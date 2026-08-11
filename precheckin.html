@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>GUESTCONNECT Pre-Checkin</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0}</style></head>
+<body class="p-4"><div class="max-w-md mx-auto bg-[#111827] p-6 rounded-3xl">
+<h1 class="text-2xl font-bold text-[#38bdf8] mb-2">Welcome to <span id="hotelName"></span></h1><p class="text-sm text-gray-400 mb-4">Powered by GUESTCONNECT - Skip the queue + Pre-book activities</p>
+<form id="form" class="space-y-3"><input name="name" placeholder="Full Name" class="w-full p-3 rounded-2xl bg-[#1f2937]" required><input name="idno" placeholder="Passport/ID Number" class="w-full p-3 rounded-2xl bg-[#1f2937]"><input name="arrival" type="time" class="w-full p-3 rounded-2xl bg-[#1f2937]"><h3 class="font-bold mt-3">Pre-Book via GUESTCONNECT:</h3><div id="activities"></div><button class="w-full bg-[#22c55e] text-black p-3 rounded-2xl font-bold">Complete Check-in on GUESTCONNECT</button></form></div>
+<script>
+const hotelId = new URLSearchParams(window.location.search).get('hotelId')||'leopardbeach';
+fetch('/api/data').then(r=>r.json()).then(data=>{document.getElementById('hotelName').innerText = data.hotels.find(h=>h.id===hotelId).name; const acts = data.services.filter(s=>s.hotelId===hotelId); document.getElementById('activities').innerHTML = acts.map(a=>`<label class="flex items-center gap-2 bg-[#1f2937] p-2 rounded-xl"><input type="checkbox" name="activity" value="${a.id}"> ${a.name} - KES ${a.price}</label>`).join('');});
+document.getElementById('form').onsubmit=e=>{e.preventDefault(); const formData = new FormData(e.target); formData.append('hotelId', hotelId); fetch('/api/precheckin',{method:'POST',body:new URLSearchParams(formData)}).then(()=>alert('✅ Check-in Complete via GUESTCONNECT! See you soon in Diani.'))};
+</script></body></html>
