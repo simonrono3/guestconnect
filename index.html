@@ -1,50 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Leopard Beach - GuestConnect</title>
+<title>Leopard Beach Resort - GuestConnect</title>
 <style>
-body{background:#0b1220;color:#fff;font-family:sans-serif;margin:0;padding:15px}
-.card{background:#1e293b;border-radius:20px;padding:20px;margin:12px 0}
-.btn{background:#38bdf8;color:#000;padding:12px 18px;border-radius:25px;border:none;font-weight:bold;margin:5px}
-.green{background:#22c55e;width:100%;padding:16px;border-radius:14px;border:none;font-size:18px;font-weight:bold}
+*{box-sizing:border-box}
+body{background:#0b1220;color:#fff;font-family:system-ui,sans-serif;margin:0;padding:12px}
+.top-card{background:#111827;border-radius:24px;padding:20px;text-align:center;margin-bottom:14px}
+.top-card h1{color:#38bdf8;margin:10px 0 4px;font-size:28px}
+.top-card p{color:#9ca3af;margin:0}
+.qr{margin:18px auto;background:#fff;padding:10px;border-radius:12px;width:150px}
+.qr img{width:100%}
+.card{background:#111827;border-radius:24px;padding:18px;margin:14px 0}
+.card h2{margin:0 0 14px;font-size:20px}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
+.btn-row button{background:#38bdf8;color:#000;border:none;border-radius:24px;padding:12px 18px;font-weight:700;flex:1 1 30%;min-width:100px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.filters button{background:#1f2937;color:#9ca3af;border:none;border-radius:20px;padding:8px 16px}
+.filters button.active{background:#38bdf8;color:#000}
+.tour-card{background:#0b1220;border-radius:18px;overflow:hidden;border:1px solid #1f2937}
+.tour-card img{width:100%;height:180px;object-fit:cover}
+.tour-info{padding:14px}
+.price{color:#22c55e;font-size:22px;font-weight:800;margin:6px 0}
+.badge{float:right;background:#22c55e;color:#000;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700}
+.green{width:100%;background:#22c55e;border:none;padding:14px;border-radius:14px;font-weight:800;font-size:16px}
+small{color:#9ca3af}
 </style>
 </head>
 <body>
-<div class="card" style="text-align:center">
-<h2 style="color:#38bdf8">Leopard Beach Resort</h2>
-<p id="room">Room 101 - Powered by GUESTCONNECT</p>
+
+<div class="top-card">
+<div style="width:70px;height:70px;border-radius:50%;overflow:hidden;margin:0 auto;border:3px solid #38bdf8"><img src="https://i.imgur.com/8Km9tLL.png" style="width:100%;height:100%;object-fit:cover"></div>
+<h1>Leopard Beach Resort</h1>
+<p>Diani Beach Rd, Ukunda</p>
+<div class="qr"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://guestconnect-ap2q.onrender.com/"></div>
+<p id="roomTxt">Room 101 - Powered by GUESTCONNECT</p>
 </div>
+
 <div class="card">
-<h3>Instant Help</h3>
-<button class="btn" onclick="book('Room Service')">Room Service</button>
-<button class="btn" onclick="book('Beach Towel')">Beach Towel</button>
-<button class="btn" onclick="book('Taxi')">Taxi</button>
-<button class="btn" onclick="book('Spa')">Spa</button>
+<h2>Instant Help</h2>
+<div class="btn-row">
+<button onclick="book('Room Service')">Room Service</button>
+<button onclick="book('Beach Towel')">Beach Towel</button>
+<button onclick="book('Taxi')">Taxi</button>
+<button onclick="book('Dhow Booking')">Dhow Booking</button>
+<button onclick="book('Spa')">Spa</button>
+<button onclick="book('Security')">Security</button>
 </div>
+</div>
+
 <div class="card">
-<h2>Discover Diani</h2>
-<div style="background:#0b1220;border-radius:16px;padding:15px;margin:10px 0">
-<h3>Dolphin Tour + Dhow Cruise</h3>
-<p>4hrs - Lunch included - Rated 4.9</p>
-<h2 style="color:#22c55e">KES 6,500</h2>
+<h2>Discover Diani via GUESTCONNECT</h2>
+<div class="filters">
+<button class="active">All</button><button>Tours</button><button>Taxi</button><button>Wellness</button><button>Food</button>
+</div>
+
+<div class="tour-card">
+<img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5">
+<div class="tour-info">
+<span class="badge">Tours</span>
+<h3 style="margin:0">Dolphin Tour + Dhow Cruise</h3>
+<small>Diani Dolphin & Dhow - 4.9 ★</small><br>
+<small>4hrs. Pick up 8AM. Lunch included</small>
+<div class="price">KES 6,500</div>
 <button class="green" onclick="book('DOLPHIN TOUR KES 6500')">Book Now on WhatsApp</button>
 </div>
-<div style="background:#0b1220;border-radius:16px;padding:15px;margin:10px 0">
-<h3>Diani Airport Transfer</h3>
-<p>Ukunda / Moi Airport</p>
-<h2 style="color:#22c55e">KES 3,500</h2>
-<button class="green" onclick="book('TAXI TO AIRPORT')">Book Taxi Now</button>
 </div>
 </div>
+
 <script>
-const params=new URLSearchParams(location.search);
-const room=params.get('room')||'101';
-document.getElementById('room').innerText='Room '+room+' - Powered by GUESTCONNECT';
-function book(s){
-window.open('https://wa.me/254712345678?text=Hi GUESTCONNECT! Room '+room+' at Leopard Beach wants: '+s,'_blank');
-}
+const p=new URLSearchParams(location.search); const room=p.get('room')||'101';
+document.getElementById('roomTxt').innerText='Room '+room+' - Powered by GUESTCONNECT';
+function book(s){ window.open('https://wa.me/254707142187?text=Hi GuestConnect! Room '+room+' wants: '+s,'_blank'); }
 </script>
 </body>
 </html>
