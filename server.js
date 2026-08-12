@@ -5,8 +5,8 @@ let vendors = [{id:'diani@taxi.com', name:'Diani Beach Cabs', type:'Taxi', phone
 let services = [{id:1, hotelId:'leopardbeach', vendorId:'dolphin@tours.com', name:'Dolphin Tour + Dhow Cruise', price:6500, category:'Tours', desc:'4hrs. Pick up 8AM. Lunch included', img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5', status:'Approved'},{id:2, hotelId:'leopardbeach', vendorId:'diani@taxi.com', name:'Airport Transfer to UKIA', price:2000, category:'Taxi', desc:'Ukunda Airport - 15min', phone:'0711111111', eta:'10 mins', img:'https://images.unsplash.com/photo-1449965408869-eaa3f722e40d', status:'Approved'},{id:3, hotelId:'leopardbeach', vendorId:'serenity@spa.com', name:'Beach Massage 60min', price:5000, category:'Wellness', desc:'Massage with ocean sound', img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874', status:'Approved'}];
 let requests = []; let bookings = []; let activities = []; let precheckins = [];
 function logActivity(entity, entityId, action){ activities.unshift({time:new Date().toLocaleString(), entity, entityId, action}); }
-function sendJSON(res, data){ res.writeHead(200, {'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}); res.end(JSON.stringify(data)); }
-function serveFile(res, file){ fs.readFile(file, (err,data)=>{ if(err){res.writeHead(404);res.end('Not Found: '+file)}else{res.writeHead(200,{'Content-Type':'text/html'});res.end(data)}}); }
+function sendJSON(res, data){ res.writeHead(200, {'Content-Type':'application/json; charset=utf-8','Access-Control-Allow-Origin':'*'}); res.end(JSON.stringify(data)); }
+function serveFile(res, file){ fs.readFile(file, (err,data)=>{ if(err){res.writeHead(404,{'Content-Type':'text/html; charset=utf-8'});res.end('Not Found: '+file)}else{res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end(data)}}); }
 const server = http.createServer((req,res)=>{
   const parsedUrl = url.parse(req.url,true); const path = parsedUrl.pathname;
   if(req.method==='POST'){
@@ -22,7 +22,8 @@ const server = http.createServer((req,res)=>{
       if(path==='/api/admin/approve-vendor'){ let v=vendors.find(v=>v.id===data.id); if(v) v.status='Approved'; sendJSON(res,{ok:true}); }
     });
   } else {
-    if(path==='/'||path==='/guest.html') serveFile(res,'guest.html');
+    if(path==='/'||path==='/index.html') serveFile(res,'index.html');
+    if(path==='/guest.html') serveFile(res,'guest.html');
     if(path==='/precheckin.html') serveFile(res,'precheckin.html');
     if(path==='/hotel-signup.html') serveFile(res,'hotel-signup.html');
     if(path==='/hotel-dashboard.html') serveFile(res,'hotel-dashboard.html');
@@ -32,4 +33,4 @@ const server = http.createServer((req,res)=>{
   }
 });
 function getAITip(service){ if(!service) return 'AI: Karibu Diani! Powered by GUESTCONNECT'; if(service.includes('Spa')||service.includes('Massage')) return 'AI CONCIERGE: Guest who booked Spa also likes Dhow Sunset Cruise tomorrow. Offer via GUESTCONNECT'; if(service.includes('Tour')||service.includes('Dolphin')) return 'AI CONCIERGE: Suggest Airport Transfer for departure + Beach Towel request.'; return 'AI CONCIERGE: Perfect upsell - Wasini Dolphin Tour, 87% love it.'; }
-server.listen(PORT,()=>console.log(`GUESTCONNECT v5.0 LAUNCHED on ${PORT}`));
+server.listen(PORT,()=>console.log(`GUESTCONNECT v5.1 FIXED on ${PORT}`));
