@@ -1,8 +1,14 @@
+
 {
   "name": "guestconnect-v5",
   "version": "5.0.0",
-  "description": "GUESTCONNECT v5.0 - Africa's In-Room Marketplace + AI Concierge - Diani, Mombasa",
+  "description": "GUESTCONNECT v5.0",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "keywords": ["guestconnect", "diani", "hotel", "marketplace", "mpesa", "kenya"]
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
 }
