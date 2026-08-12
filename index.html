@@ -1,10 +1,51 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=guest.html">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leopard Beach - GuestConnect</title>
+<style>
+body{background:#0b1220;color:#fff;font-family:sans-serif;margin:0;padding:15px}
+.card{background:#1e293b;border-radius:20px;padding:20px;margin:12px 0}
+.btn{background:#38bdf8;color:#000;padding:12px 18px;border-radius:25px;border:none;font-weight:bold;margin:5px}
+.green{background:#22c55e;width:100%;padding:16px;border-radius:14px;border:none;font-size:18px;font-weight:bold}
+</style>
 </head>
 <body>
-Redirecting to main site...
+<div class="card" style="text-align:center">
+<h2 style="color:#38bdf8">Leopard Beach Resort</h2>
+<p id="room">Room 101 - Powered by GUESTCONNECT</p>
+</div>
+<div class="card">
+<h3>Instant Help</h3>
+<button class="btn" onclick="book('Room Service')">Room Service</button>
+<button class="btn" onclick="book('Beach Towel')">Beach Towel</button>
+<button class="btn" onclick="book('Taxi')">Taxi</button>
+<button class="btn" onclick="book('Spa')">Spa</button>
+</div>
+<div class="card">
+<h2>Discover Diani</h2>
+<div style="background:#0b1220;border-radius:16px;padding:15px;margin:10px 0">
+<h3>Dolphin Tour + Dhow Cruise</h3>
+<p>4hrs - Lunch included - Rated 4.9</p>
+<h2 style="color:#22c55e">KES 6,500</h2>
+<button class="green" onclick="book('DOLPHIN TOUR KES 6500')">Book Now on WhatsApp</button>
+</div>
+<div style="background:#0b1220;border-radius:16px;padding:15px;margin:10px 0">
+<h3>Diani Airport Transfer</h3>
+<p>Ukunda / Moi Airport</p>
+<h2 style="color:#22c55e">KES 3,500</h2>
+<button class="green" onclick="book('TAXI TO AIRPORT')">Book Taxi Now</button>
+</div>
+</div>
+<script>
+const params=new URLSearchParams(location.search);
+const room=params.get('room')||'101';
+document.getElementById('room').innerText='Room '+room+' - Powered by GUESTCONNECT';
+function book(s){
+window.open('https://wa.me/254712345678?text=Hi GUESTCONNECT! Room '+room+' at Leopard Beach wants: '+s,'_blank');
+}
+</script>
 </body>
 </html>
