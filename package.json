@@ -1,14 +1,7 @@
-
 {
-  "name": "guestconnect-v5",
-  "version": "5.0.0",
-  "description": "GUESTCONNECT v5.0",
+  "name": "guesthub-os-v4",
+  "version": "4.2.0",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  }
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "mongodb": "^6.3.0" }
 }
