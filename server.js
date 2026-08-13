@@ -73,12 +73,47 @@ app.get('/api/hotels', async (req, res) => {
   res.json(data);
 });
 
+// ===== MY HOTEL ONLY - REPORT API =====
+app.get('/api/report/:hotel_id', async (req, res) => {
+  const { hotel_id, from, to } = req.params;
+  const hotelId = req.params.hotel_id;
+  
+  let q1 = supabase.from('bookings').select('*').eq('hotel_id', hotelId);
+  let q2 = supabase.from('guests').select('*').eq('hotel_id', hotelId);
+  let q3 = supabase.from('requests').select('*').eq('hotel_id', hotelId);
+
+  const { data: bookings } = await q1;
+  const { data: guests } = await q2;
+  const { data: requests } = await q3;
+
+  const revenue = bookings?.reduce((s,b)=> s + (b.amount||0),0) || 0;
+
+  res.json({
+    hotel_id: hotelId,
+    total_bookings: bookings?.length || 0,
+    total_guests: guests?.length || 0,
+    total_requests: requests?.length || 0,
+    total_revenue: revenue,
+    bookings: bookings || []
+  });
+});
+
+// ===== When guest books, SAVE hotel_id =====
+app.post('/api/bookings', async (req, res) => {
+  const { guest_name, service, hotel_id, amount } = req.body;
+  const { data, error } = await supabase.from('bookings').insert([{ guest_name, service, hotel_id, amount }]).select();
+  if(error) return res.status(400).json(error);
+  res.json(data);
+});
+
+
 // Add hotel
 app.post('/api/hotels', async (req, res) => {
   const { data, error } = await supabase.from('hotels').insert([req.body]).select();
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
