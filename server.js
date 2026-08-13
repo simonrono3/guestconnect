@@ -10,16 +10,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-console.log('GUESTSHUB™ OS v1.0 RUNNING...');
-
 // ===== PAGES =====
-app.get('/', (req,res) => res.sendFile(path.join(__dirname, 'public/index.html')));
-app.get('/guest', (req,res) => res.sendFile(path.join(__dirname, 'public/guest.html')));
-app.get('/vendor-register', (req,res) => res.sendFile(path.join(__dirname, 'public/vendor-register.html')));
-app.get('/vendor-dashboard', (req,res) => res.sendFile(path.join(__dirname, 'public/vendor-dashboard.html')));
-app.get('/gsh-dashboard', (req,res) => res.sendFile(path.join(__dirname, 'public/gsh-dashboard.html')));
-app.get('/admin', (req,res) => res.sendFile(path.join(__dirname, 'public/admin.html')));
+app.get('/', (req,res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('/guest', (req,res) => res.sendFile(path.join(__dirname, 'public', 'guest.html')));
+app.get('/vendor-register', (req,res) => res.sendFile(path.join(__dirname, 'public', 'vendor-register.html')));
+app.get('/vendor-dashboard', (req,res) => res.sendFile(path.join(__dirname, 'public', 'vendor-dashboard.html')));
+app.get('/gsh-dashboard', (req,res) => res.sendFile(path.join(__dirname, 'public', 'gsh-dashboard.html')));
+app.get('/admin', (req,res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 
 // ===== VENDOR OS =====
 app.post('/api/gsh/vendor/register', async (req,res) => {
