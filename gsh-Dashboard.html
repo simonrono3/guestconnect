@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hotel Dashboard</title>
+<style>body{background:#0f0a0a;color:white;font-family:sans-serif;padding:20px}.card{background:#1a1a1a;border-radius:16px;padding:18px;margin:12px 0}</style></head><body>
+<h2>🏨 GUESTSHUB™ Hotel OS</h2><div class="card"><h3>Room QR Generator</h3><p style="color:#888">Print & put in room. Guest scans → WhatsApp</p><input id="room" value="203" style="padding:10px"><button onclick="gen()" style="padding:10px;background:#00ff88;border:none;border-radius:8px">Generate QR</button><br><br><canvas id="qr"></canvas></div>
+<div class="card"><h3>Live Bookings & Orders</h3><div id="live"></div></div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script>
+function gen(){ QRCode.toCanvas(document.getElementById('qr'), 'GSH_ROOM_'+room.value+'_HOTEL_1', {width:200}); }
+gen();
+async function load(){
+  const b=await (await fetch('/api/gsh/bookings')).json();
+  const o=await (await fetch('/api/gsh/orders')).json();
+  live.innerHTML = [...b,...o].map(x=>`<div style="padding:8px;border-bottom:1px solid #222">${x.room_number||''} ${x.guest_phone||''} - ${x.type||x.item_name||'Booking'} - <span style="color:#00ff88">${x.status}</span></div>`).join('');
+}
+load(); setInterval(load,5000);
+</script></body></html>
