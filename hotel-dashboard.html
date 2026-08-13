@@ -1,51 +1,80 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hotel Dashboard</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0} .card{background:#111827}</style></head><body class="p-4"><div class="max-w-4xl mx-auto"><h1 class="text-2xl font-bold text-[#38bdf8] mb-4">Hotel Dashboard</h1><div class="flex gap-2 mb-4"><button onclick="tab(1)" class="bg-[#38bdf8] text-black px-4 py-2 rounded-2xl">Overview</button><button onclick="tab(2)" class="bg-[#1f2937] px-4 py-2 rounded-2xl">Requests</button><button onclick="tab(3)" class="bg-[#1f2937] px-4 py-2 rounded-2xl">Services</button></div><div id="t1"></div><div id="t2" class="hidden"></div><div id="t3" class="hidden"></div></div><script>const hotelId=new URLSearchParams(window.location.search).get('hotelId')||'savannah';function tab(n){for(let i=1;i<=3;i++)document.getElementById('t'+i).classList.add('hidden');document.getElementById('t'+n).classList.remove('hidden')}function load(){fetch('/api/data').then(r=>r.json()).then(data=>{const myBookings=data.bookings.filter(b=>b.hotelId===hotelId);const earning=myBookings.reduce((a,b)=>a+b.hotelEarning,0);document.getElementById('t1').innerHTML=`<div class="grid grid-cols-2 gap-4"><div class="card p-4 rounded-3xl"><div>Earnings</div><div class="text-3xl font-bold text-[#22c55e]">KES ${earning.toLocaleString()}</div></div><div class="card p-4 rounded-3xl"><div>Bookings</div><div class="text-3xl font-bold">${myBookings.length}</div></div></div><div class="card p-4 rounded-3xl mt-4"><div class="font-bold">QR Link</div><div class="text-xs break-all bg-[#0a0f1e] p-2 rounded-xl">https://${window.location.host}/?hotelId=${hotelId}&room=101</div></div>`;document.getElementById('t2').innerHTML=data.requests.filter(r=>r.hotelId===hotelId).map(r=>`<div class="card p-3 rounded-2xl mb-2">${r.service} - Room ${r.room}</div>`).join('')||'No requests';document.getElementById('t3').innerHTML=`<button onclick="addService()" class="bg-[#22c55e] text-black p-2 rounded-2xl mb-3">+ Add Service</button>`+data.services.filter(s=>s.hotelId===hotelId).map(s=>`<div class="card p-3 rounded-2xl mb-2">${s.name} - KES ${s.price}</div>`).join('');});}function addService(){const name=prompt('Name');if(!name)return;const price=prompt('Price');const cat=prompt('Category','Tours');fetch('/api/hotel/add-service',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`hotelId=${hotelId}&name=${encodeURIComponent(name)}&price=${price}&category=${cat}&desc=Added&img=https://picsum.photos/300/150?${Date.now()}&vendorId=${hotelId}`}).then(()=>load())}tab(1);load();</script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GM Dashboard - My Hotel Report</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:20px}
+.card{background:#1a1a1a;padding:15px;border-radius:12px;text-align:center;border:1px solid #333}
+button{padding:10px 18px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+</style>
+</head>
+<body>
+
+<h1 style="color:#00ff88;">GM Dashboard</h1>
+<p>Hotel: <b id="hotelName" style="color:#00ff88;"></b></p>
+
 <!-- ===== MY HOTEL REPORT ===== -->
-<div id="reportSection" style="margin:20px; background:#0f0f0f; padding:20px; border-radius:15px; border:1px solid #00ff88;">
+<div id="reportSection" style="margin:20px 0; border:1px solid #00ff88; border-radius:15px; padding:20px; background:#111;">
   <h2 style="color:#00ff88;">📊 My Hotel Report</h2>
-  <div style="display:flex; gap:10px; margin:15px 0;">
-    <input type="date" id="fromDate" style="padding:8px; border-radius:8px;">
-    <input type="date" id="toDate" style="padding:8px; border-radius:8px;">
-    <button onclick="loadReport()" style="background:#00ff88; color:#000; padding:8px 20px; border:none; border-radius:8px; font-weight:bold;">Generate Report</button>
-    <button onclick="downloadReport()" style="background:#fff; color:#000; padding:8px 20px; border:none; border-radius:8px;">Download PDF</button>
-  </div>
   
-  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px;">
-    <div style="background:#1a1a1a; padding:15px; border-radius:10px;"><h4>Total Guests</h4><h1 id="totalGuests">0</h1></div>
-    <div style="background:#1a1a1a; padding:15px; border-radius:10px;"><h4>Total Bookings</h4><h1 id="totalBookings">0</h1></div>
-    <div style="background:#1a1a1a; padding:15px; border-radius:10px;"><h4>Commission</h4><h1 id="totalRevenue">KES 0</h1></div>
+  <div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;">
+    <input type="date" id="fromDate" style="padding:8px; border-radius:6px;">
+    <input type="date" id="toDate" style="padding:8px; border-radius:6px;">
+    <button onclick="loadReport()" style="background:#00ff88;">🔄 Load Report</button>
+    <button onclick="downloadReport()" style="background:#fff;">📥 Download PDF</button>
   </div>
-  
-  <table id="reportTable" style="width:100%; margin-top:20px; border-collapse:collapse;">
+
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
+    <div class="card"><h2 id="totalBookings">0</h2><small>Bookings</small></div>
+    <div class="card"><h2 id="totalGuests">0</h2><small>Guests</small></div>
+    <div class="card"><h2 id="totalRevenue" style="color:#00ff88;">KES 0</h2><small>Revenue</small></div>
+  </div>
+
+  <table id="reportTable" style="width:100%; border-collapse:collapse; margin-top:10px;">
     <thead><tr style="color:#00ff88; border-bottom:1px solid #333;"><th>Date</th><th>Guest</th><th>Service</th><th>Amount</th></tr></thead>
     <tbody></tbody>
   </table>
 </div>
 
 <script>
+const MY_HOTEL = localStorage.getItem('hotel_id') || 'diani_beach_resort';
+document.getElementById('hotelName').innerText = MY_HOTEL.toUpperCase().replace(/_/g,' ');
+
+// Load report from YOUR API - MY HOTEL ONLY
 async function loadReport(){
-  const hotelId = localStorage.getItem('hotel_id') || 'diani_beach'; // GM's hotel
   const from = document.getElementById('fromDate').value;
   const to = document.getElementById('toDate').value;
   
-  // Fetch ONLY this hotel's data
-  let query = supabase.from('guests').select('*').eq('hotel_id', hotelId);
-  if(from) query = query.gte('created_at', from);
-  if(to) query = query.lte('created_at', to);
-  
-  const { data, error } = await query;
-  if(error){ alert(error.message); return; }
-  
-  document.getElementById('totalGuests').innerText = data.length;
-  document.getElementById('totalBookings').innerText = data.length;
-  
-  // Show in table
+  // Call your server API
+  let url = `/api/report/${MY_HOTEL}`;
+  if(from && to) url += `?from=${from}&to=${to}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  document.getElementById('totalBookings').innerText = data.total_bookings;
+  document.getElementById('totalGuests').innerText = data.total_guests;
+  document.getElementById('totalRevenue').innerText = 'KES ' + data.total_revenue;
+
   const tbody = document.querySelector('#reportTable tbody');
-  tbody.innerHTML = data.map(g => `<tr style="border-bottom:1px solid #222;"><td>${new Date(g.created_at).toLocaleDateString()}</td><td>${g.name || g.guest_name}</td><td>${g.service || 'Stay'}</td><td>KES ${g.amount || 0}</td></tr>`).join('');
+  tbody.innerHTML = data.bookings.map(b=>`
+    <tr style="border-bottom:1px solid #222;">
+      <td>${new Date(b.created_at).toLocaleDateString()}</td>
+      <td>${b.guest_name || b.name}</td>
+      <td>${b.service || b.request_type || '-'}</td>
+      <td>${b.amount || 0}</td>
+    </tr>
+  `).join('');
 }
 
 function downloadReport(){
-  window.print(); // Simple PDF
+  window.print(); // GM can save as PDF
 }
+
+loadReport();
 </script>
 
-</body></html>
+</body>
+</html>
