@@ -1,1 +1,20 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vendor Dashboard</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0} .card{background:#111827}</style></head><body class="p-4"><div class="max-w-4xl mx-auto"><h1 class="text-2xl font-bold text-[#38bdf8] mb-4">Vendor Dashboard</h1><div id="stats" class="grid grid-cols-2 gap-4 mb-4"></div><div id="list" class="space-y-2"></div></div><script>const vendorId=new URLSearchParams(window.location.search).get('vendorId')||'taxi@test.com';fetch('/api/data').then(r=>r.json()).then(data=>{const myServices=data.services.filter(s=>s.vendorId===vendorId);const myBookings=data.bookings.filter(b=>myServices.some(s=>s.id==b.serviceId));const total=myBookings.reduce((a,b)=>a+(parseFloat(b.price)-b.commission),0);document.getElementById('stats').innerHTML=`<div class="card p-4 rounded-3xl"><div>Bookings</div><div class="text-2xl font-bold">${myBookings.length}</div></div><div class="card p-4 rounded-3xl"><div>Earnings</div><div class="text-2xl font-bold text-[#22c55e]">KES ${total.toLocaleString()}</div></div>`;document.getElementById('list').innerHTML=myBookings.map(b=>`<div class="card p-3 rounded-2xl">${b.serviceName} - Room ${b.room} - KES ${b.price}</div>`).join('')||'No bookings';});</script></body></html>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vendor Dashboard</title>
+<style>body{background:#0a0a0a;color:white;font-family:monospace;padding:20px}.card{background:#111;border:1px solid #222;border-radius:12px;padding:16px;margin:10px 0}input{padding:10px;background:#1a1a1a;border:1px solid #333;color:white;border-radius:8px;margin:4px}button{background:#00ff88;color:#000;padding:10px 16px;border:none;border-radius:20px;font-weight:700}</style></head><body>
+<h2 style="color:#00ff88">Vendor Dashboard</h2><div class="card"><b>Add Listing</b><br><br>
+<input id="name" placeholder="Name: Wasini Dolphin Tour"><input id="price" type="number" placeholder="Price KES"><input id="duration" placeholder="3 Hours"><br>
+<select id="dept" style="padding:10px;background:#1a1a1a;color:white;border:1px solid #333;border-radius:8px"><option>TOURS</option><option>SAFARI</option><option>SPA</option><option>TAXI</option><option>DINE</option></select>
+<input id="hotel_id" placeholder="Hotel ID (1 for demo)" value="1" style="width:80px"><br><br>
+<button onclick="add()">+ Add Listing</button></div>
+<div class="card"><b>My Bookings</b><div id="books">Loading...</div></div>
+<script>
+const VENDOR_ID = 1; // Later from login
+async function add(){
+  await fetch('/api/gsh/vendor/listing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id: parseInt(hotel_id.value), vendor_id: VENDOR_ID, department: dept.value, name: name.value, price: parseFloat(price.value), duration: duration.value, is_available: true})});
+  alert('Listing Added! Guests can now book.'); loadBooks();
+}
+async function loadBooks(){
+  const r=await fetch('/api/gsh/vendor/bookings/'+VENDOR_ID); const d=await r.json();
+  books.innerHTML = d.length? d.map(b=>`<div style="border-bottom:1px solid #222;padding:8px 0">${b.created_at?.split('T')[0]} - ${b.guest_phone} - ${b.status}</div>`).join('') : 'No bookings yet';
+}
+loadBooks();
+</script></body></html>
