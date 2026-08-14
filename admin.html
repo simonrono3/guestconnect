@@ -1,15 +1,30 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin OS</title>
-<style>body{background:#000;color:#fff;font-family:monospace;padding:20px}.card{background:#111;border:1px solid #222;border-radius:12px;padding:16px;margin:12px 0}.btn{background:#00ff88;color:#000;padding:8px 12px;border:none;border-radius:20px;font-weight:700}</style></head><body>
-<h2 style="color:#00ff88">GUESTSHUB™ SUPER ADMIN OS</h2><input id="key" placeholder="ADMIN_KEY" value="GUESTSHUB2026" style="padding:10px;background:#111;border:1px solid #333;color:#fff;border-radius:8px;width:200px"><button onclick="load()" class="btn">LOAD OS</button>
-<div id="stats" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
-<div class="card"><h3>Pending Vendors - Approve to Earn 15%</h3><div id="vendors"></div></div>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Super Admin OS</title>
+<style>body{background:#000;color:#fff;font-family:monospace;padding:20px} .card{background:#111;border:1px solid #333;padding:16px;border-radius:14px;margin:12px 0} .btn{background:#00ff88;color:#000;border:none;padding:10px 16px;border-radius:20px;font-weight:800;cursor:pointer} input{padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}</style>
+</head><body>
+<h2 style="color:#00ff88">GUESTSHUB™ SUPER ADMIN OS</h2>
+<div style="display:flex;gap:10px"><input id="code" value="GUESTSHUB2026" style="flex:1"><button class="btn" onclick="loadOS()">LOAD OS</button></div>
+<div id="os" style="display:none">
+  <div class="card"><h3>💰 LIVE EARNINGS</h3><p id="earnings">Loading...</p></div>
+  <div class="card"><h3>Pending Vendors - Approve to Earn 15%</h3><div id="vendors">No pending</div></div>
+  <div class="card"><h3>Hotels</h3><input id="hname" placeholder="Hotel Name"><input id="hphone" placeholder="WhatsApp 2547..."><button class="btn" onclick="addHotel()">Add Hotel</button><div id="hotels"></div></div>
+  <div class="card"><h3>🌍 Location Switcher</h3><button class="btn" onclick="setLoc('DIANI')">Set DIANI</button> <button class="btn" onclick="setLoc('NAROK')">Set NAROK</button></div>
+  <div class="card"><h3>📱 Generate Room QR</h3><input id="roomqr" placeholder="Room 12A - Hotel ID diani-01"><button class="btn" onclick="genQR()">Generate QR</button><div id="qr"></div></div>
+</div>
 <script>
-async function load(){
-  const k=key.value; const s=await (await fetch('/api/admin/stats?key='+k)).json();
-  stats.innerHTML=`<div class="card"><h1>${s.hotels||0}</h1>Hotels</div><div class="card"><h1>${s.pending_vendors||0}</h1>Pending</div><div class="card"><h1>${s.bookings||0}</h1>Bookings</div><div class="card"><h1>${s.approved_vendors||0}</h1>Active Vendors</div>`;
-  const v=await (await fetch('/api/admin/vendors/pending?key='+k)).json();
-  vendors.innerHTML = v.map(x=>`<div style="padding:10px;border-bottom:1px solid #222">${x.company_name} - ${x.category} - ${x.phone} <button class="btn" onclick="approve(${x.id})">APPROVE</button></div>`).join('') || 'No pending';
+const SUPABASE_URL="YOUR_SUPABASE_URL"; // we will fill
+function loadOS(){ if(document.getElementById('code').value==="GUESTSHUB2026"){document.getElementById('os').style.display='block'; loadData();} else alert('Wrong Code!')}
+async function loadData(){
+ let res=await fetch('/api/vendors/pending'); let v=await res.json();
+ document.getElementById('vendors').innerHTML=v.map(x=>`${x.name} - ${x.service} <button class=btn onclick="approve('${x.id}')">Approve 15%</button>`).join('<br><br>')||'No pending';
+ let h=await fetch('/api/hotels'); let hotels=await h.json();
+ document.getElementById('hotels').innerHTML=hotels.map(h=>`${h.name} - ${h.id}`).join('<br>');
+ let r=await fetch('/api/report/diani-01'); let rep=await r.json();
+ document.getElementById('earnings').innerHTML=`Bookings: ${rep.total_bookings} | Revenue: KES ${rep.total_revenue} | Your 15%: KES ${Math.round(rep.total_revenue*0.15)}`;
 }
-async function approve(id){ await fetch('/api/admin/vendor/approve/'+id+'?key='+key.value,{method:'POST'}); alert('Approved! Vendor can now list & you earn 15%'); load(); }
-load();
-</script></body></html>
+async function approve(id){await fetch('/api/vendors/approve/'+id,{method:'POST'}); alert('Approved! You earn 15% now'); loadData();}
+async function addHotel(){ let name=document.getElementById('hname').value; let phone=document.getElementById('hphone').value; await fetch('/api/hotels',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:name.toLowerCase().replace(/ /g,'-'),name,whatsapp:phone})}); loadData();}
+function setLoc(loc){localStorage.setItem('GH_LOC',loc); alert('Location set to '+loc+' - Update index.html badge to '+loc); }
+function genQR(){ let room=document.getElementById('roomqr').value; document.getElementById('qr').innerHTML=`<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://guestconnect-ap2q.onrender.com/guest?room=${room}" > <br>Room: ${room}`;}
+</script>
+</body></html>
