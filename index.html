@@ -2,91 +2,65 @@
 <html>
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GuestHub™ Diani - OS</title>
+<title>GuestHub™ Diani</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui}
 body{background:#080808;color:#fff;padding:20px}
-.badge{border:1px solid #00ff88;color:#00ff88;border-radius:20px;padding:6px 14px;display:inline-block;font-size:12px;margin:15px 0}
-h1{font-size:42px;font-weight:900;line-height:0.9}h1 span{color:#00ff88}
-.card{background:#151515;border:1px solid #222;border-radius:20px;padding:20px;margin:15px 0}
-.btn{background:#00ff88;color:#000;border:none;padding:16px;border-radius:30px;width:100%;font-weight:800;font-size:16px;cursor:pointer}
+/* SHUKA STRIPES - from your screenshot */
+.shuka{position:fixed;top:0;left:0;width:100%;height:8px;display:flex;z-index:99}
+.shuka div{flex:1} .r{background:#c41e1e} .g{background:#006600} .b{background:#000} .w{background:#fff}
+.badge{border:1px solid #00ff88;color:#00ff88;border-radius:20px;padding:6px 14px;display:inline-block;font-size:12px;margin:20px 0 15px 0}
+h1{font-size:46px;font-weight:900;line-height:0.85;letter-spacing:-1px}h1 span{color:#00ff88}
+.card{background:#121212;border:1px solid #222;border-radius:20px;padding:20px;margin:15px 0}
+.btn{background:#00ff88;color:#000;border:none;padding:16px;border-radius:30px;width:100%;font-weight:900;font-size:16px;cursor:pointer}
+.btn-dark{background:#1c4d2e;color:#fff}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.small{opacity:0.6;font-size:14px;margin:10px 0}
+.small{opacity:0.6;font-size:14px;margin:10px 0;line-height:1.4}
 input,select{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;margin:8px 0}
-.service{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;padding:14px;border-radius:14px;margin:8px 0}
+.service{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;padding:14px;border-radius:14px;margin:8px 0;border-left:3px solid #00ff88}
 </style>
 </head>
 <body>
-<div style="text-align:center;border-top:6px solid #000">GUESTSHUB™</div>
-<div class="badge">● OS v1.0 LIVE • <span id="loc">DIANI 🏖️</span></div>
-<h1>CONNECT<br><span>EVERY GUEST</span><br>TO EVERYTHING.</h1>
+<div class="shuka"><div class="r"></div><div class="b"></div><div class="g"></div><div class="r"></div><div class="b"></div><div class="g"></div><div class="r"></div><div class="b"></div><div class="g"></div><div class="r"></div></div>
+
+<div style="text-align:center;letter-spacing:4px;font-size:18px;font-weight:800;margin-top:10px">GUESTSHUB™</div>
+<div class="badge">● OS v1.0 LIVE • Diani 🇰🇪</div>
+<h1>CONNECT<br><span>EVERY GUEST</span><br>TO<br>EVERYTHING.</h1>
 <p class="small">QR + WhatsApp + Tours + Taxi + Spa + Food - One OS</p>
 
 <div id="home">
   <div class="card">
-    <div style="color:#00ff88;font-size:12px;letter-spacing:2px">FOR GUESTS</div>
-    <p style="margin:12px 0">Scan QR in room → WhatsApp Menu → Book anything. No app needed.</p>
-    <button class="btn" onclick="showGuest()">ENTER GUEST MODE →</button>
+    <div style="color:#00ff88;font-size:11px;letter-spacing:2px;font-weight:800">FOR GUESTS</div>
+    <p style="margin:14px 0">Scan QR in room → WhatsApp Menu → Book anything. No app needed.</p>
+    <button class="btn btn-dark" onclick="showGuest()">ENTER GUEST MODE →</button>
   </div>
   <div class="grid">
-    <div class="card" onclick="location.href='/hotel-dashboard.html'" style="text-align:center;cursor:pointer"><div style="font-size:30px">🏨</div><b>Hotels</b><div class="small">GM Dashboard</div><button style="background:#222;color:#fff;border:none;padding:8px 14px;border-radius:20px;margin-top:10px">Open</button></div>
-    <div class="card" onclick="showVendor()" style="text-align:center;cursor:pointer"><div style="font-size:30px">🌍</div><b>Vendors</b><div class="small">Tours, Spa</div><button style="background:#222;color:#fff;border:none;padding:8px 14px;border-radius:20px;margin-top:10px">Join</button></div>
+    <div class="card" style="text-align:center" onclick="location.href='/hotel-dashboard.html'"><div style="font-size:32px">🏨</div><b>Hotels</b><div class="small">GM Dashboard</div></div>
+    <div class="card" style="text-align:center" onclick="showVendor()"><div style="font-size:32px">🌍</div><b>Vendors</b><div class="small">Tours, Spa</div></div>
   </div>
 </div>
 
 <div id="guestMode" style="display:none">
   <div class="card">
-    <h3>🏖️ Welcome Guest</h3>
-    <input id="room" placeholder="Room Number e.g 12A">
-    <input id="gname" placeholder="Your Name">
-    <select id="hotel"><option value="diani-01">Diani Sea Resort</option></select>
+    <h3>🏖️ Karibu!</h3>
+    <input id="room" placeholder="Room No. e.g 12A"><input id="gname" placeholder="Jina / Name">
     <div id="services"></div>
   </div>
-  <button class="small" onclick="showHome()">← Back</button>
+  <div class="small" onclick="showHome()" style="cursor:pointer">← Back</div>
 </div>
 
 <div id="vendorMode" style="display:none">
-  <div class="card">
-    <h3>Join as Vendor</h3>
-    <input id="vname" placeholder="Business Name">
-    <select id="vservice"><option>Tours</option><option>Taxi</option><option>Spa</option><option>Food</option></select>
-    <input id="vphone" placeholder="WhatsApp 2547...">
-    <button class="btn" onclick="joinVendor()">JOIN NOW</button>
-  </div>
-  <button class="small" onclick="showHome()">← Back</button>
+  <div class="card"><h3>Join as Vendor</h3><input id="vname" placeholder="Biashara Name"><input id="vphone" placeholder="WhatsApp 2547..."><button class="btn" onclick="joinVendor()">JOIN</button></div>
+  <div class="small" onclick="showHome()" style="cursor:pointer">← Back</div>
 </div>
 
 <script>
-const SERVICES=[
- {icon:'🚕',name:'Taxi to Beach / Airport',price:1500},
- {icon:'🏝️',name:'Wasini Island Tour',price:4500},
- {icon:'💆',name:'Spa Massage in Room',price:2500},
- {icon:'🍔',name:'Food - Swahili / Seafood',price:0},
- {icon:'🤿',name:'Diving & Snorkeling',price:3500}
-];
-function showGuest(){document.getElementById('home').style.display='none';document.getElementById('guestMode').style.display='block';
- document.getElementById('services').innerHTML=SERVICES.map(s=>`<div class=service><div>${s.icon} ${s.name}<br><small>${s.price?'KES '+s.price:'Order'}</small></div><button class=btn style="width:auto;padding:8px 14px" onclick="book('${s.name}',${s.price})">Book</button></div>`).join('')}
-function showVendor(){document.getElementById('home').style.display='none';document.getElementById('vendorMode').style.display='block'}
-function showHome(){document.getElementById('home').style.display='block';document.getElementById('guestMode').style.display='none';document.getElementById('vendorMode').style.display='none'}
-
-async function book(service,amount){
- const room=document.getElementById('room').value||'N/A';
- const guest=document.getElementById('gname').value||'Guest';
- const hotel=document.getElementById('hotel').value;
- if(!room){alert('Enter Room');return}
- const text=`Hello! New Booking from GuestHub™ Diani%0A%0ARoom: ${room}%0AGuest: ${guest}%0AService: ${service}%0AAmount: ${amount}%0A%0AConfirm?`;
- // Save to backend
- await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel,room,guest_name:guest,service,amount})})
- // Open WhatsApp
- window.open(`https://wa.me/254700000000?text=${text}`,'_blank');
- alert('Booked! Hotel will WhatsApp you. Asante!');
-}
-async function joinVendor(){
- const data={name:document.getElementById('vname').value,service:document.getElementById('vservice').value,phone:document.getElementById('vphone').value,location:'DIANI'};
- await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
- alert('Karibu! Vendor added. Hotels will see you now.');
- showHome();
-}
+const SERVICES=[{icon:'🚕',name:'Taxi / TukTuk',price:1500},{icon:'🏝️',name:'Wasini Tour',price:4500},{icon:'💆',name:'Spa kwa Room',price:2500},{icon:'🍔',name:'Food - Pilau / Seafood',price:0},{icon:'🤿',name:'Diving',price:3500}];
+function showGuest(){home.style.display='none';guestMode.style.display='block';services.innerHTML=SERVICES.map(s=>`<div class=service><div>${s.icon} ${s.name}<br><small>KES ${s.price||'Ask'}</small></div><button class=btn style="width:auto;padding:8px 14px" onclick="book('${s.name}',${s.price})">Book</button></div>`).join('')}
+function showVendor(){home.style.display='none';vendorMode.style.display='block'}
+function showHome(){home.style.display='block';guestMode.style.display='none';vendorMode.style.display='none'}
+async function book(service,amount){const room=document.getElementById('room').value;if(!room){alert('Weka Room');return}await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:'diani-01',room,guest_name:gname.value,service,amount})});window.open(`https://wa.me/254700000000?text=New Booking ${room} - ${service}`,'_blank');alert('Poa! Booked!')}
+async function joinVendor(){await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:vname.value,phone:vphone.value,location:'DIANI'})});alert('Karibu!');showHome()}
 </script>
 </body>
 </html>
