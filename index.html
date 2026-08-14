@@ -1,1 +1,92 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>GUESTSHUB™ OS</title><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Cinzel:wght@700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}body{background:#0a0a0a;color:#fff}.shuka{height:8px;background:repeating-linear-gradient(90deg,#CE1126 0 20px,#000 20px 40px,#fff 40px 60px,#006600 60px 80px)}.card{background:linear-gradient(135deg,rgba(255,255,255,.1),rgba(255,255,255,.03));backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:20px;margin:12px 0}.btn{width:100%;padding:16px;border-radius:100px;border:none;font-weight:900;cursor:pointer}.g{background:linear-gradient(90deg,#00ff88,#00cc6a);color:#000}.b{background:#1a1a1a;color:#fff;border:1px solid #333}</style></head><body><div class="shuka"></div><div style="padding:28px"><div style="font-family:Cinzel;font-size:32px;letter-spacing:4px;font-weight:900">GUESTSHUB™</div><div style="border:1px solid #00ff88;color:#00ff88;padding:5px 12px;border-radius:20px;font-size:10px;display:inline-block;margin-top:10px">● OS v1.0 LIVE • Diani 🇰🇪</div><h1 style="font-size:42px;line-height:.9;margin-top:22px;font-weight:900">CONNECT<br><span style="color:#00ff88">EVERY GUEST</span><br>TO EVERYTHING.</h1><p style="color:#888;margin-top:10px">QR + WhatsApp + Tours + Taxi + Spa + Food - One OS</p><div class="card"><b style="color:#00ff88;font-size:11px;letter-spacing:3px">FOR GUESTS</b><br><br>Scan QR in room → WhatsApp Menu → Book anything. No app needed.<br><br><a href="/guest?room=203"><button class="btn g">ENTER GUEST MODE →</button></a></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="card" style="text-align:center"><div style="font-size:28px">🏨</div><b>Hotels</b><br><small style="color:#888">GM Dashboard</small><br><br><a href="/gsh-dashboard"><button class="btn b">Open</button></a></div><div class="card" style="text-align:center"><div style="font-size:28px">🌍</div><b>Vendors</b><br><small style="color:#888">Tours, Spa</small><br><br><a href="/vendor-register"><button class="btn b">Join</button></a></div></div><a href="/admin"><div class="card" style="text-align:center;border:1px dashed #00ff88">⚙️ SUPER ADMIN CONTROL CENTER</div></a><div style="text-align:center;color:#444;font-size:10px;padding:20px">MADE IN Diani • CONNECT EVERY GUEST TO EVERYTHING</div></div></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GuestHub™ Diani - OS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui}
+body{background:#080808;color:#fff;padding:20px}
+.badge{border:1px solid #00ff88;color:#00ff88;border-radius:20px;padding:6px 14px;display:inline-block;font-size:12px;margin:15px 0}
+h1{font-size:42px;font-weight:900;line-height:0.9}h1 span{color:#00ff88}
+.card{background:#151515;border:1px solid #222;border-radius:20px;padding:20px;margin:15px 0}
+.btn{background:#00ff88;color:#000;border:none;padding:16px;border-radius:30px;width:100%;font-weight:800;font-size:16px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.small{opacity:0.6;font-size:14px;margin:10px 0}
+input,select{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#111;color:#fff;margin:8px 0}
+.service{display:flex;justify-content:space-between;align-items:center;background:#1c1c1c;padding:14px;border-radius:14px;margin:8px 0}
+</style>
+</head>
+<body>
+<div style="text-align:center;border-top:6px solid #000">GUESTSHUB™</div>
+<div class="badge">● OS v1.0 LIVE • <span id="loc">DIANI 🏖️</span></div>
+<h1>CONNECT<br><span>EVERY GUEST</span><br>TO EVERYTHING.</h1>
+<p class="small">QR + WhatsApp + Tours + Taxi + Spa + Food - One OS</p>
+
+<div id="home">
+  <div class="card">
+    <div style="color:#00ff88;font-size:12px;letter-spacing:2px">FOR GUESTS</div>
+    <p style="margin:12px 0">Scan QR in room → WhatsApp Menu → Book anything. No app needed.</p>
+    <button class="btn" onclick="showGuest()">ENTER GUEST MODE →</button>
+  </div>
+  <div class="grid">
+    <div class="card" onclick="location.href='/hotel-dashboard.html'" style="text-align:center;cursor:pointer"><div style="font-size:30px">🏨</div><b>Hotels</b><div class="small">GM Dashboard</div><button style="background:#222;color:#fff;border:none;padding:8px 14px;border-radius:20px;margin-top:10px">Open</button></div>
+    <div class="card" onclick="showVendor()" style="text-align:center;cursor:pointer"><div style="font-size:30px">🌍</div><b>Vendors</b><div class="small">Tours, Spa</div><button style="background:#222;color:#fff;border:none;padding:8px 14px;border-radius:20px;margin-top:10px">Join</button></div>
+  </div>
+</div>
+
+<div id="guestMode" style="display:none">
+  <div class="card">
+    <h3>🏖️ Welcome Guest</h3>
+    <input id="room" placeholder="Room Number e.g 12A">
+    <input id="gname" placeholder="Your Name">
+    <select id="hotel"><option value="diani-01">Diani Sea Resort</option></select>
+    <div id="services"></div>
+  </div>
+  <button class="small" onclick="showHome()">← Back</button>
+</div>
+
+<div id="vendorMode" style="display:none">
+  <div class="card">
+    <h3>Join as Vendor</h3>
+    <input id="vname" placeholder="Business Name">
+    <select id="vservice"><option>Tours</option><option>Taxi</option><option>Spa</option><option>Food</option></select>
+    <input id="vphone" placeholder="WhatsApp 2547...">
+    <button class="btn" onclick="joinVendor()">JOIN NOW</button>
+  </div>
+  <button class="small" onclick="showHome()">← Back</button>
+</div>
+
+<script>
+const SERVICES=[
+ {icon:'🚕',name:'Taxi to Beach / Airport',price:1500},
+ {icon:'🏝️',name:'Wasini Island Tour',price:4500},
+ {icon:'💆',name:'Spa Massage in Room',price:2500},
+ {icon:'🍔',name:'Food - Swahili / Seafood',price:0},
+ {icon:'🤿',name:'Diving & Snorkeling',price:3500}
+];
+function showGuest(){document.getElementById('home').style.display='none';document.getElementById('guestMode').style.display='block';
+ document.getElementById('services').innerHTML=SERVICES.map(s=>`<div class=service><div>${s.icon} ${s.name}<br><small>${s.price?'KES '+s.price:'Order'}</small></div><button class=btn style="width:auto;padding:8px 14px" onclick="book('${s.name}',${s.price})">Book</button></div>`).join('')}
+function showVendor(){document.getElementById('home').style.display='none';document.getElementById('vendorMode').style.display='block'}
+function showHome(){document.getElementById('home').style.display='block';document.getElementById('guestMode').style.display='none';document.getElementById('vendorMode').style.display='none'}
+
+async function book(service,amount){
+ const room=document.getElementById('room').value||'N/A';
+ const guest=document.getElementById('gname').value||'Guest';
+ const hotel=document.getElementById('hotel').value;
+ if(!room){alert('Enter Room');return}
+ const text=`Hello! New Booking from GuestHub™ Diani%0A%0ARoom: ${room}%0AGuest: ${guest}%0AService: ${service}%0AAmount: ${amount}%0A%0AConfirm?`;
+ // Save to backend
+ await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel,room,guest_name:guest,service,amount})})
+ // Open WhatsApp
+ window.open(`https://wa.me/254700000000?text=${text}`,'_blank');
+ alert('Booked! Hotel will WhatsApp you. Asante!');
+}
+async function joinVendor(){
+ const data={name:document.getElementById('vname').value,service:document.getElementById('vservice').value,phone:document.getElementById('vphone').value,location:'DIANI'};
+ await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ alert('Karibu! Vendor added. Hotels will see you now.');
+ showHome();
+}
+</script>
+</body>
+</html>
