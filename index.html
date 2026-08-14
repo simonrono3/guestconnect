@@ -55,12 +55,100 @@ input,select{width:100%;padding:14px;border-radius:12px;border:1px solid #333;ba
 </div>
 
 <script>
-const SERVICES=[{icon:'🚕',name:'Taxi / TukTuk',price:1500},{icon:'🏝️',name:'Wasini Tour',price:4500},{icon:'💆',name:'Spa kwa Room',price:2500},{icon:'🍔',name:'Food - Pilau / Seafood',price:0},{icon:'🤿',name:'Diving',price:3500}];
+let HOTELS=[];
+let ALL_SERVICES=[
+ {name:'Taxi / TukTuk / Airport',price:1500,icon:'🚕',loc:['DIANI','NAROK','NAIROBI','MOMBASA']},
+ {name:'Wasini Island + Dolphins',price:4500,icon:'🏝️',loc:['DIANI']},
+ {name:'Maasai Mara Safari',price:15000,icon:'🦁',loc:['NAROK']},
+ {name:'City Tour + Bomas',price:3000,icon:'🏙️',loc:['NAIROBI']},
+ {name:'Spa Massage in Room',price:2500,icon:'💆',loc:['DIANI','NAROK','NAIROBI','MOMBASA']},
+ {name:'Food - Pilau / Nyama Choma',price:0,icon:'🍔',loc:['DIANI','NAROK','NAIROBI','MOMBASA']},
+ {name:'Diving & Snorkeling',price:3500,icon:'🤿',loc:['DIANI','MOMBASA']},
+];
+
+// 1. Get location from URL ?loc=DIANI or from Hotel
+function getCurrentLocation(){
+  const urlParams = new URLSearchParams(window.location.search);
+  return (urlParams.get('loc') || localStorage.getItem('GH_LOC') || 'DIANI').toUpperCase();
+}
+
+function showGuest(){home.style.display='none';guestMode.style.display='block';vendorMode.style.display='none';loadHotels();renderServices()}
+function showVendor(){home.style.display='none';guestMode.style.display='none';vendorMode.style.display='block'}
+function showHome(){home.style.display='block';guestMode.style.display='none';vendorMode.style.display='none'}
+function openHotel(){window.location.href='/hotel-dashboard.html'}
+
+async function loadHotels(){
+ try{
+  let r=await fetch('/api/hotels'); HOTELS=await r.json();
+  let currentLoc = getCurrentLocation();
+  // Filter hotels by current location too
+  let filteredHotels = HOTELS.filter(h => (h.location||'DIANI').toUpperCase() === currentLoc);
+  let listToShow = filteredHotels.length > 0 ? filteredHotels : HOTELS;
+  hotelSel.innerHTML=listToShow.map(h=>`<option value="${h.id}">${h.name} - ${h.location}</option>`).join('') || `<option value="diani-01">Diani Sea Resort</option>`;
+  document.getElementById('locText').innerText = currentLoc + ' 🇰🇪';
+  document.getElementById('filterInfo').innerText = `Showing services in ${currentLoc} only`;
+ }catch(e){ hotelSel.innerHTML=`<option value="diani-01">Diani Sea Resort</option>` }
+}
+
+function renderServices(){
+  let currentLoc = getCurrentLocation();
+  let filtered = ALL_SERVICES.filter(s => s.loc.includes(currentLoc));
+  
+  // Also add filter buttons
+  services.innerHTML = `
+    <div style="display:flex;gap:8px;overflow-x:auto;margin:10px 0;padding-bottom:10px">
+      <button onclick="setLoc('DIANI')" style="background:${currentLoc==='DIANI'?'#00ff66':'#222'};color:${currentLoc==='DIANI'?'#000':'#fff'};border:none;padding:8px 16px;border-radius:20px;white-space:nowrap">Diani 🏖️</button>
+      <button onclick="setLoc('NAROK')" style="background:${currentLoc==='NAROK'?'#00ff66':'#222'};color:${currentLoc==='NAROK'?'#000':'#fff'};border:none;padding:8px 16px;border-radius:20px;white-space:nowrap">Narok 🦁</button>
+      <button onclick="setLoc('NAIROBI')" style="background:${currentLoc==='NAIROBI'?'#00ff66':'#222'};color:${currentLoc==='NAIROBI'?'#000':'#fff'};border:none;padding:8px 16px;border-radius:20px;white-space:nowrap">Nairobi 🏙️</button>
+      <button onclick="setLoc('MOMBASA')" style="background:${currentLoc==='MOMBASA'?'#00ff66':'#222'};color:${currentLoc==='MOMBASA'?'#000':'#fff'};border:none;padding:8px 16px;border-radius:20px;white-space:nowrap">Mombasa 🌊</button>
+    </div>
+    <div id="filterInfo" style="color:#00ff66;font-size:12px;margin-bottom:12px">Showing ${filtered.length} services in ${currentLoc} only</div>
+  ` + filtered.map(s=>`<div class=service><div><b>${s.icon} ${s.name}</b><br><small style="opacity:0.6">KES ${s.price||'Ask Price'}</small></div><button class=btn style="width:auto;padding:8px 16px;background:#00ff66;color:#000" onclick="book('${s.name}',${s.price})">Book</button></div>`).join('');
+
+  // ALSO LOAD REAL VENDORS FROM SUPABASE FOR THAT LOCATION
+  loadVendorsByLocation(currentLoc);
+}
+
+async function loadVendorsByLocation(loc){
+ try{
+  let r = await fetch(`/api/vendors?location=${loc}`);
+  let vendors = await r.json();
+  if(vendors.length > 0){
+    services.innerHTML += `<div style="margin-top:20px;color:#00ff66;font-size:11px;letter-spacing:2px;font-weight:800">LOCAL VENDORS IN ${loc}</div>`;
+    services.innerHTML += vendors.map(v=>`<div class=service><div><b>🌍 ${v.name}</b><br><small>${v.service} • ${v.location}</small></div><button class=btn style="width:auto;padding:8px 16px;background:#fff;color:#000" onclick="book('${v.service} - ${v.name}',0)">Book</button></div>`).join('');
+  }
+ }catch(e){}
+}
+
+function setLoc(newLoc){
+  localStorage.setItem('GH_LOC', newLoc);
+  // Update URL without reload
+  const url = new URL(window.location); url.searchParams.set('loc', newLoc); window.history.pushState({}, '', url);
+  renderServices(); loadHotels();
+}
+
+async function book(service,amount){
+ const room=document.getElementById('room').value; const guest=document.getElementById('gname').value||'Guest';
+ const hotelId=document.getElementById('hotelSel').value; const loc=getCurrentLocation();
+ if(!room){alert('Weka Room Number!');return}
+ await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotelId,room,guest_name:guest,service,amount,location:loc})});
+ window.open(`https://wa.me/254700000000?text=New Booking ${loc} - Room ${room} - ${service}`,'_blank');
+ alert(`Booked in ${loc}! ✅`);
+}
+async function joinVendor(){
+ const data={name:vname.value,service:vservice.value,phone:vphone.value,location:getCurrentLocation()};
+ if(!data.name||!data.phone){alert('Jaza jina na number');return}
+ await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+ alert(`Karibu! Added to ${data.location} vendors 💰`); showHome();
+}
+let loc=getCurrentLocation(); document.getElementById('locText').innerText=loc+' 🇰🇪';
+  
+/*const SERVICES=[{icon:'🚕',name:'Taxi / TukTuk',price:1500},{icon:'🏝️',name:'Wasini Tour',price:4500},{icon:'💆',name:'Spa kwa Room',price:2500},{icon:'🍔',name:'Food - Pilau / Seafood',price:0},{icon:'🤿',name:'Diving',price:3500}];
 function showGuest(){home.style.display='none';guestMode.style.display='block';services.innerHTML=SERVICES.map(s=>`<div class=service><div>${s.icon} ${s.name}<br><small>KES ${s.price||'Ask'}</small></div><button class=btn style="width:auto;padding:8px 14px" onclick="book('${s.name}',${s.price})">Book</button></div>`).join('')}
 function showVendor(){home.style.display='none';vendorMode.style.display='block'}
 function showHome(){home.style.display='block';guestMode.style.display='none';vendorMode.style.display='none'}
 async function book(service,amount){const room=document.getElementById('room').value;if(!room){alert('Weka Room');return}await fetch('/api/bookings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:'diani-01',room,guest_name:gname.value,service,amount})});window.open(`https://wa.me/254700000000?text=New Booking ${room} - ${service}`,'_blank');alert('Poa! Booked!')}
-async function joinVendor(){await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:vname.value,phone:vphone.value,location:'DIANI'})});alert('Karibu!');showHome()}
+async function joinVendor(){await fetch('/api/vendors',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:vname.value,phone:vphone.value,location:'DIANI'})});alert('Karibu!');showHome()}*/
 </script>
 </body>
 </html>
