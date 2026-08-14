@@ -23,6 +23,19 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ===== PAGE ROUTES =====
+
+app.get('/api/vendors/pending', async (req,res)=>{
+  const {data}=await supabase.from('vendors').select('*').eq('status','pending');
+  res.json(data||[]);
+});
+app.post('/api/vendors/approve/:id', async (req,res)=>{
+  await supabase.from('vendors').update({status:'approved'}).eq('id',req.params.id);
+  res.json({ok:true});
+});
+app.get('/api/hotels', async (req,res)=>{
+  const {data}=await supabase.from('hotels').select('*');
+  res.json(data||[]);
+});
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/guest', (req, res) => res.sendFile(path.join(__dirname, 'guest.html')));
