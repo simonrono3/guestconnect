@@ -1,80 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GM Dashboard - My Hotel Report</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GM Dashboard - GuestHub™</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;padding:20px}
-.card{background:#1a1a1a;padding:15px;border-radius:12px;text-align:center;border:1px solid #333}
-button{padding:10px 18px;border:none;border-radius:8px;font-weight:bold;cursor:pointer}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#070707;color:#fff;padding:18px}
+.card{background:#111;border:1px solid #222;border-radius:20px;padding:20px;margin:12px 0}
+.btn{border:none;padding:14px;border-radius:30px;width:100%;font-weight:900;cursor:pointer}
+.btn-green{background:#00ff66;color:#000}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#0e0e0e;color:#fff;margin:6px 0}
+.badge{border:1px solid #00ff66;color:#00ff66;border-radius:20px;padding:6px 12px;font-size:11px;display:inline-block}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+td,th{padding:10px;border-bottom:1px solid #222;font-size:13px;text-align:left}
 </style>
 </head>
 <body>
-
-<h1 style="color:#00ff88;">GM Dashboard</h1>
-<p>Hotel: <b id="hotelName" style="color:#00ff88;"></b></p>
-
-<!-- ===== MY HOTEL REPORT ===== -->
-<div id="reportSection" style="margin:20px 0; border:1px solid #00ff88; border-radius:15px; padding:20px; background:#111;">
-  <h2 style="color:#00ff88;">📊 My Hotel Report</h2>
-  
-  <div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;">
-    <input type="date" id="fromDate" style="padding:8px; border-radius:6px;">
-    <input type="date" id="toDate" style="padding:8px; border-radius:6px;">
-    <button onclick="loadReport()" style="background:#00ff88;">🔄 Load Report</button>
-    <button onclick="downloadReport()" style="background:#fff;">📥 Download PDF</button>
-  </div>
-
-  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:15px 0;">
-    <div class="card"><h2 id="totalBookings">0</h2><small>Bookings</small></div>
-    <div class="card"><h2 id="totalGuests">0</h2><small>Guests</small></div>
-    <div class="card"><h2 id="totalRevenue" style="color:#00ff88;">KES 0</h2><small>Revenue</small></div>
-  </div>
-
-  <table id="reportTable" style="width:100%; border-collapse:collapse; margin-top:10px;">
-    <thead><tr style="color:#00ff88; border-bottom:1px solid #333;"><th>Date</th><th>Guest</th><th>Service</th><th>Amount</th></tr></thead>
-    <tbody></tbody>
-  </table>
+<div style="display:flex;justify-content:space-between;align-items:center">
+  <b style="font-family:Times New Roman,serif;font-size:22px;letter-spacing:4px">GUESTSHUB™</b>
+  <span onclick="location.href='/'" style="background:#222;padding:8px 14px;border-radius:20px;font-size:12px;cursor:pointer">← Home</span>
 </div>
 
+<!-- LOGIN / REGISTER -->
+<div id="authBox">
+  <div class="card">
+    <h2>🏨 GM Login / Register</h2>
+    <p style="opacity:0.5;font-size:13px;margin:8px 0">Hotels register themselves - you earn 15% auto</p>
+    <input id="hName" placeholder="Hotel Name - e.g Diani Sea Resort">
+    <select id="hLoc"><option>DIANI</option><option>NAROK</option><option>NAIROBI</option><option>MOMBASA</option><option>KISUMU</option></select>
+    <input id="hPhone" placeholder="GM WhatsApp 2547...">
+    <input id="hEmail" placeholder="Email (for login)">
+    <input id="hPass" type="password" placeholder="Password">
+    <button class="btn btn-green" onclick="registerHotel()">REGISTER MY HOTEL →</button>
+    <div style="text-align:center;margin:12px 0;opacity:0.4">or</div>
+    <button class="btn" style="background:#222;color:#fff" onclick="loginHotel()">LOGIN</button>
+  </div>
+</div>
+
+<!-- DASHBOARD - After login -->
+<div id="dashBox" style="display:none">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between">
+      <div><h3 id="dashHotelName"></h3><span id="dashLoc" class="badge"></span></div>
+      <button onclick="logout()" style="background:#222;color:#fff;border:none;padding:8px 14px;border-radius:20px">Logout</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+      <div style="background:#181818;padding:14px;border-radius:14px;text-align:center"><div style="font-size:24px;font-weight:900" id="totalBookings">0</div><div style="opacity:0.5;font-size:11px">BOOKINGS TODAY</div></div>
+      <div style="background:#181818;padding:14px;border-radius:14px;text-align:center"><div style="font-size:24px;font-weight:900;color:#00ff66" id="totalComm">KES 0</div><div style="opacity:0.5;font-size:11px">YOUR 15% TODAY</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h4>📱 Your Hotel QR Code (Print & Put in Rooms)</h4>
+    <p style="opacity:0.5;font-size:12px;margin:6px 0">Guest scans → sees only <span id="qrLoc"></span> services</p>
+    <div id="qrBox" style="background:#fff;padding:14px;border-radius:12px;text-align:center;margin:10px 0"></div>
+    <input id="qrLink" readonly style="font-size:11px">
+    <button class="btn" style="background:#fff;color:#000;margin-top:8px" onclick="copyQR()">COPY QR LINK</button>
+  </div>
+
+  <div class="card">
+    <h4>📋 Live Bookings</h4>
+    <table><thead><tr><th>Room</th><th>Guest</th><th>Service</th><th>Amount</th></tr></thead><tbody id="bookingsBody"></tbody></table>
+  </div>
+
+  <div class="card">
+    <h4>➕ Add Rooms</h4>
+    <input id="roomNo" placeholder="Room No - 12A"><button class="btn btn-green" onclick="addRoom()">ADD ROOM</button>
+    <div id="roomsList" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-const MY_HOTEL = localStorage.getItem('hotel_id') || 'diani_beach_resort';
-document.getElementById('hotelName').innerText = MY_HOTEL.toUpperCase().replace(/_/g,' ');
+let currentHotel = null;
 
-// Load report from YOUR API - MY HOTEL ONLY
-async function loadReport(){
-  const from = document.getElementById('fromDate').value;
-  const to = document.getElementById('toDate').value;
-  
-  // Call your server API
-  let url = `/api/report/${MY_HOTEL}`;
-  if(from && to) url += `?from=${from}&to=${to}`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  document.getElementById('totalBookings').innerText = data.total_bookings;
-  document.getElementById('totalGuests').innerText = data.total_guests;
-  document.getElementById('totalRevenue').innerText = 'KES ' + data.total_revenue;
-
-  const tbody = document.querySelector('#reportTable tbody');
-  tbody.innerHTML = data.bookings.map(b=>`
-    <tr style="border-bottom:1px solid #222;">
-      <td>${new Date(b.created_at).toLocaleDateString()}</td>
-      <td>${b.guest_name || b.name}</td>
-      <td>${b.service || b.request_type || '-'}</td>
-      <td>${b.amount || 0}</td>
-    </tr>
-  `).join('');
+async function registerHotel(){
+  const data={name:hName.value,location:hLoc.value,phone:hPhone.value,email:hEmail.value,password:hPass.value};
+  if(!data.name||!data.email){alert('Jaza Hotel na Email');return}
+  let r=await fetch('/api/hotels',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  let res=await r.json();
+  alert('Hotel Registered! ✅ Now Login');
+  // auto fill login
+  hEmail.value=data.email;
 }
 
-function downloadReport(){
-  window.print(); // GM can save as PDF
+async function loginHotel(){
+  let r=await fetch(`/api/hotels?email=${hEmail.value}&password=${hPass.value}`);
+  let hotels=await r.json();
+  if(hotels.length===0){alert('Wrong email/password');return}
+  currentHotel=hotels[0];
+  localStorage.setItem('GH_HOTEL',JSON.stringify(currentHotel));
+  showDashboard();
 }
 
-loadReport();
+function showDashboard(){
+  currentHotel = currentHotel || JSON.parse(localStorage.getItem('GH_HOTEL'));
+  if(!currentHotel) return;
+  authBox.style.display='none'; dashBox.style.display='block';
+  dashHotelName.innerText=currentHotel.name; dashLoc.innerText=currentHotel.location; qrLoc.innerText=currentHotel.location;
+
+  let link = `${location.origin}/?loc=${currentHotel.location}&hotel=${currentHotel.id}`;
+  qrLink.value=link;
+  qrBox.innerHTML=''; new QRCode(qrBox,{text:link,width:160,height:160});
+  loadBookings(); loadRooms();
+}
+
+async function loadBookings(){
+  let r=await fetch(`/api/bookings?hotel_id=${currentHotel.id}`);
+  let bookings=await r.json();
+  bookingsBody.innerHTML=bookings.map(b=>`<tr><td>${b.room}</td><td>${b.guest_name}</td><td>${b.service}</td><td>KES ${b.amount}</td></tr>`).join('') || '<tr><td colspan=4 style="opacity:0.4">No bookings yet - print QR!</td></tr>';
+  totalBookings.innerText=bookings.length;
+  totalComm.innerText='KES ' + bookings.reduce((s,b)=>s+(b.amount*0.15),0).toFixed(0);
+}
+
+async function loadRooms(){
+  let r=await fetch(`/api/rooms?hotel_id=${currentHotel.id}`);
+  let rooms=await r.json();
+  roomsList.innerHTML=rooms.map(rm=>`• Room ${rm.room_no} - <a href="${location.origin}/?loc=${currentHotel.location}&hotel=${currentHotel.id}&room=${rm.room_no}" target="_blank">QR Link</a>`).join('<br>') || 'No rooms yet';
+}
+
+async function addRoom(){
+  if(!roomNo.value){alert('Weka room');return}
+  await fetch('/api/rooms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:currentHotel.id,room_no:roomNo.value})});
+  roomNo.value=''; loadRooms();
+}
+
+function copyQR(){qrLink.select();document.execCommand('copy');alert('Copied! Print this QR');}
+function logout(){localStorage.removeItem('GH_HOTEL');location.reload();}
+
+// Auto-login if already
+if(localStorage.getItem('GH_HOTEL')){currentHotel=JSON.parse(localStorage.getItem('GH_HOTEL')); showDashboard();}
 </script>
-
 </body>
 </html>
