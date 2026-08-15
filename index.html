@@ -66,6 +66,22 @@ let ALL_SERVICES=[
  {name:'Spa Massage in Room',price:2500,icon:'💆',loc:['DIANI','NAROK','NAIROBI','MOMBASA']},
  {name:'Food - Pilau / Nyama Choma',price:0,icon:'🍔',loc:['DIANI','NAROK','NAIROBI','MOMBASA']},
  {name:'Diving & Snorkeling',price:3500,icon:'🤿',loc:['DIANI','MOMBASA']},
+
+ /* async function renderServices(){
+  let currentLoc = getCurrentLocation();
+  let hotelId = new URLSearchParams(window.location.search).get('hotel');
+  
+  // Load menu from THIS hotel only
+  let r = await fetch(`/api/menu?hotel_id=${hotelId}&is_active=true`);
+  let menu = await r.json();
+  
+  services.innerHTML = menu.map(s=>`
+    <div class=service>
+      <div><b>${s.icon} ${s.name}</b><br><small style="opacity:0.6">KES ${s.price}</small></div>
+      <button class=btn style="width:auto;padding:8px 16px;background:#00ff66;color:#000" onclick="book('${s.name}',${s.price})">Book</button>
+    </div>
+  `).join('') || '<div style="opacity:0.5">No services added by hotel yet</div>';
+}*/
 ];
 
 // 1. Get location from URL ?loc=DIANI or from Hotel
