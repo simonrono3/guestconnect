@@ -64,6 +64,20 @@ td,th{padding:10px;border-bottom:1px solid #222;font-size:13px;text-align:left}
   </div>
 
   <div class="card">
+  <h4>🍽️ Hotel Menu - Add & Edit Prices</h4>
+  <p style="opacity:0.5;font-size:12px">Hii ndio itaonekana kwa guest. You control prices</p>
+  
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin:10px 0">
+    <input id="mName" placeholder="Service Name - Spa Massage">
+    <select id="mCat"><option>Transport</option><option>Tours</option><option>Spa</option><option>Food</option><option>Other</option></select>
+    <input id="mPrice" type="number" placeholder="Price KES">
+  </div>
+  <input id="mIcon" placeholder="Icon Emoji - 💆">
+  <button class="btn btn-green" onclick="addMenu()">ADD MENU ITEM →</button>
+
+  <table style="margin-top:14px"><thead><tr><th>Service</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody id="menuBody"></tbody></table>
+</div>
+  <div class="card">
     <h4>➕ Add Rooms</h4>
     <input id="roomNo" placeholder="Room No - 12A"><button class="btn btn-green" onclick="addRoom()">ADD ROOM</button>
     <div id="roomsList" style="margin-top:10px"></div>
