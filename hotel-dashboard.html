@@ -142,6 +142,39 @@ async function addRoom(){
 function copyQR(){qrLink.select();document.execCommand('copy');alert('Copied! Print this QR');}
 function logout(){localStorage.removeItem('GH_HOTEL');location.reload();}
 
+  async function loadMenu(){
+  let r=await fetch(`/api/menu?hotel_id=${currentHotel.id}`);
+  let menu=await r.json();
+  menuBody.innerHTML = menu.map(m=>`
+    <tr>
+      <td>${m.icon} ${m.name} <br><small style="opacity:0.5">${m.category}</small></td>
+      <td><input value="${m.price}" style="width:90px;padding:6px" onchange="updatePrice('${m.id}',this.value)"></td>
+      <td><button onclick="toggleMenu('${m.id}',${!m.is_active})" style="background:${m.is_active?'#00ff66':'#333'};color:#000;border:none;padding:6px 10px;border-radius:20px;font-size:11px">${m.is_active?'ON':'OFF'}</button></td>
+      <td><button onclick="deleteMenu('${m.id}')" style="background:red;color:#fff;border:none;padding:6px 10px;border-radius:10px">X</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan=4 style="opacity:0.4">No menu yet. Add Taxi, Spa etc</td></tr>';
+}
+
+async function addMenu(){
+  const data={hotel_id:currentHotel.id,name:mName.value,price:Number(mPrice.value),icon:mIcon.value||'📌',category:mCat.value};
+  if(!data.name||!data.price){alert('Jaza name na price');return}
+  await fetch('/api/menu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  mName.value=''; mPrice.value=''; mIcon.value=''; loadMenu();
+}
+
+async function updatePrice(id,newPrice){
+  await fetch(`/api/menu/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({price:Number(newPrice)})});
+}
+
+async function toggleMenu(id,status){
+  await fetch(`/api/menu/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_active:status})});
+  loadMenu();
+}
+
+async function deleteMenu(id){
+  if(confirm('Delete this service?')) await fetch(`/api/menu/${id}`,{method:'DELETE'});
+  loadMenu();
+}
 // Auto-login if already
 if(localStorage.getItem('GH_HOTEL')){currentHotel=JSON.parse(localStorage.getItem('GH_HOTEL')); showDashboard();}
 </script>
