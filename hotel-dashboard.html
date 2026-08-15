@@ -116,7 +116,7 @@ function showDashboard(){
   let link = `${location.origin}/?loc=${currentHotel.location}&hotel=${currentHotel.id}`;
   qrLink.value=link;
   qrBox.innerHTML=''; new QRCode(qrBox,{text:link,width:160,height:160});
-  loadBookings(); loadRooms();
+  loadBookings(); loadRooms(); loadMenu(); // ADD THIS
 }
 
 async function loadBookings(){
