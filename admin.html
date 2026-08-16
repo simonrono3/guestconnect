@@ -1,30 +1,16 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Super Admin OS</title>
-<style>body{background:#000;color:#fff;font-family:monospace;padding:20px} .card{background:#111;border:1px solid #333;padding:16px;border-radius:14px;margin:12px 0} .btn{background:#00ff88;color:#000;border:none;padding:10px 16px;border-radius:20px;font-weight:800;cursor:pointer} input{padding:10px;border-radius:10px;border:1px solid #333;background:#000;color:#fff}</style>
-</head><body>
-<h2 style="color:#00ff88">GUESTSHUB™ SUPER ADMIN OS</h2>
-<div style="display:flex;gap:10px"><input id="code" value="GUESTSHUB2026" style="flex:1"><button class="btn" onclick="loadOS()">LOAD OS</button></div>
-<div id="os" style="display:none">
-  <div class="card"><h3>💰 LIVE EARNINGS</h3><p id="earnings">Loading...</p></div>
-  <div class="card"><h3>Pending Vendors - Approve to Earn 15%</h3><div id="vendors">No pending</div></div>
-  <div class="card"><h3>Hotels</h3><input id="hname" placeholder="Hotel Name"><input id="hphone" placeholder="WhatsApp 2547..."><button class="btn" onclick="addHotel()">Add Hotel</button><div id="hotels"></div></div>
-  <div class="card"><h3>🌍 Location Switcher</h3><button class="btn" onclick="setLoc('DIANI')">Set DIANI</button> <button class="btn" onclick="setLoc('NAROK')">Set NAROK</button></div>
-  <div class="card"><h3>📱 Generate Room QR</h3><input id="roomqr" placeholder="Room 12A - Hotel ID diani-01"><button class="btn" onclick="genQR()">Generate QR</button><div id="qr"></div></div>
-</div>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0}.card{background:#111827}</style></head>
+<body class="p-4"><div class="max-w-6xl mx-auto"><h1 class="text-2xl font-bold text-[#8b5cf6] mb-4">👑 GUESTHUB ADMIN</h1>
+<div class="flex gap-2 mb-4"><button onclick="tab(1)" class="tab bg-[#8b5cf6] text-black px-4 py-2 rounded-2xl">Hotels</button><button onclick="tab(2)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Vendors</button><button onclick="tab(3)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Finance</button><button onclick="tab(4)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Subscriptions</button></div>
+<div id="t1"></div><div id="t2" class="hidden"></div><div id="t3" class="hidden"></div><div id="t4" class="hidden"></div></div>
 <script>
-const SUPABASE_URL="YOUR_SUPABASE_URL"; // we will fill
-function loadOS(){ if(document.getElementById('code').value==="GUESTSHUB2026"){document.getElementById('os').style.display='block'; loadData();} else alert('Wrong Code!')}
-async function loadData(){
- let res=await fetch('/api/vendors/pending'); let v=await res.json();
- document.getElementById('vendors').innerHTML=v.map(x=>`${x.name} - ${x.service} <button class=btn onclick="approve('${x.id}')">Approve 15%</button>`).join('<br><br>')||'No pending';
- let h=await fetch('/api/hotels'); let hotels=await h.json();
- document.getElementById('hotels').innerHTML=hotels.map(h=>`${h.name} - ${h.id}`).join('<br>');
- let r=await fetch('/api/report/diani-01'); let rep=await r.json();
- document.getElementById('earnings').innerHTML=`Bookings: ${rep.total_bookings} | Revenue: KES ${rep.total_revenue} | Your 15%: KES ${Math.round(rep.total_revenue*0.15)}`;
-}
-async function approve(id){await fetch('/api/vendors/approve/'+id,{method:'POST'}); alert('Approved! You earn 15% now'); loadData();}
-async function addHotel(){ let name=document.getElementById('hname').value; let phone=document.getElementById('hphone').value; await fetch('/api/hotels',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:name.toLowerCase().replace(/ /g,'-'),name,whatsapp:phone})}); loadData();}
-function setLoc(loc){localStorage.setItem('GH_LOC',loc); alert('Location set to '+loc+' - Update index.html badge to '+loc); }
-function genQR(){ let room=document.getElementById('roomqr').value; document.getElementById('qr').innerHTML=`<br><img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://guestconnect-ap2q.onrender.com/guest?room=${room}" > <br>Room: ${room}`;}
-</script>
-</body></html>
+function tab(n){document.querySelectorAll('.tab').forEach(b=>b.className='tab bg-[#1f2937] px-4 py-2 rounded-2xl');document.querySelectorAll('.tab')[n-1].className='tab bg-[#8b5cf6] text-black px-4 py-2 rounded-2xl';for(let i=1;i<=4;i++)document.getElementById('t'+i).classList.add('hidden');document.getElementById('t'+n).classList.remove('hidden')}
+fetch('/api/data').then(r=>r.json()).then(data=>{
+  document.getElementById('t1').innerHTML=data.hotels.map(h=>`<div class="card p-3 rounded-2xl mb-2 flex justify-between"><div>${h.name} - ${h.subscription}</div>${h.status==='Pending'?`<button onclick="approveHotel('${h.id}')" class="bg-[#22c55e] text-black px-3 rounded-xl">Approve</button>`:''}</div>`).join('');
+  document.getElementById('t2').innerHTML=data.vendors.map(v=>`<div class="card p-3 rounded-2xl mb-2 flex justify-between"><div>${v.name} - ${v.type}</div>${v.status==='Pending'?`<button onclick="approveVendor('${v.id}')" class="bg-[#22c55e] text-black px-3 rounded-xl">Approve</button>`:''}</div>`).join('');
+  const total = data.bookings.reduce((a,b)=>a+Number(b.our_cut||0),0); document.getElementById('t3').innerHTML=`<div class="card p-4 rounded-3xl"><div class="text-3xl font-bold text-[#22c55e]">KES ${total.toLocaleString()}</div><div>Our 50% Commission</div></div>`;
+  document.getElementById('t4').innerHTML=data.hotels.map(h=>`<div class="card p-3 rounded-2xl mb-2">${h.name} - ${h.subscription} - KSh ${h.subscription==='Professional'?19500:6500}/month</div>`).join('');
+});
+function approveHotel(id){fetch('/api/admin/approve-hotel',{method:'POST',body:`id=${id}`}).then(()=>location.reload())}
+function approveVendor(id){fetch('/api/admin/approve-vendor',{method:'POST',body:`id=${id}`}).then(()=>location.reload())}
+tab(1);
+</script></body></html>
