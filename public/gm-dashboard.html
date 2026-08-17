@@ -32,6 +32,52 @@ input,select{width:100%;padding:14px;background:#1A1A1A;border:1px solid #444;bo
 <select name="type"><option value="food">food - 0% fee</option><option value="service">service - 0% fee</option><option value="tour">tour - 15% fee</option></select>
 <button class="btn">ADD ITEM</button>
 </form></div>
+
+  <div style="background: #1e293b; padding: 30px; border-radius: 20px; margin: 30px 0; text-align: center; border: 2px solid #006600;">
+    <h2 style="color: #22c55e; margin-bottom: 15px;">📱 Your Hotel QR Code</h2>
+    <p style="color: #94a3b8; margin-bottom: 20px;">Print this and put it in every room. Guests scan to order.</p>
+    
+    <img id="qrImage" src="" alt="QR Code" style="background: white; padding: 15px; border-radius: 12px; width: 300px; height: 300px;">
+    
+    <div style="margin-top: 20px;">
+        <a id="downloadQR" href="#" download="GuestHub-QR.png" class="btn" style="background: #006600; color: white; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-weight: 700;">⬇️ Download QR</a>
+        <button onclick="printQR()" class="btn" style="background: #BB0000; color: white; padding: 12px 25px; border-radius: 10px; border: none; font-weight: 700; margin-left: 10px;">🖨️ Print QR</button>
+    </div>
+    
+    <p style="margin-top: 15px; font-size: 12px; color: #64748b;">Link: <span id="hotelLink"></span></p>
+</div>
+
+<script>
+// GET HOTEL ID FROM URL
+const urlParams = new URLSearchParams(window.location.search);
+const hotelId = urlParams.get('hotelId') || 'demo';
+
+// GENERATE QR ON LOAD
+async function loadQR() {
+    const res = await fetch(`/api/generate-qr/${hotelId}`);
+    const data = await res.json();
+    
+    if(data.success) {
+        document.getElementById('qrImage').src = data.qrCode;
+        document.getElementById('downloadQR').href = data.qrCode;
+        document.getElementById('hotelLink').innerText = data.url;
+    }
+}
+loadQR();
+
+// PRINT FUNCTION
+function printQR() {
+    const printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Print QR</title></head><body>');
+    printWindow.document.write('<h1 style="text-align:center">Scan to Order on WhatsApp</h1>');
+    printWindow.document.write('<img src="'+document.getElementById('qrImage').src+'" style="width:400px;display:block;margin:0 auto;">');
+    printWindow.document.write('<p style="text-align:center">Powered by GuestHub - Made in Diani</p>');
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
+</script>
+  
 <script>
 const hotelId='prideinn';
 fetch('/api/gm/dashboard/'+hotelId).then(r=>r.json()).then(d=>{
