@@ -1,0 +1,17 @@
+<!DOCTYPE html><html><head><title>Hotel Signup | GUESTHUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>body{background:#1A1A1A;color:#fff;font-family:'Inter';padding:40px;display:flex;justify-content:center} .container{max-width:500px;width:100%;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:2px solid #FF6B35} h1{color:#FFD700;font-family:'Playfair Display'} input,select{width:100%;padding:16px;margin:12px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff} .btn{width:100%;padding:18px;background:linear-gradient(135deg,#FF6B35,#0F9D58);border:none;color:#fff;font-weight:800;border-radius:12px;cursor:pointer}</style>
+</head><body><div class="container"><h1>🏨 Register Hotel</h1>
+<input id="name" placeholder="Hotel Name">
+<input id="hotelId" placeholder="Hotel ID - no spaces">
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<select id="plan"><option value="Starter">Starter - KES 6,500/mo</option><option value="Professional">Professional - KES 19,500/mo</option></select>
+<button class="btn" onclick="signup()">REGISTER</button></div>
+<script>
+function signup(){
+  const data={name:document.getElementById('name').value,hotelId:document.getElementById('hotelId').value,email:document.getElementById('email').value,password:document.getElementById('password').value,plan:document.getElementById('plan').value};
+  fetch('/api/hotel/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+  .then(r=>r.json()).then(d=>{alert('✅ Registered! Awaiting approval'); window.location.href='/hotel-login.html'});
+}
+</script></body></html>
