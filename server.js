@@ -1,268 +1,96 @@
+require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
+const axios = require('axios');
+const bcrypt = require('bcrypt');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
+const supa = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Serve all html files from main folder
-app.use(express.static(__dirname));
-
-// Supabase connect
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.log("WARNING: Supabase keys missing!");
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// ===== PAGE ROUTES =====
-
-app.get('/api/vendors/pending', async (req,res)=>{
-  const {data}=await supabase.from('vendors').select('*').eq('status','pending');
-  res.json(data||[]);
-});
-app.post('/api/vendors/approve/:id', async (req,res)=>{
-  await supabase.from('vendors').update({status:'approved'}).eq('id',req.params.id);
+// GM: ADD ITEMS
+app.post('/api/gm/add-item', async (req,res)=>{
+  const {hotel_id, type, name, price, desc, img, dept_whatsapp} = req.body;
+  await supa.from('hotel_items').insert({hotel_id, type, name, price, description:desc, image_url:img, dept_whatsapp});
   res.json({ok:true});
 });
-app.get('/api/hotels', async (req,res)=>{
-  const {data}=await supabase.from('hotels').select('*');
-  res.json(data||[]);
-});
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.get('/guest', (req, res) => res.sendFile(path.join(__dirname, 'guest.html')));
-app.get('/gsh-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'gsh-dashboard.html')));
-app.get('/vendor-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'vendor-dashboard.html')));
-app.get('/hotel-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'hotel-dashboard.html')));
-app.get('/hotel-signup', (req, res) => res.sendFile(path.join(__dirname, 'hotel-signup.html')));
-app.get('/vendor-register', (req, res) => res.sendFile(path.join(__dirname, 'vendor-register.html')));
-app.get('/precheckin', (req, res) => res.sendFile(path.join(__dirname, 'precheckin.html')));
 
-// ===== API ROUTES =====
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date() });
-});
-
-// Get all guests
-app.get('/api/guests', async (req, res) => {
-  const { data, error } = await supabase.from('guests').select('*').order('created_at', { ascending: false });
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Add guest
-app.post('/api/guests', async (req, res) => {
-  const { data, error } = await supabase.from('guests').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Get vendors
-app.get('/api/vendors', async (req, res) => {
-  const { data, error } = await supabase.from('vendors').select('*');
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Add vendor
-app.post('/api/vendors', async (req, res) => {
-  const { data, error } = await supabase.from('vendors').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Get hotels
-app.get('/api/hotels', async (req, res) => {
-  const { data, error } = await supabase.from('hotels').select('*');
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// ===== MY HOTEL ONLY - REPORT API =====
-app.get('/api/report/:hotel_id', async (req, res) => {
-  const { hotel_id, from, to } = req.params;
-  const hotelId = req.params.hotel_id;
+// GUEST: ORDER FOOD/SERVICE - 0% COMMISSION
+app.post('/api/guest/order', async (req,res)=>{
+  const {hotel_id, room, guest, item_id, notes} = req.body;
+  const {data:item} = await supa.from('hotel_items').select('*').eq('id', item_id).single();
+  await supa.from('orders').insert({hotel_id, room, guest_name:guest, item_id, status:'New', notes});
   
-  let q1 = supabase.from('bookings').select('*').eq('hotel_id', hotelId);
-  let q2 = supabase.from('guests').select('*').eq('hotel_id', hotelId);
-  let q3 = supabase.from('requests').select('*').eq('hotel_id', hotelId);
-
-  const { data: bookings } = await q1;
-  const { data: guests } = await q2;
-  const { data: requests } = await q3;
-
-  const revenue = bookings?.reduce((s,b)=> s + (b.amount||0),0) || 0;
-
-  res.json({
-    hotel_id: hotelId,
-    total_bookings: bookings?.length || 0,
-    total_guests: guests?.length || 0,
-    total_requests: requests?.length || 0,
-    total_revenue: revenue,
-    bookings: bookings || []
-  });
-});
-
-// ===== When guest books, SAVE hotel_id =====
-app.post('/api/bookings', async (req, res) => {
-  const { guest_name, service, hotel_id, amount } = req.body;
-  const { data, error } = await supabase.from('bookings').insert([{ guest_name, service, hotel_id, amount }]).select();
-  if(error) return res.status(400).json(error);
-  res.json(data);
-});
-
-
-// Add hotel
-app.post('/api/hotels', async (req, res) => {
-  const { data, error } = await supabase.from('hotels').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-/*const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json());
-
-// Serve all html files from main folder
-app.use(express.static(__dirname));
-
-// Supabase connect
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.log("WARNING: Supabase keys missing!");
-}
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// ===== PAGE ROUTES =====
-
-app.get('/api/vendors/pending', async (req,res)=>{
-  const {data}=await supabase.from('vendors').select('*').eq('status','pending');
-  res.json(data||[]);
-});
-app.post('/api/vendors/approve/:id', async (req,res)=>{
-  await supabase.from('vendors').update({status:'approved'}).eq('id',req.params.id);
+  const message = `🚨 NEW ORDER - Room ${room}\n${item.name} - KES ${item.price}\nGuest: ${guest}\nNotes: ${notes||'None'}`;
+  if(item.dept_whatsapp) await axios.post(`https://graph.facebook.com/v20.0/${item.dept_whatsapp}/messages`, {
+    messaging_product: "whatsapp", to: item.dept_whatsapp, text: { body: message }
+  }, { headers: { 'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}` }});
+  
   res.json({ok:true});
 });
-app.get('/api/hotels', async (req,res)=>{
-  const {data}=await supabase.from('hotels').select('*');
-  res.json(data||[]);
-});
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.get('/guest', (req, res) => res.sendFile(path.join(__dirname, 'guest.html')));
-app.get('/gsh-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'gsh-dashboard.html')));
-app.get('/vendor-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'vendor-dashboard.html')));
-app.get('/hotel-dashboard', (req, res) => res.sendFile(path.join(__dirname, 'hotel-dashboard.html')));
-app.get('/hotel-signup', (req, res) => res.sendFile(path.join(__dirname, 'hotel-signup.html')));
-app.get('/vendor-register', (req, res) => res.sendFile(path.join(__dirname, 'vendor-register.html')));
-app.get('/precheckin', (req, res) => res.sendFile(path.join(__dirname, 'precheckin.html')));
 
-// ===== API ROUTES =====
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', time: new Date() });
-});
-
-// Get all guests
-app.get('/api/guests', async (req, res) => {
-  const { data, error } = await supabase.from('guests').select('*').order('created_at', { ascending: false });
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Add guest
-app.post('/api/guests', async (req, res) => {
-  const { data, error } = await supabase.from('guests').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Get vendors
-app.get('/api/vendors', async (req, res) => {
-  const { data, error } = await supabase.from('vendors').select('*');
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Add vendor
-app.post('/api/vendors', async (req, res) => {
-  const { data, error } = await supabase.from('vendors').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// Get hotels
-app.get('/api/hotels', async (req, res) => {
-  const { data, error } = await supabase.from('hotels').select('*');
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-// ===== MY HOTEL ONLY - REPORT API =====
-app.get('/api/report/:hotel_id', async (req, res) => {
-  const { hotel_id, from, to } = req.params;
-  const hotelId = req.params.hotel_id;
-  
-  let q1 = supabase.from('bookings').select('*').eq('hotel_id', hotelId);
-  let q2 = supabase.from('guests').select('*').eq('hotel_id', hotelId);
-  let q3 = supabase.from('requests').select('*').eq('hotel_id', hotelId);
-
-  const { data: bookings } = await q1;
-  const { data: guests } = await q2;
-  const { data: requests } = await q3;
-
-  const revenue = bookings?.reduce((s,b)=> s + (b.amount||0),0) || 0;
-
-  res.json({
-    hotel_id: hotelId,
-    total_bookings: bookings?.length || 0,
-    total_guests: guests?.length || 0,
-    total_requests: requests?.length || 0,
-    total_revenue: revenue,
-    bookings: bookings || []
+// GUEST: BOOK VENDOR - 15% COMMISSION
+app.post('/api/guest/book-vendor', async (req,res)=>{
+  const {hotel_id, vendor_id, service, price, room, guest} = req.body;
+  const commission = price * 0.15;
+  await supa.from('bookings').insert({
+    hotel_id, vendor_id, service, amount:price, commission, our_cut:commission, 
+    hotel_earning:0, guest_name:guest, room, status:'Confirmed'
   });
+  res.json({ok:true});
 });
 
-// ===== When guest books, SAVE hotel_id =====
-app.post('/api/bookings', async (req, res) => {
-  const { guest_name, service, hotel_id, amount } = req.body;
-  const { data, error } = await supabase.from('bookings').insert([{ guest_name, service, hotel_id, amount }]).select();
-  if(error) return res.status(400).json(error);
-  res.json(data);
+// VENDOR: FREE SIGNUP
+app.post('/api/vendor/register', async (req,res)=>{
+  const {name, owner, phone, email, type} = req.body;
+  const hash = await bcrypt.hash('temp123', 10);
+  await supa.from('vendors').insert({id:email, name, owner, phone, email, password:hash, type, status:'Pending'});
+  res.json({ok:true});
 });
 
-
-// Add hotel
-app.post('/api/hotels', async (req, res) => {
-  const { data, error } = await supabase.from('hotels').insert([req.body]).select();
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
+// HOTEL: SIGNUP
+app.post('/api/hotel/register', async (req,res)=>{
+  const {name, hotelId, email, password} = req.body;
+  const hash = await bcrypt.hash(password, 10);
+  await supa.from('hotels').insert({id:hotelId, name, email, password:hash, status:'Pending'});
+  res.json({ok:true});
 });
 
+// GM DASHBOARD
+app.get('/api/gm/dashboard/:hotel_id', async (req,res)=>{
+  const hotel_id = req.params.hotel_id;
+  const [orders, bookings] = await Promise.all([
+    supa.from('orders').select('*, hotel_items(*)').eq('hotel_id', hotel_id),
+    supa.from('bookings').select('*').eq('hotel_id', hotel_id)
+  ]);
+  const foodRevenue = orders.data.reduce((a,b)=>a+Number(b.hotel_items?.price||0),0);
+  const vendorRevenue = bookings.data.reduce((a,b)=>a+Number(b.our_cut||0),0);
+  res.json({orders:orders.data, bookings:bookings.data, foodRevenue, vendorRevenue});
+});
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});*/
+// ADMIN STATS
+app.get('/api/admin/stats', async (req,res)=>{
+  const [hotels, bookings] = await Promise.all([supa.from('hotels').select('*'), supa.from('bookings').select('*')]);
+  const mrr = hotels.data.filter(h=>h.status==='Approved').length * 15000;
+  const commission = bookings.data.reduce((a,b)=>a+Number(b.our_cut||0),0);
+  res.json({mrr, commission, total:mrr+commission});
+});
+
+// GET ALL DATA
+app.get('/api/data', async (req,res)=>{
+  const [hotels,vendors,items] = await Promise.all([
+    supa.from('hotels').select('*'), supa.from('vendors').select('*'), supa.from('hotel_items').select('*')
+  ]);
+  res.json({hotels:hotels.data,vendors:vendors.data,items:items.data});
+});
+
+// ADMIN APPROVE
+app.post('/api/admin/approve/:type/:id', async (req,res)=>{
+  await supa.from(req.params.type).update({status:'Approved'}).eq('id', req.params.id);
+  res.json({ok:true});
+});
+
+app.listen(process.env.PORT||3000, ()=>console.log('GUESTSHUB V7.0 LIVE'));
