@@ -38,8 +38,18 @@
 .footer{text-align:center;padding:40px;border-top:1px solid #333;opacity:0.6}
 </style>
 </head><body>
-<div class="header"><div class="logo">GUESTHUB™</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
-<div class="hero">
+<div class="header"><div class="logo">GUESTHUB</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
+
+  <div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
+  <button onclick="alert('Coming Soon!')" style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
+    🏨 Hotel Login
+  </button>
+  <button onclick="alert('Coming Soon!')" style="background:#00C851; color:#fff; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
+    🚚 Vendor Signup
+  </button>
+</div>
+  
+  <div class="hero">
   <h1 id="heroTitle">ORDER FROM ANY HOTEL</h1><p id="heroSub">Food, Spa, Tours & Taxis. Direct from your room.</p>
   <div class="search-box"><input id="searchInput" placeholder="Search hotel name or location..." onkeyup="filterHotels()"><select id="locationFilter" onchange="filterHotels()"><option value="">All Locations</option></select></div>
   <div class="stats"><div class="stat"><h2 id="hotelCount">0</h2><p id="statHotels">Hotels</p></div><div class="stat"><h2>24/7</h2><p id="statService">Service</p></div><div class="stat"><h2>0%</h2><p id="statFee">Hotel Fee</p></div></div>
