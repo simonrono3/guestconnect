@@ -1,1 +1,24 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hotel Signup</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0}</style></head><body class="p-4"><div class="max-w-md mx-auto bg-[#111827] p-6 rounded-3xl"><h1 class="text-2xl font-bold text-[#38bdf8] mb-4">Join GUESTHUB</h1><form id="form" class="space-y-3"><input name="name" placeholder="Hotel Name" class="w-full p-3 rounded-2xl bg-[#1f2937]" required><input name="hotelId" placeholder="Hotel ID e.g. savannah" class="w-full p-3 rounded-2xl bg-[#1f2937]" required><input name="address" placeholder="Address" class="w-full p-3 rounded-2xl bg-[#1f2937]"><input name="phone" placeholder="Phone" class="w-full p-3 rounded-2xl bg-[#1f2937]"><input name="email" placeholder="Email" class="w-full p-3 rounded-2xl bg-[#1f2937]"><input name="password" type="password" placeholder="Password" class="w-full p-3 rounded-2xl bg-[#1f2937]"><textarea name="description" placeholder="About Hotel" class="w-full p-3 rounded-2xl bg-[#1f2937]"></textarea><input name="logo" placeholder="Logo URL" class="w-full p-3 rounded-2xl bg-[#1f2937]"><button class="w-full bg-[#22c55e] text-black p-3 rounded-2xl font-bold">Submit</button></form></div><script>document.getElementById('form').onsubmit=e=>{e.preventDefault();fetch('/api/hotel/register',{method:'POST',body:new URLSearchParams(new FormData(e.target))}).then(()=>alert('Submitted!'))}</script></body></html>
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hotel Signup</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body{background:linear-gradient(180deg,#1A1A1A 0%,#2D2418 100%);color:#fff;font-family:'Inter';padding:40px 20px}
+.container{max-width:500px;margin:auto;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:1px solid #FF6B35}
+h1{font-family:'Playfair Display';font-size:32px;color:#FFD700;text-align:center}
+input{width:100%;padding:14px;margin:10px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff}
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,#FF6B35,#0F9D58);border:none;color:#fff;font-weight:800;border-radius:12px;cursor:pointer;font-size:16px}
+</style>
+</head><body>
+<div class="container">
+<h1>🏨 Join GUESTSHUB</h1>
+<p style="text-align:center;opacity:0.7">KES 15,000/month. 0% on your food revenue</p>
+<form id="form">
+<input name="name" placeholder="Hotel Name" required>
+<input name="hotelId" placeholder="Hotel ID - e.g prideinn" required>
+<input name="email" type="email" placeholder="Email" required>
+<input name="password" type="password" placeholder="Password" required>
+<button class="btn">SUBMIT APPLICATION →</button>
+</form></div>
+<script>document.getElementById('form').onsubmit=e=>{e.preventDefault();fetch('/api/hotel/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target)))}).then(()=>alert('✅ Application Submitted!'))}</script>
+</body></html>
