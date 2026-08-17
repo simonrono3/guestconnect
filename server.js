@@ -1,13 +1,14 @@
 import { WebSocket } from 'ws';
 global.WebSocket = WebSocket;
 
+import express from 'express';
+import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import axios from 'axios';
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
-const bcrypt = require('bcrypt');
-const { createClient } = require('@supabase/supabase-js');
+dotenv.config();
 
 const app = express();
 app.use(cors());
