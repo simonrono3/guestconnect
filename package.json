@@ -1,7 +1,8 @@
 {
   "name": "guesthub-safari-os-v85",
   "version": "8.5.0",
-  "description": "Africa's AI-Powered In-Room Hotel Marketplace OS",
+  "type": "module",
+  "description": "Africa's AI-Powered In-Room",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
   "dependencies": {
@@ -10,7 +11,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "bcrypt": "^5.1.1",
-    "axios": "^1.7.2"
+    "axios": "^1.7.2",
+    "ws": "^8.18.0"
   },
   "engines": { "node": "18.x" }
 }
