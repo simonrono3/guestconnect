@@ -1,26 +1,17 @@
-<!DOCTYPE html><html><head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Join Free | GUESTSHUB</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<style>
-body{background:linear-gradient(180deg,#1A1A1A 0%,#2D2418 100%);color:#fff;font-family:'Inter';padding:40px 20px}
-.container{max-width:500px;margin:auto;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:1px solid #0F9D58}
-h1{font-family:'Playfair Display';font-size:32px;color:#FFD700}
-.alert{background:rgba(15,157,88,0.2);padding:16px;border-radius:16px;border:1px solid #0F9D58;margin:20px 0}
-input,select{width:100%;padding:14px;margin:10px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff}
-.btn{width:100%;padding:16px;background:linear-gradient(135deg,#0F9D58,#FFD700);border:none;color:#000;font-weight:800;border-radius:12px;cursor:pointer;font-size:16px}
-</style>
-</head><body>
-<div class="container">
-<h1>🏢 Join Marketplace</h1>
-<div class="alert"><b>✅ FREE TO JOIN</b><br>We take 15% only when you get a booking</div>
-<form id="form">
-<input name="name" placeholder="Business Name" required>
-<select name="type"><option>Tours & Safari</option><option>Taxi/Airport</option><option>Spa</option></select>
-<input name="owner" placeholder="Owner Name">
-<input name="phone" placeholder="WhatsApp 2547...">
-<input name="email" type="email" placeholder="Email" required>
-<button class="btn">JOIN FREE NOW →</button>
-</form></div>
-<script>document.getElementById('form').onsubmit=e=>{e.preventDefault();fetch('/api/vendor/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target)))}).then(()=>alert('✅ Submitted!'))}</script>
-</body></html>
+<!DOCTYPE html><html><head><title>Vendor Signup | GUESTHUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>body{background:#1A1A1A;color:#fff;font-family:'Inter';padding:40px;display:flex;justify-content:center} .container{max-width:500px;width:100%;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:2px solid #FF6B35} h1{color:#FFD700} input,select{width:100%;padding:16px;margin:12px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff} .btn{width:100%;padding:18px;background:linear-gradient(135deg,#FF6B35,#0F9D58);border:none;color:#fff;font-weight:800;border-radius:12px;cursor:pointer}</style>
+</head><body><div class="container"><h1>🚐 Vendor Signup</h1>
+<input id="name" placeholder="Business Name">
+<input id="owner" placeholder="Owner Name">
+<input id="phone" placeholder="Phone 2547...">
+<input id="email" placeholder="Email">
+<select id="type"><option value="tour">Tour Operator</option><option value="taxi">Taxi Service</option><option value="spa">Spa Service</option></select>
+<button class="btn" onclick="signup()">REGISTER</button></div>
+<script>
+function signup(){
+  const data={name:document.getElementById('name').value,owner:document.getElementById('owner').value,phone:document.getElementById('phone').value,email:document.getElementById('email').value,type:document.getElementById('type').value};
+  fetch('/api/vendor/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+  .then(r=>r.json()).then(d=>{alert('✅ Registered! Awaiting approval');});
+}
+</script></body></html>
