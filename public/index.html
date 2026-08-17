@@ -40,14 +40,29 @@
 </head><body>
 <div class="header"><div class="logo">GUESTHUB</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
 
-  <div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
-  <button onclick="alert('Coming Soon!')" style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
+<div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
+  
+  <button onclick="window.location.href='/hotel-login.html'" 
+  style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
     🏨 Hotel Login
   </button>
-  <button onclick="alert('Coming Soon!')" style="background:#00C851; color:#fff; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-    🚚 Vendor Signup
+
+  <button onclick="window.location.href='/vendor-signup.html'" 
+  style="background:linear-gradient(90deg, #00C851, #00FF7F); color:#fff; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; animation: vendorPulse 2s infinite;">
+    🚚 Vendor Join Us
   </button>
 </div>
+
+<style>
+@keyframes vendorPulse {
+ 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0.7); }
+ 50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0,200,81, 0); }
+ 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0); }
+}
+</style>
+
+
+  
   
   <div class="hero">
   <h1 id="heroTitle">ORDER FROM ANY HOTEL</h1><p id="heroSub">Food, Spa, Tours & Taxis. Direct from your room.</p>
