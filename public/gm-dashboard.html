@@ -11,9 +11,8 @@ h1{font-family:'Playfair Display';color:#FFD700;font-size:36px}
 .card{background:rgba(45,36,24,0.8);border:1px solid #FF6B35;padding:24px;border-radius:20px;margin:20px 0}
 input,select{width:100%;padding:14px;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff;margin:8px 0}
 .btn{background:linear-gradient(135deg,#FF6B35,#0F9D58);color:#fff;border:none;padding:16px;width:100%;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer}
-</style>
 
-  /* MENU FORM - MAKE IT BIG & CLEAR */
+/* MENU FORM - MAKE IT BIG & CLEAR */
 .add-item-card {
     background: #1a1a1a;
     padding: 25px;
@@ -61,6 +60,8 @@ input,select{width:100%;padding:14px;background:#1A1A1A;border:1px solid #444;bo
 .add-item-card button:active {
     transform: scale(0.98);
 }
+
+</style>
   
 </head><body>
 <h1>🏨 GM CONTROL CENTER</h1>
@@ -71,17 +72,21 @@ input,select{width:100%;padding:14px;background:#1A1A1A;border:1px solid #444;bo
   <div class="stat"><h3>Subscription</h3><h2>KES 15,000</h2><small>/month</small></div>
 </div>
 
-<div class="card">
+ <div class="add-item-card">
 <h2 style="font-family:'Playfair Display'">➕ Add Menu / Service / Tour</h2>
 <form id="addForm">
-<input name="name" placeholder="Item Name - e.g Nyama Choma" required>
-<input name="price" type="number" placeholder="Price KES" required>
+<input name="name" placeholder="Item Name - e.g Nyama Choma">
+<input name="price" type="number" placeholder="Price KES">
 <input name="desc" placeholder="Description">
 <input name="img" placeholder="Image URL">
 <input name="dept_whatsapp" placeholder="Dept WhatsApp Group ID">
-<select name="type"><option value="food">food - 0% fee</option><option value="service">service - 0% fee</option><option value="tour">tour - 15% fee</option></select>
+<select name="type">
+  <option value="food">food - 0% fee</option>
+  <option value="service">service - 15% fee</option>
+  <option value="tour">tour - 15% fee</option>
+</select>
 <button class="btn">ADD ITEM</button>
-</form></div>
+</form></div> 
 
   <div style="background: #1e293b; padding: 30px; border-radius: 20px; margin: 30px 0; text-align: center; border: 2px solid #006600;">
     <h2 style="color: #22c55e; margin-bottom: 15px;">📱 Your Hotel QR Code</h2>
