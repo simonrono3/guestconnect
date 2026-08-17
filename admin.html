@@ -1,16 +1,39 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin</title><script src="https://cdn.tailwindcss.com"></script><style>body{background:#0a0f1e;color:#e2e8f0}.card{background:#111827}</style></head>
-<body class="p-4"><div class="max-w-6xl mx-auto"><h1 class="text-2xl font-bold text-[#8b5cf6] mb-4">👑 GUESTHUB ADMIN</h1>
-<div class="flex gap-2 mb-4"><button onclick="tab(1)" class="tab bg-[#8b5cf6] text-black px-4 py-2 rounded-2xl">Hotels</button><button onclick="tab(2)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Vendors</button><button onclick="tab(3)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Finance</button><button onclick="tab(4)" class="tab bg-[#1f2937] px-4 py-2 rounded-2xl">Subscriptions</button></div>
-<div id="t1"></div><div id="t2" class="hidden"></div><div id="t3" class="hidden"></div><div id="t4" class="hidden"></div></div>
+<!DOCTYPE html><html><head>
+<title>Admin | GUESTSHUB</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+body{background:#1A1A1A;color:#fff;font-family:'Inter';padding:30px}
+h1{font-family:'Playfair Display';color:#FFD700;font-size:36px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:30px 0}
+.stat{background:#2D2418;border:1px solid #FF6B35;padding:24px;border-radius:20px}
+.stat h2{color:#FFD700;font-size:32px;font-family:'Playfair Display'}
+.row{background:#2D2418;padding:16px;border-radius:16px;margin:10px 0;display:flex;justify-content:space-between;align-items:center}
+.btn{background:#0F9D58;color:#fff;border:none;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer}
+</style>
+</head><body>
+<h1>👑 GUESTSHUB ADMIN</h1>
+<div class="grid">
+  <div class="stat"><h3>Hotel MRR</h3><h2 id="mrr">KES 0</h2></div>
+  <div class="stat"><h3>Commission</h3><h2 id="comm">KES 0</h2></div>
+  <div class="stat"><h3>Total</h3><h2 id="total">KES 0</h2></div>
+</div>
+
+<h2>Pending Hotels</h2><div id="hotels"></div>
+<h2>Pending Vendors</h2><div id="vendors"></div>
+
 <script>
-function tab(n){document.querySelectorAll('.tab').forEach(b=>b.className='tab bg-[#1f2937] px-4 py-2 rounded-2xl');document.querySelectorAll('.tab')[n-1].className='tab bg-[#8b5cf6] text-black px-4 py-2 rounded-2xl';for(let i=1;i<=4;i++)document.getElementById('t'+i).classList.add('hidden');document.getElementById('t'+n).classList.remove('hidden')}
-fetch('/api/data').then(r=>r.json()).then(data=>{
-  document.getElementById('t1').innerHTML=data.hotels.map(h=>`<div class="card p-3 rounded-2xl mb-2 flex justify-between"><div>${h.name} - ${h.subscription}</div>${h.status==='Pending'?`<button onclick="approveHotel('${h.id}')" class="bg-[#22c55e] text-black px-3 rounded-xl">Approve</button>`:''}</div>`).join('');
-  document.getElementById('t2').innerHTML=data.vendors.map(v=>`<div class="card p-3 rounded-2xl mb-2 flex justify-between"><div>${v.name} - ${v.type}</div>${v.status==='Pending'?`<button onclick="approveVendor('${v.id}')" class="bg-[#22c55e] text-black px-3 rounded-xl">Approve</button>`:''}</div>`).join('');
-  const total = data.bookings.reduce((a,b)=>a+Number(b.our_cut||0),0); document.getElementById('t3').innerHTML=`<div class="card p-4 rounded-3xl"><div class="text-3xl font-bold text-[#22c55e]">KES ${total.toLocaleString()}</div><div>Our 50% Commission</div></div>`;
-  document.getElementById('t4').innerHTML=data.hotels.map(h=>`<div class="card p-3 rounded-2xl mb-2">${h.name} - ${h.subscription} - KSh ${h.subscription==='Professional'?19500:6500}/month</div>`).join('');
+fetch('/api/admin/stats').then(r=>r.json()).then(d=>{
+  document.getElementById('mrr').innerText='KES '+d.mrr.toLocaleString();
+  document.getElementById('comm').innerText='KES '+d.commission.toLocaleString();
+  document.getElementById('total').innerText='KES '+d.total.toLocaleString();
 });
-function approveHotel(id){fetch('/api/admin/approve-hotel',{method:'POST',body:`id=${id}`}).then(()=>location.reload())}
-function approveVendor(id){fetch('/api/admin/approve-vendor',{method:'POST',body:`id=${id}`}).then(()=>location.reload())}
-tab(1);
+fetch('/api/data').then(r=>r.json()).then(data=>{
+  document.getElementById('hotels').innerHTML=data.hotels.filter(h=>h.status==='Pending').map(h=>
+    `<div class="row">${h.name} <button class="btn" onclick="approve('hotels','${h.id}')">Approve</button></div>`
+  ).join('');
+  document.getElementById('vendors').innerHTML=data.vendors.filter(v=>v.status==='Pending').map(v=>
+    `<div class="row">${v.name} - ${v.type} <button class="btn" onclick="approve('vendors','${v.id}')">Approve</button></div>`
+  ).join('');
+});
+function approve(type,id){fetch(`/api/admin/approve/${type}/${id}`,{method:'POST'}).then(()=>location.reload())}
 </script></body></html>
