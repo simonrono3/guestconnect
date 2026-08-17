@@ -40,8 +40,9 @@
 </head><body>
 <div class="header"><div class="logo">GUESTHUB</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
 
-<div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
+
   
+<div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
   <button onclick="window.location.href='/hotel-login.html'" 
   style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
     🏨 Hotel Login
@@ -53,14 +54,30 @@
   </button>
 </div>
 
+<!-- HII NDIO SLOGAN MPYA -->
+<h3 style="text-align:center; color:#00FF7F; font-size:18px; margin:10px 0; animation: glow 2s ease-in-out infinite alternate;">
+  Connect Every Hotel To Everything
+</h3>
+<p style="text-align:center; color:#aaa; font-size:13px; margin-bottom:20px;">
+  One app for Room Service, Housekeeping, Maintenance, Orders & Vendors
+</p>
+
+
+  
 <style>
 @keyframes vendorPulse {
  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0.7); }
  50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0,200,81, 0); }
  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0); }
 }
+@keyframes glow {
+  from { text-shadow: 0 0 5px #00FF7F; }
+  to { text-shadow: 0 0 20px #00FF7F, 0 0 30px #00FF7F; }
+}
 </style>
 
+
+  
 
   
   
