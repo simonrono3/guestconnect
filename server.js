@@ -1,3 +1,5 @@
+const QRCode = require('qrcode');
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -57,6 +59,32 @@ app.post('/api/hotel/register', async (req,res)=>{
   const hash = await bcrypt.hash(password, 10);
   await supa.from('hotels').insert({id:hotelId, name, email, password:hash, status:'Pending'});
   res.json({ok:true});
+});
+
+// GENERATE QR CODE FOR HOTEL
+app.get('/api/generate-qr/:hotelId', async (req, res) => {
+    try {
+        const { hotelId } = req.params;
+        const hotelUrl = `https://guestconnect-ap2q.onrender.com/guest.html?hotelId=${hotelId}`;
+        
+        // Generate QR as Data URL
+        const qrDataUrl = await QRCode.toDataURL(hotelUrl, {
+            width: 400,
+            margin: 2,
+            color: {
+                dark: '#006600', // Kenya Green
+                light: '#FFFFFF'
+            }
+        });
+        
+        res.json({ 
+            success: true, 
+            qrCode: qrDataUrl,
+            url: hotelUrl
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
 });
 
 // GM DASHBOARD
