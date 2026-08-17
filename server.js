@@ -93,4 +93,8 @@ app.post('/api/admin/approve/:type/:id', async (req,res)=>{
   res.json({ok:true});
 });
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(process.env.PORT||3000, ()=>console.log('GUESTSHUB V7.0 LIVE'));
