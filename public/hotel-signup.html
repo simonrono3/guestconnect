@@ -1,17 +1,81 @@
-<!DOCTYPE html><html><head><title>Hotel Signup | GUESTHUB</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<style>body{background:#1A1A1A;color:#fff;font-family:'Inter';padding:40px;display:flex;justify-content:center} .container{max-width:500px;width:100%;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:2px solid #FF6B35} h1{color:#FFD700;font-family:'Playfair Display'} input,select{width:100%;padding:16px;margin:12px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff} .btn{width:100%;padding:18px;background:linear-gradient(135deg,#FF6B35,#0F9D58);border:none;color:#fff;font-weight:800;border-radius:12px;cursor:pointer}</style>
-</head><body><div class="container"><h1>🏨 Register Hotel</h1>
-<input id="name" placeholder="Hotel Name">
-<input id="hotelId" placeholder="Hotel ID - no spaces">
-<input id="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<select id="plan"><option value="Starter">Starter - KES 6,500/mo</option><option value="Professional">Professional - KES 19,500/mo</option></select>
-<button class="btn" onclick="signup()">REGISTER</button></div>
-<script>
-function signup(){
-  const data={name:document.getElementById('name').value,hotelId:document.getElementById('hotelId').value,email:document.getElementById('email').value,password:document.getElementById('password').value,plan:document.getElementById('plan').value};
-  fetch('/api/hotel/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-  .then(r=>r.json()).then(d=>{alert('✅ Registered! Awaiting approval'); window.location.href='/hotel-login.html'});
-}
-</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hotel GM Signup - GUESTHUB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; background:#111; color:#fff; display:flex; justify-content:center; padding:20px; }
+    .box { background:#222; padding:25px; border-radius:12px; width:100%; max-width:450px; }
+    input, button { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:none; background:#333; color:#fff; }
+    button { background:#FFD700; color:#000; font-weight:bold; cursor:pointer; font-size:16px; }
+    button:hover { background:#FFC700; }
+    label { font-size:12px; color:#aaa; text-align:left; display:block; margin-top:10px; }
+    h2 { text-align:center; color:#FFD700; }
+    h4 { color:#00FF7F; margin-top:15px; }
+    hr { border-color:#333; margin:15px 0; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🏨 Hotel GM Signup</h2>
+    
+    <label>Hotel Name</label>
+    <input id="hotelName" placeholder="e.g PrideInn Paradise">
+
+    <label>GM Full Name</label>
+    <input id="gmName" placeholder="e.g John Doe">
+
+    <label>GM Email</label>
+    <input id="email" type="email" placeholder="gm@hotel.com">
+
+    <label>Password</label>
+    <input id="password" type="password" placeholder="Create Password">
+
+    <label>Hotel Location</label>
+    <input id="location" placeholder="e.g Nairobi, Mombasa">
+
+    <hr>
+    <h4>📱 Department WhatsApp Numbers</h4>
+    <p style="font-size:11px; color:#aaa;">Weka namba za WhatsApp. Orders/requests zitatumwa hapa</p>
+    
+    <label>Room Service WhatsApp</label>
+    <input id="wa_roomservice" placeholder="+2547XXXXXXXX">
+    
+    <label>Housekeeping WhatsApp</label>
+    <input id="wa_housekeeping" placeholder="+2547XXXXXXXX">
+    
+    <label>Maintenance WhatsApp</label>
+    <input id="wa_maintenance" placeholder="+2547XXXXXXXX">
+    
+    <label>Front Desk WhatsApp</label>
+    <input id="wa_frontdesk" placeholder="+2547XXXXXXXX">
+
+    <button onclick="signupHotel()">Create Hotel Account</button>
+    <p style="text-align:center; font-size:14px;">Already have account? <a href="/hotel-login.html" style="color:#FFD700">Login Here</a></p>
+  </div>
+
+  <script>
+  async function signupHotel() {
+    const data = {
+      hotel: document.getElementById('hotelName').value,
+      gm: document.getElementById('gmName').value,
+      email: document.getElementById('email').value,
+      location: document.getElementById('location').value,
+      wa_roomservice: document.getElementById('wa_roomservice').value,
+      wa_housekeeping: document.getElementById('wa_housekeeping').value,
+      wa_maintenance: document.getElementById('wa_maintenance').value,
+      wa_frontdesk: document.getElementById('wa_frontdesk').value
+    };
+    
+    if(!data.hotel || !data.email) {
+      alert('Please fill Hotel Name and Email');
+      return;
+    }
+
+    console.log('Saving Hotel:', data);
+    alert('Hotel Account Created Successfully! \n\nNext: Login to add Menu, Rooms & Services');
+    window.location.href = '/gm-dashboard.html';
+  }
+  </script>
+</body>
+</html>
