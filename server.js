@@ -1,3 +1,7 @@
+import { WebSocket } from 'ws';
+global.WebSocket = WebSocket;
+
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
