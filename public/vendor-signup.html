@@ -1,17 +1,64 @@
-<!DOCTYPE html><html><head><title>Vendor Signup | GUESTHUB</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<style>body{background:#1A1A1A;color:#fff;font-family:'Inter';padding:40px;display:flex;justify-content:center} .container{max-width:500px;width:100%;background:rgba(45,36,24,0.9);padding:40px;border-radius:24px;border:2px solid #FF6B35} h1{color:#FFD700} input,select{width:100%;padding:16px;margin:12px 0;background:#1A1A1A;border:1px solid #444;border-radius:12px;color:#fff} .btn{width:100%;padding:18px;background:linear-gradient(135deg,#FF6B35,#0F9D58);border:none;color:#fff;font-weight:800;border-radius:12px;cursor:pointer}</style>
-</head><body><div class="container"><h1>🚐 Vendor Signup</h1>
-<input id="name" placeholder="Business Name">
-<input id="owner" placeholder="Owner Name">
-<input id="phone" placeholder="Phone 2547...">
-<input id="email" placeholder="Email">
-<select id="type"><option value="tour">Tour Operator</option><option value="taxi">Taxi Service</option><option value="spa">Spa Service</option></select>
-<button class="btn" onclick="signup()">REGISTER</button></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Signup - GuestHub8.5</title>
+<style>
+body{background:#111; color:#fff; font-family:Arial; padding:20px;}
+.container{max-width:500px; margin:auto; background:#1a1a1a; padding:25px; border-radius:12px; border:1px solid #00FF7F;}
+h1{text-align:center; color:#00FF7F;}
+label{display:block; margin-top:15px; font-weight:bold; color:#DAA520;}
+input, select, textarea{width:100%; padding:12px; margin-top:5px; background:#222; border:1px solid #333; border-radius:8px; color:#fff;}
+button{background:linear-gradient(90deg, #00C851, #00FF7F); color:#000; padding:15px; width:100%; border:none; border-radius:10px; font-weight:bold; font-size:16px; margin-top:20px; cursor:pointer;}
+.note{font-size:12px; color:#aaa; margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🚚 Vendor Join GuestHub8.5</h1>
+  <p style="text-align:center; color:#aaa;">Connect with Hotels. Get More Customers.</p>
+
+  <form id="vendorForm">
+    <label>Business Name</label>
+    <input type="text" id="bizName" required placeholder="e.g Safari Cabs Ltd">
+
+    <label>Owner Name</label>
+    <input type="text" id="ownerName" required placeholder="Your Name">
+
+    <label>WhatsApp Number</label>
+    <input type="tel" id="phone" required placeholder="+2547XXXXXXXX">
+
+    <label>Service Category</label>
+    <select id="category" required>
+      <option value="">-- Select Service --</option>
+      <option value="transport">🚕 Transport - Taxi, Boda, Airport Pickup</option>
+      <option value="spa">🧖 Spa & Wellness - Massage, Barber, In-room</option>
+      <option value="tours">🌍 Tours & Safari - Day trips, Game drives</option>
+      <option value="laundry">🧺 Laundry & Dry Cleaning - Hotel pickup</option>
+      <option value="events">🎭 Events - DJ, Decor, Photographer</option>
+      <option value="gifts">🎁 Gifts - Flowers, Cake, Souvenirs</option>
+      <option value="maintenance">🔧 Maintenance - Electrician, Plumber, AC</option>
+    </select>
+
+    <label>Hotels You Can Serve</label>
+    <input type="text" id="hotels" placeholder="e.g PrideInn, Sarova, All CBD Hotels">
+
+    <label>Service Description</label>
+    <textarea id="desc" rows="3" placeholder="Briefly describe your service and rates"></textarea>
+
+    <button type="submit">Submit Application</button>
+  </form>
+  <p class="note">✅ 0% Commission for first 90 days. We will WhatsApp you in 24hrs.</p>
+</div>
+
 <script>
-function signup(){
-  const data={name:document.getElementById('name').value,owner:document.getElementById('owner').value,phone:document.getElementById('phone').value,email:document.getElementById('email').value,type:document.getElementById('type').value};
-  fetch('/api/vendor/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-  .then(r=>r.json()).then(d=>{alert('✅ Registered! Awaiting approval');});
+document.getElementById('vendorForm').onsubmit = function(e){
+  e.preventDefault();
+  alert("Application Received! 🎉 \nWe will contact you on WhatsApp soon.");
+  // Hapa baadaye tunaweka ku-save kwa database
+  window.location.href = '/';
 }
-</script></body></html>
+</script>
+</body>
+</html>
