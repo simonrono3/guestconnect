@@ -1,81 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Hotel GM Signup - GUESTHUB</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial; background:#111; color:#fff; display:flex; justify-content:center; padding:20px; }
-    .box { background:#222; padding:25px; border-radius:12px; width:100%; max-width:450px; }
-    input, button { width:100%; padding:12px; margin:8px 0; border-radius:8px; border:none; background:#333; color:#fff; }
-    button { background:#FFD700; color:#000; font-weight:bold; cursor:pointer; font-size:16px; }
-    button:hover { background:#FFC700; }
-    label { font-size:12px; color:#aaa; text-align:left; display:block; margin-top:10px; }
-    h2 { text-align:center; color:#FFD700; }
-    h4 { color:#00FF7F; margin-top:15px; }
-    hr { border-color:#333; margin:15px 0; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join GuestHub8.5 - Hotel Signup</title>
+<style>
+body{background:#0a0a0a; color:#fff; font-family:Arial; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px;}
+.signup-box{background:#1a1a1a; padding:30px; border-radius:15px; width:100%; max-width:450px; border:2px solid #B8860B;}
+h1{color:#B8860B; text-align:center; margin-bottom:20px;}
+input{width:100%; padding:12px; margin:10px 0; background:#333; border:1px solid #555; border-radius:8px; color:#fff; box-sizing:border-box;}
+button{width:100%; padding:12px; background:#00FF7F; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;}
+.success{color:#00FF7F; text-align:center; margin-top:15px;}
+</style>
 </head>
 <body>
-  <div class="box">
-    <h2>🏨 Hotel GM Signup</h2>
-    
-    <label>Hotel Name</label>
-    <input id="hotelName" placeholder="e.g PrideInn Paradise">
 
-    <label>GM Full Name</label>
-    <input id="gmName" placeholder="e.g John Doe">
+<div class="signup-box">
+  <h1>🏨 Join GuestHub8.5</h1>
+  <form onsubmit="signup(event)">
+    <input type="text" id="hotel_name" placeholder="Hotel Name" required>
+    <input type="text" id="location" placeholder="Location e.g. Mombasa" required>
+    <input type="email" id="email" placeholder="Manager Email" required>
+    <input type="tel" id="phone" placeholder="Phone Number" required>
+    <input type="password" id="password" placeholder="Create Password" required>
+    <button type="submit">Submit Application</button>
+  </form>
+  <p class="success" id="msg"></p>
+</div>
 
-    <label>GM Email</label>
-    <input id="email" type="email" placeholder="gm@hotel.com">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://your-project.supabase.co'
+const SUPABASE_KEY = 'your-anon-key-here'
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Create Password">
-
-    <label>Hotel Location</label>
-    <input id="location" placeholder="e.g Nairobi, Mombasa">
-
-    <hr>
-    <h4>📱 Department WhatsApp Numbers</h4>
-    <p style="font-size:11px; color:#aaa;">Weka namba za WhatsApp. Orders/requests zitatumwa hapa</p>
-    
-    <label>Room Service WhatsApp</label>
-    <input id="wa_roomservice" placeholder="+2547XXXXXXXX">
-    
-    <label>Housekeeping WhatsApp</label>
-    <input id="wa_housekeeping" placeholder="+2547XXXXXXXX">
-    
-    <label>Maintenance WhatsApp</label>
-    <input id="wa_maintenance" placeholder="+2547XXXXXXXX">
-    
-    <label>Front Desk WhatsApp</label>
-    <input id="wa_frontdesk" placeholder="+2547XXXXXXXX">
-
-    <button onclick="signupHotel()">Create Hotel Account</button>
-    <p style="text-align:center; font-size:14px;">Already have account? <a href="/hotel-login.html" style="color:#FFD700">Login Here</a></p>
-  </div>
-
-  <script>
-  async function signupHotel() {
-    const data = {
-      hotel: document.getElementById('hotelName').value,
-      gm: document.getElementById('gmName').value,
-      email: document.getElementById('email').value,
-      location: document.getElementById('location').value,
-      wa_roomservice: document.getElementById('wa_roomservice').value,
-      wa_housekeeping: document.getElementById('wa_housekeeping').value,
-      wa_maintenance: document.getElementById('wa_maintenance').value,
-      wa_frontdesk: document.getElementById('wa_frontdesk').value
-    };
-    
-    if(!data.hotel || !data.email) {
-      alert('Please fill Hotel Name and Email');
-      return;
-    }
-
-    console.log('Saving Hotel:', data);
-    alert('Hotel Account Created Successfully! \n\nNext: Login to add Menu, Rooms & Services');
-    window.location.href = '/gm-dashboard.html';
+async function signup(e){
+  e.preventDefault();
+  const { error } = await supabase.from('hotels').insert([{
+    hotel_name: document.getElementById('hotel_name').value,
+    location: document.getElementById('location').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    password: document.getElementById('password').value,
+    status: 'PENDING' // Muhimu: Hii ndio inafanya iende kwa approval
+  }]);
+  
+  if(error){ alert('Email tayari imetumika!') } 
+  else {
+    document.getElementById('msg').innerText = 'Application sent! We will review and email you within 24hrs ✅';
+    e.target.reset();
   }
-  </script>
+}
+</script>
 </body>
 </html>
