@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Dashboard - GuestHub8.5</title>
+<style>
+body{background:#0a0a0a; color:#fff; font-family:Arial; margin:0;}
+header{background:#111; padding:15px; display:flex; justify-content:space-between; border-bottom:2px solid #00FF7F;}
+header h1{color:#00FF7F; font-size:18px; margin:0;}
+.stats{display:flex; gap:10px; padding:15px; justify-content:space-around;}
+.stat-box{background:#1a1a1a; padding:15px; border-radius:10px; text-align:center; flex:1; border:1px solid #333;}
+.stat-box h3{color:#00FF7F; font-size:24px; margin:0;}
+.stat-box p{color:#aaa; font-size:12px; margin:5px 0 0;}
+.section{padding:15px;}
+.section h2{color:#DAA520; border-bottom:1px solid #333; padding-bottom:8px;}
+.order-card{background:#1a1a1a; border:1px solid #333; border-radius:10px; padding:15px; margin-bottom:12px;}
+.order-card.new{border-left:4px solid #00FF7F;}
+.order-top{display:flex; justify-content:space-between; margin-bottom:8px;}
+.badge{background:#00FF7F; color:#000; padding:3px 8px; border-radius:5px; font-size:11px; font-weight:bold;}
+.btn-group{display:flex; gap:8px; margin-top:10px;}
+.btn{padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; flex:1;}
+.btn-accept{background:#00C851; color:#000;}
+.btn-decline{background:#8B0000; color:#fff;}
+.btn-call{background:#DAA520; color:#000;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚚 Vendor Dashboard</h1>
+  <div style="color:#aaa; font-size:12px;">Safari Cabs Ltd</div>
+</header>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-box">
+    <h3>12</h3>
+    <p>This Week</p>
+  </div>
+  <div class="stat-box">
+    <h3>Ksh 28,500</h3>
+    <p>Earnings</p>
+  </div>
+  <div class="stat-box">
+    <h3>4.9⭐</h3>
+    <p>Rating</p>
+  </div>
+</div>
+
+<!-- NEW ORDERS -->
+<div class="section">
+  <h2>🔔 New Requests</h2>
+  
+  <div class="order-card new">
+    <div class="order-top">
+      <b>Room 305 - PrideInn Nairobi</b>
+      <span class="badge">NEW</span>
+    </div>
+    <p><b>Service:</b> 🚕 Airport Pickup - JKIA 6:00 AM</p>
+    <p><b>Guest:</b> John Smith | <b>Pay:</b> Ksh 2,500</p>
+    <p><b>Note:</b> Flight BA-102. Guest has 2 luggage.</p>
+    <div class="btn-group">
+      <button class="btn btn-accept" onclick="acceptOrder()">Accept</button>
+      <button class="btn btn-decline" onclick="declineOrder()">Decline</button>
+      <button class="btn btn-call" onclick="callHotel()">Call Front Desk</button>
+    </div>
+  </div>
+
+  <div class="order-card new">
+    <div class="order-top">
+      <b>Room 112 - Sarova Stanley</b>
+      <span class="badge">NEW</span>
+    </div>
+    <p><b>Service:</b> 🌍 City Tour - Nairobi National Park</p>
+    <p><b>Guest:</b> Sarah Lee | <b>Pay:</b> Ksh 8,000</p>
+    <p><b>Time:</b> Today 2:00 PM</p>
+    <div class="btn-group">
+      <button class="btn btn-accept" onclick="acceptOrder()">Accept</button>
+      <button class="btn btn-decline" onclick="declineOrder()">Decline</button>
+      <button class="btn btn-call" onclick="callHotel()">Call Hotel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIVE BOOKINGS -->
+<div class="section">
+  <h2>📅 Active Bookings</h2>
+  <div class="order-card">
+    <div class="order-top">
+      <b>Room 201 - PrideInn</b>
+      <span style="color:#00FF7F;">Accepted</span>
+    </div>
+    <p><b>Service:</b> 🧖 In-room Massage 8:00 PM</p>
+    <p><b>Status:</b> Vendor on the way</p>
+  </div>
+</div>
+
+<script>
+function acceptOrder(){
+  alert("✅ Order Accepted! \nGuest + Hotel Front Desk have been notified on WhatsApp.");
+}
+function declineOrder(){
+  alert("Order Declined. It will be sent to next vendor.");
+}
+function callHotel(){
+  alert("Calling Hotel Front Desk...");
+}
+</script>
+
+</body>
+</html>
