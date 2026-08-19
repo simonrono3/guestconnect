@@ -49,4 +49,16 @@ function showTab(type,el){window.currentTab=type;document.querySelectorAll('.tab
 function order(id,name,price,type){const t=translations[currentLang];const guest=prompt(t.enterName);if(!guest)return;const phone=prompt(t.enterPhone);const endpoint=(type==='food')?'/api/guest/order':'/api/guest/book-vendor';const body=(type==='food')?{hotel_id:hotelId,room,guest,item_id:id,phone}:{hotel_id:hotelId,vendor_id:'vendor',service:name,price,room,guest};fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(()=>{if(type==='food')fetch('/api/guest/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone,amount:price})});alert(isBookingType(type)?t.booked:t.orderSent);document.getElementById('activeOrders').innerText=Number(document.getElementById('activeOrders').innerText)+1;});}
 function isBookingType(type){return type==='tour'||type==='taxi'||type==='service';}
 function sendChat(){const msg=document.getElementById('chatInput').value;if(!msg)return;document.getElementById('chatLog').innerHTML+=`<div><b>You:</b> ${msg}</div>`;fetch('/api/guest/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,hotel_id:hotelId,room,lang:currentLang})}).then(r=>r.json()).then(d=>{document.getElementById('chatLog').innerHTML+=`<div style="color:var(--gold)"><b>AI:</b> ${d.reply}</div>`;document.getElementById('chatInput').value='';});}
-</script></body></html>
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script> <!-- Weka hii kwanza -->
+<script>
+    // Code yako yote ya supabase inaenda hapa chini
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+</script>
+
+
+
+
+</body></html>
