@@ -51,29 +51,27 @@ button:hover{background:#00C851;}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script>
-const SUPABASE_URL = 'https://your-project.supabase.co' // WEKA YAKO
-const SUPABASE_KEY = 'your-anon-key-here' // WEKA YAKO
-const { createClient } = supabase
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY) // FIXED HAPA
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function signup(e){
   e.preventDefault();
   document.getElementById('msg').innerText = '';
   document.getElementById('err').innerText = '';
 
-  const { error } = await supabaseClient.from('hotels').insert([{
+  const { data, error } = await supabaseClient.from('hotels').insert([{
     hotel_name: document.getElementById('hotel_name').value,
     location: document.getElementById('location').value,
     hotel_type: document.getElementById('hotel_type').value,
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     password: document.getElementById('password').value,
-    status: 'PENDING',
-    created_at: new Date()
-  }]);
+    status: 'PENDING'
+  }]).select();
   
   if(error){ 
+    console.log(error)
     document.getElementById('err').innerText = 'Error: ' + error.message 
   } else {
     document.getElementById('msg').innerText = 'Application sent! We will email you after approval ✅';
@@ -81,18 +79,5 @@ async function signup(e){
   }
 }
 </script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script> <!-- Weka hii kwanza -->
-<script>
-    // Code yako yote ya supabase inaenda hapa chini
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-</script>
-
-
-
-
-
 </body>
 </html>
