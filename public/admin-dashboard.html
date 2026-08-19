@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuestHub Admin - Hotel Approvals</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{background:#0a0a0a; color:#fff; font-family:'Poppins',sans-serif; margin:0; padding:20px;}
+.header{display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:2px solid #B8860B; padding-bottom:15px;}
+h1{font-family:'Playfair Display'; color:#DAA520; margin:0;}
+.logout{background:#FF4444; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;}
+.stats{display:flex; gap:20px; margin-bottom:30px;}
+.stat-box{background:#1a1a1a; padding:20px; border-radius:12px; border-left:4px solid #00FF7F; flex:1;}
+.stat-box h3{margin:0; color:#aaa; font-size:14px;}
+.stat-box p{margin:5px 0 0; font-size:28px; font-weight:bold; color:#00FF7F;}
+table{width:100%; border-collapse:collapse; background:#1a1a1a; border-radius:12px; overflow:hidden;}
+th,td{padding:15px; text-align:left; border-bottom:1px solid #333;}
+th{background:#2a2a2a; color:#DAA520; font-weight:600;}
+tr:hover{background:#222;}
+.status{padding:6px 12px; border-radius:20px; font-size:12px; font-weight:bold;}
+.status.PENDING{background:#FFD700; color:#000;}
+.status.APPROVED{background:#00FF7F; color:#000;}
+.status.REJECTED{background:#FF4444; color:#fff;}
+.btn-approve{background:#00FF7F; color:#000; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold; margin-right:8px;}
+.btn-reject{background:#FF4444; color:#fff; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold;}
+.btn-approve:hover{opacity:0.8;}
+.btn-reject:hover{opacity:0.8;}
+.loading{text-align:center; padding:40px; color:#aaa;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏨 GuestHub Admin Dashboard</h1>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<div class="stats">
+  <div class="stat-box">
+    <h3>Pending Hotels</h3>
+    <p id="pendingCount">0</p>
+  </div>
+  <div class="stat-box">
+    <h3>Approved Hotels</h3>
+    <p id="approvedCount">0</p>
+  </div>
+</div>
+
+<div id="loading" class="loading">Loading hotels...</div>
+
+<table id="hotelsTable" style="display:none;">
+  <thead>
+    <tr>
+      <th>Hotel Name</th>
+      <th>Location</th>
+      <th>Type</th>
+      <th>Manager Email</th>
+      <th>Phone</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="hotelsBody">
+  </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://your-project.supabase.co' // WEKA YAKO
+const SUPABASE_KEY = 'your-anon-key-here' // WEKA YAKO
+const { createClient } = supabase
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+async function loadHotels(){
+  const { data, error } = await supabaseClient
+    .from('hotels')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if(error){
+    alert('Error loading hotels: ' + error.message)
+    return
+  }
+
+  document.getElementById('loading').style.display = 'none'
+  document.getElementById('hotelsTable').style.display = 'table'
+
+  let pending = 0, approved = 0
+  const tbody = document.getElementById('hotelsBody')
+  tbody.innerHTML = ''
+
+  data.forEach(hotel => {
+    if(hotel.status === 'PENDING') pending++
+    if(hotel.status === 'APPROVED') approved++
+
+    const row = `
+      <tr>
+        <td><b>${hotel.hotel_name}</b></td>
+        <td>${hotel.location}</td>
+        <td>${hotel.hotel_type}</td>
+        <td>${hotel.email}</td>
+        <td>${hotel.phone}</td>
+        <td><span class="status ${hotel.status}">${hotel.status}</span></td>
+        <td>
+          ${hotel.status === 'PENDING' ? 
+          `<button class="btn-approve" onclick="updateStatus('${hotel.id}', 'APPROVED')">Approve</button>
+           <button class="btn-reject" onclick="updateStatus('${hotel.id}', 'REJECTED')">Reject</button>` 
+          : '-'}
+        </td>
+      </tr>
+    `
+    tbody.innerHTML += row
+  })
+
+  document.getElementById('pendingCount').innerText = pending
+  document.getElementById('approvedCount').innerText = approved
+}
+
+async function updateStatus(id, newStatus){
+  if(!confirm(`Are you sure you want to ${newStatus} this hotel?`)) return;
+
+  const { error } = await supabaseClient
+    .from('hotels')
+    .update({ status: newStatus })
+    .eq('id', id)
+
+  if(error){
+    alert('Error: ' + error.message)
+  } else {
+    alert(`Hotel ${newStatus} successfully!`)
+    loadHotels() // refresh
+  }
+}
+
+function logout(){
+  window.location.href = '/'
+}
+
+// Load on start
+loadHotels()
+</script>
+
+</body>
+</html>
