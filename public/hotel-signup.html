@@ -11,8 +11,11 @@ body{background:#0a0a0a; color:#fff; font-family:'Poppins',sans-serif; display:f
 h1{color:#DAA520; text-align:center; margin-bottom:10px; font-family:'Playfair Display';}
 p.sub{text-align:center; color:#aaa; font-size:13px; margin-bottom:25px;}
 input, select{width:100%; padding:14px; margin:10px 0; background:#333; border:1px solid #555; border-radius:8px; color:#fff; box-sizing:border-box; font-size:15px;}
+input:focus, select:focus{border-color:#B8860B; outline:none;}
 button{width:100%; padding:14px; background:#00FF7F; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:15px; font-size:16px;}
+button:hover{background:#00C851;}
 .success{color:#00FF7F; text-align:center; margin-top:15px; font-weight:bold;}
+.error{color:#FF4444; text-align:center; margin-top:15px; font-weight:bold;}
 </style>
 </head>
 <body>
@@ -22,37 +25,57 @@ button{width:100%; padding:14px; background:#00FF7F; color:#000; border:none; bo
   <p class="sub">Fill the form. We will review and get back to you within 24hrs.</p>
   <form onsubmit="signup(event)">
     <input type="text" id="hotel_name" placeholder="Hotel Name" required>
-    <select id="location" required><option value="">Select Location</option><option>Mombasa</option><option>Nairobi</option><option>Kisumu</option></select>
-    <select id="hotel_type" required><option value="">Hotel Type</option><option>5 Star</option><option>Beach</option><option>Safari</option><option>City</option></select>
+    <select id="location" required>
+      <option value="">Select Location</option>
+      <option>Mombasa</option>
+      <option>Nairobi</option>
+      <option>Kisumu</option>
+      <option>Diani</option>
+      <option>Nakuru</option>
+    </select>
+    <select id="hotel_type" required>
+      <option value="">Hotel Type</option>
+      <option>5 Star</option>
+      <option>Beach</option>
+      <option>Safari</option>
+      <option>City</option>
+    </select>
     <input type="email" id="email" placeholder="Manager Email" required>
-    <input type="tel" id="phone" placeholder="Phone Number" required>
-    <input type="password" id="password" placeholder="Create Password" required>
+    <input type="tel" id="phone" placeholder="Phone Number e.g 07xx xxx xxx" required>
+    <input type="password" id="password" placeholder="Create Password" minlength="6" required>
     <button type="submit">Submit Application</button>
   </form>
   <p class="success" id="msg"></p>
+  <p class="error" id="err"></p>
   <p style="text-align:center; margin-top:15px;"><a href="/" style="color:#B8860B;">← Back to Home</a></p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://your-project.supabase.co'
-const SUPABASE_KEY = 'your-anon-key-here'
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const SUPABASE_URL = 'https://your-project.supabase.co' // WEKA YAKO
+const SUPABASE_KEY = 'your-anon-key-here' // WEKA YAKO
+const { createClient } = supabase
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY) // FIXED HAPA
 
 async function signup(e){
   e.preventDefault();
-  const { error } = await supabase.from('hotels').insert([{
+  document.getElementById('msg').innerText = '';
+  document.getElementById('err').innerText = '';
+
+  const { error } = await supabaseClient.from('hotels').insert([{
     hotel_name: document.getElementById('hotel_name').value,
     location: document.getElementById('location').value,
     hotel_type: document.getElementById('hotel_type').value,
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     password: document.getElementById('password').value,
-    status: 'PENDING'
+    status: 'PENDING',
+    created_at: new Date()
   }]);
   
-  if(error){ alert('Email already exists!') } 
-  else {
+  if(error){ 
+    document.getElementById('err').innerText = 'Error: ' + error.message 
+  } else {
     document.getElementById('msg').innerText = 'Application sent! We will email you after approval ✅';
     e.target.reset();
   }
