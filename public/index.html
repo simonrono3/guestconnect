@@ -96,4 +96,16 @@ function filterHotels(){searchQuery=document.getElementById('searchInput').value
 function filterByCategory(cat,el){currentCategory=cat;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');filterHotels();}
 function renderHotels(hotels){const t=translations[currentLang];document.getElementById('hotelCount').innerText=allHotels.length;if(hotels.length===0){document.getElementById('hotelsGrid').style.display='none';document.getElementById('noResults').style.display='block';return;}document.getElementById('hotelsGrid').style.display='grid';document.getElementById('noResults').style.display='none';document.getElementById('hotelsGrid').innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800'}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800'"><div class="category-badge">${h.category}</div><div class="hotel-body"><h3>${h.name}</h3><div class="location">${t.location} ${h.location||'Kenya'}</div><div class="tags"><div class="tag">🍽️ Food</div><div class="tag">🛎️ Spa</div><div class="tag">🦁 Tours</div><div class="tag">🚕 Taxi</div></div><button class="btn">${t.orderBtn}</button></div></div>`).join('');}
 fetch('/api/data').then(r=>r.json()).then(data=>{allHotels=data.hotels.filter(h=>h.status==='Approved');const locations=[...new Set(allHotels.map(h=>h.location).filter(Boolean))];const locSelect=document.getElementById('locationFilter');locations.forEach(loc=>{locSelect.innerHTML+=`<option value="${loc}">${loc}</option>`;});applyLang(currentLang);}).catch(err=>console.log("API error",err));
-</script></body></html>
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script> <!-- Weka hii kwanza -->
+<script>
+    // Code yako yote ya supabase inaenda hapa chini
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+</script>
+
+
+
+
+</body></html>
