@@ -18,6 +18,9 @@
 .stat{text-align:center}
 .stat h2{font-family:'Playfair Display';font-size:40px;color:var(--green);margin:0}
 .stat p{opacity:0.7;margin:5px 0}
+.top-buttons{display:flex; gap:10px; justify-content:center; padding:15px 0;}
+.btn-top{background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;}
+.btn-vendor{background:linear-gradient(90deg, #00C851, #00FF7F); color:#fff; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; animation: vendorPulse 2s infinite;}
 .category-filter{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:40px 0}
 .cat-btn{padding:12px 24px;background:rgba(45,36,24,0.5);border:1px solid #444;border-radius:50px;font-weight:800;cursor:pointer}
 .cat-btn.active{background:linear-gradient(135deg,var(--orange),var(--green));border-color:transparent}
@@ -36,73 +39,38 @@
 .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),var(--green));color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;font-size:16px}
 .no-results{text-align:center;padding:60px;opacity:0.6}
 .footer{text-align:center;padding:40px;border-top:1px solid #333;opacity:0.6}
-</style>
-</head><body>
-<div class="header"><div class="logo">GUESTHUB</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
-
-<div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
-  <button onclick="window.location.href='/hotel-signup.html'" 
-  style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-    🏨 Hotel signup
-  </button>
-
-  
-  
-<div class="top-buttons" style="display:flex; gap:10px; justify-content:center; padding:15px 0;">
-  <button onclick="window.location.href='/hotel-login.html'" 
-  style="background:#FFD700; color:#000; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-    🏨 Hotel Login
-  </button>
-  
-
-  <button onclick="window.location.href='/vendor-signup.html'" 
-  style="background:linear-gradient(90deg, #00C851, #00FF7F); color:#fff; padding:10px 20px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; animation: vendorPulse 2s infinite;">
-    🚚 Vendor Join Us
-  </button>
-</div>
-
-
-<!-- HERO SECTION -->
-<section style="text-align:center; padding:20px 15px;">
-  <h2 style="color:#00FF7F; font-size:20px; margin-bottom:5px;">Connect Every Hotel To Everything</h2>
-  <p style="color:#aaa; font-size:13px; margin-bottom:20px;">One app for Room Service, Housekeeping, Maintenance, Orders & Vendors</p>
-
-  <h1 style="color:#DAA520; font-size:28px; font-family:serif; line-height:1.2;">ORDER FROM ANY HOTEL</h1>
-  <p style="color:#ccc; font-size:14px; margin-bottom:20px;">🚕 Taxis, 🧖 Spa, 🌍 Tours, 🧺 Laundry & 🎭 Experiences. Direct from your room.</p>
-
-  <div style="display:flex; gap:10px; justify-content:center;">
-    <input id="searchInput" placeholder="Search hotel name or location.." 
-    style="padding:12px; width:60%; border:2px solid #DAA520; border-radius:10px; background:#222; color:#fff;">
-    <select style="padding:12px; border:2px solid #8B0000; border-radius:10px; background:#333; color:#fff;">
-      <option>All Locations</option>
-    </select>
-  </div>
-
-  <!-- STATS -->
-  <div style="display:flex; justify-content:space-around; margin-top:25px;">
-    <div><h3 style="color:#00FF7F; font-size:28px; margin:0;">1</h3><p style="color:#aaa; margin:0;">Hotels</p></div>
-    <div><h3 style="color:#00FF7F; font-size:28px; margin:0;">24/7</h3><p style="color:#aaa; margin:0;">Service</p></div>
-    <div><h3 style="color:#00FF7F; font-size:28px; margin:0;">0%</h3><p style="color:#aaa; margin:0;">Hotel Fee</p></div>
-  </div>
-</section>
-
-
-  
-
-
-  
-<style>
 @keyframes vendorPulse {
  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0.7); }
  50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0,200,81, 0); }
  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,200,81, 0); }
 }
-@keyframes glow {
-  from { text-shadow: 0 0 5px #00FF7F; }
-  to { text-shadow: 0 0 20px #00FF7F, 0 0 30px #00FF7F; }
-}
 </style>
+</head><body>
+<div class="header"><div class="logo">GUESTHUB</div><select id="langSelect" onchange="changeLang(this.value)"><option value="en">🇬🇧 English</option><option value="sw">🇰🇪 Kiswahili</option><option value="fr">🇫🇷 Français</option></select></div>
 
+<div class="top-buttons">
+  <button class="btn-top" onclick="window.location.href='/hotel-signup.html'">🏨 Hotel signup</button>
+  <button class="btn-top" onclick="window.location.href='/hotel-login.html'">🏨 Hotel Login</button>
+  <button class="btn-vendor" onclick="window.location.href='/vendor-signup.html'">🚚 Vendor Join Us</button>
+</div>
+
+<div class="hero">
+  <h2 style="color:#00FF7F; font-size:20px;">Connect Every Hotel To Everything</h2>
+  <p>One app for Room Service, Housekeeping, Maintenance, Orders & Vendors</p>
+  <h1 id="heroTitle">ORDER FROM ANY HOTEL</h1>
+  <p id="heroSub">🚕 Taxis, 🧖 Spa, 🌍 Tours, 🧺 Laundry & 🎭 Experiences. Direct from your room.</p>
+  <div class="search-box">
+    <input id="searchInput" onkeyup="filterHotels()" placeholder="Search hotel name or location..">
+    <select id="locationFilter" onchange="filterHotels()">
+      <option value="">All Locations</option>
+    </select>
+  </div>
+  <div class="stats">
+    <div class="stat"><h2 id="hotelCount">0</h2><p id="statHotels">Hotels</p></div>
+    <div class="stat"><h2>24/7</h2><p id="statService">Service</p></div>
+    <div class="stat"><h2>0%</h2><p id="statFee">Hotel Fee</p></div>
+  </div>
+</div>
 
 <div class="category-filter">
   <div class="cat-btn active" onclick="filterByCategory('All',this)" id="catAll">All</div>
@@ -111,8 +79,10 @@
   <div class="cat-btn" onclick="filterByCategory('Beach',this)" id="catBeach">🏖️ Beach</div>
   <div class="cat-btn" onclick="filterByCategory('City',this)" id="catCity">🏙️ City</div>
 </div>
+
 <div class="container"><h2 class="section-title" id="sectionTitle">Featured Hotels</h2><div id="hotelsGrid" class="grid"></div><div id="noResults" class="no-results" style="display:none"><h3 id="noResultTitle">No hotels found</h3><p id="noResultSub">Try a different search</p></div></div>
 <div class="footer">© 2026 GUESTHUB SAFARI OS | <span id="footerText">Scan QR in your room</span></div>
+
 <script>
 const translations={en:{heroTitle:"ORDER FROM ANY HOTEL",heroSub:"Food, Spa, Tours & Taxis. Direct from your room.",searchPlaceholder:"Search hotel name or location...",statHotels:"Hotels",statService:"Service",statFee:"Hotel Fee",sectionTitle:"Featured Hotels",orderBtn:"ENTER HOTEL →",location:"📍",catAll:"All",cat5Star:"⭐ 5 Star",catSafari:"🦁 Safari",catBeach:"🏖️ Beach",catCity:"🏙️ City",noResultTitle:"No hotels found",noResultSub:"Try a different search",footerText:"Scan QR in your room"},
 sw:{heroTitle:"AGIZA KUTOKA HOTEL YOYOTE",heroSub:"Chakula, Spa, Ziara & Taxi. Moja kwa moja kutoka chumbani.",searchPlaceholder:"Tafuta jina la hoteli au eneo...",statHotels:"Hoteli",statService:"Huduma",statFee:"Ada ya Hoteli",sectionTitle:"Hoteli Maarufu",orderBtn:"INGIA HOTELINI →",location:"📍",catAll:"Zote",cat5Star:"⭐ Nyota 5",catSafari:"🦁 Safari",catBeach:"🏖️ Pwani",catCity:"🏙️ Mji",noResultTitle:"Hakuna hoteli",noResultSub:"Jaribu utafutaji mwingine",footerText:"Piga Scan QR chumbani"},
@@ -125,5 +95,5 @@ let searchQuery='';
 function filterHotels(){searchQuery=document.getElementById('searchInput').value.toLowerCase();const location=document.getElementById('locationFilter').value;let filtered=allHotels.filter(h=>(h.name.toLowerCase().includes(searchQuery)||(h.location||'').toLowerCase().includes(searchQuery))&&(location===''||h.location===location)&&(currentCategory==='All'||h.category===currentCategory));renderHotels(filtered);}
 function filterByCategory(cat,el){currentCategory=cat;document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');filterHotels();}
 function renderHotels(hotels){const t=translations[currentLang];document.getElementById('hotelCount').innerText=allHotels.length;if(hotels.length===0){document.getElementById('hotelsGrid').style.display='none';document.getElementById('noResults').style.display='block';return;}document.getElementById('hotelsGrid').style.display='grid';document.getElementById('noResults').style.display='none';document.getElementById('hotelsGrid').innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800'}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800'"><div class="category-badge">${h.category}</div><div class="hotel-body"><h3>${h.name}</h3><div class="location">${t.location} ${h.location||'Kenya'}</div><div class="tags"><div class="tag">🍽️ Food</div><div class="tag">🛎️ Spa</div><div class="tag">🦁 Tours</div><div class="tag">🚕 Taxi</div></div><button class="btn">${t.orderBtn}</button></div></div>`).join('');}
-fetch('/api/data').then(r=>r.json()).then(data=>{allHotels=data.hotels.filter(h=>h.status==='Approved');const locations=[...new Set(allHotels.map(h=>h.location).filter(Boolean))];const locSelect=document.getElementById('locationFilter');locations.forEach(loc=>{locSelect.innerHTML+=`<option value="${loc}">${loc}</option>`;});applyLang(currentLang);});
+fetch('/api/data').then(r=>r.json()).then(data=>{allHotels=data.hotels.filter(h=>h.status==='Approved');const locations=[...new Set(allHotels.map(h=>h.location).filter(Boolean))];const locSelect=document.getElementById('locationFilter');locations.forEach(loc=>{locSelect.innerHTML+=`<option value="${loc}">${loc}</option>`;});applyLang(currentLang);}).catch(err=>console.log("API error",err));
 </script></body></html>
