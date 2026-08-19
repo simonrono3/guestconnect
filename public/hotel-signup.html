@@ -3,29 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join GuestHub8.5 - Hotel Signup</title>
+<title>Join GuestHub - Hotel Application</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-body{background:#0a0a0a; color:#fff; font-family:Arial; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px;}
-.signup-box{background:#1a1a1a; padding:30px; border-radius:15px; width:100%; max-width:450px; border:2px solid #B8860B;}
-h1{color:#B8860B; text-align:center; margin-bottom:20px;}
-input{width:100%; padding:12px; margin:10px 0; background:#333; border:1px solid #555; border-radius:8px; color:#fff; box-sizing:border-box;}
-button{width:100%; padding:12px; background:#00FF7F; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;}
-.success{color:#00FF7F; text-align:center; margin-top:15px;}
+body{background:#0a0a0a; color:#fff; font-family:'Poppins',sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; padding:20px;}
+.signup-box{background:#1a1a1a; padding:35px; border-radius:15px; width:100%; max-width:480px; border:2px solid #B8860B;}
+h1{color:#DAA520; text-align:center; margin-bottom:10px; font-family:'Playfair Display';}
+p.sub{text-align:center; color:#aaa; font-size:13px; margin-bottom:25px;}
+input, select{width:100%; padding:14px; margin:10px 0; background:#333; border:1px solid #555; border-radius:8px; color:#fff; box-sizing:border-box; font-size:15px;}
+button{width:100%; padding:14px; background:#00FF7F; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:15px; font-size:16px;}
+.success{color:#00FF7F; text-align:center; margin-top:15px; font-weight:bold;}
 </style>
 </head>
 <body>
 
 <div class="signup-box">
   <h1>🏨 Join GuestHub8.5</h1>
+  <p class="sub">Fill the form. We will review and get back to you within 24hrs.</p>
   <form onsubmit="signup(event)">
     <input type="text" id="hotel_name" placeholder="Hotel Name" required>
-    <input type="text" id="location" placeholder="Location e.g. Mombasa" required>
+    <select id="location" required><option value="">Select Location</option><option>Mombasa</option><option>Nairobi</option><option>Kisumu</option></select>
+    <select id="hotel_type" required><option value="">Hotel Type</option><option>5 Star</option><option>Beach</option><option>Safari</option><option>City</option></select>
     <input type="email" id="email" placeholder="Manager Email" required>
     <input type="tel" id="phone" placeholder="Phone Number" required>
     <input type="password" id="password" placeholder="Create Password" required>
     <button type="submit">Submit Application</button>
   </form>
   <p class="success" id="msg"></p>
+  <p style="text-align:center; margin-top:15px;"><a href="/" style="color:#B8860B;">← Back to Home</a></p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -39,15 +44,16 @@ async function signup(e){
   const { error } = await supabase.from('hotels').insert([{
     hotel_name: document.getElementById('hotel_name').value,
     location: document.getElementById('location').value,
+    hotel_type: document.getElementById('hotel_type').value,
     email: document.getElementById('email').value,
     phone: document.getElementById('phone').value,
     password: document.getElementById('password').value,
-    status: 'PENDING' // Muhimu: Hii ndio inafanya iende kwa approval
+    status: 'PENDING'
   }]);
   
-  if(error){ alert('Email tayari imetumika!') } 
+  if(error){ alert('Email already exists!') } 
   else {
-    document.getElementById('msg').innerText = 'Application sent! We will review and email you within 24hrs ✅';
+    document.getElementById('msg').innerText = 'Application sent! We will email you after approval ✅';
     e.target.reset();
   }
 }
