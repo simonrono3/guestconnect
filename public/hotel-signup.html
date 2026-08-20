@@ -51,9 +51,13 @@ button:hover{background:#00C851;}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
 <script>
+const SUPABASE_URL = 'https://abcdefgh.supabase.co' // WEKA YAKO
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIs...' // WEKA YAKO
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+
+  
 
 async function signup(e){
   e.preventDefault();
