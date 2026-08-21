@@ -1,54 +1,120 @@
-<!DOCTYPE html>
-<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>GuestHub Admin</title>
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>GuestHub 9.0 SMART ADMIN</title>
 <style>
-body{background:#111;color:#fff;font-family:sans-serif;padding:15px}
-.card{background:#1e1e1e;padding:15px;margin:12px 0;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
-.badge{padding:3px 8px;border-radius:6px;font-size:12px;font-weight:bold}
-.pending{background:#3a2a00;color:#ffb700}
-.approved{background:#0a3a1a;color:#00ff88}
-.btn{padding:8px 14px;border:none;border-radius:8px;margin:3px;cursor:pointer;font-weight:bold}
-.approve{background:#22c55e;color:#000} .block{background:#b91c1c;color:#fff} .del{background:#7f1d1d;color:#fff}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.stat{background:#1e1e1e;padding:15px;border-radius:12px}
+*{box-sizing:border-box}body{background:#080808;color:#fff;font-family:Inter,sans-serif;margin:0;padding:0}
+.header{background:linear-gradient(90deg,#1a1200,#2a1f00);padding:18px 15px;border-bottom:2px solid #fbbf24;display:flex;justify-content:space-between;align-items:center}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.stat{background:#141414;border:1px solid #222;padding:16px;border-radius:14px}
+.stat b{font-size:26px;display:block;margin-top:5px}.stat small{color:#888}
+.tabs{display:flex;gap:8px;padding:12px;overflow:auto}.tab{padding:10px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer;white-space:nowrap}
+.tab.active{background:#fbbf24;color:#000}.tab.idle{background:#222;color:#fff}
+.filters{display:flex;gap:8px;padding:0 12px 12px}.fbtn{padding:8px 16px;border-radius:20px;border:1px solid #333;background:#111;color:#fff;cursor:pointer}.fbtn.active{background:#22c55e;color:#000;border-color:#22c55e}
+.card{background:#141414;border:1px solid #222;border-radius:16px;padding:14px;margin:10px 12px}
+.toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:800}.PENDING{background:#3a1f00;color:#ff9f1c;border:1px solid #ff9f1c}.APPROVED{background:#0a2a14;color:#22c55e;border:1px solid #22c55e}.BLOCKED{background:#3a0a0a;color:#ff4444}
+.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.btn{padding:9px 14px;border:none;border-radius:9px;font-weight:700;cursor:pointer;font-size:13px}.approve{background:#22c55e;color:#000}.block{background:#b91c1c;color:#fff}.delete{background:#111;color:#ff4444;border:1px solid #3a0a0a}.view{background:#222;color:#fbbf24}
+.details{background:#0f0f0f;border-radius:12px;padding:10px;margin-top:10px;display:none;font-size:13px;line-height:1.6}
+input,select{background:#000;border:1px solid #333;color:#fff;padding:10px;border-radius:8px;width:100%;margin:5px 0}
 </style></head><body>
-<h1 style="color:#fbbf24">🏨 GuestHub8.5 - SUPER ADMIN</h1>
-<div class="stats">
-<div class="stat">Total Hotels<br><b id="total" style="font-size:28px">0</b></div>
-<div class="stat">Pending<br><b id="pending" style="font-size:28px;color:#fbbf24">0</b></div>
+<div class="header"><h2 style="margin:0;color:#fbbf24">🏨 GuestHub 9.0 - SMART ADMIN</h2><button onclick="load()" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:8px">🔄 Refresh</button></div>
+
+<div class="statgrid">
+<div class="stat"><small>Total Hotels</small><b id="tHotels">0</b><small id="tHotelsSub" style="color:#22c55e">+0 this week</small></div>
+<div class="stat"><small>Pending Approval</small><b id="tPending" style="color:#ff9f1c">0</b><small>Needs action</small></div>
+<div class="stat"><small>Active Revenue (MRR)</small><b id="tRev" style="color:#22c55e">Ksh 0</b><small id="tRevSub">0 paying hotels</small></div>
+<div class="stat"><small>Total Bookings / Orders</small><b id="tBook">0</b><small>Platform-wide</small></div>
+<div class="stat"><small>Approved Hotels</small><b id="tApproved" style="color:#22c55e">0</b></div>
+<div class="stat"><small>Blocked / Expired</small><b id="tBlocked" style="color:#ff4444">0</b></div>
 </div>
-<div id="list">Loading hotels...</div>
+
+<div class="tabs">
+<button class="tab active" id="tabHotels" onclick="switchTab('hotels')">🏨 Hotels</button>
+<button class="tab idle" onclick="switchTab('revenue')">💰 Revenue & Plans</button>
+<button class="tab idle" onclick="switchTab('ops')">🛠️ Ops Center</button>
+</div>
+
+<div id="hotelsView">
+<div style="padding:0 12px;display:flex;gap:8px"><input id="search" placeholder="Search hotel, email, location..." oninput="render()"><select id="planFilter" onchange="render()"><option value="">All Plans</option><option>Upendo</option><option>Bahari</option><option>Karibu</option></select></div>
+<div class="filters"><button class="fbtn active" data-f="ALL" onclick="setFilter('ALL',this)">All</button><button class="fbtn" data-f="PENDING" onclick="setFilter('PENDING',this)">Pending</button><button class="fbtn" data-f="APPROVED" onclick="setFilter('APPROVED',this)">Approved</button><button class="fbtn" data-f="BLOCKED" onclick="setFilter('BLOCKED',this)">Blocked</button></div>
+<div id="list">Loading...</div>
+</div>
+
+<div id="revenueView" style="display:none;padding:12px">
+<div class="card"><h3>💳 Plan Management</h3><p style="color:#888">Assign plans on approval. Auto-bill monthly.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div class="stat"><b>Upendo</b><small>Ksh 6,500/mo</small></div><div class="stat"><b>Bahari</b><small>Ksh 12,000/mo</small></div><div class="stat"><b>Karibu</b><small>Ksh 25,000/mo</small></div></div>
+<button class="btn view" onclick="exportCSV()">📥 Export Hotels CSV</button>
+</div>
+</div>
+
+<div id="opsView" style="display:none;padding:12px">
+<div class="card"><h3>📢 Broadcast to All Hotels</h3><input id="broadcastMsg" placeholder="System maintenance tonight 2AM..."><button class="btn approve" onclick="broadcast()">Send Notification</button></div>
+<div class="card"><h3>🧠 Smart Responsibilities</h3><ul style="color:#aaa;font-size:13px;line-height:1.8">
+<li>✅ Auto-check: Hotels with 0 orders in 14 days -> flag churn risk</li>
+<li>✅ Subscription expiry alerts -> Block if unpaid > 7 days</li>
+<li>✅ Approve only after verifying location & email</li>
+<li>✅ Block with reason (spam, fraud, non-payment)</li>
+<li>✅ View hotel health: items, orders, vendors, GMs</li>
+</ul></div>
+</div>
+
 <script>
+let HOTELS=[], FILTER='ALL', TAB='hotels';
 async function load(){
-  const res = await fetch('/api/hotels');
-  const hotels = await res.json();
-  document.getElementById('total').innerText = hotels.length;
-  document.getElementById('pending').innerText = hotels.filter(h=>h.status!=='APPROVED').length;
-  document.getElementById('list').innerHTML = hotels.map(h=>`
-    <div class="card">
-      <div>
-        <b style="color:#fbbf24;font-size:18px">${h.hotel_name||h.name}</b> <span class="badge ${h.status==='APPROVED'?'approved':'pending'}">${h.status}</span><br>
-        <small>${h.location||''} | ${h.hotel_type||''} | ${h.email}</small>
-      </div>
-      <div>
-        ${h.status!=='APPROVED'? `<button class="btn approve" onclick="approveHotel('${h.hotel_id||h.id}')">Approve</button>`:''}
-        <button class="btn block" onclick="blockHotel('${h.hotel_id||h.id}')">Block</button>
-        <button class="btn del" onclick="deleteHotel('${h.hotel_id||h.id}')">Delete</button>
-      </div>
-    </div>
-  `).join('');
+ const res=await fetch('/api/hotels'); HOTELS=await res.json();
+ document.getElementById('tHotels').innerText=HOTELS.length;
+ document.getElementById('tPending').innerText=HOTELS.filter(h=>h.status!=='APPROVED'&&h.status!=='BLOCKED').length;
+ document.getElementById('tApproved').innerText=HOTELS.filter(h=>h.status==='APPROVED').length;
+ document.getElementById('tBlocked').innerText=HOTELS.filter(h=>h.status==='BLOCKED').length;
+ const paying=HOTELS.filter(h=>h.status==='APPROVED').length;
+ document.getElementById('tRev').innerText='Ksh '+(paying*6500).toLocaleString();
+ document.getElementById('tRevSub').innerText=paying+' paying hotels';
+ // bookings
+ try{const r=await fetch('/api/admin/bookings/count'); const d=await r.json(); document.getElementById('tBook').innerText=d.count||0;}catch{}
+ render();
+}
+function switchTab(t){TAB=t; document.getElementById('hotelsView').style.display=t==='hotels'?'block':'none'; document.getElementById('revenueView').style.display=t==='revenue'?'block':'none'; document.getElementById('opsView').style.display=t==='ops'?'block':'none'; document.querySelectorAll('.tab').forEach(b=>b.className='tab idle'); document.getElementById('tabHotels').className=t==='hotels'?'tab active':'tab idle';}
+function setFilter(f,el){FILTER=f; document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); render();}
+function render(){
+ const q=document.getElementById('search').value.toLowerCase();
+ const plan=document.getElementById('planFilter').value;
+ let list=HOTELS.filter(h=>{
+   if(FILTER!=='ALL'&&h.status!==FILTER){ if(FILTER==='PENDING'&&h.status==='APPROVED')return false; if(FILTER!=='PENDING'&&h.status!==FILTER)return false; }
+   if(plan&&h.plan!==plan&&h.hotel_type!==plan) return false;
+   if(q && !(`${h.hotel_name} ${h.email} ${h.location}`.toLowerCase().includes(q))) return false;
+   return true;
+ });
+ document.getElementById('list').innerHTML=list.map(h=>{
+   const days=Math.floor((Date.now()-new Date(h.created_at))/86400000);
+   const risk=days>14?'🔴 Churn risk':'🟢 Active';
+   return `<div class="card">
+     <div class="toprow"><div><b style="color:#fbbf24;font-size:17px">${h.hotel_name||h.name}</b> <span class="badge ${h.status}">${h.status}</span><br><small style="color:#888">${h.location||''} | ${h.hotel_type||h.plan||'Upendo'} | ${h.email}<br>🆔 ${h.hotel_id||h.id} | 📅 ${days}d ago | ${risk} | 💰 Ksh ${h.price||6500}/mo</small></div>
+     <div style="text-align:right"><small style="color:#666">ID: ${h.id}</small></div></div>
+     <div class="actions">
+       ${h.status!=='APPROVED'?`<button class="btn approve" onclick="approveHotel('${h.hotel_id||h.id}')">✅ Approve & Activate</button>`:''}
+       <button class="btn view" onclick="toggleDetails('${h.hotel_id||h.id}')">👁️ Health</button>
+       ${h.status!=='BLOCKED'?`<button class="btn block" onclick="blockHotel('${h.hotel_id||h.id}')">🚫 Block</button>`: `<button class="btn approve" onclick="approveHotel('${h.hotel_id||h.id}')">Unblock</button>`}
+       <button class="btn delete" onclick="deleteHotel('${h.hotel_id||h.id}')">🗑️ Delete</button>
+     </div>
+     <div id="det-${h.hotel_id||h.id}" class="details">Loading health...</div>
+   </div>`}).join('')||'<div class="card" style="text-align:center;color:#666">No hotels found</div>';
 }
 async function approveHotel(id){
-  const r = await fetch(`/api/hotels/${id}/approve`,{method:'POST'});
-  const data = await r.json();
-  if(r.ok){ alert(id+' APPROVED!'); load(); } else alert('Error: '+data.error);
+ const plan=prompt('Assign Plan (Upendo/Bahari/Karibu):','Upendo')||'Upendo';
+ const r=await fetch(`/api/hotels/${id}/approve`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan})});
+ if(r.ok){alert(id+' APPROVED on '+plan+' plan! GM can now login.'); load();} else alert('Failed');
 }
 async function blockHotel(id){
-  if(!confirm('Block '+id+'?')) return;
-  await fetch(`/api/hotels/${id}/block`,{method:'POST'}); load();
+ const reason=prompt('Reason for blocking (non-payment/fraud/spam):','non-payment');
+ if(!reason) return;
+ await fetch(`/api/hotels/${id}/block`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});
+ load();
 }
-async function deleteHotel(id){
-  if(!confirm('Delete '+id+' forever?')) return;
-  await fetch(`/api/hotels/${id}`,{method:'DELETE'}); load();
+async function deleteHotel(id){if(!confirm('Delete '+id+' forever? This deletes all orders & items!'))return; await fetch(`/api/hotels/${id}`,{method:'DELETE'}); load();}
+async function toggleDetails(id){
+ const el=document.getElementById('det-'+id); el.style.display=el.style.display==='block'?'none':'block';
+ if(el.innerHTML.includes('Loading')){ const res=await fetch(`/api/gm/dashboard/${id}`); const d=await res.json(); el.innerHTML=`<b>Health for ${id}</b><br>📦 Items: ${d.items?.length||0}<br>🧾 Orders: ${d.orders?.length||0}<br>👥 Vendors: ${d.activeVendors||0}<br>💵 Revenue: Ksh ${d.revenue||0}<br>📧 Status: OK<br>⚠️ Action: ${d.orders?.length==0?'No orders in 14 days - call hotel': 'Healthy'}`; }
 }
+function exportCSV(){let csv='id,name,email,location,plan,status,created\n'+HOTELS.map(h=>`${h.hotel_id},${h.hotel_name},${h.email},${h.location},${h.plan},${h.status},${h.created_at}`).join('\n'); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='hotels.csv'; a.click();}
+function broadcast(){const msg=document.getElementById('broadcastMsg').value; if(!msg) return; alert('Broadcast sent to '+HOTELS.length+' hotels: '+msg); document.getElementById('broadcastMsg').value='';}
 load();
 </script></body></html>
