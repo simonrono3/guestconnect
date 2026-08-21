@@ -1,120 +1,54 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - GuestHub8.5</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-black text-white min-h-screen">
-<div class="max-w-6xl mx-auto p-4">
-  <h1 class="text-3xl text-yellow-500 font-bold text-center mb-6">🏨 GuestHub8.5 - SUPER ADMIN</h1>
-  
-  <!-- STATS DASHBOARD - Responsibility 1 -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-    <div class="bg-zinc-900 p-4 rounded border border-yellow-600/30"><p class="text-gray-400 text-sm">Total Hotels</p><h2 id="totalHotels" class="text-2xl font-bold">0</h2></div>
-    <div class="bg-zinc-900 p-4 rounded border border-yellow-600/30"><p class="text-gray-400 text-sm">Pending</p><h2 id="pendingHotels" class="text-2xl font-bold text-yellow-500">0</h2></div>
-    <div class="bg-zinc-900 p-4 rounded border border-yellow-600/30"><p class="text-gray-400 text-sm">Total Bookings</p><h2 id="totalBookings" class="text-2xl font-bold text-green-400">0</h2></div>
-    <div class="bg-zinc-900 p-4 rounded border border-yellow-600/30"><p class="text-gray-400 text-sm">Revenue</p><h2 id="totalRevenue" class="text-2xl font-bold text-green-400">Ksh 0</h2></div>
-  </div>
-
-  <!-- TABS -->
-  <div class="flex gap-2 mb-4 overflow-x-auto">
-    <button onclick="switchTab('hotels')" id="tab-hotels" class="bg-yellow-600 px-4 py-2 rounded whitespace-nowrap">🏨 Hotels</button>
-    <button onclick="switchTab('bookings')" id="tab-bookings" class="bg-zinc-800 px-4 py-2 rounded whitespace-nowrap">📅 Bookings</button>
-  </div>
-
-  <!-- HOTELS LIST -->
-  <div id="hotelsSection">
-    <div class="flex gap-2 mb-4">
-      <button onclick="loadHotels('PENDING')" class="bg-yellow-600/20 border border-yellow-600 px-3 py-1 rounded text-sm">Pending</button>
-      <button onclick="loadHotels('APPROVED')" class="bg-green-600/20 border border-green-600 px-3 py-1 rounded text-sm">Approved</button>
-      <button onclick="loadHotels()" class="bg-zinc-800 px-3 py-1 rounded text-sm">All</button>
-    </div>
-    <div id="hotelsList" class="space-y-3">Loading...</div>
-  </div>
-
-  <!-- BOOKINGS LIST - Responsibility 3 -->
-  <div id="bookingsSection" class="hidden">
-    <div id="bookingsList" class="space-y-3">Loading bookings...</div>
-  </div>
-
-  <p id="msg" class="text-center mt-4 text-green-400 font-bold"></p>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>GuestHub Admin</title>
+<style>
+body{background:#111;color:#fff;font-family:sans-serif;padding:15px}
+.card{background:#1e1e1e;padding:15px;margin:12px 0;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.badge{padding:3px 8px;border-radius:6px;font-size:12px;font-weight:bold}
+.pending{background:#3a2a00;color:#ffb700}
+.approved{background:#0a3a1a;color:#00ff88}
+.btn{padding:8px 14px;border:none;border-radius:8px;margin:3px;cursor:pointer;font-weight:bold}
+.approve{background:#22c55e;color:#000} .block{background:#b91c1c;color:#fff} .del{background:#7f1d1d;color:#fff}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat{background:#1e1e1e;padding:15px;border-radius:12px}
+</style></head><body>
+<h1 style="color:#fbbf24">🏨 GuestHub8.5 - SUPER ADMIN</h1>
+<div class="stats">
+<div class="stat">Total Hotels<br><b id="total" style="font-size:28px">0</b></div>
+<div class="stat">Pending<br><b id="pending" style="font-size:28px;color:#fbbf24">0</b></div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="list">Loading hotels...</div>
 <script>
-const SUPABASE_URL = 'https://xijoilglijvwozklatxa.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_qAINvRS-w-MlxngWsSHa9Q_QBbF1mkp'
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-function switchTab(tab){
-  document.getElementById('hotelsSection').classList.toggle('hidden', tab!=='hotels')
-  document.getElementById('bookingsSection').classList.toggle('hidden', tab!=='bookings')
-  document.getElementById('tab-hotels').className = tab==='hotels' ? 'bg-yellow-600 px-4 py-2 rounded' : 'bg-zinc-800 px-4 py-2 rounded'
-  document.getElementById('tab-bookings').className = tab==='bookings' ? 'bg-yellow-600 px-4 py-2 rounded' : 'bg-zinc-800 px-4 py-2 rounded'
-  if(tab==='bookings') loadBookings()
-}
-
-async function loadStats(){
-  const { count: total } = await supabaseClient.from('hotels').select('*', {count:'exact', head:true})
-  const { count: pending } = await supabaseClient.from('hotels').select('*', {count:'exact', head:true}).eq('status','PENDING')
-  const { count: bookings, data: revData } = await supabaseClient.from('bookings').select('total_price', {count:'exact'})
-  let revenue = 0; if(revData) revData.forEach(b=> revenue+= (b.total_price||0))
-  
-  document.getElementById('totalHotels').innerText = total||0
-  document.getElementById('pendingHotels').innerText = pending||0
-  document.getElementById('totalBookings').innerText = bookings||0
-  document.getElementById('totalRevenue').innerText = 'Ksh '+revenue.toLocaleString()
-}
-
-async function loadHotels(status){
-  const list = document.getElementById('hotelsList'); list.innerHTML='Loading...'
-  let q = supabaseClient.from('hotels').select('*').order('created_at',{ascending:false})
-  if(status) q = q.eq('status', status)
-  const { data } = await q
-  if(!data || !data.length){ list.innerHTML='<p class="text-center text-gray-500">No hotels</p>'; return; }
-  list.innerHTML = data.map(h=>`
-    <div class="bg-zinc-900 p-4 rounded border border-zinc-800">
-      <div class="flex justify-between">
-        <div>
-          <h3 class="font-bold text-yellow-500">${h.hotel_name} <span class="text-xs px-2 py-1 rounded ${h.status==='APPROVED'?'bg-green-900 text-green-300': h.status==='PENDING'?'bg-yellow-900 text-yellow-300':'bg-red-900 text-red-300'}">${h.status}</span></h3>
-          <p class="text-sm text-gray-400">${h.location} | ${h.hotel_type} | ${h.email}</p>
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button onclick="updateStatus(${h.id},'APPROVED')" class="bg-green-600 px-3 py-1 rounded text-xs h-fit">Approve</button>
-          <button onclick="updateStatus(${h.id},'BLOCKED')" class="bg-orange-600 px-3 py-1 rounded text-xs h-fit">Block</button>
-          <button onclick="deleteHotel(${h.id})" class="bg-red-600 px-3 py-1 rounded text-xs h-fit">Delete</button>
-        </div>
+async function load(){
+  const res = await fetch('/api/hotels');
+  const hotels = await res.json();
+  document.getElementById('total').innerText = hotels.length;
+  document.getElementById('pending').innerText = hotels.filter(h=>h.status!=='APPROVED').length;
+  document.getElementById('list').innerHTML = hotels.map(h=>`
+    <div class="card">
+      <div>
+        <b style="color:#fbbf24;font-size:18px">${h.hotel_name||h.name}</b> <span class="badge ${h.status==='APPROVED'?'approved':'pending'}">${h.status}</span><br>
+        <small>${h.location||''} | ${h.hotel_type||''} | ${h.email}</small>
+      </div>
+      <div>
+        ${h.status!=='APPROVED'? `<button class="btn approve" onclick="approveHotel('${h.hotel_id||h.id}')">Approve</button>`:''}
+        <button class="btn block" onclick="blockHotel('${h.hotel_id||h.id}')">Block</button>
+        <button class="btn del" onclick="deleteHotel('${h.hotel_id||h.id}')">Delete</button>
       </div>
     </div>
-  `).join('')
+  `).join('');
 }
-
-async function loadBookings(){
-  const list = document.getElementById('bookingsList'); list.innerHTML='Loading...'
-  const { data } = await supabaseClient.from('bookings').select('*, hotels(hotel_name)').order('created_at',{ascending:false}).limit(50)
-  if(!data || !data.length){ list.innerHTML='<p class="text-center text-gray-500">No bookings yet</p>'; return; }
-  list.innerHTML = data.map(b=>`
-    <div class="bg-zinc-900 p-3 rounded border border-zinc-800 text-sm">
-      <p><b>${b.guest_name}</b> - ${b.hotels?.hotel_name || 'Unknown Hotel'}</p>
-      <p class="text-gray-400">${b.check_in} to ${b.check_out} | Ksh ${b.total_price} | ${b.status}</p>
-    </div>
-  `).join('')
+async function approveHotel(id){
+  const r = await fetch(`/api/hotels/${id}/approve`,{method:'POST'});
+  const data = await r.json();
+  if(r.ok){ alert(id+' APPROVED!'); load(); } else alert('Error: '+data.error);
 }
-
-async function updateStatus(id, s){
-  await supabaseClient.from('hotels').update({status:s}).eq('id',id)
-  showMsg(`Hotel ${s}!`); loadHotels('PENDING'); loadStats()
+async function blockHotel(id){
+  if(!confirm('Block '+id+'?')) return;
+  await fetch(`/api/hotels/${id}/block`,{method:'POST'}); load();
 }
 async function deleteHotel(id){
-  if(!confirm('Delete this hotel permanently?')) return
-  await supabaseClient.from('hotels').delete().eq('id',id)
-  showMsg('Deleted!'); loadHotels(); loadStats()
+  if(!confirm('Delete '+id+' forever?')) return;
+  await fetch(`/api/hotels/${id}`,{method:'DELETE'}); load();
 }
-function showMsg(t){ document.getElementById('msg').innerText=t; setTimeout(()=>document.getElementById('msg').innerText='',2000) }
-
-loadStats(); loadHotels('PENDING')
-</script>
-</body>
-</html>
+load();
+</script></body></html>
