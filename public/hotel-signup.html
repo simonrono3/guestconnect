@@ -14,6 +14,7 @@ input, select{width:100%; padding:14px; margin:10px 0; background:#333; border:1
 input:focus, select:focus{border-color:#B8860B; outline:none;}
 button{width:100%; padding:14px; background:#00FF7F; color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:15px; font-size:16px;}
 button:hover{background:#00C851;}
+button:disabled{background:#555; cursor:not-allowed;}
 .success{color:#00FF7F; text-align:center; margin-top:15px; font-weight:bold;}
 .error{color:#FF4444; text-align:center; margin-top:15px; font-weight:bold;}
 </style>
@@ -43,43 +44,51 @@ button:hover{background:#00C851;}
     <input type="email" id="email" placeholder="Manager Email" required>
     <input type="tel" id="phone" placeholder="Phone Number e.g 07xx xxx xxx" required>
     <input type="password" id="password" placeholder="Create Password" minlength="6" required>
-    <button type="submit">Submit Application</button>
+    <button type="submit" id="btn">Submit Application</button>
   </form>
   <p class="success" id="msg"></p>
   <p class="error" id="err"></p>
   <p style="text-align:center; margin-top:15px;"><a href="/" style="color:#B8860B;">← Back to Home</a></p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://xijoilglijvwozklatxa.supabase.co' // WEKA YAKO
-const SUPABASE_KEY = 'sb_publishable_qAINvRS-w-MlxngWsSHa9Q_QBbF1mkp' // WEKA YAKO
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-
-  
-
 async function signup(e){
   e.preventDefault();
-  document.getElementById('msg').innerText = '';
-  document.getElementById('err').innerText = '';
+  const msgEl = document.getElementById('msg');
+  const errEl = document.getElementById('err');
+  const btn = document.getElementById('btn');
+  msgEl.innerText = '';
+  errEl.innerText = '';
+  btn.innerText = 'Sending...';
+  btn.disabled = true;
 
-  const { data, error } = await supabaseClient.from('hotels').insert([{
-    hotel_name: document.getElementById('hotel_name').value,
+  const payload = {
+    hotel_name: document.getElementById('hotel_name').value.trim(),
     location: document.getElementById('location').value,
     hotel_type: document.getElementById('hotel_type').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value.trim().toLowerCase(),
+    phone: document.getElementById('phone').value.trim(),
     password: document.getElementById('password').value,
-    status: 'PENDING'
-  }]).select();
-  
-  if(error){ 
-    console.log(error)
-    document.getElementById('err').innerText = 'Error: ' + error.message 
-  } else {
-    document.getElementById('msg').innerText = 'Application sent! We will email you after approval ✅';
+    hotel_id: document.getElementById('hotel_name').value.trim().toLowerCase().replace(/[^a-z0-9]/g,'')
+  };
+
+  try {
+    const res = await fetch('/api/hotels/signup', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Signup failed');
+
+    msgEl.innerText = 'Application sent! We will email you after approval ✅';
     e.target.reset();
+  } catch(error){
+    console.error(error);
+    errEl.innerText = 'Error: ' + error.message;
+  } finally {
+    btn.innerText = 'Submit Application';
+    btn.disabled = false;
   }
 }
 </script>
