@@ -7,14 +7,27 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import axios from 'axios';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname)); // FIX 1: Badilisha kutoka 'public' kuja root
+app.use(express.static(path.join(__dirname, 'public'))); // Bado itasoma public kama ipo
+
 const supa = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// FIX 2: ADD ROUTES ZA HTML
+app.get('/', (req,res)=> res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/signup.html', (req,res)=> res.sendFile(path.join(__dirname, 'signup.html')));
+app.get('/admin.html', (req,res)=> res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/login.html', (req,res)=> res.sendFile(path.join(__dirname, 'login.html')));
 
 // 1. GM: ADD ITEMS
 app.post('/api/gm/add-item', async (req,res)=>{
@@ -35,7 +48,7 @@ app.post('/api/guest/order', async (req,res)=>{
   res.json({ok:true, order_id: order.id});
 });
 
-// 3. GUEST: BOOK VENDOR - SERVICE/TOUR/TAXI
+// 3. GUEST: BOOK VENDOR
 app.post('/api/guest/book-vendor', async (req,res)=>{
   const {hotel_id, vendor_id, service, price, room, guest} = req.body;
   const commission = price * 0.15;
@@ -46,7 +59,7 @@ app.post('/api/guest/book-vendor', async (req,res)=>{
   res.json({ok:true});
 });
 
-// 4. AI CONCIERGE - MULTI LANGUAGE
+// 4. AI CONCIERGE
 app.post('/api/guest/ai-chat', async (req,res)=>{
   const {message, hotel_id, room, lang='en'} = req.body;
   let reply = "Karibu! How can I help you today?";
@@ -128,7 +141,7 @@ app.get('/api/admin/stats', async (req,res)=>{
   res.json({mrr, commission, total:mrr+commission, hotels:hotels.data.length});
 });
 
-// 12. GET ALL DATA FOR HOMEPAGE + GUEST
+// 12. GET ALL DATA
 app.get('/api/data', async (req,res)=>{
   const [hotels,vendors,items,reviews] = await Promise.all([
     supa.from('hotels').select('*'), supa.from('vendors').select('*'),
@@ -143,4 +156,4 @@ app.post('/api/admin/approve/:type/:id', async (req,res)=>{
   res.json({ok:true});
 });
 
-app.listen(process.env.PORT||3000, ()=>console.log('GUESTHUB V8.5 LIVE ON PORT', process.env.PORT||3000));
+app.listen(process.env.PORT||10000, ()=>console.log('GUESTHUB V8.5 LIVE ON PORT', process.env.PORT||10000));
