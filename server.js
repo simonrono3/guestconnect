@@ -112,4 +112,17 @@ app.post('/api/gm/add-item', async (req,res)=>{
   res.json({ok:true});
 });
 
+
+app.get('/api/admin/bookings/count', async (req,res)=>{
+  const {count} = await supa.from('orders').select('*',{count:'exact', head:true});
+  res.json({count});
+});
+app.post('/api/hotels/:id/approve', async (req,res)=>{
+  const id=req.params.id.toLowerCase(); const {plan}=req.body;
+  await supa.from('hotels').update({status:'APPROVED', plan: plan||'Upendo', price: plan==='Bahari'?12000: plan==='Karibu'?25000:6500}).or(`id.eq.${id},hotel_id.eq.${id}`);
+  res.json({ok:true});
+});
+
+
+
 app.listen(process.env.PORT||10000, ()=>console.log('LIVE 8.5 - APPROVE FIXED'));
