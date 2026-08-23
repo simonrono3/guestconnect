@@ -16,7 +16,7 @@
 .details{background:#0f0f0f;border-radius:12px;padding:10px;margin-top:10px;display:none;font-size:13px;line-height:1.6}
 input,select{background:#000;border:1px solid #333;color:#fff;padding:10px;border-radius:8px;width:100%;margin:5px 0}
 </style></head><body>
-<div class="header"><h2 style="margin:0;color:#fbbf24">🏨 GuestHub 9.0 - SMART ADMIN</h2><button onclick="load()" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:8px">🔄 Refresh</button></div>
+<div class="header"><h2 style="margin:0;color:#fbbf24">🏨 GuestHub 9.0 - SMART ADMIN</h2><div style="display:flex;gap:8px"><button onclick="load()" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:8px">🔄 Refresh</button><button onclick="logout()" style="background:#ff4444;color:#fff;border:none;padding:8px 12px;border-radius:8px">Logout</button></div></div>
 
 <div class="statgrid">
 <div class="stat"><small>Total Hotels</small><b id="tHotels">0</b><small id="tHotelsSub" style="color:#22c55e">+0 this week</small></div>
@@ -58,9 +58,18 @@ input,select{background:#000;border:1px solid #333;color:#fff;padding:10px;borde
 </div>
 
 <script>
+// ===== TOKEN SECURITY - ADDED =====
+const ADMIN_TOKEN = localStorage.getItem('admin_token');
+if(!ADMIN_TOKEN){ location.href='/admin-login.html'; }
+function authHeader(){ return {'Content-Type':'application/json','x-admin-token': ADMIN_TOKEN}; }
+function logout(){ localStorage.removeItem('admin_token'); location.href='/admin-login.html'; }
+
 let HOTELS=[], FILTER='ALL', TAB='hotels';
 async function load(){
- const res=await fetch('/api/hotels'); HOTELS=await res.json();
+ try{
+ const res=await fetch('/api/hotels',{headers:{'x-admin-token':ADMIN_TOKEN}});
+ if(res.status===401){ logout(); return; }
+ HOTELS=await res.json();
  document.getElementById('tHotels').innerText=HOTELS.length;
  document.getElementById('tPending').innerText=HOTELS.filter(h=>h.status!=='APPROVED'&&h.status!=='BLOCKED').length;
  document.getElementById('tApproved').innerText=HOTELS.filter(h=>h.status==='APPROVED').length;
@@ -68,9 +77,9 @@ async function load(){
  const paying=HOTELS.filter(h=>h.status==='APPROVED').length;
  document.getElementById('tRev').innerText='Ksh '+(paying*6500).toLocaleString();
  document.getElementById('tRevSub').innerText=paying+' paying hotels';
- // bookings
- try{const r=await fetch('/api/admin/bookings/count'); const d=await r.json(); document.getElementById('tBook').innerText=d.count||0;}catch{}
+ try{const r=await fetch('/api/admin/bookings/count',{headers:{'x-admin-token':ADMIN_TOKEN}}); const d=await r.json(); document.getElementById('tBook').innerText=d.count||0;}catch{}
  render();
+ }catch(e){ document.getElementById('list').innerHTML='<div class="card" style="color:#ff4444">Session expired. <a href="/admin-login.html" style="color:#fbbf24">Login again</a></div>'; }
 }
 function switchTab(t){TAB=t; document.getElementById('hotelsView').style.display=t==='hotels'?'block':'none'; document.getElementById('revenueView').style.display=t==='revenue'?'block':'none'; document.getElementById('opsView').style.display=t==='ops'?'block':'none'; document.querySelectorAll('.tab').forEach(b=>b.className='tab idle'); document.getElementById('tabHotels').className=t==='hotels'?'tab active':'tab idle';}
 function setFilter(f,el){FILTER=f; document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); render();}
@@ -80,7 +89,7 @@ function render(){
  let list=HOTELS.filter(h=>{
    if(FILTER!=='ALL'&&h.status!==FILTER){ if(FILTER==='PENDING'&&h.status==='APPROVED')return false; if(FILTER!=='PENDING'&&h.status!==FILTER)return false; }
    if(plan&&h.plan!==plan&&h.hotel_type!==plan) return false;
-   if(q && !(`${h.hotel_name} ${h.email} ${h.location}`.toLowerCase().includes(q))) return false;
+   if(q &&!(`${h.hotel_name} ${h.email} ${h.location}`.toLowerCase().includes(q))) return false;
    return true;
  });
  document.getElementById('list').innerHTML=list.map(h=>{
@@ -100,16 +109,16 @@ function render(){
 }
 async function approveHotel(id){
  const plan=prompt('Assign Plan (Upendo/Bahari/Karibu):','Upendo')||'Upendo';
- const r=await fetch(`/api/hotels/${id}/approve`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan})});
- if(r.ok){alert(id+' APPROVED on '+plan+' plan! GM can now login.'); load();} else alert('Failed');
+ const r=await fetch(`/api/hotels/${id}/approve`,{method:'POST',headers:authHeader(),body:JSON.stringify({plan})});
+ if(r.ok){alert(id+' APPROVED on '+plan+' plan! GM can now login.'); load();} else{ if(r.status===401) logout(); else alert('Failed'); }
 }
 async function blockHotel(id){
  const reason=prompt('Reason for blocking (non-payment/fraud/spam):','non-payment');
  if(!reason) return;
- await fetch(`/api/hotels/${id}/block`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reason})});
+ await fetch(`/api/hotels/${id}/block`,{method:'POST',headers:authHeader(),body:JSON.stringify({reason})});
  load();
 }
-async function deleteHotel(id){if(!confirm('Delete '+id+' forever? This deletes all orders & items!'))return; await fetch(`/api/hotels/${id}`,{method:'DELETE'}); load();}
+async function deleteHotel(id){if(!confirm('Delete '+id+' forever? This deletes all orders & items!'))return; await fetch(`/api/hotels/${id}`,{method:'DELETE',headers:{'x-admin-token':ADMIN_TOKEN}}); load();}
 async function toggleDetails(id){
  const el=document.getElementById('det-'+id); el.style.display=el.style.display==='block'?'none':'block';
  if(el.innerHTML.includes('Loading')){ const res=await fetch(`/api/gm/dashboard/${id}`); const d=await res.json(); el.innerHTML=`<b>Health for ${id}</b><br>📦 Items: ${d.items?.length||0}<br>🧾 Orders: ${d.orders?.length||0}<br>👥 Vendors: ${d.activeVendors||0}<br>💵 Revenue: Ksh ${d.revenue||0}<br>📧 Status: OK<br>⚠️ Action: ${d.orders?.length==0?'No orders in 14 days - call hotel': 'Healthy'}`; }
