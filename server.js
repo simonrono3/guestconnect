@@ -14,13 +14,8 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ===== 1. PRODUCTION SECURITY HEADERS =====
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
-}));
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
-// ===== 2. CORS LOCKED =====
 const ALLOWED_ORIGINS = [
   'https://guestconnect-ap2q.onrender.com',
   'http://localhost:10000',
@@ -30,12 +25,12 @@ app.use(cors({
   origin: function(origin, cb){
     if(!origin) return cb(null, true);
     if(ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.onrender.com')) return cb(null, true);
-    return cb(null, true); // allow for now, but logs
+    return cb(null, true);
   },
   credentials: true
 }));
 
-app.use(express.json({limit: '20kb'})); // prevent large payload attacks
+app.use(express.json({limit: '20kb'}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 if(!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY){
@@ -43,7 +38,7 @@ if(!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY){
 }
 const supa = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// ===== 3. ADMIN SECURITY =====
+// ===== ADMIN SECURITY =====
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'GuestHub2026!Secure';
 console.log('🔐 Admin password set:', ADMIN_PASS ? 'YES' : 'NO');
 
@@ -55,25 +50,25 @@ function requireAdmin(req,res,next){
   next();
 }
 
-// ===== 4. RATE LIMITERS - STOP BRUTE FORCE =====
 const loginLimiter = rateLimit({
-  windowMs: 15*60*1000, // 15 min
-  max: 20, // 20 attempts per 15 min
+  windowMs: 15*60*1000,
+  max: 20,
   message: {ok:false, message:'Too many login attempts, try after 15 min'}
 });
 const signupLimiter = rateLimit({
-  windowMs: 60*60*1000, // 1 hour
+  windowMs: 60*60*1000,
   max: 10,
   message: {error:'Too many signups from this IP'}
 });
 
 app.get('/', (req,res)=> res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-// ===== 5. INPUT VALIDATION HELPER =====
 function clean(s){ return (s||'').toString().trim().toLowerCase(); }
 function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-// ===== SIGNUP - SECURED =====
+// SAFE SELECT - NO PASSWORDS EVER
+const SAFE_HOTEL_FIELDS = 'id,hotel_id,hotel_name,name,email,phone,location,hotel_type,plan,price,status,created_at';
+
 app.post('/api/hotels/signup', signupLimiter, async (req,res)=>{
   try{
     const { hotel_name, name, location, hotel_type, email, phone, password } = req.body;
@@ -85,7 +80,7 @@ app.post('/api/hotels/signup', signupLimiter, async (req,res)=>{
     const hotel_id = finalName.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,20);
     if(!hotel_id) return res.status(400).json({error:'Invalid hotel name'});
     
-    const hash = await bcrypt.hash(password, 12); // stronger hash
+    const hash = await bcrypt.hash(password, 12);
     const { error } = await supa.from('hotels').insert([{
       id: hotel_id, hotel_id, name: finalName, hotel_name: finalName,
       location: (location||'').slice(0,100),
@@ -106,7 +101,6 @@ app.post('/api/hotels/signup', signupLimiter, async (req,res)=>{
   }
 });
 
-// ===== LOGIN - SECURED WITH RATE LIMIT =====
 app.post('/api/hotel/login', loginLimiter, async (req,res)=>{
   try{
     const {hotelId, hotel_id, password} = req.body;
@@ -121,7 +115,6 @@ app.post('/api/hotel/login', loginLimiter, async (req,res)=>{
     if(!ok) return res.status(401).json({ok:false, message:'Wrong password'});
     if(hotel.status !== 'APPROVED') return res.status(403).json({ok:false, message:`Not approved yet. Status: ${hotel.status}`});
     
-    // Don't leak password hash
     const safeHotel = {...hotel}; delete safeHotel.password; delete safeHotel.password_hash;
     res.json({ok:true, hotel: safeHotel});
   }catch(e){ 
@@ -130,7 +123,6 @@ app.post('/api/hotel/login', loginLimiter, async (req,res)=>{
   }
 });
 
-// ===== ADMIN LOGIN - SECURED =====
 app.post('/api/admin/login', loginLimiter, (req,res)=>{
   const {password} = req.body;
   if(!password) return res.status(401).json({ok:false, message:'Password required'});
@@ -138,17 +130,17 @@ app.post('/api/admin/login', loginLimiter, (req,res)=>{
   res.status(401).json({ok:false, message:'Wrong admin password'});
 });
 
-// ===== ADMIN APIS - NOW PROTECTED =====
+// ===== ADMIN APIS - FIXED TO NOT LEAK PASSWORDS =====
 app.get('/api/hotels', requireAdmin, async (req,res)=>{
-  const {data} = await supa.from('hotels').select('*').order('created_at',{ascending:false});
+  const {data} = await supa.from('hotels').select(SAFE_HOTEL_FIELDS).order('created_at',{ascending:false});
   res.json(data||[]);
 });
 app.get('/api/admin/hotels', requireAdmin, async (req,res)=>{
-  const {data} = await supa.from('hotels').select('*').order('created_at',{ascending:false});
+  const {data} = await supa.from('hotels').select(SAFE_HOTEL_FIELDS).order('created_at',{ascending:false});
   res.json(data||[]);
 });
 app.get('/api/admin/stats', requireAdmin, async (req,res)=>{
-  const {data} = await supa.from('hotels').select('*');
+  const {data} = await supa.from('hotels').select(SAFE_HOTEL_FIELDS);
   res.json({hotels:data||[]});
 });
 app.get('/api/admin/bookings/count', requireAdmin, async (req,res)=>{
@@ -156,7 +148,6 @@ app.get('/api/admin/bookings/count', requireAdmin, async (req,res)=>{
   res.json({count: count||0});
 });
 
-// APPROVE - SINGLE CLEAN ENDPOINT
 app.post('/api/hotels/:id/approve', requireAdmin, async (req,res)=>{
   try{
     const id = clean(req.params.id);
@@ -168,7 +159,6 @@ app.post('/api/hotels/:id/approve', requireAdmin, async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// Keep old approve routes for backward compat but protected
 app.post('/api/admin/approve/:id', requireAdmin, async (req,res)=>{
   const id = clean(req.params.id);
   await supa.from('hotels').update({status:'APPROVED'}).or(`id.eq.${id},hotel_id.eq.${id}`);
@@ -181,14 +171,12 @@ app.post('/api/approve', requireAdmin, async (req,res)=>{
   res.json({ok:true});
 });
 
-// BLOCK
 app.post('/api/hotels/:id/block', requireAdmin, async (req,res)=>{
   const id = clean(req.params.id);
   await supa.from('hotels').update({status:'BLOCKED'}).or(`id.eq.${id},hotel_id.eq.${id}`);
   res.json({ok:true});
 });
 
-// DELETE
 app.delete('/api/hotels/:id', requireAdmin, async (req,res)=>{
   const id = clean(req.params.id);
   await supa.from('hotels').delete().or(`id.eq.${id},hotel_id.eq.${id}`);
@@ -200,7 +188,6 @@ app.post('/api/hotels/:id/delete', requireAdmin, async (req,res)=>{
   res.json({ok:true});
 });
 
-// GM ADD ITEM - PROTECTED BY HOTEL_ID CHECK
 app.post('/api/gm/add-item', async (req,res)=>{
   try{
     const {hotel_id, type, name, price} = req.body;
@@ -211,7 +198,6 @@ app.post('/api/gm/add-item', async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// GM DASHBOARD - ISOLATED
 app.get('/api/gm/dashboard/:hotel_id', async (req,res)=>{
   try{
     const hid=clean(req.params.hotel_id);
@@ -224,4 +210,7 @@ app.get('/api/gm/dashboard/:hotel_id', async (req,res)=>{
   }catch(e){ res.status(500).json({error:e.message}); }
 });
 
-// 404 handler
+// ===== KEEP YOUR OTHER ROUTES HERE (guest, orders, etc) =====
+
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, ()=> console.log(`✅ GuestHub 9.0 SECURED on ${PORT}`));
