@@ -1,75 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Signup - GuestHub8.5</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Join GuestHub - All Vendors Welcome</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <style>
-body{background:#111; color:#fff; font-family:Arial; padding:20px;}
-.container{max-width:500px; margin:auto; background:#1a1a1a; padding:25px; border-radius:12px; border:1px solid #00FF7F;}
-h1{text-align:center; color:#00FF7F;}
-label{display:block; margin-top:15px; font-weight:bold; color:#DAA520;}
-input, select, textarea{width:100%; padding:12px; margin-top:5px; background:#222; border:1px solid #333; border-radius:8px; color:#fff;}
-button{background:linear-gradient(90deg, #00C851, #00FF7F); color:#000; padding:15px; width:100%; border:none; border-radius:10px; font-weight:bold; font-size:16px; margin-top:20px; cursor:pointer;}
-.note{font-size:12px; color:#aaa; margin-top:10px;}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#141414;--border:#222}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:30px}
+.hero{background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;padding:26px 18px;border-radius:0 0 28px 28px}
+.hero h1{font-family:Space Grotesk;font-size:32px;margin:0;line-height:.95;font-weight:800}
+.cat{margin:16px 14px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px}
+.cat h3{margin:0 0 10px;font-family:Space Grotesk;font-size:15px;color:var(--lime);display:flex;justify-content:space-between}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{border:1px solid #2a2a2a;background:#0a0a0a;border-radius:14px;padding:12px;cursor:pointer;transition:.15s;position:relative}
+.opt.on{border-color:var(--lime);background:rgba(198,255,0,.12);transform:scale(.98)}
+.opt b{font-size:13px;display:block}.opt small{font-size:10px;color:#888;display:block;margin-top:2px}
+.opt.check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:1px solid #444;display:grid;place-items:center;font-size:10px}
+.opt.on.check{background:var(--lime);color:#000;border-color:var(--lime)}
+.form{padding:14px}
+label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:14px;display:block}
+input,select,textarea{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px}
+.upload{border:1.5px dashed #333;border-radius:14px;padding:14px;text-align:center;background:#0a0a0a;margin-top:6px;position:relative}
+.upload input{position:absolute;inset:0;opacity:0}
+.btn{width:100%;background:var(--lime);color:#000;padding:16px;border:none;border-radius:14px;font-weight:900;font-size:16px;margin-top:16px}
+.prog{height:6px;background:#1a1a1a;border-radius:999px;overflow:hidden;margin:10px 14px}.prog i{display:block;height:100%;background:var(--lime);width:0;transition:.4s}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🚚 Vendor Join GuestHub8.5</h1>
-  <p style="text-align:center; color:#aaa;">Connect with Hotels. Get More Customers.</p>
+<div class="hero">
+<h1>EARN WITH GUESTHUB</h1>
+<p style="font-weight:800;margin:8px 0 0;font-size:13px;opacity:.8">For ALL hospitality vendors • Hotels bring clients to YOU</p>
+<div style="margin-top:10px;background:#000;color:#fff;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900">✅ 120+ Vendors • Ksh 80k/mo avg • M-Pesa Instant</div>
+</div>
+<div class="prog"><i id="pbar"></i></div>
 
-  <form id="vendorForm">
-    <label>Business Name</label>
-    <input type="text" id="bizName" required placeholder="e.g Safari Cabs Ltd">
+<div class="form">
+<form id="f">
 
-    <label>Owner Name</label>
-    <input type="text" id="ownerName" required placeholder="Your Name">
-
-    <label>WhatsApp Number</label>
-    <input type="tel" id="phone" required placeholder="+2547XXXXXXXX">
-
-    <label>Service Category</label>
-    <select id="category" required>
-      <option value="">-- Select Service --</option>
-      <option value="transport">🚕 Transport - Taxi, Boda, Airport Pickup</option>
-      <option value="spa">🧖 Spa & Wellness - Massage, Barber, In-room</option>
-      <option value="tours">🌍 Tours & Safari - Day trips, Game drives</option>
-      <option value="laundry">🧺 Laundry & Dry Cleaning - Hotel pickup</option>
-      <option value="events">🎭 Events - DJ, Decor, Photographer</option>
-      <option value="gifts">🎁 Gifts - Flowers, Cake, Souvenirs</option>
-      <option value="maintenance">🔧 Maintenance - Electrician, Plumber, AC</option>
-    </select>
-
-    <label>Hotels You Can Serve</label>
-    <input type="text" id="hotels" placeholder="e.g PrideInn, Sarova, All CBD Hotels">
-
-    <label>Service Description</label>
-    <textarea id="desc" rows="3" placeholder="Briefly describe your service and rates"></textarea>
-
-    <button type="submit">Submit Application</button>
-  </form>
-  <p class="note">✅ 0% Commission for first 90 days. We will WhatsApp you in 24hrs.</p>
+<!-- BASIC -->
+<div class="cat"><h3>👤 Basic Info</h3>
+<label>Full Name</label><input id="full_name" required placeholder="Kevin Kipchumba">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label>Phone (M-Pesa)</label><input id="phone" required placeholder="0722..."></div><div><label>ID No</label><input id="id_number" required></div></div>
+<label>Email + Password (login)</label><div style="display:grid;grid-template-columns:1.2fr.8fr;gap:8px"><input id="email" type="email" placeholder="email@gmail.com" required><input id="password" type="password" placeholder="Pass 6+" required></div>
+<label>Base City</label><select id="city"><option>Eldoret</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Naivasha</option><option>Diani</option><option>Maasai Mara Region</option></select>
 </div>
 
-<script>
-document.getElementById('vendorForm').onsubmit = function(e){
-  e.preventDefault();
-  alert("Application Received! 🎉 \nWe will contact you on WhatsApp soon.");
-  // Hapa baadaye tunaweka ku-save kwa database
-  window.location.href = '/';
-}
-</script>
+<!-- CATEGORY 1: TRANSPORT -->
+<div class="cat"><h3>🚕 1. TRANSPORT & TAXI</h3><div class="grid" id="g1"></div></div>
+<!-- CATEGORY 2: TOURS & SAFARI -->
+<div class="cat"><h3>🌍 2. TOURS, SAFARI & ADVENTURE</h3><div class="grid" id="g2"></div></div>
+<!-- CATEGORY 3: STAY & WELLNESS -->
+<div class="cat"><h3>🧖 3. WELLNESS & HOTEL SERVICES</h3><div class="grid" id="g3"></div></div>
+<!-- CATEGORY 4: MEDIA & LIFESTYLE -->
+<div class="cat"><h3>📸 4. MEDIA, LIFESTYLE & CONCIERGE</h3><div class="grid" id="g4"></div></div>
+
+<!-- DYNAMIC FIELDS -->
+<div class="cat" id="dynBox"><h3>⚙️ Service Details <span style="color:#888" id="selCount">0 selected</span></h3>
+<label>Vehicle / Equipment (if applicable)</label><select id="vehicle"><option>Select</option><option>Sedan - Premio/Axio</option><option>SUV - Prado/TX/Landcruiser</option><option>Van - Alphard/Hiace 7-14 seater</option><option>Safari Landcruiser Open Roof</option><option>Boda / TukTuk</option><option>No Vehicle - I go on foot</option><option>Massage Bed + Oils</option><option>Camera Kit + Drone</option></select>
+<label>Number Plate / Business License No</label><input id="plate" placeholder="KDA 123A or License">
+<label>Your Price (Base price guests see)</label><input id="price" type="number" value="2500" placeholder="e.g. 2500">
+<label>Bio (Why hotels pick you?)</label><textarea id="bio" maxlength="120" placeholder="e.g. 5yrs JKIA expert, fluent English, baby seat, Maasai Mara guide certified"></textarea>
+</div>
+
+<!-- KYC -->
+<div class="cat"><h3>🪪 KYC - Trust Badge (Hotels require)</h3>
+<label>ID Front Photo</label><div class="upload"><input type="file" id="id_photo" accept="image/*"><b style="color:var(--lime)">📸 Upload ID</b><small style="color:#666;display:block">Clear photo</small></div>
+<label>Selfie Holding ID</label><div class="upload"><input type="file" id="selfie"><b>🤳 Selfie + ID</b></div>
+<label>Vehicle / Kit / Certificate Photo</label><div class="upload"><input type="file" id="car_photo" accept="image/*"><b>🚗📷 Upload Proof</b><small style="color:#666;display:block">Car front + interior OR Tour vehicle OR Massage cert OR Drone license</small></div>
+</div>
+
+<!-- PAYOUT -->
+<div class="cat"><h3>💸 M-Pesa Payout</h3>
+<label>M-Pesa Number</label><input id="mpesa" required placeholder="0722...">
+<label>M-Pesa Name</label><input id="mpesa_name" placeholder="As per ID">
+<label style="text-transform:none;color:#ccc;font-size:12px;margin-top:10px"><input type="checkbox" required> I agree to be on time (<15min), be polite, no extra charges. Fake docs = lifetime ban.</label>
+<button class="btn" type="submit" id="btn">🚀 Submit - Get Approved in 1 Hour</button>
+</div>
+
+</form>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script> <!-- Weka hii kwanza -->
+<script src="config.js"></script>
 <script>
-    // Code yako yote ya supabase inaenda hapa chini
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+const S={
+ g1:[
+  {id:'airport_taxi',t:'Airport Taxi',d:'JKIA/Wilson/Eldoret Airport'},
+  {id:'sgr_taxi',t:'SGR Transfer',d:'Nairobi SGR'},
+  {id:'town_taxi',t:'Town Taxi',d:'Uber style in town'},
+  {id:'car_hire',t:'Car Hire + Driver',d:'Daily hire Ksh 5-15k'},
+  {id:'luxury_transfer',t:'Luxury Transfer',d:'Prado/V8 for VIP'},
+  {id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'},
+ ],
+ g2:[
+  {id:'nairobi_tour',t:'Nairobi City Tour',d:'Museum, Bomas, Giraffe'},
+  {id:'park_day',t:'National Park Day Trip',d:'Nairobi Park / Hellsgate'},
+  {id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days package'},
+  {id:'amboseli_safari',t:'Amboseli / Tsavo',d:'Elephants + Kilimanjaro'},
+  {id:'hike_guide',t:'Hiking Guide',d:'Mt Kenya, Longonot, Karura'},
+  {id:'beach_safari',t:'Beach & Diani Tour',d:'Snorkeling, Wasini'},
+ ],
+ g3:[
+  {id:'massage',t:'In-Room Massage',d:'Swedish, Deep Tissue'},
+  {id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},
+  {id:'laundry',t:'Express Laundry',d:'2hr return'},
+  {id:'gym_trainer',t:'Gym / Yoga Trainer',d:'In-room or gym'},
+  {id:'babysitter',t:'Babysitter / Nanny',d:'Hotel certified'},
+  {id:'chef',t:'Private Chef',d:'In-room dining'},
+ ],
+ g4:[
+  {id:'photography',t:'Photography',d:'Portrait, events'},
+  {id:'drone',t:'Drone + Videography',d:'Hotel + Safari shots'},
+  {id:'shopping',t:'Personal Shopper',d:'Maasai market, gifts'},
+  {id:'translator',t:'Translator / Guide',d:'French, German, Chinese'},
+  {id:'event_decor',t:'Event Decor / Cake',d:'Birthdays in hotel'},
+  {id:'concierge',t:'Concierge / Errands',d:'Anything guest needs'},
+ ]
+};
+let sel=[];
+function render(){
+ Object.keys(S).forEach(g=>{
+  const box=document.getElementById(g); box.innerHTML='';
+  S[g].forEach(o=>{
+   const div=document.createElement('div'); div.className='opt'; div.id='opt-'+o.id;
+   div.innerHTML=`<div class=check>✓</div><b>${o.t}</b><small>${o.d}</small>`;
+   div.onclick=()=>toggle(o.id,div); box.appendChild(div);
+  });
+ });
+}
+function toggle(id,div){
+ if(sel.includes(id)){ sel=sel.filter(s=>s!==id); div.classList.remove('on'); }
+ else { sel.push(id); div.classList.add('on'); }
+ document.getElementById('selCount').innerText=sel.length+' selected';
+ document.getElementById('pbar').style.width=Math.min(20+sel.length*12+ (document.getElementById('full_name').value?20:0),100)+'%';
+}
+render();
+const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+document.getElementById('f').addEventListener('submit', async e=>{
+ e.preventDefault();
+ if(sel.length==0) return alert('Select at least 1 service mkuu!');
+ const btn=document.getElementById('btn'); btn.innerText='⏳ Submitting...'; btn.disabled=true;
+ const payload={
+  full_name:full_name.value, phone:phone.value, id_number:id_number.value,
+  email:email.value, password:password.value, city:city.value,
+  services:sel, vehicle:vehicle.value, plate:plate.value,
+  price:parseInt(price.value||0), bio:bio.value, mpesa:mpesa.value, mpesa_name:mpesa_name.value,
+  status:'pending', rating:5.0, created_at:new Date().toISOString()
+ };
+ try{
+  const {error}=await supa.from('vendors').insert([payload]);
+  if(error) throw error;
+  alert('✅ Karibu GuestHub!\n\nYou selected: '+sel.join(', ')+'\n\nWe verify ID in 30min, you get SMS.\nLogin: /vendor-dashboard.html');
+  location.href='/vendor-login.html';
+ }catch(err){ alert('Error: '+err.message); btn.disabled=false; btn.innerText='🚀 Submit'; }
+});
 </script>
-
-  
-
-
 </body>
 </html>
