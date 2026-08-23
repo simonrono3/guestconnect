@@ -1,245 +1,171 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>GuestHub 9.0 SMART ADMIN</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin 10.1 - Unified Empire</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
-*{box-sizing:border-box}body{background:#080808;color:#fff;font-family:Inter,sans-serif;margin:0;padding:0}
-.header{background:linear-gradient(90deg,#1a1200,#2a1f00);padding:18px 15px;border-bottom:2px solid #fbbf24;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
-.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
-.stat{background:#141414;border:1px solid #222;padding:16px;border-radius:14px}
-.stat b{font-size:26px;display:block;margin-top:5px}.stat small{color:#888}
-.tabs{display:flex;gap:8px;padding:12px;overflow:auto;position:sticky;top:70px;background:#080808;z-index:15}
-.tab{padding:10px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer;white-space:nowrap}
-.tab.active{background:#fbbf24;color:#000}.tab.idle{background:#222;color:#fff}
-.filters{display:flex;gap:8px;padding:0 12px 12px}.fbtn{padding:8px 16px;border-radius:20px;border:1px solid #333;background:#111;color:#fff;cursor:pointer}.fbtn.active{background:#22c55e;color:#000;border-color:#22c55e}
-.card{background:#141414;border:1px solid #222;border-radius:16px;padding:14px;margin:10px 12px}
-.toprow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:800}.PENDING{background:#3a1f00;color:#ff9f1c;border:1px solid #ff9f1c}.APPROVED{background:#0a2a14;color:#22c55e;border:1px solid #22c55e}.BLOCKED{background:#3a0a0a;color:#ff4444}
-.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.btn{padding:9px 14px;border:none;border-radius:9px;font-weight:700;cursor:pointer;font-size:13px}.approve{background:#22c55e;color:#000}.block{background:#b91c1c;color:#fff}.delete{background:#111;color:#ff4444;border:1px solid #3a0a0a}.view{background:#222;color:#fbbf24}
-.details{background:#0f0f0f;border-radius:12px;padding:10px;margin-top:10px;display:none;font-size:13px;line-height:1.6}
-input,select,textarea{background:#000;border:1px solid #333;color:#fff;padding:11px;border-radius:10px;width:100%;margin:5px 0}
-.btn-gold{background:#fbbf24;color:#000;padding:11px 18px;border-radius:10px;font-weight:900;border:none;cursor:pointer}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.dept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.dept-card{background:#0f0f0f;border:1px solid #222;border-radius:12px;padding:10px}
-</style></head><body>
-<div class="header"><h2 style="margin:0;color:#fbbf24">🏨 GuestHub 9.0 - SMART ADMIN</h2><div style="display:flex;gap:8px"><button onclick="load()" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:8px">🔄</button><button onclick="location.href='/qr-codes.html'" style="background:#fbbf24;color:#000;border:none;padding:8px 12px;border-radius:8px;font-weight:800">📲 QR</button><button onclick="logout()" style="background:#ff4444;color:#fff;border:none;padding:8px 12px;border-radius:8px">Logout</button></div></div>
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#050505;--card:#111;--border:#222}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:30px}
+header{position:sticky;top:0;z-index:50;background:#080808;border-bottom:2px solid var(--gold);padding:14px;display:flex;justify-content:space-between;align-items:center}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:center}
+.stat b{font-size:22px;display:block;font-family:Space Grotesk}.stat small{color:#888;font-size:9px;font-weight:900}
+.stat.money{border-color:var(--lime);background:linear-gradient(135deg,#111,#1a1f00)}
+.tabs{display:flex;gap:8px;padding:0 12px 12px;overflow:auto;position:sticky;top:56px;background:var(--bg);z-index:40}
+.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:12px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
+.section{padding:0 12px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;border:1px solid #1a1a1a;border-radius:12px;padding:12px;margin-bottom:8px}
+.btn{padding:9px 14px;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:11px}.btn-a{background:var(--lime);color:#000}.btn-g{background:var(--gold);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}
+.input{width:100%;padding:12px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;color:#fff;margin-top:6px}
+.badge{padding:4px 8px;border-radius:999px;font-size:10px;font-weight:900}.PENDING{background:#3a1f00;color:#ff9f1c}.APPROVED{background:#0a2a14;color:#22c55e}.BLOCKED{background:#3a0a0a;color:#ff4444}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+<header><div style="font-family:Space Grotesk;font-weight:800">👑 ADMIN 10.1 UNIFIED <span style="color:var(--lime)">• Supabase Native</span></div><div style="display:flex;gap:6px"><button class="btn btn-d" onclick="location.reload()">🔄</button><button class="btn btn-d" onclick="localStorage.clear();location.href='/hotel-login.html'">Logout</button></div></header>
 
 <div class="statgrid">
-<div class="stat"><small>Total Hotels</small><b id="tHotels">0</b><small id="tHotelsSub" style="color:#22c55e">+0 this week</small></div>
-<div class="stat"><small>Pending Approval</small><b id="tPending" style="color:#ff9f1c">0</b><small>Needs action</small></div>
-<div class="stat"><small>Active Revenue (MRR)</small><b id="tRev" style="color:#22c55e">Ksh 0</b><small id="tRevSub">0 paying hotels</small></div>
-<div class="stat"><small>Total Bookings / Orders</small><b id="tBook">0</b><small>Platform-wide</small></div>
-<div class="stat"><small>Menu Items</small><b id="tItems" style="color:#fbbf24">0</b><small>Food & Services</small></div>
-<div class="stat"><small>Blocked / Expired</small><b id="tBlocked" style="color:#ff4444">0</b></div>
+<div class="stat money"><b id="s_comm">Ksh 0</b><small>💰 YOUR 15% COMM</small></div>
+<div class="stat"><b id="s_hotels">0</b><small>🏨 HOTELS</small></div>
+<div class="stat"><b id="s_pending">0</b><small>🚚 PENDING VENDORS</small></div>
+<div class="stat"><b id="s_orders">0</b><small>🔔 NEW ORDERS</small></div>
+<div class="stat"><b id="s_items">0</b><small>🍽️ MENU ITEMS</small></div>
+<div class="stat"><b id="s_gmv">Ksh 0</b><small>💵 TOTAL GMV</small></div>
 </div>
 
 <div class="tabs">
-<button class="tab active" id="tabHotels" onclick="switchTab('hotels')">🏨 Hotels</button>
-<button class="tab idle" id="tabMenu" onclick="switchTab('menu')">🍽️ Menu & Services</button>
-<button class="tab idle" id="tabDept" onclick="switchTab('dept')">🛎️ Departments WA</button>
-<button class="tab idle" onclick="switchTab('revenue')">💰 Revenue</button>
-<button class="tab idle" onclick="switchTab('ops')">🛠️ Ops</button>
+<button class="tab active" onclick="tab('hotels',this)">🏨 Hotels</button>
+<button class="tab" onclick="tab('vendors',this)">🚚 Vendors (<span id="c_v">0</span>)</button>
+<button class="tab" onclick="tab('menu',this)">🍽️ Menu Builder</button>
+<button class="tab" onclick="tab('dept',this)">🛎️ WA Departments</button>
+<button class="tab" onclick="tab('orders',this)">🔔 Live Orders</button>
+<button class="tab" onclick="tab('cash',this)">💸 Cash</button>
 </div>
 
-<div id="hotelsView">
-<div style="padding:0 12px;display:flex;gap:8px"><input id="search" placeholder="Search hotel, email, location..." oninput="render()"><select id="planFilter" onchange="render()"><option value="">All Plans</option><option>Upendo</option><option>Bahari</option><option>Karibu</option></select></div>
-<div class="filters"><button class="fbtn active" data-f="ALL" onclick="setFilter('ALL',this)">All</button><button class="fbtn" data-f="PENDING" onclick="setFilter('PENDING',this)">Pending</button><button class="fbtn" data-f="APPROVED" onclick="setFilter('APPROVED',this)">Approved</button><button class="fbtn" data-f="BLOCKED" onclick="setFilter('BLOCKED',this)">Blocked</button></div>
-<div id="list">Loading...</div>
-</div>
+<div id="view-hotels" class="section"></div>
+<div id="view-vendors" class="section" style="display:none"></div>
+<div id="view-menu" class="section" style="display:none"></div>
+<div id="view-dept" class="section" style="display:none"></div>
+<div id="view-orders" class="section" style="display:none"></div>
+<div id="view-cash" class="section" style="display:none"></div>
 
-<div id="menuView" style="display:none;padding:0 2px">
-<div class="card" style="border:1px dashed #fbbf24">
-<h3 style="margin:0 0 10px;color:#fbbf24">🍽️ Add Service / Menu for Guest (Guest sees after QR scan)</h3>
-<div class="grid2">
-<div><label>Select Hotel</label><select id="menuHotel"></select></div>
-<div><label>Department / Category</label><select id="itemType">
-<option value="food">🍽️ Room Service - Food</option>
-<option value="service">🛎️ Housekeeping - Service</option>
-<option value="laundry">🧺 Laundry</option>
-<option value="spa">🧖 Spa & Massage</option>
-<option value="taxi">🚕 Taxi & Transport</option>
-<option value="tour">🦁 Tours & Safari</option>
-<option value="bar">🍹 Bar & Drinks</option>
-<option value="extra">✨ Extra Service</option>
-</select></div>
-</div>
-<input id="itemName" placeholder="Name e.g. Pilau Beef, Full Body Massage, Airport Taxi">
-<div class="grid2"><input id="itemPrice" type="number" placeholder="Price KES e.g. 650"><input id="itemTime" placeholder="Time e.g. 15 mins"></div>
-<textarea id="itemDesc" placeholder="Description e.g. Spicy pilau with beef, served hot in 15 mins to Room"></textarea>
-<input id="itemImage" placeholder="Image URL (optional - will use default)">
-<button class="btn-gold" style="width:100%;margin-top:8px" onclick="addItem()">+ Add to Guest Dashboard</button>
-</div>
-<div style="padding:12px;display:flex;gap:8px"><input id="itemSearch" placeholder="Search items..." oninput="renderItems()"><select id="itemHotelFilter" onchange="renderItems()"><option value="">All Hotels</option></select></div>
-<div id="itemsList"></div>
-</div>
-
-<div id="deptView" style="display:none;padding:12px">
-<div class="card"><h3>🛎️ Departments WhatsApp Numbers (Orders go directly)</h3><p style="color:#888;font-size:12px">Set different WhatsApp per department. Guest order goes to that number. If empty, uses main hotel phone.</p>
-<select id="deptHotel" onchange="loadDept()"></select>
-<div class="dept-grid" style="margin-top:12px">
-<div class="dept-card"><label>🍽️ Kitchen / Room Service</label><input id="wa_kitchen" placeholder="2547..."></div>
-<div class="dept-card"><label>🧹 Housekeeping</label><input id="wa_housekeeping" placeholder="2547..."></div>
-<div class="dept-card"><label>🧺 Laundry</label><input id="wa_laundry" placeholder="2547..."></div>
-<div class="dept-card"><label>🧖 Spa</label><input id="wa_spa" placeholder="2547..."></div>
-<div class="dept-card"><label>🚕 Taxi / Tours</label><input id="wa_taxi" placeholder="2547..."></div>
-<div class="dept-card"><label>🛎️ Front Office</label><input id="wa_front" placeholder="2547..."></div>
-</div>
-<button class="btn-gold" style="width:100%;margin-top:12px" onclick="saveDept()">💾 Save Departments</button>
-</div>
-</div>
-
-<div id="revenueView" style="display:none;padding:12px">
-<div class="card"><h3>💳 Plan Management</h3>
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div class="stat"><b>Upendo</b><small>Ksh 6,500/mo</small></div><div class="stat"><b>Bahari</b><small>Ksh 12,000/mo</small></div><div class="stat"><b>Karibu</b><small>Ksh 25,000/mo</small></div></div>
-<button class="btn view" onclick="exportCSV()">📥 Export Hotels CSV</button>
-</div>
-</div>
-
-<div id="opsView" style="display:none;padding:12px">
-<div class="card"><h3>📢 Broadcast to All Hotels</h3><input id="broadcastMsg" placeholder="System maintenance tonight 2AM..."><button class="btn approve" onclick="broadcast()">Send Notification</button></div>
-<div class="card"><h3>📲 Quick Links</h3><button class="btn view" onclick="window.open('/qr-codes.html','_blank')">QR Generator</button> <button class="btn view" onclick="window.open('/','_blank')">Homepage</button> <button class="btn view" onclick="window.open('/guest.html?hotelId=demo&room=101','_blank')">Demo Guest Page</button></div>
-</div>
-
+<script src="config.js"></script>
 <script>
-const ADMIN_TOKEN = localStorage.getItem('admin_token');
-if(!ADMIN_TOKEN){ location.href='/admin-login.html'; }
-function authHeader(){ return {'Content-Type':'application/json','x-admin-token': ADMIN_TOKEN}; }
-function logout(){ localStorage.removeItem('admin_token'); location.href='/admin-login.html'; }
+const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let HOTELS=[], ITEMS=[];
 
-let HOTELS=[], ITEMS=[], FILTER='ALL', TAB='hotels';
+async function init(){ loadHotels(); loadVendors(); loadOrders(); }
 
-async function load(){
- try{
- const res=await fetch('/api/hotels',{headers:{'x-admin-token':ADMIN_TOKEN}});
- if(res.status===401){ logout(); return; }
- HOTELS=await res.json();
- document.getElementById('tHotels').innerText=HOTELS.length;
- document.getElementById('tPending').innerText=HOTELS.filter(h=>h.status!=='APPROVED'&&h.status!=='BLOCKED').length;
- document.getElementById('tApproved')?.remove; // keep existing id?
- document.getElementById('tPending').innerText=HOTELS.filter(h=>h.status!=='APPROVED'&&h.status!=='BLOCKED').length;
- const approved=HOTELS.filter(h=>h.status==='APPROVED').length;
- document.getElementById('tRev').innerText='Ksh '+(approved*6500).toLocaleString();
- document.getElementById('tRevSub').innerText=approved+' paying hotels';
- document.getElementById('tBlocked').innerText=HOTELS.filter(h=>h.status==='BLOCKED').length;
- // fill selects
- const sel1=document.getElementById('menuHotel'), sel2=document.getElementById('deptHotel'), sel3=document.getElementById('itemHotelFilter');
- [sel1,sel2,sel3].forEach(s=>{if(!s)return; s.innerHTML=s.id==='itemHotelFilter'?'<option value="">All Hotels</option>':''; HOTELS.forEach(h=>{s.innerHTML+=`<option value="${h.hotel_id||h.id}">${h.hotel_name||h.name} - ${h.location||''}</option>`;});});
- try{const r=await fetch('/api/admin/bookings/count',{headers:{'x-admin-token':ADMIN_TOKEN}}); const d=await r.json(); document.getElementById('tBook').innerText=d.count||0;}catch{}
- render();
- loadItems();
- }catch(e){ document.getElementById('list').innerHTML='<div class="card" style="color:#ff4444">Session expired. <a href="/admin-login.html" style="color:#fbbf24">Login again</a></div>'; }
+async function loadHotels(){
+ const {data} = await supa.from('hotels').select('*').order('created_at',{ascending:false}).limit(100);
+ HOTELS=data||[]; document.getElementById('s_hotels').innerText=HOTELS.length;
+ const box=document.getElementById('view-hotels');
+ box.innerHTML=`<div class=card><b>🏨 Hotels (${HOTELS.length})</b> - Impersonate to edit QR/Menu<br><input class=input id=hSearch placeholder="Search hotel, city, email" oninput="renderHotels()"></div><div id=hList></div>`;
+ renderHotels();
+ // fill menu selects
+ const sel=document.getElementById('menuHotelSel'); if(sel){ sel.innerHTML=''; HOTELS.forEach(h=>sel.innerHTML+=`<option value="${h.id}">${h.name||h.hotel_name} - ${h.city}</option>`); }
 }
+
+function renderHotels(){
+ const q=(document.getElementById('hSearch')?.value||'').toLowerCase();
+ const list=HOTELS.filter(h=>`${h.name||''} ${h.city||''} ${h.email||''}`.toLowerCase().includes(q));
+ document.getElementById('hList').innerHTML=list.map(h=>`
+  <div class=row><div><b style=color:var(--gold)>${h.name||h.hotel_name}</b> <span class=badge APPROVED>${h.city||''}</span><br><small style=color:#888>ID: ${h.id} • ${h.email} • WA: ${h.whatsapp_front||'-'}<br>Link: /guest.html?hotel=${h.id}&room=101</small></div>
+  <div style=display:flex;flex-direction:column;gap:6px><button class=btn btn-a onclick="impersonate('${h.email}')">Login as GM</button><button class=btn btn-d onclick="copyLink('${h.id}')">Copy QR Link</button><button class=btn btn-d onclick="deleteHotel('${h.id}')">Del</button></div></div>`).join('');
+}
+
+async function loadVendors(){
+ const {data:pend} = await supa.from('vendors').select('*').eq('status','pending').order('created_at',{ascending:false});
+ const {data:all} = await supa.from('vendors').select('*').order('created_at',{ascending:false}).limit(50);
+ document.getElementById('s_pending').innerText=pend?.length||0; document.getElementById('c_v').innerText=pend?.length||0;
+ const box=document.getElementById('view-vendors');
+ box.innerHTML=`<div class=card style=border-color:var(--gold)><b>🚨 Pending (${pend?.length||0})</b></div>`+(pend||[]).map(v=>`
+  <div class=row style=border-left:4px solid var(--gold)><div><b>${v.full_name}</b><br><small style=color:#888>${v.phone} • ${v.city} • ${(v.services||[]).join(', ')} • ${v.price}</small></div>
+  <div style=display:flex;flex-direction:column;gap:6px><button class=btn btn-a onclick="approveV('${v.id}')">✅ Approve</button><button class=btn btn-d onclick="rejectV('${v.id}')">Reject</button></div></div>`).join('')+
+ `<div class=card style=margin-top:12px><b>All Vendors</b></div>`+(all||[]).map(v=>`<div class=row><div><b>${v.full_name}</b> ${v.status}<br><small>${v.city}</small></div><button class=btn btn-d onclick="approveV('${v.id}')">Approve</button></div>`).join('');
+}
+
+async function loadMenuTab(){
+ const box=document.getElementById('view-menu');
+ box.innerHTML=`
+ <div class=card style=border-color:var(--gold)><b>🍽️ Add Menu - Works with hotel_services table (text hotel_id)</b><br><small style=color:#888>Guest sees this instantly on QR scan</small><br><br>
+ <select id=menuHotelSel class=input></select>
+ <div class=grid2 style=margin-top:8px><select id=mCat class=input><option value=food>🍽️ Food</option><option value=taxi>🚕 Taxi</option><option value=tour>🌍 Tours</option><option value=spa>🧖 Spa</option><option value=media>📸 Media</option></select><input id=mPrice type=number class=input placeholder="Price 650"></div>
+ <input id=mName class=input placeholder="Name e.g. Pilau Beef">
+ <input id=mDesc class=input placeholder="Desc e.g. Hot in 15min to room">
+ <button class=btn btn-g style=width:100%;margin-top:8px onclick="addMenu()">+ Add to Guest Dashboard</button>
+ </div><div id=itemsList></div>`;
+ loadHotels(); loadItems();
+}
+
 async function loadItems(){
- try{
-  const r=await fetch('/api/data'); const d=await r.json(); ITEMS=d.items||[];
-  document.getElementById('tItems').innerText=ITEMS.length;
-  renderItems();
- }catch{}
-}
-function switchTab(t){
- TAB=t;
- ['hotelsView','menuView','deptView','revenueView','opsView'].forEach(v=>document.getElementById(v).style.display='none');
- document.getElementById(t+'View').style.display='block';
- document.querySelectorAll('.tab').forEach(b=>b.className='tab idle');
- const map={hotels:'tabHotels',menu:'tabMenu',dept:'tabDept'}; if(map[t]) document.getElementById(map[t]).className='tab active';
-}
-function setFilter(f,el){FILTER=f; document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); render();}
-function render(){
- const q=document.getElementById('search').value.toLowerCase();
- const plan=document.getElementById('planFilter').value;
- let list=HOTELS.filter(h=>{
-   if(FILTER!=='ALL'&&h.status!==FILTER){ if(FILTER==='PENDING'&&h.status==='APPROVED')return false; if(FILTER!=='PENDING'&&h.status!==FILTER)return false; }
-   if(plan&&h.plan!==plan&&h.hotel_type!==plan) return false;
-   if(q &&!(`${h.hotel_name} ${h.email} ${h.location}`.toLowerCase().includes(q))) return false;
-   return true;
- });
- document.getElementById('list').innerHTML=list.map(h=>{
-   const days=Math.floor((Date.now()-new Date(h.created_at))/86400000);
-   const id=h.hotel_id||h.id;
-   return `<div class="card">
-     <div class="toprow"><div><b style="color:#fbbf24;font-size:17px">${h.hotel_name||h.name}</b> <span class="badge ${h.status}">${h.status}</span><br><small style="color:#888">${h.location||''} | ${h.hotel_type||h.plan||'Upendo'} | ${h.email}<br>🆔 ${id} | 📅 ${days}d ago | 💰 Ksh ${h.price||6500}/mo | 📱 ${h.phone||'No phone'}</small></div></div>
-     <div class="actions">
-       ${h.status!=='APPROVED'?`<button class="btn approve" onclick="approveHotel('${id}')">✅ Approve</button>`:''}
-       <button class="btn view" onclick="toggleDetails('${id}')">👁️ Health</button>
-       <button class="btn view" style="background:#141414;color:#22c55e;border:1px solid #22c55e" onclick="openGuest('${id}')">🛒 Guest View</button>
-       <button class="btn view" style="background:#fbbf24;color:#000" onclick="openMenuFor('${id}')">🍽️ Add Menu</button>
-       ${h.status!=='BLOCKED'?`<button class="btn block" onclick="blockHotel('${id}')">🚫 Block</button>`: `<button class="btn approve" onclick="approveHotel('${id}')">Unblock</button>`}
-       <button class="btn delete" onclick="deleteHotel('${id}')">🗑️ Delete</button>
-     </div>
-     <div id="det-${id}" class="details">Loading health...</div>
-   </div>`}).join('')||'<div class="card" style="text-align:center;color:#666">No hotels found</div>';
-}
-function openGuest(id){window.open(`/guest.html?hotelId=${id}&room=101`,'_blank');}
-function openMenuFor(id){document.getElementById('menuHotel').value=id; switchTab('menu'); document.getElementById('tabMenu').className='tab active'; document.getElementById('tabHotels').className='tab idle'; window.scrollTo(0,0);}
-
-async function approveHotel(id){ const plan=prompt('Assign Plan (Upendo/Bahari/Karibu):','Upendo')||'Upendo'; const r=await fetch(`/api/hotels/${id}/approve`,{method:'POST',headers:authHeader(),body:JSON.stringify({plan})}); if(r.ok){alert(id+' APPROVED on '+plan); load();} else{ if(r.status===401) logout(); else alert('Failed'); }}
-async function blockHotel(id){ const reason=prompt('Reason for blocking:','non-payment'); if(!reason) return; await fetch(`/api/hotels/${id}/block`,{method:'POST',headers:authHeader(),body:JSON.stringify({reason})}); load();}
-async function deleteHotel(id){if(!confirm('Delete '+id+' forever?'))return; await fetch(`/api/hotels/${id}`,{method:'DELETE',headers:{'x-admin-token':ADMIN_TOKEN}}); load();}
-async function toggleDetails(id){ const el=document.getElementById('det-'+id); el.style.display=el.style.display==='block'?'none':'block'; if(el.innerHTML.includes('Loading')){ try{const res=await fetch(`/api/gm/dashboard/${id}`); const d=await res.json(); el.innerHTML=`<b>Health ${id}</b><br>📦 Items: ${d.items?.length||0}<br>🧾 Orders: ${d.orders?.length||0}<br>👥 Vendors: ${d.activeVendors||0}<br>💵 Revenue: Ksh ${d.revenue||0}<br>🍽️ Menu Items: ${ITEMS.filter(i=>i.hotel_id===id).length}`;}catch{el.innerHTML='Health data unavailable - check GM dashboard route';}}}
-
-// MENU LOGIC
-function renderItems(){
- const q=(document.getElementById('itemSearch').value||'').toLowerCase();
- const hf=document.getElementById('itemHotelFilter').value;
- const list=document.getElementById('itemsList'); list.innerHTML='';
- let filtered=ITEMS.filter(i=>{
-  if(hf && i.hotel_id!==hf) return false;
-  if(q &&!(`${i.name} ${i.type}`.toLowerCase().includes(q))) return false;
-  return true;
- }).slice(-100).reverse();
- list.innerHTML=filtered.map(i=>`<div class="card" style="display:flex;gap:10px;align-items:center"><img src="${i.image_url||i.image||'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200'}" style="width:56px;height:56px;border-radius:10px;object-fit:cover"><div style="flex:1"><b>${i.name}</b> <small style="color:#888">(${i.type}) - ${i.hotel_id}</small><br><small style="color:#fbbf24">KES ${i.price} • ${i.description?.slice(0,60)||''}</small></div><button class="btn delete" onclick="deleteItem('${i.id}')">🗑️</button><button class="btn view" onclick="openGuest('${i.hotel_id}')">View</button></div>`).join('')||'<div class="card" style="text-align:center;color:#666">No menu items - add above</div>';
-}
-async function addItem(){
- const hotel_id=document.getElementById('menuHotel').value;
- const name=document.getElementById('itemName').value.trim();
- const price=parseInt(document.getElementById('itemPrice').value);
- const type=document.getElementById('itemType').value;
- const desc=document.getElementById('itemDesc').value;
- const time=document.getElementById('itemTime').value||'15 mins';
- const img=document.getElementById('itemImage').value||`https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800`;
- if(!hotel_id||!name||!price){alert('Fill hotel, name, price');return;}
- const body={hotel_id,type,name,price,description:desc+' | ⏱️ '+time,image_url:img,image:img,time};
- try{
-  let r=await fetch('/api/admin/items',{method:'POST',headers:authHeader(),body:JSON.stringify(body)});
-  if(!r.ok){ r=await fetch('/api/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); }
-  const d=await r.json();
-  alert('✅ '+name+' added to '+hotel_id+' - Guest will see it now!');
-  document.getElementById('itemName').value=''; document.getElementById('itemPrice').value=''; document.getElementById('itemDesc').value='';
-  loadItems();
- }catch(e){alert('Error adding: '+e.message);}
-}
-async function deleteItem(id){ if(!confirm('Delete item?'))return; await fetch('/api/admin/items/'+id,{method:'DELETE',headers:authHeader()}); loadItems(); }
-
-// DEPT WA
-function loadDept(){
- const hid=document.getElementById('deptHotel').value;
- const h=HOTELS.find(x=>(x.hotel_id||x.id)===hid);
- if(!h) return;
- // try load saved depts from localStorage or h object
- const saved=JSON.parse(localStorage.getItem('dept_'+hid)||'{}');
- document.getElementById('wa_kitchen').value=saved.kitchen||h.phone||'';
- document.getElementById('wa_housekeeping').value=saved.housekeeping||'';
- document.getElementById('wa_laundry').value=saved.laundry||'';
- document.getElementById('wa_spa').value=saved.spa||'';
- document.getElementById('wa_taxi').value=saved.taxi||'';
- document.getElementById('wa_front').value=saved.front||h.phone||'';
-}
-function saveDept(){
- const hid=document.getElementById('deptHotel').value;
- const data={
-  kitchen:document.getElementById('wa_kitchen').value,
-  housekeeping:document.getElementById('wa_housekeeping').value,
-  laundry:document.getElementById('wa_laundry').value,
-  spa:document.getElementById('wa_spa').value,
-  taxi:document.getElementById('wa_taxi').value,
-  front:document.getElementById('wa_front').value
- };
- localStorage.setItem('dept_'+hid,JSON.stringify(data));
- // Also try save to backend
- fetch('/api/hotels/'+hid+'/departments',{method:'POST',headers:authHeader(),body:JSON.stringify(data)}).catch(()=>{});
- alert('✅ Departments saved for '+hid+' - Guest orders will go to these WhatsApps!');
+ const {data} = await supa.from('hotel_services').select('*').order('created_at',{ascending:false}).limit(100);
+ ITEMS=data||[]; document.getElementById('s_items').innerText=ITEMS.length;
+ const box=document.getElementById('itemsList'); if(!box) return;
+ box.innerHTML=ITEMS.map(i=>`<div class=row><div><b>${i.title}</b> - Ksh ${i.price} <br><small style=color:#888>${i.category} • Hotel: ${i.hotel_id?.slice(0,8)} • ${i.description||''}</small></div><button class=btn btn-d onclick="delItem('${i.id}')">🗑️</button></div>`).join('');
 }
 
-function exportCSV(){let csv='id,name,email,location,plan,status,created\n'+HOTELS.map(h=>`${h.hotel_id},${h.hotel_name},${h.email},${h.location},${h.plan},${h.status},${h.created_at}`).join('\n'); const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='hotels.csv'; a.click();}
-function broadcast(){const msg=document.getElementById('broadcastMsg').value; if(!msg) return; alert('Broadcast sent to '+HOTELS.length+' hotels: '+msg); document.getElementById('broadcastMsg').value='';}
-load();
-</script></body></html>
+async function addMenu(){
+ const hotel_id=document.getElementById('menuHotelSel').value; const title=document.getElementById('mName').value; const price=parseInt(document.getElementById('mPrice').value); const category=document.getElementById('mCat').value; const description=document.getElementById('mDesc').value;
+ if(!hotel_id||!title||!price) return alert('Fill hotel, name, price');
+ const {error}=await supa.from('hotel_services').insert([{hotel_id,title,price,category,description,active:true}]);
+ if(error) return alert(error.message); alert('✅ Added! Guest QR now shows it'); loadItems();
+}
+async function delItem(id){ if(!confirm('Delete?')) return; await supa.from('hotel_services').delete().eq('id',id); loadItems(); }
+
+async function loadOrders(){
+ const {data} = await supa.from('orders').select('*').order('created_at',{ascending:false}).limit(100);
+ document.getElementById('s_orders').innerText=data?.filter(o=>o.status=='new').length||0;
+ let gmv=0; data?.forEach(o=>gmv+=o.amount||0); document.getElementById('s_gmv').innerText='Ksh '+gmv.toLocaleString(); document.getElementById('s_comm').innerText='Ksh '+Math.floor(gmv*0.15).toLocaleString();
+ const box=document.getElementById('view-orders'); if(!box) return;
+ box.innerHTML=`<div class=card><b>🔔 Last 100 Orders - GMV Ksh ${gmv.toLocaleString()}</b></div>`+ (data||[]).map(o=>`<div class=row><div><b>Room ${o.room} • ${o.service_title||o.service}</b><br><small style=color:#888>${o.guest_name} • Ksh ${o.amount} • ${o.status} • Hotel ${o.hotel_id?.slice(0,8)}</small></div><small style=color:var(--lime)>Your 15%: ${Math.floor((o.amount||0)*0.15)}</small></div>`).join('');
+}
+
+async function loadDeptTab(){
+ document.getElementById('view-dept').innerHTML=`
+ <div class=card><b>🛎️ WA Departments (goes to hotels.whatsapp_*)</b><br><small style=color:#888>Set per hotel, Guest order routes to these</small><br><br>
+ <select id=deptHotelSel class=input onchange="loadDeptVals()"></select>
+ <div class=grid2 style=margin-top:10px>
+ <div><label>🍽️ Kitchen</label><input id=wa_k class=input></div>
+ <div><label>🧹 Housekeeping</label><input id=wa_h class=input></div>
+ <div><label>🧺 Laundry</label><input id=wa_l class=input></div>
+ <div><label>🧖 Spa</label><input id=wa_s class=input></div>
+ <div><label>🚕 Taxi</label><input id=wa_t class=input></div>
+ <div><label>🛎️ Front</label><input id=wa_f class=input></div>
+ </div>
+ <button class=btn btn-a style=width:100%;margin-top:10px onclick="saveDept()">💾 Save WA</button></div>`;
+ const sel=document.getElementById('deptHotelSel'); sel.innerHTML=''; HOTELS.forEach(h=>sel.innerHTML+=`<option value="${h.id}">${h.name||h.hotel_name} - ${h.city}</option>`);
+}
+async function loadDeptVals(){
+ const id=document.getElementById('deptHotelSel').value; const h=HOTELS.find(x=>x.id==id); if(!h) return;
+ document.getElementById('wa_k').value=h.whatsapp_kitchen||''; document.getElementById('wa_h').value=h.whatsapp_house||''; document.getElementById('wa_f').value=h.whatsapp_front||'';
+}
+async function saveDept(){
+ const id=document.getElementById('deptHotelSel').value;
+ const payload={whatsapp_kitchen:document.getElementById('wa_k').value, whatsapp_house:document.getElementById('wa_h').value, whatsapp_front:document.getElementById('wa_f').value};
+ const {error}=await supa.from('hotels').update(payload).eq('id',id); if(error) alert(error.message); else alert('✅ WA saved for hotel');
+}
+
+function tab(name,el){
+ document.querySelectorAll('[id^=view-]').forEach(e=>e.style.display='none');
+ document.getElementById('view-'+name).style.display='block';
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+ if(name=='menu') loadMenuTab();
+ if(name=='dept') loadDeptTab();
+ if(name=='orders') loadOrders();
+ if(name=='cash'){ document.getElementById('view-cash').innerHTML=document.getElementById('view-orders').innerHTML; document.getElementById('view-cash').style.display='block'; document.getElementById('view-orders').style.display='none'; }
+}
+async function approveV(id){ await supa.from('vendors').update({status:'approved'}).eq('id',id); loadVendors(); }
+async function rejectV(id){ await supa.from('vendors').update({status:'rejected'}).eq('id',id); loadVendors(); }
+function impersonate(email){ localStorage.setItem('hotel_email',email); location.href='/hotel-dashboard.html'; }
+function copyLink(id){ const link=location.origin+'/guest.html?hotel='+id+'&room=101'; navigator.clipboard.writeText(link); alert('Copied: '+link); }
+async function deleteHotel(id){ if(!confirm('Delete hotel?')) return; await supa.from('hotels').delete().eq('id',id); loadHotels(); }
+
+init();
+</script>
+</body>
+</html>
