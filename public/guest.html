@@ -19,7 +19,7 @@
 .svc{background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;position:relative;text-align:left}
 .svc:active{transform:scale(.97);border-color:var(--lime)}
 .svc b{font-size:13px;display:block}.svc small{color:#888;font-size:10px;display:block;margin-top:2px}.svc i{font-style:normal;font-size:20px;display:block;margin-bottom:6px}
-.svc.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px}
+.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px}
 .input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;margin-top:6px;font-size:14px}
 .btn{width:100%;background:var(--lime);color:#000;padding:15px;border:none;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;place-items:center;z-index:100;padding:16px}
@@ -35,11 +35,7 @@
 
 <div style="padding:10px 12px 0"><div style="background:#141414;border:1px dashed #333;border-radius:14px;padding:10px;display:flex;gap:8px"><input id="guestName" class="input" style="margin:0" placeholder="Your name e.g. John"><input id="roomNo" class="input" style="margin:0" placeholder="Room e.g. 204"></div></div>
 
-<!-- QUICK ACTIONS -->
-<div class="cat"><h3>⚡ Instant - 1 Tap Order</h3>
-<div class="grid2" id="quick"></div>
-</div>
-
+<div class="cat"><h3>⚡ Instant - 1 Tap Order</h3><div class="grid2" id="quick"></div></div>
 <div class="cat"><h3>🚕 Transport & Taxi</h3><div class="grid2" id="g1"></div></div>
 <div class="cat"><h3>🌍 Tours & Safari (Hotel Trusted)</h3><div class="grid2" id="g2"></div></div>
 <div class="cat"><h3>🧖 Spa, Food & Room Service</h3><div class="grid2" id="g3"></div></div>
@@ -51,7 +47,6 @@
 
 <div style="text-align:center;padding:16px;color:#555;font-size:10px;font-weight:800">🔒 GuestHub Secure • Hotels pay vendors after your OTP • Zero extra fees</div>
 
-<!-- ORDER MODAL -->
 <div class="modal" id="orderModal"><div class="modalBox">
 <h3 id="mTitle" style="margin:0;font-family:Space Grotesk">Confirm Order</h3><small id="mDesc" style="color:#888"></small>
 <label style="font-size:10px;color:#888;margin-top:12px;display:block">Your WhatsApp (for OTP)</label><input id="guestPhone" class="input" placeholder="254722...">
@@ -101,7 +96,36 @@ const SERVICES={
  ]
 };
 
-function render(){
+async function render(){
+ let realMenu=null;
+ if(hotelId && hotelId!='demo'){
+  const {data}=await supa.from('hotel_services').select('*').eq('hotel_id',hotelId).eq('active',true).order('created_at',{ascending:false});
+  if(data && data.length>0) realMenu=data;
+ }
+ if(realMenu){
+  const groups={taxi:[],tour:[],spa:[],food:[],media:[]};
+  realMenu.forEach(m=>{
+    const cat=(m.category||'food').toLowerCase();
+    if(!groups[cat]) groups[cat]=[];
+    groups[cat].push(m);
+  });
+  // Quick = first 4
+  document.getElementById('quick').innerHTML=realMenu.slice(0,4).map(m=>`
+    <div class=svc onclick="openOrder('${m.id}','${m.title.replace(/'/g,'')}','${(m.description||'').replace(/'/g,'')}',${m.price})">
+      <div class=price>Ksh ${m.price}</div><i>⚡</i><b>${m.title}</b><small>${m.description||m.category}</small>
+    </div>`).join('');
+
+  const mapCat={taxi:'g1',tour:'g2',spa:'g3',food:'g3',media:'g4'};
+  // clear all
+  ['g1','g2','g3','g4'].forEach(id=>document.getElementById(id).innerHTML='');
+  realMenu.forEach(m=>{
+    const targetId=mapCat[m.category]||'g4';
+    const box=document.getElementById(targetId);
+    box.innerHTML+=`<div class=svc onclick="openOrder('${m.id}','${m.title.replace(/'/g,'')}','${(m.description||'').replace(/'/g,'')}',${m.price})"><div class=price>Ksh ${m.price}</div><i>${m.category=='taxi'?'🚕':m.category=='tour'?'🌍':m.category=='spa'?'🧖':m.category=='food'?'🍔':'📸'}</i><b>${m.title}</b><small>${m.description||''}</small></div>`;
+  });
+  return;
+ }
+ // fallback demo
  Object.keys(SERVICES).forEach(g=>{
   const box=document.getElementById(g); if(!box) return;
   box.innerHTML=SERVICES[g].map(s=>`
@@ -119,17 +143,18 @@ async function initHotel(){
  document.getElementById('roomBadge').innerText='🛏️ Room '+(room||'Guest')+' • 📶 Free WiFi • 🔒 Verified';
 
  if(!hid){
-  document.getElementById('hotelName').innerText='Demo Hotel (Add?hotel=ID to URL)';
-  hotelId='demo'; return;
+  document.getElementById('hotelName').innerText='Demo Hotel (Add?hotel=ID)';
+  hotelId='demo'; await render(); return;
  }
  hotelId=hid;
  const {data}=await supa.from('hotels').select('*').eq('id',hid).single();
- if(data){ hotel=data; document.getElementById('hotelName').innerText=data.name; document.getElementById('hotelTag').innerText=(data.city||'')+' • '+ (data.tagline||'5-star services • 15 min'); localStorage.setItem('last_hotel_id',hid); }
+ if(data){ hotel=data; document.getElementById('hotelName').innerText=data.name; document.getElementById('hotelTag').innerText=(data.city||'')+' • '+(data.tagline||'5-star services • 15 min'); localStorage.setItem('last_hotel_id',hid); }
+ await render();
 }
 
 function openOrder(id,title,desc,price){
  if(!document.getElementById('roomNo').value ||!document.getElementById('guestName').value){
-  alert('Mkuu enter your name + room number first at top'); document.getElementById('guestName').focus(); return;
+  alert('Enter your name + room first'); return;
  }
  selectedSvc={id,title,desc,price};
  document.getElementById('mTitle').innerText=title;
@@ -140,30 +165,27 @@ function closeModal(){ document.getElementById('orderModal').style.display='none
 function closeSuccess(){ document.getElementById('successModal').style.display='none'; }
 
 async function placeOrder(){
- const btn=document.getElementById('confirmBtn'); btn.innerText='⏳ Sending to Hotel...'; btn.disabled=true;
+ const btn=document.getElementById('confirmBtn'); btn.innerText='⏳ Sending...'; btn.disabled=true;
  try{
   const payload={
    hotel_id: hotelId=='demo'?null:hotelId,
    room: document.getElementById('roomNo').value,
    guest_name: document.getElementById('guestName').value,
-   guest_phone: document.getElementById('guestPhone').value || '2547',
+   guest_phone: document.getElementById('guestPhone').value||'2547',
    service: selectedSvc.id,
    service_title: selectedSvc.title,
-   details: document.getElementById('orderNote').value || selectedSvc.desc,
+   details: document.getElementById('orderNote').value||selectedSvc.desc,
    amount: selectedSvc.price,
    status:'new',
    created_at: new Date().toISOString()
   };
-  // Save guest info
   localStorage.setItem('last_room',payload.room);
   localStorage.setItem('guest_name',payload.guest_name);
   localStorage.setItem('guest_phone',payload.guest_phone);
-
   const {error}=await supa.from('orders').insert([payload]);
   if(error) throw error;
-
   closeModal();
-  document.getElementById('successText').innerText=`${selectedSvc.title} for Room ${payload.room} sent to ${hotel?hotel.name:'hotel front desk'}. They will assign best vendor in 2 min. Keep your phone ON for OTP ${Math.floor(1000+Math.random()*9000)}.`;
+  document.getElementById('successText').innerText=`${selectedSvc.title} for Room ${payload.room} sent to ${hotel?hotel.name:'hotel'}. Vendor assigned in 2 min. OTP: ${Math.floor(1000+Math.random()*9000)}`;
   document.getElementById('successModal').style.display='grid';
   if(navigator.vibrate) navigator.vibrate([100,50,100]);
  }catch(e){ alert('Error: '+e.message); }
@@ -172,11 +194,10 @@ async function placeOrder(){
 
 function contact(type){
  const phone = type=='front'? (hotel?.whatsapp_front||'254722000000') : (hotel?.whatsapp_house||'254722000000');
- window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'')+'?text=Hi, Room '+document.getElementById('roomNo').value+' needs help - '+type);
+ window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'')+'?text=Hi Room '+document.getElementById('roomNo').value+' needs '+type);
 }
 
-// Init
-render(); initHotel();
+initHotel();
 document.getElementById('guestName').value=localStorage.getItem('guest_name')||'';
 document.getElementById('guestPhone').value=localStorage.getItem('guest_phone')||'';
 </script>
