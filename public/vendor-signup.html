@@ -36,8 +36,6 @@ input,select,textarea{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;
 
 <div class="form">
 <form id="f">
-
-<!-- BASIC -->
 <div class="cat"><h3>👤 Basic Info</h3>
 <label>Full Name</label><input id="full_name" required placeholder="Kevin Kipchumba">
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label>Phone (M-Pesa)</label><input id="phone" required placeholder="0722..."></div><div><label>ID No</label><input id="id_number" required></div></div>
@@ -45,38 +43,30 @@ input,select,textarea{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;
 <label>Base City</label><select id="city"><option>Eldoret</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Naivasha</option><option>Diani</option><option>Maasai Mara Region</option></select>
 </div>
 
-<!-- CATEGORY 1: TRANSPORT -->
 <div class="cat"><h3>🚕 1. TRANSPORT & TAXI</h3><div class="grid" id="g1"></div></div>
-<!-- CATEGORY 2: TOURS & SAFARI -->
 <div class="cat"><h3>🌍 2. TOURS, SAFARI & ADVENTURE</h3><div class="grid" id="g2"></div></div>
-<!-- CATEGORY 3: STAY & WELLNESS -->
 <div class="cat"><h3>🧖 3. WELLNESS & HOTEL SERVICES</h3><div class="grid" id="g3"></div></div>
-<!-- CATEGORY 4: MEDIA & LIFESTYLE -->
 <div class="cat"><h3>📸 4. MEDIA, LIFESTYLE & CONCIERGE</h3><div class="grid" id="g4"></div></div>
 
-<!-- DYNAMIC FIELDS -->
 <div class="cat" id="dynBox"><h3>⚙️ Service Details <span style="color:#888" id="selCount">0 selected</span></h3>
-<label>Vehicle / Equipment (if applicable)</label><select id="vehicle"><option>Select</option><option>Sedan - Premio/Axio</option><option>SUV - Prado/TX/Landcruiser</option><option>Van - Alphard/Hiace 7-14 seater</option><option>Safari Landcruiser Open Roof</option><option>Boda / TukTuk</option><option>No Vehicle - I go on foot</option><option>Massage Bed + Oils</option><option>Camera Kit + Drone</option></select>
-<label>Number Plate / Business License No</label><input id="plate" placeholder="KDA 123A or License">
-<label>Your Price (Base price guests see)</label><input id="price" type="number" value="2500" placeholder="e.g. 2500">
-<label>Bio (Why hotels pick you?)</label><textarea id="bio" maxlength="120" placeholder="e.g. 5yrs JKIA expert, fluent English, baby seat, Maasai Mara guide certified"></textarea>
+<label>Vehicle / Equipment</label><select id="vehicle"><option>Select</option><option>Sedan - Premio/Axio</option><option>SUV - Prado/TX/Landcruiser</option><option>Van - Alphard/Hiace 7-14 seater</option><option>Safari Landcruiser Open Roof</option><option>Boda / TukTuk</option><option>No Vehicle - I go on foot</option><option>Massage Bed + Oils</option><option>Camera Kit + Drone</option></select>
+<label>Number Plate / License</label><input id="plate" placeholder="KDA 123A or License">
+<label>Your Price (Base)</label><input id="price" type="number" value="2500">
+<label>Bio</label><textarea id="bio" maxlength="120" placeholder="e.g. 5yrs JKIA expert, fluent English, baby seat"></textarea>
 </div>
 
-<!-- KYC -->
-<div class="cat"><h3>🪪 KYC - Trust Badge (Hotels require)</h3>
-<label>ID Front Photo</label><div class="upload"><input type="file" id="id_photo" accept="image/*"><b style="color:var(--lime)">📸 Upload ID</b><small style="color:#666;display:block">Clear photo</small></div>
+<div class="cat"><h3>🪪 KYC</h3>
+<label>ID Front Photo</label><div class="upload"><input type="file" id="id_photo" accept="image/*"><b style="color:var(--lime)">📸 Upload ID</b></div>
 <label>Selfie Holding ID</label><div class="upload"><input type="file" id="selfie"><b>🤳 Selfie + ID</b></div>
-<label>Vehicle / Kit / Certificate Photo</label><div class="upload"><input type="file" id="car_photo" accept="image/*"><b>🚗📷 Upload Proof</b><small style="color:#666;display:block">Car front + interior OR Tour vehicle OR Massage cert OR Drone license</small></div>
+<label>Vehicle / Kit Photo</label><div class="upload"><input type="file" id="car_photo" accept="image/*"><b>🚗📷 Upload Proof</b></div>
 </div>
 
-<!-- PAYOUT -->
 <div class="cat"><h3>💸 M-Pesa Payout</h3>
 <label>M-Pesa Number</label><input id="mpesa" required placeholder="0722...">
 <label>M-Pesa Name</label><input id="mpesa_name" placeholder="As per ID">
-<label style="text-transform:none;color:#ccc;font-size:12px;margin-top:10px"><input type="checkbox" required> I agree to be on time (<15min), be polite, no extra charges. Fake docs = lifetime ban.</label>
+<label style="text-transform:none;color:#ccc;font-size:12px;margin-top:10px"><input type="checkbox" required> I agree to be on time (<15min), be polite, no extra charges.</label>
 <button class="btn" type="submit" id="btn">🚀 Submit - Get Approved in 1 Hour</button>
 </div>
-
 </form>
 </div>
 
@@ -84,45 +74,17 @@ input,select,textarea{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;
 <script src="config.js"></script>
 <script>
 const S={
- g1:[
-  {id:'airport_taxi',t:'Airport Taxi',d:'JKIA/Wilson/Eldoret Airport'},
-  {id:'sgr_taxi',t:'SGR Transfer',d:'Nairobi SGR'},
-  {id:'town_taxi',t:'Town Taxi',d:'Uber style in town'},
-  {id:'car_hire',t:'Car Hire + Driver',d:'Daily hire Ksh 5-15k'},
-  {id:'luxury_transfer',t:'Luxury Transfer',d:'Prado/V8 for VIP'},
-  {id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'},
- ],
- g2:[
-  {id:'nairobi_tour',t:'Nairobi City Tour',d:'Museum, Bomas, Giraffe'},
-  {id:'park_day',t:'National Park Day Trip',d:'Nairobi Park / Hellsgate'},
-  {id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days package'},
-  {id:'amboseli_safari',t:'Amboseli / Tsavo',d:'Elephants + Kilimanjaro'},
-  {id:'hike_guide',t:'Hiking Guide',d:'Mt Kenya, Longonot, Karura'},
-  {id:'beach_safari',t:'Beach & Diani Tour',d:'Snorkeling, Wasini'},
- ],
- g3:[
-  {id:'massage',t:'In-Room Massage',d:'Swedish, Deep Tissue'},
-  {id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},
-  {id:'laundry',t:'Express Laundry',d:'2hr return'},
-  {id:'gym_trainer',t:'Gym / Yoga Trainer',d:'In-room or gym'},
-  {id:'babysitter',t:'Babysitter / Nanny',d:'Hotel certified'},
-  {id:'chef',t:'Private Chef',d:'In-room dining'},
- ],
- g4:[
-  {id:'photography',t:'Photography',d:'Portrait, events'},
-  {id:'drone',t:'Drone + Videography',d:'Hotel + Safari shots'},
-  {id:'shopping',t:'Personal Shopper',d:'Maasai market, gifts'},
-  {id:'translator',t:'Translator / Guide',d:'French, German, Chinese'},
-  {id:'event_decor',t:'Event Decor / Cake',d:'Birthdays in hotel'},
-  {id:'concierge',t:'Concierge / Errands',d:'Anything guest needs'},
- ]
+ g1:[{id:'airport_taxi',t:'Airport Taxi',d:'JKIA/Wilson/Eldoret'},{id:'sgr_taxi',t:'SGR Transfer',d:'Nairobi SGR'},{id:'town_taxi',t:'Town Taxi',d:'Uber style'},{id:'car_hire',t:'Car Hire + Driver',d:'Daily Ksh 5-15k'},{id:'luxury_transfer',t:'Luxury Transfer',d:'Prado/V8 VIP'},{id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'}],
+ g2:[{id:'nairobi_tour',t:'Nairobi City Tour',d:'Museum, Bomas'},{id:'park_day',t:'National Park Day Trip',d:'Nairobi Park'},{id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days'},{id:'amboseli_safari',t:'Amboseli / Tsavo',d:'Elephants'},{id:'hike_guide',t:'Hiking Guide',d:'Mt Kenya'},{id:'beach_safari',t:'Beach & Diani Tour',d:'Snorkeling'}],
+ g3:[{id:'massage',t:'In-Room Massage',d:'Swedish, Deep'},{id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},{id:'laundry',t:'Express Laundry',d:'2hr return'},{id:'gym_trainer',t:'Gym / Yoga Trainer',d:'In-room'},{id:'babysitter',t:'Babysitter / Nanny',d:'Certified'},{id:'chef',t:'Private Chef',d:'In-room dining'}],
+ g4:[{id:'photography',t:'Photography',d:'Portrait, events'},{id:'drone',t:'Drone + Videography',d:'Hotel shots'},{id:'shopping',t:'Personal Shopper',d:'Maasai market'},{id:'translator',t:'Translator / Guide',d:'French, German'},{id:'event_decor',t:'Event Decor / Cake',d:'Birthdays'},{id:'concierge',t:'Concierge / Errands',d:'Anything'}]
 };
 let sel=[];
 function render(){
  Object.keys(S).forEach(g=>{
   const box=document.getElementById(g); box.innerHTML='';
   S[g].forEach(o=>{
-   const div=document.createElement('div'); div.className='opt'; div.id='opt-'+o.id;
+   const div=document.createElement('div'); div.className='opt';
    div.innerHTML=`<div class=check>✓</div><b>${o.t}</b><small>${o.d}</small>`;
    div.onclick=()=>toggle(o.id,div); box.appendChild(div);
   });
@@ -132,7 +94,7 @@ function toggle(id,div){
  if(sel.includes(id)){ sel=sel.filter(s=>s!==id); div.classList.remove('on'); }
  else { sel.push(id); div.classList.add('on'); }
  document.getElementById('selCount').innerText=sel.length+' selected';
- document.getElementById('pbar').style.width=Math.min(20+sel.length*12+ (document.getElementById('full_name').value?20:0),100)+'%';
+ document.getElementById('pbar').style.width=Math.min(20+sel.length*12,100)+'%';
 }
 render();
 const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -141,18 +103,40 @@ document.getElementById('f').addEventListener('submit', async e=>{
  if(sel.length==0) return alert('Select at least 1 service mkuu!');
  const btn=document.getElementById('btn'); btn.innerText='⏳ Submitting...'; btn.disabled=true;
  const payload={
-  full_name:full_name.value, phone:phone.value, id_number:id_number.value,
-  email:email.value, password:password.value, city:city.value,
-  services:sel, vehicle:vehicle.value, plate:plate.value,
-  price:parseInt(price.value||0), bio:bio.value, mpesa:mpesa.value, mpesa_name:mpesa_name.value,
-  status:'pending', rating:5.0, created_at:new Date().toISOString()
+  full_name:document.getElementById('full_name').value,
+  phone:document.getElementById('phone').value,
+  id_number:document.getElementById('id_number').value,
+  email:document.getElementById('email').value,
+  password:document.getElementById('password').value,
+  city:document.getElementById('city').value,
+  services:sel,
+  vehicle:document.getElementById('vehicle').value,
+  plate:document.getElementById('plate').value,
+  price:parseInt(document.getElementById('price').value||0),
+  bio:document.getElementById('bio').value,
+  mpesa:document.getElementById('mpesa').value,
+  mpesa_name:document.getElementById('mpesa_name').value,
+  status:'pending',
+  rating:5.0,
+  wallet:0,
+  created_at:new Date().toISOString()
  };
  try{
   const {error}=await supa.from('vendors').insert([payload]);
   if(error) throw error;
-  alert('✅ Karibu GuestHub!\n\nYou selected: '+sel.join(', ')+'\n\nWe verify ID in 30min, you get SMS.\nLogin: /vendor-dashboard.html');
-  location.href='/vendor-login.html';
- }catch(err){ alert('Error: '+err.message); btn.disabled=false; btn.innerText='🚀 Submit'; }
+  // 🔥 FIXED - THIS WAS MISSING
+  localStorage.setItem('vendor_email', payload.email);
+  localStorage.setItem('vendor_name', payload.full_name);
+  localStorage.setItem('vendor_city', payload.city);
+  localStorage.setItem('vendor_services', JSON.stringify(sel));
+
+  alert('✅ Karibu '+payload.full_name+'!\n\nServices: '+sel.join(', ')+'\n\nWe will verify in 30min. Dashboard loading...');
+  location.href='/vendor-dashboard.html';
+ }catch(err){
+  alert('Error: '+err.message);
+  btn.disabled=false;
+  btn.innerText='🚀 Submit - Get Approved in 1 Hour';
+ }
 });
 </script>
 </body>
