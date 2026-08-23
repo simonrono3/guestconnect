@@ -1,208 +1,184 @@
-<!DOCTYPE html><html><head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GUESTHUB | In-Room</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GuestHub - Your Hotel SuperApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--gold:#FFD700;--orange:#FF6B35;--green:#0F9D58;--bg:#080808;--card:#141414}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:'Inter';overflow-x:hidden}
-.hero-top{position:relative;height:280px;overflow:hidden}
-.hero-top img{width:100%;height:100%;object-fit:cover;filter:brightness(0.4)}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 10%,transparent 80%)}
-.hero-content{position:absolute;bottom:0;left:0;right:0;padding:20px 5%}
-.logo{font-family:'Playfair Display';color:var(--gold);font-size:22px;font-weight:900}
-.room-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,215,0,0.15);border:1px solid var(--gold);padding:8px 14px;border-radius:30px;font-weight:800;font-size:13px;margin-top:10px}
-.room-badge b{color:var(--gold)}
-.welcome-h1{font-family:'Playfair Display';font-size:32px;margin:12px 0 4px;line-height:1.1}
-.welcome-h1 span{color:var(--gold)}
-.sub{opacity:0.5;font-size:13px}
-.quick-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-.q-stat{background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px;text-align:center}
-.q-stat b{display:block;color:var(--gold);font-size:18px}
-.q-stat span{font-size:10px;opacity:0.5;text-transform:uppercase;letter-spacing:1px}
-.container{max-width:1100px;margin:0 auto;padding:18px}
-.scan-card{background:linear-gradient(135deg,#1A1A1A,#141414);border:1px dashed var(--gold);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;margin:16px 0}
-.scan-card.icon{width:48px;height:48px;background:var(--gold);border-radius:12px;display:grid;place-items:center;color:#000;font-size:22px}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
-.tab{padding:12px 18px;background:var(--card);border:1px solid #222;border-radius:30px;font-weight:800;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;font-size:13px;transition:0.2s}
-.tab.active{background:var(--gold);color:#000;border-color:var(--gold)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:16px}
-.card{background:var(--card);border:1px solid #1e1e1e;border-radius:20px;overflow:hidden;transition:0.3s}
-.card:hover{transform:translateY(-4px);border-color:#333}
-.card img{width:100%;height:180px;object-fit:cover}
-.card-body{padding:14px}
-.card-top{display:flex;justify-content:space-between;align-items:start}
-.price{color:var(--gold);font-family:'Playfair Display';font-size:20px;font-weight:800}
-.badge{font-size:9px;padding:4px 8px;border-radius:20px;font-weight:900}
-.badge-free{background:var(--green);color:#fff}.badge-fee{background:var(--orange);color:#000}
-.btn{width:100%;padding:13px;border:none;border-radius:12px;font-weight:900;cursor:pointer;margin-top:10px;font-size:14px}
-.btn-order{background:linear-gradient(135deg,var(--gold),#FFA500);color:#000}
-.btn-book{background:linear-gradient(135deg,var(--orange),#FF8C00);color:#fff}
-.btn-wa{background:#25D366;color:#fff;display:flex;justify-content:center;align-items:center;gap:6px}
-.footer-order{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-top:1px solid #222;padding:12px 5%;display:flex;justify-content:space-between;align-items:center;z-index:90}
-.chat-box{position:fixed;bottom:80px;right:14px;width:340px;background:#141414;border:1px solid #333;border-radius:18px;overflow:hidden;z-index:95;display:none}
-.chat-box.open{display:block}
-.chat-head{background:#1A1A1A;padding:12px 16px;display:flex;justify-content:space-between;font-weight:800;border-bottom:1px solid #222}
-.chat-log{height:180px;overflow-y:auto;padding:12px;font-size:13px;display:flex;flex-direction:column;gap:8px}
-.chat-input{display:flex;gap:6px;padding:10px;background:#0A0A0A}
-.chat-input input{flex:1;background:#1A1A1A;border:1px solid #333;border-radius:10px;padding:10px;color:#fff}
-@media(max-width:768px){.hero-top{height:240px}.welcome-h1{font-size:26px}.quick-stats{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:1fr}}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#141414;--border:#222}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:40px}
+.hero{background:linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);color:#000;padding:22px 16px 18px;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+.hero::after{content:'✨';position:absolute;right:18px;top:18px;font-size:28px}
+.hero h1{font-family:Space Grotesk;font-size:30px;line-height:.9;margin:0;font-weight:800}
+.hero p{margin:6px 0 0;font-weight:800;opacity:.8;font-size:12px}
+.roomBadge{display:inline-flex;background:#000;color:#fff;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900;margin-top:10px;gap:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px}
+.cat h3{margin:0 0 10px;font-family:Space Grotesk;font-size:14px;color:var(--lime)}
+.svc{background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;position:relative;text-align:left}
+.svc:active{transform:scale(.97);border-color:var(--lime)}
+.svc b{font-size:13px;display:block}.svc small{color:#888;font-size:10px;display:block;margin-top:2px}.svc i{font-style:normal;font-size:20px;display:block;margin-bottom:6px}
+.svc.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px}
+.input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;margin-top:6px;font-size:14px}
+.btn{width:100%;background:var(--lime);color:#000;padding:15px;border:none;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;place-items:center;z-index:100;padding:16px}
+.modalBox{background:#161616;border:1px solid #2a2a2a;border-radius:22px;padding:18px;width:100%;max-width:380px}
 </style>
-</head><body>
-
-<div class="hero-top">
-<img id="hotelHero" src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200">
-<div class="hero-overlay"></div>
-<div class="hero-content">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<div class="logo">GUESTHUB™ <span style="font-size:10px;color:#fff;opacity:0.5;letter-spacing:2px">AFRICA</span></div>
-<select id="langSelect" onchange="changeLang(this.value)" style="background:rgba(0,0,0,0.6);color:#fff;border:1px solid var(--gold);padding:6px 10px;border-radius:8px"><option value="en">EN</option><option value="sw">SW</option><option value="fr">FR</option></select>
-</div>
-<div class="room-badge">🚪 Room <b id="roomNo">101</b> • <span id="hotelName" style="color:var(--gold)">Loading...</span> • <span style="width:6px;height:6px;background:#00FF7F;border-radius:50%;display:inline-block"></span> Live</div>
-<h1 class="welcome-h1" id="welcomeTitle">Karibu! Order<br>Everything <span>From Bed</span></h1>
-<p class="sub" id="welcomeSub">No app download. No call. Just tap & we deliver to your room via WhatsApp department.</p>
-<div class="quick-stats">
-<div class="q-stat"><b id="points">0</b><span>Points</span></div>
-<div class="q-stat"><b id="activeOrders">0</b><span>Active</span></div>
-<div class="q-stat"><b>~12m</b><span>Avg Time</span></div>
-<div class="q-stat"><b style="color:#25D366">WA</b><span>24/7 Chat</span></div>
-</div>
-</div>
+</head>
+<body>
+<div class="hero">
+<h1 id="hotelTitle">WELCOME TO<br><span id="hotelName">YOUR HOTEL</span></h1>
+<p id="hotelTag">5-star services • 15 min delivery • M-Pesa or Room Bill</p>
+<div class="roomBadge" id="roomBadge">🛏️ Room 204 • 📶 Free WiFi • 🔒 Safe stay</div>
 </div>
 
-<div class="container">
-<div class="scan-card">
-<div class="icon">📲</div>
-<div><b style="font-size:13px">You're in Room <span id="roomDup">101</span> – All orders go to your room</b><div style="font-size:11px;opacity:0.5">Food, Laundry, Taxi, Spa, Tours – Direct to hotel WhatsApp. No extra fee for hotel services.</div></div>
+<div style="padding:10px 12px 0"><div style="background:#141414;border:1px dashed #333;border-radius:14px;padding:10px;display:flex;gap:8px"><input id="guestName" class="input" style="margin:0" placeholder="Your name e.g. John"><input id="roomNo" class="input" style="margin:0" placeholder="Room e.g. 204"></div></div>
+
+<!-- QUICK ACTIONS -->
+<div class="cat"><h3>⚡ Instant - 1 Tap Order</h3>
+<div class="grid2" id="quick"></div>
 </div>
 
-<div class="tabs" id="tabs">
-<div class="tab active" onclick="showTab('food',this)">🍽️ Room Service <span class="badge badge-free">0% FEE</span></div>
-<div class="tab" onclick="showTab('service',this)">🛎️ Housekeeping</div>
-<div class="tab" onclick="showTab('laundry',this)">🧺 Laundry</div>
-<div class="tab" onclick="showTab('spa',this)">🧖 Spa</div>
-<div class="tab" onclick="showTab('tour',this)">🦁 Tours <span class="badge badge-fee">15%</span></div>
-<div class="tab" onclick="showTab('taxi',this)">🚕 Taxi</div>
+<div class="cat"><h3>🚕 Transport & Taxi</h3><div class="grid2" id="g1"></div></div>
+<div class="cat"><h3>🌍 Tours & Safari (Hotel Trusted)</h3><div class="grid2" id="g2"></div></div>
+<div class="cat"><h3>🧖 Spa, Food & Room Service</h3><div class="grid2" id="g3"></div></div>
+<div class="cat"><h3>📸 Media & Concierge</h3><div class="grid2" id="g4"></div></div>
+
+<div class="cat" style="border-color:#fbbf24"><h3>💬 Need Help? Talk to Human</h3>
+<div class="grid2"><button class="svc" onclick="contact('front')"><i>🏨</i><b>Front Desk</b><small>WhatsApp instantly</small></button><button class="svc" onclick="contact('house')"><i>🧹</i><b>Housekeeping</b><small>Towels, cleaning</small></button></div>
 </div>
 
-<div id="items" class="grid"></div>
-<div id="noItems" style="display:none;text-align:center;padding:40px;opacity:0.5">No items in this category yet – GM will add soon</div>
-</div>
+<div style="text-align:center;padding:16px;color:#555;font-size:10px;font-weight:800">🔒 GuestHub Secure • Hotels pay vendors after your OTP • Zero extra fees</div>
 
-<div class="footer-order">
-<div><div style="font-size:12px;opacity:0.5">Room <span id="footerRoom">101</span> • <span id="footerHotel">Hotel</span></div><div style="font-weight:800">Need help? <span style="color:#25D366">WhatsApp Us</span></div></div>
-<button onclick="toggleChat()" style="background:var(--gold);border:none;padding:10px 16px;border-radius:12px;font-weight:900">💬 AI Concierge</button>
-</div>
+<!-- ORDER MODAL -->
+<div class="modal" id="orderModal"><div class="modalBox">
+<h3 id="mTitle" style="margin:0;font-family:Space Grotesk">Confirm Order</h3><small id="mDesc" style="color:#888"></small>
+<label style="font-size:10px;color:#888;margin-top:12px;display:block">Your WhatsApp (for OTP)</label><input id="guestPhone" class="input" placeholder="254722...">
+<label style="font-size:10px;color:#888;margin-top:10px;display:block">Time / Note</label><input id="orderNote" class="input" placeholder="e.g. Tomorrow 8AM, 2 bags, baby seat">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn" style="background:#1f1f1f;color:#fff;border:1px solid #333" onclick="closeModal()">Cancel</button><button class="btn" id="confirmBtn" onclick="placeOrder()">✅ Order - Pay at Hotel</button></div>
+<small style="color:#666;display:block;text-align:center;margin-top:10px">You pay after service with OTP. No prepayment.</small>
+</div></div>
 
-<div class="chat-box" id="chatBox">
-<div class="chat-head"><span>🤖 AI Concierge</span><span onclick="toggleChat()" style="cursor:pointer">✕</span></div>
-<div id="chatLog" class="chat-log"><div style="background:#1A1A1A;padding:8px 12px;border-radius:12px;align-self:flex-start">Hi! I'm your in-room assistant. Ask me "What to eat?" or "Book taxi to airport"</div></div>
-<div class="chat-input"><input id="chatInput" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')sendChat()"><button onclick="sendChat()" style="background:var(--gold);border:none;padding:10px;border-radius:10px;font-weight:800">➤</button></div>
-</div>
+<div class="modal" id="successModal"><div class="modalBox" style="text-align:center">
+<div style="font-size:40px">✅</div><h3 style="font-family:Space Grotesk">Order Sent to Hotel!</h3><p style="color:#888;font-size:13px;line-height:1.5" id="successText">Hotel front desk assigned your vendor. You will get WhatsApp with vendor name + live location + OTP.</p><button class="btn" onclick="closeSuccess()">Great ✨</button></div></div>
 
+<script src="config.js"></script>
 <script>
-const params=new URLSearchParams(location.search);
-const hotelId=params.get('hotelId')||'demo';
-const room=params.get('room')||'101';
-document.getElementById('roomNo').innerText=room;
-document.getElementById('roomDup').innerText=room;
-document.getElementById('footerRoom').innerText=room;
+const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let hotel=null, hotelId=null, selectedSvc=null;
 
-let allHotels=[], allItems=[], allReviews=[], currentTab='food', currentHotel=null;
-
-const translations={
- en:{welcomeTitle:"Karibu! Order<br>Everything <span>From Bed</span>",welcomeSub:"No app download. No call. Just tap & we deliver to your room via WhatsApp department.",orderNow:"🛒 Order to Room →",bookNow:"📲 Book via WhatsApp →",waBtn:"💬 WhatsApp Dept"},
- sw:{welcomeTitle:"Karibu! Agiza<br>Kila Kitu <span>Kitandani</span>",welcomeSub:"Hakuna app. Hakuna kupiga simu. Bonyeza tu – tunaleta chumbani.",orderNow:"🛒 Agiza Chumbani →",bookNow:"📲 Weka Nafasi →",waBtn:"💬 WhatsApp Idara"},
- fr:{welcomeTitle:"Bienvenue! Commandez<br>Tout <span>Depuis Lit</span>",welcomeSub:"Pas d'app. Pas d'appel. Touchez & on livre.",orderNow:"🛒 Commander →",bookNow:"📲 Réserver →",waBtn:"💬 WhatsApp"}
+const SERVICES={
+ quick:[
+  {id:'airport_taxi',icon:'✈️',t:'Airport Taxi Now',d:'JKIA/Wilson in 15min',price:2500,cat:'taxi'},
+  {id:'room_food',icon:'🍔',t:'Room Service',d:'Burger, fries, drinks',price:1200,cat:'food'},
+  {id:'laundry',icon:'👕',t:'Laundry Express',d:'2hr return',price:500,cat:'spa'},
+  {id:'massage',icon:'🧖',t:'Massage in Room',d:'Swedish 60min',price:3500,cat:'spa'},
+ ],
+ g1:[
+  {id:'airport_taxi',icon:'🚕',t:'Airport Transfer',d:'JKIA, Wilson, SGR',price:2500},
+  {id:'town_taxi',icon:'🚖',t:'Town Taxi',d:'Uber style',price:600},
+  {id:'car_hire',icon:'🚙',t:'Car Hire + Driver',d:'Daily 5-15k',price:8000},
+  {id:'luxury_transfer',icon:'✨',t:'VIP Transfer',d:'Prado V8',price:12000},
+ ],
+ g2:[
+  {id:'nairobi_tour',icon:'🦒',t:'City Tour',d:'Giraffe, Museum',price:3500},
+  {id:'park_day',icon:'🦁',t:'Nairobi Park',d:'Day trip',price:8000},
+  {id:'mara_safari',icon:'🌍',t:'Maasai Mara 3D',d:'Hotel trusted guide',price:25000},
+  {id:'beach_safari',icon:'🐬',t:'Diani & Wasini',d:'Dolphins',price:7000},
+ ],
+ g3:[
+  {id:'massage',icon:'💆',t:'Deep Massage',d:'In-room 60min',price:3500},
+  {id:'spa_nails',icon:'💅',t:'Nails & Hair',d:'In-room beauty',price:2000},
+  {id:'food_delivery',icon:'🍕',t:'Food Outside',d:'Java, KFC',price:300},
+  {id:'chef',icon:'👨‍🍳',t:'Private Chef',d:'In-room dining',price:5000},
+ ],
+ g4:[
+  {id:'photography',icon:'📸',t:'Photography',d:'Portrait',price:5000},
+  {id:'shopping',icon:'🛍️',t:'Personal Shopper',d:'Maasai market',price:1000},
+  {id:'translator',icon:'🗣️',t:'Translator',d:'French/German',price:2000},
+  {id:'concierge',icon:'🔑',t:'Anything Else?',d:'Just ask',price:500},
+ ]
 };
-let lang=localStorage.getItem('guesthub_lang')||'en';
-function changeLang(l){lang=l;localStorage.setItem('guesthub_lang',l);applyLang();}
-function applyLang(){const t=translations[lang]||translations.en;document.getElementById('welcomeTitle').innerHTML=t.welcomeTitle;document.getElementById('welcomeSub').innerText=t.welcomeSub;if(allItems.length)showTab(currentTab,document.querySelector('.tab.active'));}
 
-function toggleChat(){document.getElementById('chatBox').classList.toggle('open');}
-
-function showTab(type,el){
- currentTab=type;
- document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
- if(el) el.classList.add('active');
- const t=translations[lang]||translations.en;
- const filtered=allItems.filter(i=>(i.type||i.category||'food').toLowerCase()===type.toLowerCase());
- const grid=document.getElementById('items');
- if(filtered.length===0){grid.style.display='none';document.getElementById('noItems').style.display='block';return;}
- grid.style.display='grid';document.getElementById('noItems').style.display='none';
- grid.innerHTML=filtered.map(i=>{
-  const revs=allReviews.filter(r=>r.item_id===i.id);
-  const avg=revs.length?(revs.reduce((a,b)=>a+b.rating,0)/revs.length).toFixed(1):'5.0';
-  const isFood=type==='food'||type==='service'||type==='laundry'||type==='spa';
-  return `<div class="card"><img src="${i.image_url||i.image||'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800'}">
-   <div class="card-body">
-    <div class="card-top"><b>${i.name}</b><span>⭐ ${avg}</span></div>
-    <div style="font-size:12px;opacity:0.6;margin:6px 0;min-height:32px">${i.description||'Premium hotel service, delivered fast'}</div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><div class="price">KES ${Number(i.price||0).toLocaleString()}</div><span class="badge ${isFood?'badge-free':'badge-fee'}">${isFood?'0% FEE':'15% FEE'}</span></div>
-    <button class="btn ${isFood?'btn-order':'btn-book'}" onclick="orderItem('${i.id}','${(i.name||'').replace(/'/g,'')}','${i.type||type}',${i.price||0})">${isFood?t.orderNow:t.bookNow}</button>
-    <button class="btn btn-wa" style="margin-top:6px" onclick="orderWhatsApp('${(i.name||'').replace(/'/g,'')}','${type}',${i.price||0})">${t.waBtn}</button>
-   </div></div>`;
- }).join('');
+function render(){
+ Object.keys(SERVICES).forEach(g=>{
+  const box=document.getElementById(g); if(!box) return;
+  box.innerHTML=SERVICES[g].map(s=>`
+   <div class=svc onclick="openOrder('${s.id}','${s.t}','${s.d}',${s.price})">
+    <div class=price>Ksh ${s.price}</div><i>${s.icon}</i><b>${s.t}</b><small>${s.d}</small>
+   </div>`).join('');
+ });
 }
 
-function getDept(type){
- const map={food:'kitchen',service:'housekeeping',laundry:'laundry',spa:'spa',taxi:'taxi',tour:'tours',front:'front'};
- return map[type]||type;
-}
+async function initHotel(){
+ const params=new URLSearchParams(location.search);
+ const hid=params.get('hotel')||params.get('hotel_id')||params.get('h')||localStorage.getItem('last_hotel_id');
+ const room=params.get('room')||localStorage.getItem('last_room')||'';
+ if(room) document.getElementById('roomNo').value=room;
+ document.getElementById('roomBadge').innerText='🛏️ Room '+(room||'Guest')+' • 📶 Free WiFi • 🔒 Verified';
 
-function orderWhatsApp(itemName,type,price){
- const dept=getDept(type);
- const hotel=currentHotel||{};
- let phone=(hotel.phone||hotel.hotel_phone||'254700000000').replace(/[^0-9]/g,'');
- if(phone.startsWith('0')) phone='254'+phone.slice(1);
- if(!phone.startsWith('254')) phone='254'+phone;
- const deptLabel={kitchen:'KITCHEN / ROOM SERVICE',housekeeping:'HOUSEKEEPING',laundry:'LAUNDRY',spa:'SPA',taxi:'TAXI',tours:'TOURS',front:'FRONT OFFICE'}[dept]||dept.toUpperCase();
- const msg=`*GUESTHUB ORDER - ${deptLabel}*%0A%0A🏨 Hotel: ${hotel.hotel_name||hotel.name||hotelId}%0A🚪 Room: ${room}%0A🛒 Item: ${itemName}%0A💰 Price: KES ${price}%0A%0A_Please deliver to my room. Sent via GuestHub QR_`;
- window.open(`https://wa.me/${phone}?text=${msg}`,'_blank');
- document.getElementById('activeOrders').innerText=parseInt(document.getElementById('activeOrders').innerText)+1;
- // Also log order to backend
- fetch('/api/guest/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotelId,room,guest:'Guest '+room,item_id:itemName,phone,dept:dept})}).catch(()=>{});
-}
-
-function orderItem(id,name,type,price){
- const guestName=prompt(lang==='sw'?'Jina lako:':'Your name:')||'Guest '+room;
- const phone=prompt('M-Pesa / WhatsApp 2547...')||'';
- if(type==='food' && phone){
-   fetch('/api/guest/pay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone,amount:price})}).catch(()=>{});
+ if(!hid){
+  document.getElementById('hotelName').innerText='Demo Hotel (Add?hotel=ID to URL)';
+  hotelId='demo'; return;
  }
- orderWhatsApp(name,type,price);
- alert(lang==='sw'?'✅ Oda imetumwa WhatsApp!':'✅ Order sent to WhatsApp department!');
+ hotelId=hid;
+ const {data}=await supa.from('hotels').select('*').eq('id',hid).single();
+ if(data){ hotel=data; document.getElementById('hotelName').innerText=data.name; document.getElementById('hotelTag').innerText=(data.city||'')+' • '+ (data.tagline||'5-star services • 15 min'); localStorage.setItem('last_hotel_id',hid); }
 }
 
-function sendChat(){
- const input=document.getElementById('chatInput'); const msg=input.value.trim(); if(!msg) return;
- document.getElementById('chatLog').innerHTML+=`<div style="background:var(--gold);color:#000;padding:8px 12px;border-radius:12px;align-self:flex-end;max-width:80%">${msg}</div>`;
- input.value='';
- fetch('/api/guest/ai-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,hotel_id:hotelId,room,lang})})
-.then(r=>r.json()).then(d=>{
-  document.getElementById('chatLog').innerHTML+=`<div style="background:#1A1A1A;padding:8px 12px;border-radius:12px;align-self:flex-start;max-width:80%">${d.reply||'I can help you order food, taxi, spa, laundry. Just say what you need!'}</div>`;
-  document.getElementById('chatLog').scrollTop=9999;
- }).catch(()=>{document.getElementById('chatLog').innerHTML+=`<div style="background:#1A1A1A;padding:8px 12px;border-radius:12px;align-self:flex-start">Try: "Order pilau" or "Book taxi to airport"</div>`});
+function openOrder(id,title,desc,price){
+ if(!document.getElementById('roomNo').value ||!document.getElementById('guestName').value){
+  alert('Mkuu enter your name + room number first at top'); document.getElementById('guestName').focus(); return;
+ }
+ selectedSvc={id,title,desc,price};
+ document.getElementById('mTitle').innerText=title;
+ document.getElementById('mDesc').innerText=desc+' • Ksh '+price;
+ document.getElementById('orderModal').style.display='grid';
+}
+function closeModal(){ document.getElementById('orderModal').style.display='none'; }
+function closeSuccess(){ document.getElementById('successModal').style.display='none'; }
+
+async function placeOrder(){
+ const btn=document.getElementById('confirmBtn'); btn.innerText='⏳ Sending to Hotel...'; btn.disabled=true;
+ try{
+  const payload={
+   hotel_id: hotelId=='demo'?null:hotelId,
+   room: document.getElementById('roomNo').value,
+   guest_name: document.getElementById('guestName').value,
+   guest_phone: document.getElementById('guestPhone').value || '2547',
+   service: selectedSvc.id,
+   service_title: selectedSvc.title,
+   details: document.getElementById('orderNote').value || selectedSvc.desc,
+   amount: selectedSvc.price,
+   status:'new',
+   created_at: new Date().toISOString()
+  };
+  // Save guest info
+  localStorage.setItem('last_room',payload.room);
+  localStorage.setItem('guest_name',payload.guest_name);
+  localStorage.setItem('guest_phone',payload.guest_phone);
+
+  const {error}=await supa.from('orders').insert([payload]);
+  if(error) throw error;
+
+  closeModal();
+  document.getElementById('successText').innerText=`${selectedSvc.title} for Room ${payload.room} sent to ${hotel?hotel.name:'hotel front desk'}. They will assign best vendor in 2 min. Keep your phone ON for OTP ${Math.floor(1000+Math.random()*9000)}.`;
+  document.getElementById('successModal').style.display='grid';
+  if(navigator.vibrate) navigator.vibrate([100,50,100]);
+ }catch(e){ alert('Error: '+e.message); }
+ btn.innerText='✅ Order - Pay at Hotel'; btn.disabled=false;
 }
 
-// LOAD DATA
-fetch('/api/data').then(r=>r.json()).then(data=>{
- allHotels=data.hotels||[];
- allItems=data.items||[];
- allReviews=data.reviews||[];
- currentHotel=allHotels.find(h=>(h.hotel_id||h.id)===hotelId)||allHotels[0]||{};
- document.getElementById('hotelName').innerText=currentHotel.hotel_name||currentHotel.name||hotelId;
- document.getElementById('footerHotel').innerText=currentHotel.hotel_name||currentHotel.name||hotelId;
- if(currentHotel.image) document.getElementById('hotelHero').src=currentHotel.image;
- // Filter items for this hotel
- const hotelItems=allItems.filter(i=> (i.hotel_id===hotelId) ||!i.hotel_id);
- if(hotelItems.length) allItems=hotelItems;
- applyLang();
- showTab('food',document.querySelector('.tab.active'));
-}).catch(e=>{
- console.log(e);
- document.getElementById('hotelName').innerText=hotelId;
- applyLang();
- showTab('food',document.querySelector('.tab.active'));
-});
+function contact(type){
+ const phone = type=='front'? (hotel?.whatsapp_front||'254722000000') : (hotel?.whatsapp_house||'254722000000');
+ window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'')+'?text=Hi, Room '+document.getElementById('roomNo').value+' needs help - '+type);
+}
+
+// Init
+render(); initHotel();
+document.getElementById('guestName').value=localStorage.getItem('guest_name')||'';
+document.getElementById('guestPhone').value=localStorage.getItem('guest_phone')||'';
 </script>
-</body></html>
+</body>
+</html>
