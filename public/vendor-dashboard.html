@@ -1,121 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendor Dashboard - GuestHub8.5</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vendor OS 9.0 - GuestHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{background:#0a0a0a; color:#fff; font-family:Arial; margin:0;}
-header{background:#111; padding:15px; display:flex; justify-content:space-between; border-bottom:2px solid #00FF7F;}
-header h1{color:#00FF7F; font-size:18px; margin:0;}
-.stats{display:flex; gap:10px; padding:15px; justify-content:space-around;}
-.stat-box{background:#1a1a1a; padding:15px; border-radius:10px; text-align:center; flex:1; border:1px solid #333;}
-.stat-box h3{color:#00FF7F; font-size:24px; margin:0;}
-.stat-box p{color:#aaa; font-size:12px; margin:5px 0 0;}
-.section{padding:15px;}
-.section h2{color:#DAA520; border-bottom:1px solid #333; padding-bottom:8px;}
-.order-card{background:#1a1a1a; border:1px solid #333; border-radius:10px; padding:15px; margin-bottom:12px;}
-.order-card.new{border-left:4px solid #00FF7F;}
-.order-top{display:flex; justify-content:space-between; margin-bottom:8px;}
-.badge{background:#00FF7F; color:#000; padding:3px 8px; border-radius:5px; font-size:11px; font-weight:bold;}
-.btn-group{display:flex; gap:8px; margin-top:10px;}
-.btn{padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer; flex:1;}
-.btn-accept{background:#00C851; color:#000;}
-.btn-decline{background:#8B0000; color:#fff;}
-.btn-call{background:#DAA520; color:#000;}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#131313;--border:#222;--ok:#22c55e;--muted:#888}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:'Inter',sans-serif;padding-bottom:100px}
+header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Space Grotesk';font-weight:800;font-size:18px}.logo span{color:var(--lime)}
+.live{font-size:11px;background:#0a2a14;border:1px solid #14532d;color:var(--ok);padding:6px 10px;border-radius:999px;font-weight:800;display:flex;gap:6px;align-items:center}
+.dot{width:7px;height:7px;background:var(--ok);border-radius:50%;box-shadow:0 0 0 4px rgba(34,197,94,.2);animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+.wallet{margin:14px;background:linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);color:#000;border-radius:20px;padding:18px;display:flex;justify-content:space-between}
+.wallet h2{margin:4px 0 0;font-family:'Space Grotesk';font-size:32px;font-weight:800}.wallet small{opacity:.7;font-weight:700;letter-spacing:.08em}
+.btn-withdraw{background:#000;color:#fff;border:none;padding:10px 16px;border-radius:999px;font-weight:800;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px}
+.s-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;text-align:center}
+.s-card b{font-size:20px;display:block}.s-card span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.tabs{display:flex;gap:8px;padding:14px;overflow:auto;position:sticky;top:62px;z-index:40;background:var(--bg)}
+.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:13px;cursor:pointer}
+.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
+.section{padding:0 14px;margin-top:6px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.card.new{border-left:4px solid var(--lime);animation:slide.4s ease}
+@keyframes slide{from{transform:translateX(10px);opacity:0}to{transform:translateX(0);opacity:1}}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.badge{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px}
+.badge.new{background:var(--lime);color:#000}.badge.urgent{background:#ff3b30;color:#fff;animation:blink.8s infinite}
+@keyframes blink{50%{opacity:.5}}
+.meta{color:var(--muted);font-size:12px;line-height:1.5}.meta b{color:#fff}
+.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.btn{padding:12px;border:none;border-radius:12px;font-weight:900;cursor:pointer;font-size:13px}
+.btn-a{background:var(--lime);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}.btn-c{background:#fbbf24;color:#000}
+.switch{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin:10px 14px}
+.toggle{width:46px;height:26px;background:#333;border-radius:999px;position:relative;cursor:pointer;transition:.2s}.toggle.on{background:var(--ok)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}.toggle.on::after{left:23px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#0e0e0e;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 18px}
+.bottom button{background:none;border:none;color:var(--muted);font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px}.bottom button.active{color:var(--lime)}
+.gold{color:var(--gold)}
 </style>
 </head>
 <body>
-
 <header>
-  <h1>🚚 Vendor Dashboard</h1>
-  <div style="color:#aaa; font-size:12px;">Safari Cabs Ltd</div>
+<div class="logo"><span>GuestHub</span> Vendor OS</div>
+<div class="live"><div class="dot"></div><span id="statusTxt">ONLINE • Auto-Accept ON</span></div>
 </header>
 
-<!-- STATS -->
+<div class="wallet">
+<div><small>WALLET BALANCE</small><h2 id="bal">Ksh 28,500</h2><small id="today">+ Ksh 4,200 Today • 12 trips</small></div>
+<button class="btn-withdraw" onclick="withdraw()">Withdraw → M-Pesa</button>
+</div>
+
 <div class="stats">
-  <div class="stat-box">
-    <h3>12</h3>
-    <p>This Week</p>
-  </div>
-  <div class="stat-box">
-    <h3>Ksh 28,500</h3>
-    <p>Earnings</p>
-  </div>
-  <div class="stat-box">
-    <h3>4.9⭐</h3>
-    <p>Rating</p>
-  </div>
+<div class="s-card"><b id="s_week">12</b><span>This Week</span></div>
+<div class="s-card"><b>4.9⭐</b><span>Rating • Top 5%</span></div>
+<div class="s-card"><b id="s_resp">98%</b><span>Response</span></div>
 </div>
 
-<!-- NEW ORDERS -->
-<div class="section">
-  <h2>🔔 New Requests</h2>
-  
-  <div class="order-card new">
-    <div class="order-top">
-      <b>Room 305 - PrideInn Nairobi</b>
-      <span class="badge">NEW</span>
-    </div>
-    <p><b>Service:</b> 🚕 Airport Pickup - JKIA 6:00 AM</p>
-    <p><b>Guest:</b> John Smith | <b>Pay:</b> Ksh 2,500</p>
-    <p><b>Note:</b> Flight BA-102. Guest has 2 luggage.</p>
-    <div class="btn-group">
-      <button class="btn btn-accept" onclick="acceptOrder()">Accept</button>
-      <button class="btn btn-decline" onclick="declineOrder()">Decline</button>
-      <button class="btn btn-call" onclick="callHotel()">Call Front Desk</button>
-    </div>
-  </div>
-
-  <div class="order-card new">
-    <div class="order-top">
-      <b>Room 112 - Sarova Stanley</b>
-      <span class="badge">NEW</span>
-    </div>
-    <p><b>Service:</b> 🌍 City Tour - Nairobi National Park</p>
-    <p><b>Guest:</b> Sarah Lee | <b>Pay:</b> Ksh 8,000</p>
-    <p><b>Time:</b> Today 2:00 PM</p>
-    <div class="btn-group">
-      <button class="btn btn-accept" onclick="acceptOrder()">Accept</button>
-      <button class="btn btn-decline" onclick="declineOrder()">Decline</button>
-      <button class="btn btn-call" onclick="callHotel()">Call Hotel</button>
-    </div>
-  </div>
+<div class="switch">
+<div><b>🟢 Available for jobs</b><br><small style="color:#888">You get 3x more orders when ON</small></div>
+<div class="toggle on" id="availToggle" onclick="this.classList.toggle('on')"></div>
 </div>
 
-<!-- ACTIVE BOOKINGS -->
-<div class="section">
-  <h2>📅 Active Bookings</h2>
-  <div class="order-card">
-    <div class="order-top">
-      <b>Room 201 - PrideInn</b>
-      <span style="color:#00FF7F;">Accepted</span>
-    </div>
-    <p><b>Service:</b> 🧖 In-room Massage 8:00 PM</p>
-    <p><b>Status:</b> Vendor on the way</p>
-  </div>
+<div class="switch" style="margin-top:0">
+<div><b>⚡ Smart Auto-Accept (JKIA)</b><br><small style="color:#888">AI accepts < Ksh 3000 jobs near you</small></div>
+<div class="toggle on" onclick="this.classList.toggle('on')"></div>
 </div>
 
+<div class="tabs">
+<button class="tab active" onclick="tab('new',this)">🔔 New (2)</button>
+<button class="tab" onclick="tab('active',this)">📅 Active</button>
+<button class="tab" onclick="tab('services',this)">🛠️ My Services & Prices</button>
+<button class="tab" onclick="tab('wallet',this)">💰 Earnings</button>
+</div>
+
+<!-- NEW -->
+<div id="view-new" class="section">
+<div class="card new">
+<div class="top"><b>🏨 Room 305 • PrideInn Westlands</b><span class="badge urgent">⚡ 2 MIN LEFT</span></div>
+<div class="meta"><b>Service:</b> 🚕 JKIA Pickup 6:00 AM<br><b>Guest:</b> John Smith (UK) • 💎 VIP<br><b>Pay:</b> <span style="color:var(--lime);font-weight:900">Ksh 2,500 + Ksh 500 tip possible</span><br><b>Flight:</b> BA-102 Landed • 2 Bags • <a href="#" style="color:var(--gold)">Track Flight</a><br><b>Distance:</b> 3.2km from you • ETA to hotel 8 min</div>
+<div class="actions"><button class="btn btn-a" onclick="accept(this)">✅ Accept • One Tap</button><button class="btn btn-d" onclick="decline(this)">Decline</button><button class="btn btn-c" onclick="call()">📞 Call Front Desk</button></div>
+<div style="margin-top:10px;display:flex;gap:6px"><span style="font-size:10px;background:#1f1f1f;border:1px solid #333;padding:4px 8px;border-radius:999px">🧳 Help with luggage</span><span style="font-size:10px;background:#1f1f1f;border:1px solid #333;padding:4px 8px;border-radius:999px">🗣️ English</span></div>
+</div>
+
+<div class="card new">
+<div class="top"><b>🏨 Room 112 • Sarova Stanley</b><span class="badge new">NEW • HIGH VALUE</span></div>
+<div class="meta"><b>Service:</b> 🌍 Nairobi National Park + Giraffe Center<br><b>Guest:</b> Sarah Lee (2 pax) • <b>Pay: Ksh 8,000</b><br><b>Time:</b> Today 2:00 PM • Hotel paid - you keep 100%<br><b>Note:</b> Guest wants photos, has kids</div>
+<div class="actions"><button class="btn btn-a" onclick="accept(this)">Accept Ksh 8k</button><button class="btn btn-d">Bid Higher</button><button class="btn btn-c">Chat Guest</button></div>
+</div>
+</div>
+
+<!-- ACTIVE -->
+<div id="view-active" class="section" style="display:none">
+<div class="card" style="border-left:4px solid var(--ok)">
+<div class="top"><b>Room 201 • PrideInn • John</b><span class="badge" style="background:var(--ok);color:#000">ON THE WAY</span></div>
+<div class="meta"><b>🧖 In-room Massage 8PM</b><br>Guest Location: Live <a href="#" class="gold">📍 View on Map</a><br>OTP to start service: <b style="font-size:18px;letter-spacing:3px;color:var(--lime)">4821</b></div>
+<div class="actions"><button class="btn btn-a">✅ Completed • Get OTP</button><button class="btn btn-c">🧭 Navigate</button><button class="btn btn-d">Issue</button></div>
+</div>
+</div>
+
+<!-- SERVICES -->
+<div id="view-services" class="section" style="display:none">
+<div class="card"><b>🛠️ My Active Services</b><br><small style="color:#888">What hotels see for your profile. Toggle OFF when busy.</small>
+<div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🚕 Airport Transfer (Sedan)</span><b>Ksh 2,500</b></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🌍 Half Day City Tour</span><b>Ksh 8,000</b></div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🧖 Deep Tissue Massage</span><b>Ksh 3,500</b></div>
+</div>
+<button class="btn btn-a" style="width:100%;margin-top:12px">+ Add New Service / Set Surge Price</button>
+</div>
+<div class="card"><b>🏆 GuestHub Vendor Perks</b><br><small style="color:#888">Your rating unlocks:</small><br><br>✅ Priority in 5-star hotels • ✅ Instant M-Pesa • ✅ Free fuel 1x/month at Total<br><span style="color:var(--lime);font-weight:800">Keep 4.9 to keep perks</span></div>
+</div>
+
+<!-- WALLET -->
+<div id="view-wallet" class="section" style="display:none">
+<div class="card"><b>💰 This Month</b><h2 style="font-family:Space Grotesk;font-size:36px;margin:6px 0">Ksh 84,200</h2><small style="color:var(--ok)">↑ 23% vs last month • You are Top Earner in Nairobi</small><br><br><div style="height:60px;background:linear-gradient(90deg,#131313 0%,#222 100%);border-radius:10px;display:flex;align-items:end;gap:4px;padding:6px"><div style="height:40%;width:100%;background:var(--lime)"></div><div style="height:70%;width:100%;background:var(--lime)"></div><div style="height:55%;width:100%;background:var(--lime)"></div><div style="height:90%;width:100%;background:var(--lime)"></div><div style="height:100%;width:100%;background:var(--gold)"></div></div></div>
+</div>
+
+<div class="bottom">
+<button class="active">🔔<span>Jobs</span></button><button>🗺️<span>Map</span></button><button>💬<span>Chats</span></button><button onclick="tab('wallet',document.querySelectorAll('.tab')[3])">💰<span>Wallet</span></button><button>👤<span>Profile</span></button>
+</div>
+
+<script src="config.js"></script>
 <script>
-function acceptOrder(){
-  alert("✅ Order Accepted! \nGuest + Hotel Front Desk have been notified on WhatsApp.");
+const supabase = window.supabase?.createClient? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY) : null;
+function tab(name,el){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); }
+function accept(btn){ btn.innerText='✅ Accepted!'; btn.style.background='#22c55e'; const w=document.getElementById('bal'); // fake increase
+ w.innerText='Ksh 31,000'; if(navigator.vibrate) navigator.vibrate(100); setTimeout(()=>{ alert('✅ Guest + Hotel notified on WhatsApp.\n\n🧭 Open Google Maps?\nGuest OTP: 4821 will be required to complete.'); tab('active',document.querySelectorAll('.tab')[1]); },300);
 }
-function declineOrder(){
-  alert("Order Declined. It will be sent to next vendor.");
-}
-function callHotel(){
-  alert("Calling Hotel Front Desk...");
-}
+function decline(btn){ btn.closest('.card').style.opacity='.3'; setTimeout(()=>btn.closest('.card').remove(),400); }
+function withdraw(){ alert('💸 M-Pesa Withdrawal\n\nAmount: Ksh 28,500\nTo: 0722xxxxxx\nFee: Ksh 0 (GuestHub covers)\n\n✅ Sent! You will receive in 10 sec.'); }
+function call(){ alert('📞 Calling PrideInn Front Desk...'); }
+// Sound for new order
+setInterval(()=>{ if(document.getElementById('availToggle').classList.contains('on') && Math.random()>.8){ if(navigator.vibrate) navigator.vibrate([100,50,100]); } },8000);
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script> <!-- Weka hii kwanza -->
-<script>
-    // Code yako yote ya supabase inaenda hapa chini
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-</script>
-
-
-  
 </body>
 </html>
