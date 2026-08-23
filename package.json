@@ -1,6 +1,6 @@
 {
   "name": "guesthub-safari-os-v85",
-  "version": "8.5.0",
+  "version": "9.0.0",
   "type": "module",
   "description": "Africa's AI-Powered In-Room",
   "main": "server.js",
@@ -12,7 +12,9 @@
     "dotenv": "^16.4.5",
     "bcryptjs": "^2.4.3",
     "axios": "^1.7.2",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
   },
   "engines": { "node": "18.x" }
 }
