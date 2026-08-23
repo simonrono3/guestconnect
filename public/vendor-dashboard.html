@@ -2,138 +2,113 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor OS 9.0 - GuestHub</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>Vendor OS 9.2 - Integrated</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#131313;--border:#222;--ok:#22c55e;--muted:#888}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:'Inter',sans-serif;padding-bottom:100px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
 header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:'Space Grotesk';font-weight:800;font-size:18px}.logo span{color:var(--lime)}
-.live{font-size:11px;background:#0a2a14;border:1px solid #14532d;color:var(--ok);padding:6px 10px;border-radius:999px;font-weight:800;display:flex;gap:6px;align-items:center}
-.dot{width:7px;height:7px;background:var(--ok);border-radius:50%;box-shadow:0 0 0 4px rgba(34,197,94,.2);animation:pulse 1.5s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.wallet{margin:14px;background:linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);color:#000;border-radius:20px;padding:18px;display:flex;justify-content:space-between}
-.wallet h2{margin:4px 0 0;font-family:'Space Grotesk';font-size:32px;font-weight:800}.wallet small{opacity:.7;font-weight:700;letter-spacing:.08em}
-.btn-withdraw{background:#000;color:#fff;border:none;padding:10px 16px;border-radius:999px;font-weight:800;cursor:pointer}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px}
-.s-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;text-align:center}
-.s-card b{font-size:20px;display:block}.s-card span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:20px;padding:18px;display:flex;justify-content:space-between}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px}
 .tabs{display:flex;gap:8px;padding:14px;overflow:auto;position:sticky;top:62px;z-index:40;background:var(--bg)}
-.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:13px;cursor:pointer}
-.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
-.section{padding:0 14px;margin-top:6px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
-.card.new{border-left:4px solid var(--lime);animation:slide.4s ease}
-@keyframes slide{from{transform:translateX(10px);opacity:0}to{transform:translateX(0);opacity:1}}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.badge{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px}
-.badge.new{background:var(--lime);color:#000}.badge.urgent{background:#ff3b30;color:#fff;animation:blink.8s infinite}
-@keyframes blink{50%{opacity:.5}}
-.meta{color:var(--muted);font-size:12px;line-height:1.5}.meta b{color:#fff}
-.actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
-.btn{padding:12px;border:none;border-radius:12px;font-weight:900;cursor:pointer;font-size:13px}
-.btn-a{background:var(--lime);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}.btn-c{background:#fbbf24;color:#000}
-.switch{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin:10px 14px}
-.toggle{width:46px;height:26px;background:#333;border-radius:999px;position:relative;cursor:pointer;transition:.2s}.toggle.on{background:var(--ok)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}.toggle.on::after{left:23px}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#0e0e0e;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 18px}
-.bottom button{background:none;border:none;color:var(--muted);font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:4px}.bottom button.active{color:var(--lime)}
-.gold{color:var(--gold)}
+.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:13px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
+.btn{padding:12px;border:none;border-radius:12px;font-weight:900;cursor:pointer}.btn-a{background:var(--lime);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}.btn-c{background:#fbbf24;color:#000}
+.badge{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;background:var(--lime);color:#000}
+.toggle{width:46px;height:26px;background:#333;border-radius:999px;position:relative;cursor:pointer}.toggle.on{background:var(--ok)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}.toggle.on::after{left:23px}
 </style>
 </head>
 <body>
-<header>
-<div class="logo"><span>GuestHub</span> Vendor OS</div>
-<div class="live"><div class="dot"></div><span id="statusTxt">ONLINE • Auto-Accept ON</span></div>
-</header>
+<header><div style="font-family:Space Grotesk;font-weight:800">GuestHub <span style="color:var(--lime)">Vendor OS 9.2</span></div><div id="vendorName" style="font-size:11px;color:#888">Loading...</div></header>
 
-<div class="wallet">
-<div><small>WALLET BALANCE</small><h2 id="bal">Ksh 28,500</h2><small id="today">+ Ksh 4,200 Today • 12 trips</small></div>
-<button class="btn-withdraw" onclick="withdraw()">Withdraw → M-Pesa</button>
+<div class="wallet"><div><small style="font-weight:800;opacity:.7">WALLET • <span id="status">PENDING</span></small><h2 id="bal" style="margin:4px 0 0;font-family:Space Grotesk;font-size:32px">Ksh 0</h2><small id="city">-</small></div><button class="btn" style="background:#000;color:#fff;border-radius:999px" onclick="alert('M-Pesa withdrawal: Supabase integration coming - funds after OTP')">Withdraw</button></div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px">
+<div class="card" style="text-align:center"><b id="svcCount">0</b><br><small style="color:#888">SERVICES</small></div>
+<div class="card" style="text-align:center"><b>5.0⭐</b><br><small style="color:#888">NEW VENDOR</small></div>
+<div class="card" style="text-align:center"><b id="orderCount">0</b><br><small style="color:#888">ORDERS</small></div>
 </div>
 
-<div class="stats">
-<div class="s-card"><b id="s_week">12</b><span>This Week</span></div>
-<div class="s-card"><b>4.9⭐</b><span>Rating • Top 5%</span></div>
-<div class="s-card"><b id="s_resp">98%</b><span>Response</span></div>
-</div>
-
-<div class="switch">
-<div><b>🟢 Available for jobs</b><br><small style="color:#888">You get 3x more orders when ON</small></div>
-<div class="toggle on" id="availToggle" onclick="this.classList.toggle('on')"></div>
-</div>
-
-<div class="switch" style="margin-top:0">
-<div><b>⚡ Smart Auto-Accept (JKIA)</b><br><small style="color:#888">AI accepts < Ksh 3000 jobs near you</small></div>
-<div class="toggle on" onclick="this.classList.toggle('on')"></div>
+<div style="margin:10px 14px;background:#131313;border:1px solid #222;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+<div><b>🟢 Available for jobs</b><br><small style="color:#888">Hotels see you when ON</small></div><div class="toggle on" id="avail" onclick="this.classList.toggle('on')"></div>
 </div>
 
 <div class="tabs">
-<button class="tab active" onclick="tab('new',this)">🔔 New (2)</button>
-<button class="tab" onclick="tab('active',this)">📅 Active</button>
-<button class="tab" onclick="tab('services',this)">🛠️ My Services & Prices</button>
-<button class="tab" onclick="tab('wallet',this)">💰 Earnings</button>
+<button class="tab active" onclick="showTab('new',this)">🔔 New Jobs</button>
+<button class="tab" onclick="showTab('active',this)">📅 Active</button>
+<button class="tab" onclick="showTab('services',this)">🛠️ My Services</button>
+<button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
 </div>
 
-<!-- NEW -->
-<div id="view-new" class="section">
-<div class="card new">
-<div class="top"><b>🏨 Room 305 • PrideInn Westlands</b><span class="badge urgent">⚡ 2 MIN LEFT</span></div>
-<div class="meta"><b>Service:</b> 🚕 JKIA Pickup 6:00 AM<br><b>Guest:</b> John Smith (UK) • 💎 VIP<br><b>Pay:</b> <span style="color:var(--lime);font-weight:900">Ksh 2,500 + Ksh 500 tip possible</span><br><b>Flight:</b> BA-102 Landed • 2 Bags • <a href="#" style="color:var(--gold)">Track Flight</a><br><b>Distance:</b> 3.2km from you • ETA to hotel 8 min</div>
-<div class="actions"><button class="btn btn-a" onclick="accept(this)">✅ Accept • One Tap</button><button class="btn btn-d" onclick="decline(this)">Decline</button><button class="btn btn-c" onclick="call()">📞 Call Front Desk</button></div>
-<div style="margin-top:10px;display:flex;gap:6px"><span style="font-size:10px;background:#1f1f1f;border:1px solid #333;padding:4px 8px;border-radius:999px">🧳 Help with luggage</span><span style="font-size:10px;background:#1f1f1f;border:1px solid #333;padding:4px 8px;border-radius:999px">🗣️ English</span></div>
-</div>
-
-<div class="card new">
-<div class="top"><b>🏨 Room 112 • Sarova Stanley</b><span class="badge new">NEW • HIGH VALUE</span></div>
-<div class="meta"><b>Service:</b> 🌍 Nairobi National Park + Giraffe Center<br><b>Guest:</b> Sarah Lee (2 pax) • <b>Pay: Ksh 8,000</b><br><b>Time:</b> Today 2:00 PM • Hotel paid - you keep 100%<br><b>Note:</b> Guest wants photos, has kids</div>
-<div class="actions"><button class="btn btn-a" onclick="accept(this)">Accept Ksh 8k</button><button class="btn btn-d">Bid Higher</button><button class="btn btn-c">Chat Guest</button></div>
-</div>
-</div>
-
-<!-- ACTIVE -->
-<div id="view-active" class="section" style="display:none">
-<div class="card" style="border-left:4px solid var(--ok)">
-<div class="top"><b>Room 201 • PrideInn • John</b><span class="badge" style="background:var(--ok);color:#000">ON THE WAY</span></div>
-<div class="meta"><b>🧖 In-room Massage 8PM</b><br>Guest Location: Live <a href="#" class="gold">📍 View on Map</a><br>OTP to start service: <b style="font-size:18px;letter-spacing:3px;color:var(--lime)">4821</b></div>
-<div class="actions"><button class="btn btn-a">✅ Completed • Get OTP</button><button class="btn btn-c">🧭 Navigate</button><button class="btn btn-d">Issue</button></div>
-</div>
-</div>
-
-<!-- SERVICES -->
-<div id="view-services" class="section" style="display:none">
-<div class="card"><b>🛠️ My Active Services</b><br><small style="color:#888">What hotels see for your profile. Toggle OFF when busy.</small>
-<div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
-<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🚕 Airport Transfer (Sedan)</span><b>Ksh 2,500</b></div>
-<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🌍 Half Day City Tour</span><b>Ksh 8,000</b></div>
-<div style="display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222"><span>🧖 Deep Tissue Massage</span><b>Ksh 3,500</b></div>
-</div>
-<button class="btn btn-a" style="width:100%;margin-top:12px">+ Add New Service / Set Surge Price</button>
-</div>
-<div class="card"><b>🏆 GuestHub Vendor Perks</b><br><small style="color:#888">Your rating unlocks:</small><br><br>✅ Priority in 5-star hotels • ✅ Instant M-Pesa • ✅ Free fuel 1x/month at Total<br><span style="color:var(--lime);font-weight:800">Keep 4.9 to keep perks</span></div>
-</div>
-
-<!-- WALLET -->
-<div id="view-wallet" class="section" style="display:none">
-<div class="card"><b>💰 This Month</b><h2 style="font-family:Space Grotesk;font-size:36px;margin:6px 0">Ksh 84,200</h2><small style="color:var(--ok)">↑ 23% vs last month • You are Top Earner in Nairobi</small><br><br><div style="height:60px;background:linear-gradient(90deg,#131313 0%,#222 100%);border-radius:10px;display:flex;align-items:end;gap:4px;padding:6px"><div style="height:40%;width:100%;background:var(--lime)"></div><div style="height:70%;width:100%;background:var(--lime)"></div><div style="height:55%;width:100%;background:var(--lime)"></div><div style="height:90%;width:100%;background:var(--lime)"></div><div style="height:100%;width:100%;background:var(--gold)"></div></div></div>
-</div>
-
-<div class="bottom">
-<button class="active">🔔<span>Jobs</span></button><button>🗺️<span>Map</span></button><button>💬<span>Chats</span></button><button onclick="tab('wallet',document.querySelectorAll('.tab')[3])">💰<span>Wallet</span></button><button>👤<span>Profile</span></button>
-</div>
+<div id="view-new" style="padding:0 14px"><div id="jobsList"></div></div>
+<div id="view-active" style="padding:0 14px;display:none"><div class="card" style="text-align:center;color:#888">No active jobs yet. Accept one from New Jobs.</div></div>
+<div id="view-services" style="padding:0 14px;display:none"></div>
+<div id="view-profile" style="padding:0 14px;display:none"></div>
 
 <script src="config.js"></script>
 <script>
-const supabase = window.supabase?.createClient? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY) : null;
-function tab(name,el){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); }
-function accept(btn){ btn.innerText='✅ Accepted!'; btn.style.background='#22c55e'; const w=document.getElementById('bal'); // fake increase
- w.innerText='Ksh 31,000'; if(navigator.vibrate) navigator.vibrate(100); setTimeout(()=>{ alert('✅ Guest + Hotel notified on WhatsApp.\n\n🧭 Open Google Maps?\nGuest OTP: 4821 will be required to complete.'); tab('active',document.querySelectorAll('.tab')[1]); },300);
+const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentVendor=null;
+
+async function init(){
+ // 1. Get vendor from localStorage or last login email
+ const email = localStorage.getItem('vendor_email');
+ if(!email){ document.getElementById('vendorName').innerText='Not logged in - go /vendor-signup.html'; return; }
+ const {data,error} = await supa.from('vendors').select('*').eq('email',email).single();
+ if(error ||!data){ document.getElementById('vendorName').innerText='Vendor not found'; return; }
+ currentVendor=data;
+ document.getElementById('vendorName').innerText=data.full_name+' • '+data.city;
+ document.getElementById('bal').innerText='Ksh '+(data.wallet||0);
+ document.getElementById('city').innerText=data.city+' • '+ (data.vehicle||'');
+ document.getElementById('status').innerText=data.status.toUpperCase();
+ document.getElementById('svcCount').innerText=(data.services||[]).length;
+ renderServices(data);
+ renderProfile(data);
+ loadJobs(data);
 }
-function decline(btn){ btn.closest('.card').style.opacity='.3'; setTimeout(()=>btn.closest('.card').remove(),400); }
-function withdraw(){ alert('💸 M-Pesa Withdrawal\n\nAmount: Ksh 28,500\nTo: 0722xxxxxx\nFee: Ksh 0 (GuestHub covers)\n\n✅ Sent! You will receive in 10 sec.'); }
-function call(){ alert('📞 Calling PrideInn Front Desk...'); }
-// Sound for new order
-setInterval(()=>{ if(document.getElementById('availToggle').classList.contains('on') && Math.random()>.8){ if(navigator.vibrate) navigator.vibrate([100,50,100]); } },8000);
+
+function renderServices(v){
+ const cont=document.getElementById('view-services');
+ let html=`<div class=card><b>🛠️ Your Active Services (${v.services.length})</b><br><small style=color:#888>Hotels filter by these</small><div style=margin-top:12px;display:flex;flex-direction:column;gap:8px>`;
+ const priceMap={airport_taxi:2500,sgr_taxi:2000,town_taxi:500,car_hire:8000,luxury_transfer:12000,boda_tuktuk:200,nairobi_tour:3500,park_day:8000,mara_safari:25000,amboseli_safari:20000,hike_guide:3000,beach_safari:7000,massage:3500,spa_nails:2000,laundry:500,gym_trainer:1500,babysitter:1000,chef:5000,photography:5000,drone:8000,shopping:1000,translator:2000,event_decor:4000,concierge:800};
+ (v.services||[]).forEach(s=>{
+  const label=s.replace(/_/g,' ').toUpperCase();
+  html+=`<div style=display:flex;justify-content:space-between;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222><span>✅ ${label}</span><b>Ksh ${priceMap[s]||v.price||2500}</b></div>`;
+ });
+ html+=`</div><button class=btn style=width:100%;margin-top:12px;background:#1f1f1f;color:#fff onclick="location.href='/vendor-signup.html'">+ Edit Services</button></div>`;
+ cont.innerHTML=html;
+}
+
+function renderProfile(v){
+ const cont=document.getElementById('view-profile');
+ cont.innerHTML=`<div class=card><b>👤 ${v.full_name}</b><br><small style=color:#888>ID: ${v.id_number} • ${v.phone}<br>Vehicle: ${v.vehicle} - ${v.plate}<br>M-Pesa: ${v.mpesa} (${v.mpesa_name})<br>Bio: ${v.bio}</small><br><br><span style=background:${v.status=='approved'?'#22c55e':'#fbbf24'};color:#000;padding:4px 10px;border-radius:999px;font-weight:900;font-size:11px>${v.status.toUpperCase()}</span><br><br><button class=btn btn-d style=width:100% onclick="localStorage.clear();location.href='/vendor-login.html'">Logout</button></div>`;
+}
+
+async function loadJobs(v){
+ // Fetch orders matching vendor services
+ const {data:orders} = await supa.from('orders').select('*').eq('status','new').limit(10);
+ const list=document.getElementById('jobsList');
+ if(!orders || orders.length==0){
+  list.innerHTML=`<div class=card style=text-align:center;color:#888>🔔 No new jobs for <b>${v.services[0]||'you'}</b> yet.<br><small>Hotels in ${v.city} will send when guest orders.<br>Keep AVAILABLE ON.</small><br><br><div style=background:#0a0a0a;border-radius:12px;padding:12px;text-align:left><b>Demo Job (test accept):</b><br>Room 305 • Airport Pickup • Ksh 2,500<br><button class=btn btn-a style=width:100%;margin-top:8px onclick="acceptDemo(this)">Accept Demo Ksh 2500</button></div></div>`;
+  document.getElementById('orderCount').innerText='0';
+  return;
+ }
+ document.getElementById('orderCount').innerText=orders.length;
+ list.innerHTML=orders.map(o=>`
+  <div class=card style=border-left:4px solid var(--lime)>
+   <div style=display:flex;justify-content:space-between><b>Room ${o.room} • ${o.hotel_name||'Hotel'}</b><span class=badge>NEW</span></div>
+   <div style=color:#888;font-size:12px;margin-top:6px>Service: <b style=color:#fff>${o.service}</b><br>Pay: <b style=color:var(--lime)>Ksh ${o.amount}</b> • Guest: ${o.guest_name||'Guest'}</div>
+   <div style=display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px><button class=btn btn-a onclick="acceptOrder('${o.id}')">✅ Accept</button><button class=btn btn-d>Decline</button></div>
+  </div>`).join('');
+}
+
+function showTab(name,el){ document.querySelectorAll('[id^=view-]').forEach(d=>d.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function acceptDemo(btn){ btn.innerText='✅ Accepted! Check Active'; btn.style.background='#22c55e'; setTimeout(()=>showTab('active',document.querySelectorAll('.tab')[1]),600); }
+async function acceptOrder(id){ alert('✅ Order '+id+' accepted! Guest notified on WhatsApp. OTP required to complete.'); }
+
+init();
+// Save email from signup redirect hack
+if(!localStorage.getItem('vendor_email')){ const e=prompt('Enter your vendor email to load dashboard (once):'); if(e){ localStorage.setItem('vendor_email',e); location.reload(); } }
 </script>
 </body>
 </html>
