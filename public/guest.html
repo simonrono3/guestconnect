@@ -1,205 +1,3194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<meta name="description" content="GuestHub - Your hotel services, room service, transport, tours and concierge in one place.">
+
 <title>GuestHub - Your Hotel SuperApp</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#141414;--border:#222}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:40px}
-.hero{background:linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);color:#000;padding:22px 16px 18px;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
-.hero::after{content:'✨';position:absolute;right:18px;top:18px;font-size:28px}
-.hero h1{font-family:Space Grotesk;font-size:30px;line-height:.9;margin:0;font-weight:800}
-.hero p{margin:6px 0 0;font-weight:800;opacity:.8;font-size:12px}
-.roomBadge{display:inline-flex;background:#000;color:#fff;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900;margin-top:10px;gap:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cat{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px}
-.cat h3{margin:0 0 10px;font-family:Space Grotesk;font-size:14px;color:var(--lime)}
-.svc{background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;position:relative;text-align:left}
-.svc:active{transform:scale(.97);border-color:var(--lime)}
-.svc b{font-size:13px;display:block}.svc small{color:#888;font-size:10px;display:block;margin-top:2px}.svc i{font-style:normal;font-size:20px;display:block;margin-bottom:6px}
-.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px}
-.input{width:100%;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;margin-top:6px;font-size:14px}
-.btn{width:100%;background:var(--lime);color:#000;padding:15px;border:none;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer;margin-top:12px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);display:none;place-items:center;z-index:100;padding:16px}
-.modalBox{background:#161616;border:1px solid #2a2a2a;border-radius:22px;padding:18px;width:100%;max-width:380px}
+:root{
+  --lime:#c6ff00;
+  --lime-soft:#d9ff66;
+  --gold:#fbbf24;
+  --green:#22c55e;
+  --red:#ef4444;
+  --blue:#38bdf8;
+
+  --bg:#070707;
+  --card:#121212;
+  --card2:#171717;
+  --input:#0b0b0b;
+  --border:#242424;
+  --border-light:#303030;
+
+  --text:#fff;
+  --muted:#929292;
+  --muted2:#666;
+
+  --radius:20px;
+  --shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(198,255,0,.08),transparent 32%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+  min-height:100vh;
+  padding-bottom:90px;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button{
+  -webkit-appearance:none;
+}
+
+button:focus-visible,
+input:focus-visible{
+  outline:2px solid var(--lime);
+  outline-offset:2px;
+}
+
+/* =========================
+   TOP HERO
+========================= */
+
+.hero{
+  background:
+    radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 18%),
+    linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);
+  color:#000;
+  padding:
+    max(22px,env(safe-area-inset-top))
+    18px
+    22px;
+  border-radius:0 0 30px 30px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 35px rgba(198,255,0,.12);
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  border:1px solid rgba(0,0,0,.1);
+  border-radius:50%;
+  right:-60px;
+  bottom:-80px;
+}
+
+.hero::after{
+  content:"✨";
+  position:absolute;
+  right:20px;
+  top:24px;
+  font-size:30px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:12px;
+  position:relative;
+  z-index:1;
+}
+
+.brandLogo{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  background:#000;
+  color:var(--lime);
+  border-radius:11px;
+  font-size:17px;
+  box-shadow:0 5px 15px rgba(0,0,0,.18);
+}
+
+.brandText{
+  font-family:Space Grotesk,sans-serif;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.4px;
+}
+
+.hero h1{
+  font-family:Space Grotesk,sans-serif;
+  font-size:clamp(27px,8vw,38px);
+  line-height:.94;
+  margin:0;
+  font-weight:800;
+  letter-spacing:-1px;
+  position:relative;
+  z-index:1;
+}
+
+.hero h1 span{
+  word-break:break-word;
+}
+
+.hero p{
+  margin:9px 0 0;
+  font-weight:700;
+  opacity:.75;
+  font-size:12px;
+  line-height:1.4;
+  max-width:310px;
+  position:relative;
+  z-index:1;
+}
+
+.roomBadge{
+  display:inline-flex;
+  align-items:center;
+  background:#000;
+  color:#fff;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  margin-top:12px;
+  gap:6px;
+  position:relative;
+  z-index:1;
+}
+
+/* =========================
+   GUEST DETAILS
+========================= */
+
+.guestPanel{
+  margin:12px;
+  padding:13px;
+  background:linear-gradient(145deg,#151515,#101010);
+  border:1px solid var(--border);
+  border-radius:18px;
+}
+
+.panelTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:9px;
+}
+
+.panelTitle strong{
+  font-family:Space Grotesk,sans-serif;
+  font-size:13px;
+}
+
+.panelTitle small{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.guestGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.input{
+  width:100%;
+  padding:13px 12px;
+  background:var(--input);
+  border:1px solid #292929;
+  border-radius:12px;
+  color:#fff;
+  margin-top:6px;
+  font-size:13px;
+  transition:.18s ease;
+}
+
+.input::placeholder{
+  color:#555;
+}
+
+.input:focus{
+  border-color:var(--lime);
+  box-shadow:0 0 0 3px rgba(198,255,0,.08);
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.searchWrap{
+  padding:2px 12px 0;
+}
+
+.searchBox{
+  position:relative;
+}
+
+.searchBox span{
+  position:absolute;
+  left:13px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:15px;
+  pointer-events:none;
+}
+
+.searchBox input{
+  padding-left:40px;
+  margin-top:0;
+}
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.cat{
+  margin:12px;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.018),transparent),
+    var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:14px;
+  box-shadow:0 5px 20px rgba(0,0,0,.12);
+}
+
+.catHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.cat h3{
+  margin:0;
+  font-family:Space Grotesk,sans-serif;
+  font-size:14px;
+  color:var(--lime);
+}
+
+.catCount{
+  min-width:22px;
+  height:22px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#202020;
+  color:#777;
+  font-size:9px;
+  font-weight:800;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+
+.svc{
+  appearance:none;
+  width:100%;
+  min-height:118px;
+  background:
+    linear-gradient(145deg,#101010,#090909);
+  border:1px solid #242424;
+  border-radius:17px;
+  padding:12px;
+  cursor:pointer;
+  transition:.18s ease;
+  position:relative;
+  text-align:left;
+  color:#fff;
+  overflow:hidden;
+}
+
+.svc:hover{
+  border-color:#4a4a4a;
+  transform:translateY(-2px);
+}
+
+.svc:active{
+  transform:scale(.97);
+  border-color:var(--lime);
+}
+
+.svcIcon{
+  font-style:normal;
+  font-size:22px;
+  display:block;
+  margin-bottom:8px;
+}
+
+.svc b{
+  font-size:12px;
+  display:block;
+  line-height:1.25;
+  padding-right:8px;
+}
+
+.svc small{
+  color:#777;
+  font-size:9px;
+  display:block;
+  margin-top:4px;
+  line-height:1.3;
+  padding-right:5px;
+}
+
+.price{
+  position:absolute;
+  top:9px;
+  right:8px;
+  background:var(--lime);
+  color:#000;
+  font-size:9px;
+  font-weight:900;
+  padding:4px 7px;
+  border-radius:999px;
+  max-width:90px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading{
+  margin:12px;
+  padding:25px;
+  text-align:center;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  color:#777;
+  font-size:12px;
+}
+
+.spinner{
+  width:25px;
+  height:25px;
+  border:3px solid #292929;
+  border-top-color:var(--lime);
+  border-radius:50%;
+  margin:0 auto 10px;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.emptyState{
+  display:none;
+  text-align:center;
+  padding:25px 12px;
+  color:#777;
+  font-size:12px;
+}
+
+.emptyState div{
+  font-size:30px;
+  margin-bottom:8px;
+}
+
+/* =========================
+   HELP
+========================= */
+
+.helpCard{
+  border-color:rgba(251,191,36,.35)!important;
+}
+
+.helpCard h3{
+  color:var(--gold);
+}
+
+.helpButtons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.helpButton{
+  min-height:100px;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.actions{
+  margin:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.actionBtn{
+  border:1px solid var(--border);
+  background:#121212;
+  color:#fff;
+  padding:13px 10px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.actionBtn:hover{
+  border-color:#444;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+  text-align:center;
+  padding:18px 16px;
+  color:#555;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.7;
+}
+
+.footer strong{
+  color:#777;
+}
+
+/* =========================
+   BUTTON
+========================= */
+
+.btn{
+  width:100%;
+  background:var(--lime);
+  color:#000;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  font-size:13px;
+  cursor:pointer;
+  margin-top:10px;
+  transition:.15s ease;
+}
+
+.btn:hover{
+  filter:brightness(1.06);
+}
+
+.btn:active{
+  transform:scale(.98);
+}
+
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.btn.secondary{
+  background:#1d1d1d;
+  color:#fff;
+  border:1px solid #333;
+}
+
+/* =========================
+   MODALS
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:none;
+  place-items:end center;
+  z-index:1000;
+  padding:12px;
+}
+
+.modal.active{
+  display:grid;
+}
+
+.modalBox{
+  background:
+    linear-gradient(145deg,#191919,#101010);
+  border:1px solid #303030;
+  border-radius:24px;
+  padding:18px;
+  width:100%;
+  max-width:430px;
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:var(--shadow);
+  animation:modalUp .22s ease;
+}
+
+@keyframes modalUp{
+  from{
+    transform:translateY(25px);
+    opacity:0;
+  }
+  to{
+    transform:translateY(0);
+    opacity:1;
+  }
+}
+
+.modalTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.closeBtn{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:1px solid #333;
+  background:#111;
+  color:#fff;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.modalTitle{
+  margin:0;
+  font-family:Space Grotesk,sans-serif;
+  font-size:20px;
+}
+
+.modalDesc{
+  color:#888;
+  font-size:11px;
+  line-height:1.5;
+  margin-top:5px;
+}
+
+.fieldLabel{
+  font-size:9px;
+  color:#777;
+  margin-top:13px;
+  display:block;
+  font-weight:700;
+}
+
+.modalButtons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+/* =========================
+   SUCCESS
+========================= */
+
+.successIcon{
+  width:70px;
+  height:70px;
+  margin:0 auto 12px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(198,255,0,.1);
+  font-size:36px;
+}
+
+.successText{
+  color:#888;
+  font-size:12px;
+  line-height:1.6;
+}
+
+.orderCode{
+  margin:14px 0;
+  padding:12px;
+  border:1px dashed #3c3c3c;
+  border-radius:13px;
+  background:#0b0b0b;
+}
+
+.orderCode small{
+  display:block;
+  color:#666;
+  font-size:8px;
+  margin-bottom:4px;
+}
+
+.orderCode strong{
+  font-family:Space Grotesk,sans-serif;
+  letter-spacing:1px;
+  color:var(--lime);
+}
+
+/* =========================
+   ORDERS
+========================= */
+
+.orderItem{
+  background:#0d0d0d;
+  border:1px solid #242424;
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:8px;
+}
+
+.orderRow{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.orderItem strong{
+  font-size:12px;
+}
+
+.orderItem small{
+  display:block;
+  color:#666;
+  font-size:9px;
+  margin-top:4px;
+}
+
+.status{
+  font-size:8px;
+  font-weight:900;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#202020;
+  color:#aaa;
+  white-space:nowrap;
+  height:max-content;
+}
+
+.status.new{
+  background:rgba(56,189,248,.12);
+  color:var(--blue);
+}
+
+.status.completed{
+  background:rgba(34,197,94,.12);
+  color:var(--green);
+}
+
+.status.cancelled{
+  background:rgba(239,68,68,.12);
+  color:var(--red);
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:20px;
+  z-index:2000;
+  display:none;
+  background:#202020;
+  border:1px solid #363636;
+  color:#fff;
+  padding:13px 14px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:700;
+  box-shadow:var(--shadow);
+}
+
+.toast.show{
+  display:block;
+  animation:toastIn .2s ease;
+}
+
+@keyframes toastIn{
+  from{
+    opacity:0;
+    transform:translateY(10px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(min-width:600px){
+  body{
+    max-width:850px;
+    margin:auto;
+  }
+
+  .hero{
+    border-radius:0 0 35px 35px;
+  }
+
+  .grid2{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .quickGrid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .modal{
+    place-items:center;
+  }
+
+  .modalBox{
+    max-height:85vh;
+  }
+}
+
+@media(max-width:360px){
+  .guestGrid{
+    grid-template-columns:1fr;
+  }
+
+  .grid2{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .svc{
+    min-height:112px;
+  }
+
+  .price{
+    font-size:8px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
+}
 </style>
 </head>
+
 <body>
-<div class="hero">
-<h1 id="hotelTitle">WELCOME TO<br><span id="hotelName">YOUR HOTEL</span></h1>
-<p id="hotelTag">5-star services • 15 min delivery • M-Pesa or Room Bill</p>
-<div class="roomBadge" id="roomBadge">🛏️ Room 204 • 📶 Free WiFi • 🔒 Safe stay</div>
+
+<!-- =========================
+     HERO
+========================= -->
+
+<header class="hero">
+
+  <div class="brand">
+    <div class="brandLogo">G</div>
+    <div class="brandText">GUESTHUB</div>
+  </div>
+
+  <h1 id="hotelTitle">
+    WELCOME TO<br>
+    <span id="hotelName">YOUR HOTEL</span>
+  </h1>
+
+  <p id="hotelTag">
+    Hotel services • Room service • Tours • Transport • Concierge
+  </p>
+
+  <div class="roomBadge" id="roomBadge">
+    🛏️ Room Guest • 📶 Free WiFi • 🔒 Verified
+  </div>
+
+</header>
+
+
+<!-- =========================
+     GUEST INFORMATION
+========================= -->
+
+<section class="guestPanel">
+
+  <div class="panelTitle">
+    <strong>👋 Your stay</strong>
+    <small>Required before ordering</small>
+  </div>
+
+  <div class="guestGrid">
+
+    <input
+      id="guestName"
+      class="input"
+      placeholder="Your name e.g. John"
+      autocomplete="name"
+      aria-label="Guest name"
+    >
+
+    <input
+      id="roomNo"
+      class="input"
+      placeholder="Room e.g. 204"
+      inputmode="numeric"
+      autocomplete="off"
+      aria-label="Room number"
+    >
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     SEARCH
+========================= -->
+
+<div class="searchWrap">
+
+  <div class="searchBox">
+
+    <span>🔎</span>
+
+    <input
+      id="searchService"
+      class="input"
+      placeholder="Search room service, safari, taxi..."
+      autocomplete="off"
+      aria-label="Search services"
+    >
+
+  </div>
+
 </div>
 
-<div style="padding:10px 12px 0"><div style="background:#141414;border:1px dashed #333;border-radius:14px;padding:10px;display:flex;gap:8px"><input id="guestName" class="input" style="margin:0" placeholder="Your name e.g. John"><input id="roomNo" class="input" style="margin:0" placeholder="Room e.g. 204"></div></div>
 
-<div class="cat"><h3>⚡ Instant - 1 Tap Order</h3><div class="grid2" id="quick"></div></div>
-<div class="cat"><h3>🚕 Transport & Taxi</h3><div class="grid2" id="g1"></div></div>
-<div class="cat"><h3>🌍 Tours & Safari (Hotel Trusted)</h3><div class="grid2" id="g2"></div></div>
-<div class="cat"><h3>🧖 Spa, Food & Room Service</h3><div class="grid2" id="g3"></div></div>
-<div class="cat"><h3>📸 Media & Concierge</h3><div class="grid2" id="g4"></div></div>
+<!-- =========================
+     LOADING
+========================= -->
 
-<div class="cat" style="border-color:#fbbf24"><h3>💬 Need Help? Talk to Human</h3>
-<div class="grid2"><button class="svc" onclick="contact('front')"><i>🏨</i><b>Front Desk</b><small>WhatsApp instantly</small></button><button class="svc" onclick="contact('house')"><i>🧹</i><b>Housekeeping</b><small>Towels, cleaning</small></button></div>
+<div id="loadingState" class="loading">
+
+  <div class="spinner"></div>
+
+  Loading your hotel's services...
+
 </div>
 
-<div style="text-align:center;padding:16px;color:#555;font-size:10px;font-weight:800">🔒 GuestHub Secure • Hotels pay vendors after your OTP • Zero extra fees</div>
 
-<div class="modal" id="orderModal"><div class="modalBox">
-<h3 id="mTitle" style="margin:0;font-family:Space Grotesk">Confirm Order</h3><small id="mDesc" style="color:#888"></small>
-<label style="font-size:10px;color:#888;margin-top:12px;display:block">Your WhatsApp (for OTP)</label><input id="guestPhone" class="input" placeholder="254722...">
-<label style="font-size:10px;color:#888;margin-top:10px;display:block">Time / Note</label><input id="orderNote" class="input" placeholder="e.g. Tomorrow 8AM, 2 bags, baby seat">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn" style="background:#1f1f1f;color:#fff;border:1px solid #333" onclick="closeModal()">Cancel</button><button class="btn" id="confirmBtn" onclick="placeOrder()">✅ Order - Pay at Hotel</button></div>
-<small style="color:#666;display:block;text-align:center;margin-top:10px">You pay after service with OTP. No prepayment.</small>
-</div></div>
+<!-- =========================
+     SERVICE SECTIONS
+========================= -->
 
-<div class="modal" id="successModal"><div class="modalBox" style="text-align:center">
-<div style="font-size:40px">✅</div><h3 style="font-family:Space Grotesk">Order Sent to Hotel!</h3><p style="color:#888;font-size:13px;line-height:1.5" id="successText">Hotel front desk assigned your vendor. You will get WhatsApp with vendor name + live location + OTP.</p><button class="btn" onclick="closeSuccess()">Great ✨</button></div></div>
+<main id="serviceArea" style="display:none;">
 
+  <section class="cat">
+
+    <div class="catHeader">
+      <h3>⚡ Instant — 1 Tap Order</h3>
+      <span class="catCount" id="quickCount">0</span>
+    </div>
+
+    <div class="grid2 quickGrid" id="quick"></div>
+
+  </section>
+
+
+  <section class="cat">
+
+    <div class="catHeader">
+      <h3>🚕 Transport & Taxi</h3>
+      <span class="catCount" id="g1Count">0</span>
+    </div>
+
+    <div class="grid2" id="g1"></div>
+
+  </section>
+
+
+  <section class="cat">
+
+    <div class="catHeader">
+      <h3>🌍 Tours & Safari</h3>
+      <span class="catCount" id="g2Count">0</span>
+    </div>
+
+    <div class="grid2" id="g2"></div>
+
+  </section>
+
+
+  <section class="cat">
+
+    <div class="catHeader">
+      <h3>🧖 Spa, Food & Room Service</h3>
+      <span class="catCount" id="g3Count">0</span>
+    </div>
+
+    <div class="grid2" id="g3"></div>
+
+  </section>
+
+
+  <section class="cat">
+
+    <div class="catHeader">
+      <h3>📸 Media & Concierge</h3>
+      <span class="catCount" id="g4Count">0</span>
+    </div>
+
+    <div class="grid2" id="g4"></div>
+
+  </section>
+
+
+  <!-- SEARCH EMPTY STATE -->
+
+  <div id="emptySearch" class="emptyState">
+
+    <div>🔎</div>
+
+    <strong>No service found</strong>
+
+    <br>
+
+    Try another search.
+
+  </div>
+
+
+  <!-- HUMAN HELP -->
+
+  <section class="cat helpCard">
+
+    <div class="catHeader">
+
+      <h3>💬 Need Help? Talk to Human</h3>
+
+    </div>
+
+    <div class="helpButtons">
+
+      <button
+        class="svc helpButton"
+        type="button"
+        id="frontDeskBtn"
+      >
+        <i class="svcIcon">🏨</i>
+        <b>Front Desk</b>
+        <small>Open WhatsApp instantly</small>
+      </button>
+
+
+      <button
+        class="svc helpButton"
+        type="button"
+        id="housekeepingBtn"
+      >
+        <i class="svcIcon">🧹</i>
+        <b>Housekeeping</b>
+        <small>Towels, cleaning & room help</small>
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<!-- =========================
+     ACTIONS
+========================= -->
+
+<div class="actions">
+
+  <button
+    class="actionBtn"
+    type="button"
+    id="ordersBtn"
+  >
+    📋 My Orders
+  </button>
+
+  <button
+    class="actionBtn"
+    type="button"
+    id="helpBtn"
+  >
+    ℹ️ How GuestHub Works
+  </button>
+
+</div>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+  🔒 <strong>GuestHub Secure</strong><br>
+
+  Your hotel coordinates the service. Payment is handled according to the hotel's approved process.<br>
+
+  <span>GuestHub • Hospitality made simple ✨</span>
+
+</footer>
+
+
+<!-- =========================
+     ORDER MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="orderModal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="mTitle"
+>
+
+  <div class="modalBox">
+
+    <div class="modalTop">
+
+      <div>
+
+        <h3 id="mTitle" class="modalTitle">
+          Confirm Order
+        </h3>
+
+        <div id="mDesc" class="modalDesc"></div>
+
+      </div>
+
+      <button
+        class="closeBtn"
+        type="button"
+        id="closeOrderBtn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <label class="fieldLabel" for="guestPhone">
+      WhatsApp number
+    </label>
+
+    <input
+      id="guestPhone"
+      class="input"
+      placeholder="254712345678"
+      inputmode="tel"
+      autocomplete="tel"
+    >
+
+    <label class="fieldLabel" for="orderNote">
+      Time / special instructions
+    </label>
+
+    <input
+      id="orderNote"
+      class="input"
+      placeholder="e.g. Tomorrow 8AM, 2 bags, baby seat"
+    >
+
+
+    <div class="modalButtons">
+
+      <button
+        class="btn secondary"
+        type="button"
+        id="cancelOrderBtn"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn"
+        type="button"
+        id="confirmBtn"
+      >
+        ✅ Place Order
+      </button>
+
+    </div>
+
+    <small
+      style="color:#666;display:block;text-align:center;margin-top:10px;line-height:1.5"
+    >
+      Your request is sent securely to the hotel for processing.
+    </small>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     SUCCESS MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="successModal"
+  role="dialog"
+  aria-modal="true"
+>
+
+  <div class="modalBox" style="text-align:center">
+
+    <div class="successIcon">
+      ✅
+    </div>
+
+    <h3
+      style="font-family:Space Grotesk;margin:0;font-size:21px"
+    >
+      Request Received!
+    </h3>
+
+    <p
+      class="successText"
+      id="successText"
+    >
+      Your request has been sent to the hotel.
+    </p>
+
+    <div class="orderCode">
+
+      <small>GUESTHUB ORDER REFERENCE</small>
+
+      <strong id="orderReference">
+        GH-000000
+      </strong>
+
+    </div>
+
+    <button
+      class="btn"
+      type="button"
+      id="successCloseBtn"
+    >
+      Great ✨
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     ORDERS MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="ordersModal"
+  role="dialog"
+  aria-modal="true"
+>
+
+  <div class="modalBox">
+
+    <div class="modalTop">
+
+      <div>
+
+        <h3 class="modalTitle">
+          📋 My Orders
+        </h3>
+
+        <div class="modalDesc">
+          Your recent GuestHub requests for this room.
+        </div>
+
+      </div>
+
+      <button
+        class="closeBtn"
+        type="button"
+        id="closeOrdersBtn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="ordersList" style="margin-top:14px">
+
+      <div class="loading" style="margin:0">
+        Loading orders...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     INFO MODAL
+========================= -->
+
+<div
+  class="modal"
+  id="helpModal"
+  role="dialog"
+  aria-modal="true"
+>
+
+  <div class="modalBox">
+
+    <div class="modalTop">
+
+      <div>
+
+        <h3 class="modalTitle">
+          ℹ️ How GuestHub Works
+        </h3>
+
+      </div>
+
+      <button
+        class="closeBtn"
+        type="button"
+        id="closeHelpBtn"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div style="margin-top:14px">
+
+      <div class="orderItem">
+        <strong>1️⃣ Choose a service</strong>
+        <small>Select room service, transport, safari, spa or concierge.</small>
+      </div>
+
+      <div class="orderItem">
+        <strong>2️⃣ Enter your details</strong>
+        <small>Provide your name, room and WhatsApp number.</small>
+      </div>
+
+      <div class="orderItem">
+        <strong>3️⃣ Hotel receives your request</strong>
+        <small>The hotel team can coordinate the requested service.</small>
+      </div>
+
+      <div class="orderItem">
+        <strong>4️⃣ Track your request</strong>
+        <small>Use My Orders to see the latest status stored in GuestHub.</small>
+      </div>
+
+      <div class="orderItem">
+        <strong>5️⃣ Enjoy your stay ✨</strong>
+        <small>GuestHub puts the services you need in one simple place.</small>
+      </div>
+
+    </div>
+
+    <button
+      class="btn"
+      type="button"
+      id="helpDoneBtn"
+    >
+      Got it
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     TOAST
+========================= -->
+
+<div
+  id="toast"
+  class="toast"
+  role="status"
+  aria-live="polite"
+></div>
+
+
+<!-- YOUR SUPABASE CONFIG -->
 <script src="config.js"></script>
-<script>
-const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let hotel=null, hotelId=null, selectedSvc=null;
 
-const SERVICES={
- quick:[
-  {id:'airport_taxi',icon:'✈️',t:'Airport Taxi Now',d:'JKIA/Wilson in 15min',price:2500,cat:'taxi'},
-  {id:'room_food',icon:'🍔',t:'Room Service',d:'Burger, fries, drinks',price:1200,cat:'food'},
-  {id:'laundry',icon:'👕',t:'Laundry Express',d:'2hr return',price:500,cat:'spa'},
-  {id:'massage',icon:'🧖',t:'Massage in Room',d:'Swedish 60min',price:3500,cat:'spa'},
- ],
- g1:[
-  {id:'airport_taxi',icon:'🚕',t:'Airport Transfer',d:'JKIA, Wilson, SGR',price:2500},
-  {id:'town_taxi',icon:'🚖',t:'Town Taxi',d:'Uber style',price:600},
-  {id:'car_hire',icon:'🚙',t:'Car Hire + Driver',d:'Daily 5-15k',price:8000},
-  {id:'luxury_transfer',icon:'✨',t:'VIP Transfer',d:'Prado V8',price:12000},
- ],
- g2:[
-  {id:'nairobi_tour',icon:'🦒',t:'City Tour',d:'Giraffe, Museum',price:3500},
-  {id:'park_day',icon:'🦁',t:'Nairobi Park',d:'Day trip',price:8000},
-  {id:'mara_safari',icon:'🌍',t:'Maasai Mara 3D',d:'Hotel trusted guide',price:25000},
-  {id:'beach_safari',icon:'🐬',t:'Diani & Wasini',d:'Dolphins',price:7000},
- ],
- g3:[
-  {id:'massage',icon:'💆',t:'Deep Massage',d:'In-room 60min',price:3500},
-  {id:'spa_nails',icon:'💅',t:'Nails & Hair',d:'In-room beauty',price:2000},
-  {id:'food_delivery',icon:'🍕',t:'Food Outside',d:'Java, KFC',price:300},
-  {id:'chef',icon:'👨‍🍳',t:'Private Chef',d:'In-room dining',price:5000},
- ],
- g4:[
-  {id:'photography',icon:'📸',t:'Photography',d:'Portrait',price:5000},
-  {id:'shopping',icon:'🛍️',t:'Personal Shopper',d:'Maasai market',price:1000},
-  {id:'translator',icon:'🗣️',t:'Translator',d:'French/German',price:2000},
-  {id:'concierge',icon:'🔑',t:'Anything Else?',d:'Just ask',price:500},
- ]
+
+<script>
+"use strict";
+
+/* =========================================================
+   GUESTHUB PART 2
+   Guest-facing hotel service application
+========================================================= */
+
+
+/* =========================================================
+   SUPABASE INITIALIZATION
+========================================================= */
+
+let supa = null;
+
+if(
+  window.supabase &&
+  typeof SUPABASE_URL !== "undefined" &&
+  typeof SUPABASE_KEY !== "undefined" &&
+  SUPABASE_URL &&
+  SUPABASE_KEY
+){
+  try{
+    supa = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+  }catch(error){
+    console.error("Supabase initialization failed:",error);
+  }
+}
+
+
+/* =========================================================
+   APPLICATION STATE
+========================================================= */
+
+let hotel = null;
+let hotelId = null;
+let selectedSvc = null;
+let allServices = [];
+let toastTimer = null;
+
+
+/* =========================================================
+   DEMO SERVICES
+========================================================= */
+
+const SERVICES = {
+
+  quick:[
+    {
+      id:"airport_taxi",
+      icon:"✈️",
+      t:"Airport Taxi Now",
+      d:"JKIA / Wilson transfer",
+      price:2500,
+      cat:"taxi"
+    },
+    {
+      id:"room_food",
+      icon:"🍔",
+      t:"Room Service",
+      d:"Food & drinks",
+      price:1200,
+      cat:"food"
+    },
+    {
+      id:"laundry",
+      icon:"👕",
+      t:"Laundry Express",
+      d:"Fast hotel laundry",
+      price:500,
+      cat:"spa"
+    },
+    {
+      id:"massage",
+      icon:"🧖",
+      t:"Massage in Room",
+      d:"Swedish 60 minutes",
+      price:3500,
+      cat:"spa"
+    }
+  ],
+
+  g1:[
+    {
+      id:"airport_taxi",
+      icon:"🚕",
+      t:"Airport Transfer",
+      d:"JKIA, Wilson, SGR",
+      price:2500,
+      cat:"taxi"
+    },
+    {
+      id:"town_taxi",
+      icon:"🚖",
+      t:"Town Taxi",
+      d:"Private hotel transfer",
+      price:600,
+      cat:"taxi"
+    },
+    {
+      id:"car_hire",
+      icon:"🚙",
+      t:"Car Hire + Driver",
+      d:"Daily private vehicle",
+      price:8000,
+      cat:"taxi"
+    },
+    {
+      id:"luxury_transfer",
+      icon:"✨",
+      t:"VIP Transfer",
+      d:"Premium vehicle",
+      price:12000,
+      cat:"taxi"
+    }
+  ],
+
+  g2:[
+    {
+      id:"nairobi_tour",
+      icon:"🦒",
+      t:"Nairobi City Tour",
+      d:"Giraffe Centre & Museum",
+      price:3500,
+      cat:"tour"
+    },
+    {
+      id:"park_day",
+      icon:"🦁",
+      t:"Nairobi National Park",
+      d:"Safari day trip",
+      price:8000,
+      cat:"tour"
+    },
+    {
+      id:"mara_safari",
+      icon:"🌍",
+      t:"Maasai Mara Safari",
+      d:"3-day safari",
+      price:25000,
+      cat:"tour"
+    },
+    {
+      id:"beach_safari",
+      icon:"🐬",
+      t:"Diani & Wasini",
+      d:"Coast experience",
+      price:7000,
+      cat:"tour"
+    }
+  ],
+
+  g3:[
+    {
+      id:"massage",
+      icon:"💆",
+      t:"Deep Massage",
+      d:"In-room 60 minutes",
+      price:3500,
+      cat:"spa"
+    },
+    {
+      id:"spa_nails",
+      icon:"💅",
+      t:"Nails & Hair",
+      d:"In-room beauty service",
+      price:2000,
+      cat:"spa"
+    },
+    {
+      id:"food_delivery",
+      icon:"🍕",
+      t:"Food Outside",
+      d:"Restaurant delivery",
+      price:300,
+      cat:"food"
+    },
+    {
+      id:"chef",
+      icon:"👨‍🍳",
+      t:"Private Chef",
+      d:"In-room dining",
+      price:5000,
+      cat:"food"
+    }
+  ],
+
+  g4:[
+    {
+      id:"photography",
+      icon:"📸",
+      t:"Photography",
+      d:"Hotel & holiday portraits",
+      price:5000,
+      cat:"media"
+    },
+    {
+      id:"shopping",
+      icon:"🛍️",
+      t:"Personal Shopper",
+      d:"Shopping assistance",
+      price:1000,
+      cat:"media"
+    },
+    {
+      id:"translator",
+      icon:"🗣️",
+      t:"Translator",
+      d:"French / German",
+      price:2000,
+      cat:"media"
+    },
+    {
+      id:"concierge",
+      icon:"🔑",
+      t:"Anything Else?",
+      d:"Ask the concierge",
+      price:500,
+      cat:"media"
+    }
+  ]
+
 };
 
-async function render(){
- let realMenu=null;
- if(hotelId && hotelId!='demo'){
-  const {data}=await supa.from('hotel_services').select('*').eq('hotel_id',hotelId).eq('active',true).order('created_at',{ascending:false});
-  if(data && data.length>0) realMenu=data;
- }
- if(realMenu){
-  const groups={taxi:[],tour:[],spa:[],food:[],media:[]};
-  realMenu.forEach(m=>{
-    const cat=(m.category||'food').toLowerCase();
-    if(!groups[cat]) groups[cat]=[];
-    groups[cat].push(m);
-  });
-  // Quick = first 4
-  document.getElementById('quick').innerHTML=realMenu.slice(0,4).map(m=>`
-    <div class=svc onclick="openOrder('${m.id}','${m.title.replace(/'/g,'')}','${(m.description||'').replace(/'/g,'')}',${m.price})">
-      <div class=price>Ksh ${m.price}</div><i>⚡</i><b>${m.title}</b><small>${m.description||m.category}</small>
-    </div>`).join('');
 
-  const mapCat={taxi:'g1',tour:'g2',spa:'g3',food:'g3',media:'g4'};
-  // clear all
-  ['g1','g2','g3','g4'].forEach(id=>document.getElementById(id).innerHTML='');
-  realMenu.forEach(m=>{
-    const targetId=mapCat[m.category]||'g4';
-    const box=document.getElementById(targetId);
-    box.innerHTML+=`<div class=svc onclick="openOrder('${m.id}','${m.title.replace(/'/g,'')}','${(m.description||'').replace(/'/g,'')}',${m.price})"><div class=price>Ksh ${m.price}</div><i>${m.category=='taxi'?'🚕':m.category=='tour'?'🌍':m.category=='spa'?'🧖':m.category=='food'?'🍔':'📸'}</i><b>${m.title}</b><small>${m.description||''}</small></div>`;
-  });
-  return;
- }
- // fallback demo
- Object.keys(SERVICES).forEach(g=>{
-  const box=document.getElementById(g); if(!box) return;
-  box.innerHTML=SERVICES[g].map(s=>`
-   <div class=svc onclick="openOrder('${s.id}','${s.t}','${s.d}',${s.price})">
-    <div class=price>Ksh ${s.price}</div><i>${s.icon}</i><b>${s.t}</b><small>${s.d}</small>
-   </div>`).join('');
- });
+/* =========================================================
+   DOM HELPERS
+========================================================= */
+
+function $(id){
+  return document.getElementById(id);
 }
+
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message){
+
+  const toast = $("toast");
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(()=>{
+    toast.classList.remove("show");
+  },3000);
+
+}
+
+
+/* =========================================================
+   MODAL FUNCTIONS
+========================================================= */
+
+function openModal(id){
+
+  const modal = $(id);
+
+  if(!modal) return;
+
+  modal.classList.add("active");
+
+  document.body.style.overflow="hidden";
+
+}
+
+
+function closeModal(id){
+
+  const modal = $(id);
+
+  if(!modal) return;
+
+  modal.classList.remove("active");
+
+  if(
+    !document.querySelector(".modal.active")
+  ){
+    document.body.style.overflow="";
+  }
+
+}
+
+
+function closeAllModals(){
+
+  document
+    .querySelectorAll(".modal.active")
+    .forEach(modal=>{
+      modal.classList.remove("active");
+    });
+
+  document.body.style.overflow="";
+
+}
+
+
+/* =========================================================
+   FORMAT MONEY
+========================================================= */
+
+function formatMoney(value){
+
+  const number = Number(value);
+
+  if(!Number.isFinite(number)){
+    return "Price on request";
+  }
+
+  return "Ksh "+number.toLocaleString("en-KE");
+
+}
+
+
+/* =========================================================
+   GENERATE LOCAL ORDER REFERENCE
+========================================================= */
+
+function generateOrderReference(){
+
+  const now = Date.now()
+    .toString()
+    .slice(-6);
+
+  const random =
+    Math.floor(100+Math.random()*900);
+
+  return "GH-"+now+"-"+random;
+
+}
+
+
+/* =========================================================
+   CATEGORY ICON
+========================================================= */
+
+function categoryIcon(category){
+
+  const cat = String(category||"").toLowerCase();
+
+  if(cat==="taxi") return "🚕";
+  if(cat==="tour") return "🌍";
+  if(cat==="spa") return "🧖";
+  if(cat==="food") return "🍔";
+  if(cat==="media") return "📸";
+
+  return "✨";
+
+}
+
+
+/* =========================================================
+   NORMALIZE SUPABASE SERVICE
+========================================================= */
+
+function normalizeService(service){
+
+  return {
+
+    id:service.id,
+
+    icon:
+      service.icon ||
+      categoryIcon(service.category),
+
+    t:
+      service.title ||
+      service.name ||
+      "Hotel Service",
+
+    d:
+      service.description ||
+      service.category ||
+      "Available service",
+
+    price:
+      Number(service.price) || 0,
+
+    cat:
+      String(service.category||"food").toLowerCase()
+
+  };
+
+}
+
+
+/* =========================================================
+   CREATE SERVICE CARD SAFELY
+========================================================= */
+
+function createServiceCard(service){
+
+  const button =
+    document.createElement("button");
+
+  button.type="button";
+  button.className="svc serviceCard";
+
+  button.dataset.search =
+    `${service.t} ${service.d} ${service.cat}`.toLowerCase();
+
+  const price =
+    document.createElement("span");
+
+  price.className="price";
+  price.textContent =
+    service.price > 0
+      ? formatMoney(service.price)
+      : "Ask hotel";
+
+  const icon =
+    document.createElement("i");
+
+  icon.className="svcIcon";
+  icon.textContent=service.icon;
+
+  const title =
+    document.createElement("b");
+
+  title.textContent=service.t;
+
+  const desc =
+    document.createElement("small");
+
+  desc.textContent=service.d;
+
+  button.appendChild(price);
+  button.appendChild(icon);
+  button.appendChild(title);
+  button.appendChild(desc);
+
+  button.addEventListener(
+    "click",
+    ()=>{
+      openOrder(service);
+    }
+  );
+
+  return button;
+
+}
+
+
+/* =========================================================
+   RENDER SERVICES
+========================================================= */
+
+function renderServices(services){
+
+  const boxes={
+    quick:$("quick"),
+    g1:$("g1"),
+    g2:$("g2"),
+    g3:$("g3"),
+    g4:$("g4")
+  };
+
+  Object.values(boxes).forEach(box=>{
+    box.innerHTML="";
+  });
+
+
+  const groups={
+    quick:[],
+    g1:[],
+    g2:[],
+    g3:[],
+    g4:[]
+  };
+
+
+  /* First four services become quick services */
+
+  groups.quick =
+    services.slice(0,4);
+
+
+  services.forEach(service=>{
+
+    const cat =
+      String(service.cat||"").toLowerCase();
+
+    if(cat==="taxi"){
+      groups.g1.push(service);
+    }
+    else if(cat==="tour"){
+      groups.g2.push(service);
+    }
+    else if(cat==="spa" || cat==="food"){
+      groups.g3.push(service);
+    }
+    else{
+      groups.g4.push(service);
+    }
+
+  });
+
+
+  Object.keys(groups).forEach(group=>{
+
+    groups[group].forEach(service=>{
+
+      boxes[group].appendChild(
+        createServiceCard(service)
+      );
+
+    });
+
+  });
+
+
+  updateCounts();
+
+}
+
+
+/* =========================================================
+   DEMO RENDER
+========================================================= */
+
+function renderDemoServices(){
+
+  const services=[];
+
+  Object.keys(SERVICES).forEach(group=>{
+
+    if(group==="quick") return;
+
+    SERVICES[group].forEach(service=>{
+      services.push(service);
+    });
+
+  });
+
+
+  allServices=services;
+
+  renderServices(services);
+
+}
+
+
+/* =========================================================
+   UPDATE COUNTS
+========================================================= */
+
+function updateCounts(){
+
+  $("quickCount").textContent =
+    $("quick").children.length;
+
+  $("g1Count").textContent =
+    $("g1").children.length;
+
+  $("g2Count").textContent =
+    $("g2").children.length;
+
+  $("g3Count").textContent =
+    $("g3").children.length;
+
+  $("g4Count").textContent =
+    $("g4").children.length;
+
+}
+
+
+/* =========================================================
+   SEARCH SERVICES
+========================================================= */
+
+function searchServices(){
+
+  const query =
+    $("searchService")
+      .value
+      .trim()
+      .toLowerCase();
+
+  const cards =
+    document.querySelectorAll(
+      ".serviceCard"
+    );
+
+  let visible=0;
+
+  cards.forEach(card=>{
+
+    const matches =
+      !query ||
+      card.dataset.search.includes(query);
+
+    card.style.display =
+      matches ? "" : "none";
+
+    if(matches){
+      visible++;
+    }
+
+  });
+
+
+  $("emptySearch").style.display =
+    query && visible===0
+      ? "block"
+      : "none";
+
+}
+
+
+/* =========================================================
+   HOTEL INITIALIZATION
+========================================================= */
 
 async function initHotel(){
- const params=new URLSearchParams(location.search);
- const hid=params.get('hotel')||params.get('hotel_id')||params.get('h')||localStorage.getItem('last_hotel_id');
- const room=params.get('room')||localStorage.getItem('last_room')||'';
- if(room) document.getElementById('roomNo').value=room;
- document.getElementById('roomBadge').innerText='🛏️ Room '+(room||'Guest')+' • 📶 Free WiFi • 🔒 Verified';
 
- if(!hid){
-  document.getElementById('hotelName').innerText='Demo Hotel (Add?hotel=ID)';
-  hotelId='demo'; await render(); return;
- }
- hotelId=hid;
- const {data}=await supa.from('hotels').select('*').eq('id',hid).single();
- if(data){ hotel=data; document.getElementById('hotelName').innerText=data.name; document.getElementById('hotelTag').innerText=(data.city||'')+' • '+(data.tagline||'5-star services • 15 min'); localStorage.setItem('last_hotel_id',hid); }
- await render();
+  try{
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const hid =
+      params.get("hotel") ||
+      params.get("hotel_id") ||
+      params.get("h") ||
+      localStorage.getItem(
+        "last_hotel_id"
+      );
+
+
+    const room =
+      params.get("room") ||
+      localStorage.getItem(
+        "last_room"
+      ) ||
+      "";
+
+
+    if(room){
+      $("roomNo").value=room;
+    }
+
+
+    updateRoomBadge();
+
+
+    /* No hotel ID = demo mode */
+
+    if(!hid){
+
+      hotelId="demo";
+
+      $("hotelName").textContent=
+        "DEMO HOTEL";
+
+      $("hotelTag").textContent=
+        "Experience room service, transport, tours & concierge";
+
+      renderDemoServices();
+
+      finishLoading();
+
+      return;
+
+    }
+
+
+    hotelId=hid;
+
+
+    if(!supa){
+
+      showToast(
+        "GuestHub is in demo mode because Supabase is not configured."
+      );
+
+      renderDemoServices();
+
+      finishLoading();
+
+      return;
+
+    }
+
+
+    const {
+      data,
+      error
+    } = await supa
+      .from("hotels")
+      .select("*")
+      .eq("id",hid)
+      .single();
+
+
+    if(error){
+
+      console.error(
+        "Hotel loading error:",
+        error
+      );
+
+      $("hotelName").textContent=
+        "HOTEL";
+
+      showToast(
+        "Hotel details could not be loaded."
+      );
+
+    }
+    else if(data){
+
+      hotel=data;
+
+      $("hotelName").textContent =
+        data.name ||
+        "YOUR HOTEL";
+
+
+      const city =
+        data.city
+          ? data.city+" • "
+          : "";
+
+
+      $("hotelTag").textContent =
+        city+
+        (
+          data.tagline ||
+          "Room service • Tours • Transport • Concierge"
+        );
+
+
+      localStorage.setItem(
+        "last_hotel_id",
+        hid
+      );
+
+    }
+
+
+    await loadHotelServices();
+
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    renderDemoServices();
+
+    showToast(
+      "Some hotel information could not be loaded."
+    );
+
+  }
+  finally{
+
+    finishLoading();
+
+  }
+
 }
 
-function openOrder(id,title,desc,price){
- if(!document.getElementById('roomNo').value ||!document.getElementById('guestName').value){
-  alert('Enter your name + room first'); return;
- }
- selectedSvc={id,title,desc,price};
- document.getElementById('mTitle').innerText=title;
- document.getElementById('mDesc').innerText=desc+' • Ksh '+price;
- document.getElementById('orderModal').style.display='grid';
+
+/* =========================================================
+   LOAD HOTEL SERVICES
+========================================================= */
+
+async function loadHotelServices(){
+
+  if(!supa || hotelId==="demo"){
+
+    renderDemoServices();
+
+    return;
+
+  }
+
+
+  try{
+
+    const {
+      data,
+      error
+    } = await supa
+      .from("hotel_services")
+      .select("*")
+      .eq("hotel_id",hotelId)
+      .eq("active",true)
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
+
+
+    if(error){
+
+      console.error(
+        "Service loading error:",
+        error
+      );
+
+      renderDemoServices();
+
+      return;
+
+    }
+
+
+    if(data && data.length){
+
+      allServices =
+        data.map(normalizeService);
+
+      renderServices(allServices);
+
+    }
+    else{
+
+      renderDemoServices();
+
+    }
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    renderDemoServices();
+
+  }
+
 }
-function closeModal(){ document.getElementById('orderModal').style.display='none'; }
-function closeSuccess(){ document.getElementById('successModal').style.display='none'; }
+
+
+/* =========================================================
+   FINISH LOADING
+========================================================= */
+
+function finishLoading(){
+
+  $("loadingState").style.display="none";
+
+  $("serviceArea").style.display="block";
+
+}
+
+
+/* =========================================================
+   UPDATE ROOM BADGE
+========================================================= */
+
+function updateRoomBadge(){
+
+  const room =
+    $("roomNo").value.trim();
+
+
+  $("roomBadge").textContent =
+    "🛏️ Room "+
+    (room || "Guest")+
+    " • 📶 Free WiFi • 🔒 Verified";
+
+}
+
+
+/* =========================================================
+   VALIDATE GUEST
+========================================================= */
+
+function validateGuest(){
+
+  const name =
+    $("guestName")
+      .value
+      .trim();
+
+  const room =
+    $("roomNo")
+      .value
+      .trim();
+
+
+  if(!name){
+
+    showToast(
+      "Please enter your name first."
+    );
+
+    $("guestName").focus();
+
+    return false;
+
+  }
+
+
+  if(!room){
+
+    showToast(
+      "Please enter your room number."
+    );
+
+    $("roomNo").focus();
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   OPEN ORDER
+========================================================= */
+
+function openOrder(service){
+
+  if(!validateGuest()){
+    return;
+  }
+
+
+  selectedSvc=service;
+
+
+  $("mTitle").textContent =
+    service.t;
+
+
+  $("mDesc").textContent =
+    `${service.d} • ${
+      service.price > 0
+        ? formatMoney(service.price)
+        : "Price on request"
+    }`;
+
+
+  $("orderNote").value="";
+
+
+  $("guestPhone").value =
+    localStorage.getItem(
+      "guest_phone"
+    ) || "";
+
+
+  openModal("orderModal");
+
+
+  setTimeout(()=>{
+    $("guestPhone").focus();
+  },100);
+
+}
+
+
+/* =========================================================
+   VALIDATE PHONE
+========================================================= */
+
+function normalizePhone(phone){
+
+  let value =
+    String(phone||"")
+      .replace(/[^\d+]/g,"");
+
+
+  if(value.startsWith("+254")){
+    value =
+      "254"+
+      value.slice(4);
+  }
+
+
+  if(value.startsWith("07")){
+    value =
+      "254"+
+      value.slice(1);
+  }
+
+
+  if(value.startsWith("01")){
+    value =
+      "254"+
+      value.slice(1);
+  }
+
+
+  return value;
+
+}
+
+
+function validKenyanPhone(phone){
+
+  const normalized =
+    normalizePhone(phone);
+
+
+  return /^254(?:7|1)\d{8}$/
+    .test(normalized);
+
+}
+
+
+/* =========================================================
+   CREATE CLIENT ORDER REFERENCE
+========================================================= */
+
+function createReference(){
+
+  return generateOrderReference();
+
+}
+
+
+/* =========================================================
+   PLACE ORDER
+========================================================= */
 
 async function placeOrder(){
- const btn=document.getElementById('confirmBtn'); btn.innerText='⏳ Sending...'; btn.disabled=true;
- try{
+
+  if(!selectedSvc){
+
+    showToast(
+      "Please select a service."
+    );
+
+    return;
+
+  }
+
+
+  if(!validateGuest()){
+    return;
+  }
+
+
+  const btn =
+    $("confirmBtn");
+
+
+  const phone =
+    normalizePhone(
+      $("guestPhone").value
+    );
+
+
+  if(!validKenyanPhone(phone)){
+
+    showToast(
+      "Enter a valid Kenyan WhatsApp number."
+    );
+
+    $("guestPhone").focus();
+
+    return;
+
+  }
+
+
+  const note =
+    $("orderNote")
+      .value
+      .trim();
+
+
+  const guestName =
+    $("guestName")
+      .value
+      .trim();
+
+
+  const room =
+    $("roomNo")
+      .value
+      .trim();
+
+
+  const reference =
+    createReference();
+
+
   const payload={
-   hotel_id: hotelId=='demo'?null:hotelId,
-   room: document.getElementById('roomNo').value,
-   guest_name: document.getElementById('guestName').value,
-   guest_phone: document.getElementById('guestPhone').value||'2547',
-   service: selectedSvc.id,
-   service_title: selectedSvc.title,
-   details: document.getElementById('orderNote').value||selectedSvc.desc,
-   amount: selectedSvc.price,
-   status:'new',
-   created_at: new Date().toISOString()
+
+    hotel_id:
+      hotelId==="demo"
+        ? null
+        : hotelId,
+
+    room:room,
+
+    guest_name:guestName,
+
+    guest_phone:phone,
+
+    service:selectedSvc.id,
+
+    service_title:selectedSvc.t,
+
+    details:
+      note ||
+      selectedSvc.d,
+
+    amount:
+      Number(selectedSvc.price)||0,
+
+    status:"new",
+
+    created_at:
+      new Date().toISOString()
+
   };
-  localStorage.setItem('last_room',payload.room);
-  localStorage.setItem('guest_name',payload.guest_name);
-  localStorage.setItem('guest_phone',payload.guest_phone);
-  const {error}=await supa.from('orders').insert([payload]);
-  if(error) throw error;
-  closeModal();
-  document.getElementById('successText').innerText=`${selectedSvc.title} for Room ${payload.room} sent to ${hotel?hotel.name:'hotel'}. Vendor assigned in 2 min. OTP: ${Math.floor(1000+Math.random()*9000)}`;
-  document.getElementById('successModal').style.display='grid';
-  if(navigator.vibrate) navigator.vibrate([100,50,100]);
- }catch(e){ alert('Error: '+e.message); }
- btn.innerText='✅ Order - Pay at Hotel'; btn.disabled=false;
+
+
+  btn.disabled=true;
+
+  btn.textContent=
+    "⏳ Sending request...";
+
+
+  try{
+
+    if(!supa){
+
+      /*
+       Demo mode:
+       Keep request locally so the interface
+       can still be tested before Supabase
+       is connected.
+      */
+
+      saveLocalDemoOrder(
+        payload,
+        reference
+      );
+
+    }
+    else{
+
+      const {
+        error
+      } = await supa
+        .from("orders")
+        .insert([payload]);
+
+
+      if(error){
+        throw error;
+      }
+
+    }
+
+
+    /* Save guest details */
+
+    localStorage.setItem(
+      "last_room",
+      room
+    );
+
+    localStorage.setItem(
+      "guest_name",
+      guestName
+    );
+
+    localStorage.setItem(
+      "guest_phone",
+      phone
+    );
+
+
+    closeModal("orderModal");
+
+
+    $("successText").textContent =
+      `${selectedSvc.t} for Room ${room} has been sent to ${
+        hotel?.name || "the hotel"
+      }. The hotel team can now process your request.`;
+
+
+    $("orderReference").textContent =
+      reference;
+
+
+    openModal("successModal");
+
+
+    if(
+      "vibrate" in navigator
+    ){
+
+      navigator.vibrate([
+        100,
+        50,
+        100
+      ]);
+
+    }
+
+
+  }
+  catch(error){
+
+    console.error(
+      "Order error:",
+      error
+    );
+
+
+    showToast(
+      "Order could not be sent. Please try again."
+    );
+
+  }
+  finally{
+
+    btn.disabled=false;
+
+    btn.textContent=
+      "✅ Place Order";
+
+  }
+
 }
+
+
+/* =========================================================
+   LOCAL DEMO ORDER
+========================================================= */
+
+function saveLocalDemoOrder(
+  payload,
+  reference
+){
+
+  const existing =
+    JSON.parse(
+      localStorage.getItem(
+        "guesthub_demo_orders"
+      ) || "[]"
+    );
+
+
+  existing.unshift({
+
+    ...payload,
+
+    reference,
+
+    status:"new"
+
+  });
+
+
+  localStorage.setItem(
+    "guesthub_demo_orders",
+    JSON.stringify(
+      existing.slice(0,20)
+    )
+  );
+
+}
+
+
+/* =========================================================
+   LOAD ORDERS
+========================================================= */
+
+async function viewOrders(){
+
+  const room =
+    $("roomNo")
+      .value
+      .trim();
+
+
+  if(!room){
+
+    showToast(
+      "Enter your room number first."
+    );
+
+    $("roomNo").focus();
+
+    return;
+
+  }
+
+
+  openModal("ordersModal");
+
+
+  $("ordersList").innerHTML =
+    `
+      <div class="loading" style="margin:0">
+        <div class="spinner"></div>
+        Loading your orders...
+      </div>
+    `;
+
+
+  try{
+
+    let orders=[];
+
+
+    /* Demo/local orders */
+
+    const localOrders =
+      JSON.parse(
+        localStorage.getItem(
+          "guesthub_demo_orders"
+        ) || "[]"
+      );
+
+
+    if(
+      hotelId==="demo" ||
+      !supa
+    ){
+
+      orders =
+        localOrders.filter(
+          order =>
+            String(order.room)===
+            String(room)
+        );
+
+    }
+    else{
+
+      const {
+        data,
+        error
+      } = await supa
+        .from("orders")
+        .select("*")
+        .eq("hotel_id",hotelId)
+        .eq("room",room)
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        )
+        .limit(20);
+
+
+      if(error){
+        throw error;
+      }
+
+
+      orders=data||[];
+
+    }
+
+
+    renderOrders(orders);
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    $("ordersList").innerHTML =
+      `
+        <div class="emptyState"
+             style="display:block">
+          <div>⚠️</div>
+          <strong>Unable to load orders</strong>
+          <br>
+          Please try again.
+        </div>
+      `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER ORDERS
+========================================================= */
+
+function renderOrders(orders){
+
+  if(!orders.length){
+
+    $("ordersList").innerHTML =
+      `
+        <div class="emptyState"
+             style="display:block">
+          <div>📋</div>
+          <strong>No orders yet</strong>
+          <br>
+          Your GuestHub requests will appear here.
+        </div>
+      `;
+
+    return;
+
+  }
+
+
+  $("ordersList").innerHTML="";
+
+
+  orders.forEach(order=>{
+
+    const item =
+      document.createElement("div");
+
+    item.className="orderItem";
+
+
+    const row =
+      document.createElement("div");
+
+    row.className="orderRow";
+
+
+    const left =
+      document.createElement("div");
+
+
+    const title =
+      document.createElement("strong");
+
+    title.textContent =
+      order.service_title ||
+      order.service ||
+      "Hotel service";
+
+
+    const details =
+      document.createElement("small");
+
+    details.textContent =
+      order.details ||
+      "Request submitted";
+
+
+    left.appendChild(title);
+    left.appendChild(details);
+
+
+    const status =
+      document.createElement("span");
+
+    const statusText =
+      String(
+        order.status||"new"
+      ).toLowerCase();
+
+
+    status.className =
+      "status "+
+      statusText;
+
+
+    status.textContent =
+      statusText
+        .charAt(0)
+        .toUpperCase()+
+      statusText
+        .slice(1);
+
+
+    row.appendChild(left);
+    row.appendChild(status);
+
+    item.appendChild(row);
+
+
+    if(order.amount){
+
+      const amount =
+        document.createElement("small");
+
+      amount.textContent =
+        formatMoney(order.amount);
+
+      item.appendChild(amount);
+
+    }
+
+
+    $("ordersList")
+      .appendChild(item);
+
+  });
+
+}
+
+
+/* =========================================================
+   WHATSAPP CONTACT
+========================================================= */
 
 function contact(type){
- const phone = type=='front'? (hotel?.whatsapp_front||'254722000000') : (hotel?.whatsapp_house||'254722000000');
- window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'')+'?text=Hi Room '+document.getElementById('roomNo').value+' needs '+type);
+
+  const room =
+    $("roomNo")
+      .value
+      .trim();
+
+
+  if(!room){
+
+    showToast(
+      "Enter your room number first."
+    );
+
+    $("roomNo").focus();
+
+    return;
+
+  }
+
+
+  let phone="";
+
+
+  if(type==="front"){
+
+    phone =
+      hotel?.whatsapp_front ||
+      hotel?.front_desk_phone ||
+      "";
+
+  }
+  else{
+
+    phone =
+      hotel?.whatsapp_house ||
+      hotel?.housekeeping_phone ||
+      "";
+
+  }
+
+
+  phone =
+    String(phone)
+      .replace(/[^\d]/g,"");
+
+
+  if(!phone){
+
+    showToast(
+      "This hotel has not configured its WhatsApp number yet."
+    );
+
+    return;
+
+  }
+
+
+  const message =
+    type==="front"
+      ? `Hi, I am GuestHub guest in Room ${room}. I need assistance from the front desk.`
+      : `Hi, I am GuestHub guest in Room ${room}. I need housekeeping assistance.`;
+
+
+  const url =
+    "https://wa.me/"+
+    phone+
+    "?text="+
+    encodeURIComponent(message);
+
+
+  window.open(
+    url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
 }
 
+
+/* =========================================================
+   HELP MODAL
+========================================================= */
+
+function openHelp(){
+
+  openModal("helpModal");
+
+}
+
+
+/* =========================================================
+   LOCAL STORAGE LISTENERS
+========================================================= */
+
+$("guestName")
+  .addEventListener(
+    "input",
+    event=>{
+
+      localStorage.setItem(
+        "guest_name",
+        event.target.value
+      );
+
+    }
+  );
+
+
+$("roomNo")
+  .addEventListener(
+    "input",
+    event=>{
+
+      localStorage.setItem(
+        "last_room",
+        event.target.value
+      );
+
+      updateRoomBadge();
+
+    }
+  );
+
+
+$("guestPhone")
+  .addEventListener(
+    "input",
+    event=>{
+
+      localStorage.setItem(
+        "guest_phone",
+        event.target.value
+      );
+
+    }
+  );
+
+
+$("searchService")
+  .addEventListener(
+    "input",
+    searchServices
+  );
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+$("closeOrderBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("orderModal")
+  );
+
+
+$("cancelOrderBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("orderModal")
+  );
+
+
+$("confirmBtn")
+  .addEventListener(
+    "click",
+    placeOrder
+  );
+
+
+$("successCloseBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("successModal")
+  );
+
+
+$("ordersBtn")
+  .addEventListener(
+    "click",
+    viewOrders
+  );
+
+
+$("closeOrdersBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("ordersModal")
+  );
+
+
+$("helpBtn")
+  .addEventListener(
+    "click",
+    openHelp
+  );
+
+
+$("closeHelpBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("helpModal")
+  );
+
+
+$("helpDoneBtn")
+  .addEventListener(
+    "click",
+    ()=>closeModal("helpModal")
+  );
+
+
+$("frontDeskBtn")
+  .addEventListener(
+    "click",
+    ()=>contact("front")
+  );
+
+
+$("housekeepingBtn")
+  .addEventListener(
+    "click",
+    ()=>contact("house")
+  );
+
+
+/* =========================================================
+   CLOSE MODAL WHEN BACKDROP IS CLICKED
+========================================================= */
+
+document
+  .querySelectorAll(".modal")
+  .forEach(modal=>{
+
+    modal.addEventListener(
+      "click",
+      event=>{
+
+        if(
+          event.target===modal
+        ){
+
+          modal.classList.remove(
+            "active"
+          );
+
+          document.body.style.overflow="";
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(event.key==="Escape"){
+
+      closeAllModals();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   RESTORE GUEST DETAILS
+========================================================= */
+
+$("guestName").value =
+  localStorage.getItem(
+    "guest_name"
+  ) || "";
+
+
+$("guestPhone").value =
+  localStorage.getItem(
+    "guest_phone"
+  ) || "";
+
+
+/* =========================================================
+   START APPLICATION
+========================================================= */
+
 initHotel();
-document.getElementById('guestName').value=localStorage.getItem('guest_name')||'';
-document.getElementById('guestPhone').value=localStorage.getItem('guest_phone')||'';
+
 </script>
+
 </body>
 </html>
