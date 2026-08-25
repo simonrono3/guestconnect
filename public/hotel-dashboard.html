@@ -1,208 +1,391 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hotel OS 9.7 - QR + Menu Final</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GuestHub Hotel Dashboard 10.0</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="config.js"></script>
+
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#131313;--border:#222;--ok:#22c55e}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:30px}
-header{position:sticky;top:0;z-index:50;background:rgba(8,8,8,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:Space Grotesk;font-weight:800;font-size:18px}.logo span{color:var(--lime)}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block;font-family:Space Grotesk}.stat small{color:#888;font-size:9px;font-weight:900;letter-spacing:.08em}
-.stat.live{border-color:var(--lime);background:linear-gradient(135deg,#131313,#1a1a0a)}
-.tabs{display:flex;gap:8px;padding:0 12px 12px;overflow:auto;position:sticky;top:58px;background:var(--bg);z-index:40}
-.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:12px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.section{padding:0 12px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:10px;position:relative}
-.card.new{border-left:4px solid var(--lime);animation:pop.3s}
-@keyframes pop{from{transform:scale(.98);opacity:0}to{transform:scale(1);opacity:1}}
-.badge{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px}
-.badge.taxi{background:var(--lime);color:#000}.badge.spa{background:var(--gold);color:#000}.badge.tour{background:#8b5cf6;color:#fff}.badge.food{background:#ff6b35;color:#fff}
-.btn{padding:10px 14px;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:12px}.btn-a{background:var(--lime);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}
-.vendor{display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:10px;margin-bottom:8px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:none;place-items:center;z-index:100;padding:16px}
-.modalBox{background:#141414;border:1px solid #2a2a2a;border-radius:20px;padding:18px;width:100%;max-width:420px;max-height:85vh;overflow:auto}
-.input{width:100%;padding:12px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;color:#fff;margin-top:6px}
+
+:root{
+--lime:#c6ff00;
+--gold:#fbbf24;
+--bg:#060606;
+--card:#141414;
+--border:#262626;
+--green:#22c55e;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+background:var(--bg);
+color:white;
+font-family:Inter,sans-serif;
+padding-bottom:100px;
+}
+
+header{
+position:sticky;
+top:0;
+z-index:100;
+background:#080808;
+border-bottom:1px solid #222;
+padding:16px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-family:Space Grotesk;
+font-weight:800;
+font-size:22px;
+}
+
+.logo span{
+color:var(--lime);
+}
+
+.hotelTag{
+font-size:12px;
+color:#999;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+padding:14px;
+}
+
+.stat{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:18px;
+padding:16px;
+text-align:center;
+}
+
+.stat b{
+font-size:24px;
+display:block;
+font-family:Space Grotesk;
+}
+
+.stat small{
+color:#888;
+font-size:11px;
+font-weight:700;
+}
+
+.tabs{
+display:flex;
+overflow:auto;
+gap:8px;
+padding:0 14px 14px;
+}
+
+.tab{
+white-space:nowrap;
+padding:10px 16px;
+border-radius:999px;
+border:none;
+font-weight:800;
+cursor:pointer;
+background:#1a1a1a;
+color:white;
+}
+
+.tab.active{
+background:var(--lime);
+color:black;
+}
+
+.section{
+padding:14px;
+display:none;
+}
+
+.section.active{
+display:block;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:18px;
+padding:14px;
+margin-bottom:12px;
+}
+
+.btn{
+padding:12px;
+border:none;
+border-radius:12px;
+font-weight:800;
+cursor:pointer;
+}
+
+.btn-green{
+background:var(--lime);
+color:black;
+}
+
+.btn-dark{
+background:#222;
+color:white;
+}
+
+.btn-gold{
+background:var(--gold);
+color:black;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:6px;
+background:#0a0a0a;
+border:1px solid #333;
+border-radius:12px;
+color:white;
+}
+
+.order{
+background:#0a0a0a;
+border:1px solid #222;
+border-radius:14px;
+padding:12px;
+margin-top:10px;
+}
+
+.vendor{
+background:#0a0a0a;
+border:1px solid #222;
+border-radius:14px;
+padding:12px;
+margin-top:10px;
+}
+
+.qrbox{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-top:15px;
+}
+
 </style>
 </head>
+
 <body>
+
 <header>
-<div><div class="logo">🏨 <span id="hotelName">Loading Hotel...</span></div><small id="hotelCity" style="color:#888;font-weight:800">-</small></div>
-<div style="display:flex;gap:8px"><button class="btn btn-d" onclick="openSettings()">⚙️</button><button class="btn btn-d" onclick="localStorage.clear();location.href='/hotel-login.html'">Logout</button></div>
+
+<div class="logo">
+GuestHub <span>HotelOS</span>
+</div>
+
+<div class="hotelTag" id="hotelName">
+Loading...
+</div>
+
 </header>
 
 <div class="stats">
-<div class="stat live"><b id="s_orders">0</b><small>🔔 NEW ORDERS</small></div>
-<div class="stat"><b id="s_vendors">0</b><small>🚚 VENDORS</small></div>
-<div class="stat"><b id="s_rev">Ksh 0</b><small>💰 TODAY REV</small></div>
-<div class="stat"><b id="s_rating">4.9</b><small>⭐ RATING</small></div>
+
+<div class="stat">
+<b id="todayRevenue">0</b>
+<small>TODAY REVENUE</small>
+</div>
+
+<div class="stat">
+<b id="monthRevenue">0</b>
+<small>MONTH REVENUE</small>
+</div>
+
+<div class="stat">
+<b id="totalOrders">0</b>
+<small>ORDERS</small>
+</div>
+
+<div class="stat">
+<b id="activeVendors">0</b>
+<small>ACTIVE VENDORS</small>
+</div>
+
 </div>
 
 <div class="tabs">
-<button class="tab active" onclick="tab('orders',this)">🔔 Live (<span id="c_orders">0</span>)</button>
-<button class="tab" onclick="tab('vendors',this)">🚚 Vendors</button>
-<button class="tab" onclick="tab('qr',this)">📱 QR Studio</button>
-<button class="tab" onclick="tab('menu',this)">🍔 Menu Builder</button>
-<button class="tab" onclick="tab('analytics',this)">📊 Analytics</button>
+
+<button class="tab active"
+onclick="openTab('orders',this)">
+🔔 Orders
+</button>
+
+<button class="tab"
+onclick="openTab('vendors',this)">
+🚚 Vendors
+</button>
+
+<button class="tab"
+onclick="openTab('services',this)">
+🍽 Services
+</button>
+
+<button class="tab"
+onclick="openTab('revenue',this)">
+💰 Revenue
+</button>
+
+<button class="tab"
+onclick="openTab('qr',this)">
+📱 QR Codes
+</button>
+
 </div>
 
-<div id="view-orders" class="section"></div>
-<div id="view-vendors" class="section" style="display:none"></div>
+<!-- ORDERS -->
 
-<div id="view-qr" class="section" style="display:none">
-<div class="card" style="border-color:var(--lime)">
-<b>📱 QR Code Studio</b><br><small style="color:#888">Guest scans → auto Room + Hotel → order comes here</small>
-<div style="margin-top:12px"><label style="font-size:10px;color:#888">Guest Link (auto)</label><input class="input" id="qrHotelUrl" readonly></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-<div><label style="font-size:10px;color:#888">Room</label><input class="input" id="qrRoom" value="204"></div>
-<div><label style="font-size:10px;color:#888">Hotel ID</label><input class="input" id="qrHotelId" readonly></div>
-</div>
-<button class="btn btn-a" style="width:100%;margin-top:10px" onclick="generateQR()">✨ Generate QR - Room <span id="qrRoomLabel">204</span></button>
-<div id="qrPreview" style="margin-top:14px;text-align:center"></div>
-</div>
+<div id="orders" class="section active">
+
 <div class="card">
-<b>🖨️ Bulk QR 101-120</b>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-<input class="input" id="qrStart" type="number" value="101"><input class="input" id="qrEnd" type="number" value="120">
-</div>
-<button class="btn btn-d" style="width:100%;margin-top:10px" onclick="generateBulkQR()">🖨️ Generate Bulk Print Sheet</button>
-<div id="qrBulk" style="margin-top:14px"></div>
-</div>
+
+<b>Guest Orders</b>
+
+<div id="ordersList">
+Loading orders...
 </div>
 
-<div id="view-menu" class="section" style="display:none">
-<div class="card" style="border-color:var(--gold)">
-<b>🍔 Menu Builder - What Guest Sees on QR Scan</b><br><small style="color:#888">Add real prices. Replaces demo menu instantly.</small>
-<div style="margin-top:12px;background:#0a0a0a;border:1px solid #222;border-radius:14px;padding:12px">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<select id="m_cat" class="input" style="margin:0"><option value="taxi">🚕 Transport</option><option value="tour">🌍 Tours</option><option value="spa">🧖 Spa</option><option value="food">🍔 Food</option><option value="media">📸 Concierge</option></select>
-<input id="m_price" type="number" class="input" style="margin:0" placeholder="Price Ksh">
-</div>
-<input id="m_title" class="input" placeholder="Title e.g. Airport Taxi JKIA">
-<input id="m_desc" class="input" placeholder="Desc e.g. Sedan, baby seat, 45min">
-<label style="display:flex;gap:8px;align-items:center;margin-top:10px;font-size:12px"><input type="checkbox" id="m_active" checked> Active (show to guest)</label>
-<button class="btn btn-a" style="width:100%;margin-top:10px" onclick="addMenuItem()">➕ Add Menu Item</button>
-</div>
-<div id="menuList" style="margin-top:14px"></div>
-</div>
-<div class="card"><b>📱 WhatsApp Routing</b>
-<label style="font-size:10px;color:#888;margin-top:10px;display:block">Front Desk WA</label><input class="input" id="wa_front" placeholder="254722...">
-<label style="font-size:10px;color:#888;margin-top:8px;display:block">Housekeeping WA</label><input class="input" id="wa_house" placeholder="254722...">
-<label style="font-size:10px;color:#888;margin-top:8px;display:block">Kitchen WA</label><input class="input" id="wa_kitchen" placeholder="254722...">
-<button class="btn btn-a" style="width:100%;margin-top:10px" onclick="saveWA()">💾 Save WA Numbers</button>
-</div>
 </div>
 
-<div id="view-analytics" class="section" style="display:none"><div class="card"><b>📊 This Week</b><br><br><div style="height:80px;background:#0a0a0a;border-radius:12px;display:flex;align-items:end;gap:4px;padding:8px"><div style="height:30%;width:100%;background:var(--lime)"></div><div style="height:60%;width:100%;background:var(--lime)"></div><div style="height:90%;width:100%;background:var(--gold)"></div><div style="height:70%;width:100%;background:var(--lime)"></div></div><br><small style="color:#888">Orders up 34%. Top: Airport Taxi</small></div></div>
+</div>
 
-<div class="modal" id="assignModal"><div class="modalBox"><h3 style="margin:0;font-family:Space Grotesk">Assign Vendor ⚡</h3><div id="vendorList" style="margin-top:12px"></div><button class="btn btn-d" style="width:100%;margin-top:12px" onclick="closeModal()">Close</button></div></div>
-<div class="modal" id="settingsModal"><div class="modalBox"><h3>⚙️ Hotel Settings</h3><label>Hotel Name</label><input class="input" id="set_name"><label>City</label><input class="input" id="set_city"><button class="btn btn-a" style="width:100%;margin-top:12px" onclick="saveSettings()">Save</button><button class="btn btn-d" style="width:100%;margin-top:8px" onclick="closeSettings()">Close</button></div></div>
+<!-- VENDORS -->
 
-<script src="config.js"></script>
-<script>
-const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let hotel=null, allVendors=[], currentOrder=null;
+<div id="vendors" class="section">
 
-async function init(){
- const email = localStorage.getItem('hotel_email') || localStorage.getItem('hotelEmail');
- if(!email){ document.getElementById('hotelName').innerText='Not logged in'; return; }
- const {data} = await supa.from('hotels').select('*').eq('email',email).single();
- if(!data){ document.getElementById('hotelName').innerText='Hotel not found'; return; }
- hotel=data;
- document.getElementById('hotelName').innerText=data.name || data.hotel_name || 'My Hotel';
- document.getElementById('hotelCity').innerText=(data.city||'')+' • '+(data.status||'ACTIVE');
- document.getElementById('set_name').value=data.name||''; document.getElementById('set_city').value=data.city||'';
- document.getElementById('qrHotelId').value=data.id;
- document.getElementById('wa_front').value=data.whatsapp_front||''; document.getElementById('wa_house').value=data.whatsapp_house||''; document.getElementById('wa_kitchen').value=data.whatsapp_kitchen||'';
- const baseUrl = window.location.origin + '/guest.html?hotel='+data.id;
- document.getElementById('qrHotelUrl').value=baseUrl+'&room=204';
- document.getElementById('qrRoom').addEventListener('input',e=>{ document.getElementById('qrRoomLabel').innerText=e.target.value||'204'; });
- loadOrders(); loadVendors(); loadMenu();
- setInterval(()=>{ loadOrders(); loadVendors(); },8000);
-}
+<div class="card">
 
-async function loadOrders(){
- const {data} = await supa.from('orders').select('*').eq('hotel_id', hotel.id).eq('status','new').order('created_at',{ascending:false});
- const box=document.getElementById('view-orders');
- if(!data || data.length==0){
-  box.innerHTML=`<div class=card style=text-align:center;color:#888>✅ No new orders.<br><small>Guests scanning QR will appear here live.<br><br><button class=btn btn-a onclick="createDemoOrder()">+ Create Demo Order</button></small></div>`;
-  document.getElementById('s_orders').innerText='0'; document.getElementById('c_orders').innerText='0'; return;
- }
- document.getElementById('s_orders').innerText=data.length; document.getElementById('c_orders').innerText=data.length;
- let rev=0; data.forEach(o=>rev+=parseInt(o.amount||0));
- document.getElementById('s_rev').innerText='Ksh '+rev.toLocaleString();
- box.innerHTML=data.map(o=>`
-  <div class=card new>
-   <div style=display:flex;justify-content:space-between><b>Room ${o.room||o.room_number} - ${o.guest_name||'Guest'}</b><span class="badge ${getBadge(o.service)}">${(o.service||'').toUpperCase()}</span></div>
-   <div style=color:#888;font-size:12px;margin-top:6px><b style=color:#fff>${o.service}</b> - ${o.details||''}<br>Pay: <b style=color:var(--lime)>Ksh ${o.amount}</b> • ${timeAgo(o.created_at)}<br>Phone: ${o.guest_phone||'-'}</div>
-   <div style=display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px><button class=btn btn-a onclick="openAssign('${o.id}')">🚚 Assign Vendor</button><button class=btn btn-d onclick="whatsappGuest('${o.guest_phone}')">💬 WA Guest</button></div>
-  </div>`).join('');
-}
+<b>Vendor Tracking</b>
 
-async function loadVendors(){
- const city=hotel.city||'Eldoret';
- const {data} = await supa.from('vendors').select('*').eq('city',city).eq('status','approved').order('rating',{ascending:false}).limit(30);
- allVendors=data||[]; document.getElementById('s_vendors').innerText=allVendors.length;
- const box=document.getElementById('view-vendors');
- if(allVendors.length==0){ box.innerHTML=`<div class=card>No approved vendors in ${city} yet.</div>`; return; }
- box.innerHTML=`<div class=card><b>🚚 Approved in ${city} (${allVendors.length})</b></div>`+ allVendors.map(v=>`
-   <div class=vendor><div><b>${v.full_name}</b><br><small style=color:#888>${(v.services||[]).slice(0,2).join(', ')} • ${v.vehicle}</small></div><div style=display:flex;gap:6px><button class=btn btn-a onclick="quickAssign('${v.id}')">Assign</button><button class=btn btn-d onclick="window.open('https://wa.me/${v.phone}')">WA</button></div></div>`).join('');
-}
+<div id="vendorsList"></div>
 
-function getBadge(s){ s=(s||'').toLowerCase(); if(s.includes('taxi')) return 'taxi'; if(s.includes('massage')||s.includes('spa')) return 'spa'; if(s.includes('tour')||s.includes('safari')) return 'tour'; return 'food'; }
-function timeAgo(t){ const d=(Date.now()-new Date(t))/60000; if(d<1) return 'Just now'; if(d<60) return Math.floor(d)+'m ago'; return Math.floor(d/60)+'h ago'; }
-function openAssign(orderId){ currentOrder=orderId; document.getElementById('assignModal').style.display='grid'; document.getElementById('vendorList').innerHTML=allVendors.map(v=>`<div class=vendor><div><b>${v.full_name}</b><br><small>${v.phone}</small></div><button class=btn btn-a onclick="assign('${v.id}')">Assign</button></div>`).join('')||'No vendors'; }
-function closeModal(){ document.getElementById('assignModal').style.display='none'; }
-async function assign(vendorId){ const {error}=await supa.from('orders').update({vendor_id:vendorId,status:'assigned',assigned_at:new Date().toISOString()}).eq('id',currentOrder); if(error) return alert(error.message); alert('✅ Vendor assigned!'); closeModal(); loadOrders(); }
-function whatsappGuest(phone){ if(!phone) return alert('No phone'); window.open('https://wa.me/'+phone.replace(/[^0-9]/g,'')); }
-function quickAssign(id){ alert('Pick an order first then Assign Vendor'); }
-function tab(name,el){ document.querySelectorAll('[id^=view-]').forEach(e=>e.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); if(name=='qr'&&hotel){ const base=window.location.origin+'/guest.html?hotel='+hotel.id; document.getElementById('qrHotelUrl').value=base+'&room='+(document.getElementById('qrRoom').value||204); } }
-function openSettings(){ document.getElementById('settingsModal').style.display='grid'; }
-function closeSettings(){ document.getElementById('settingsModal').style.display='none'; }
-async function saveSettings(){ const {error}=await supa.from('hotels').update({name:document.getElementById('set_name').value,city:document.getElementById('set_city').value}).eq('id',hotel.id); if(error) alert(error.message); else location.reload(); }
-async function createDemoOrder(){ const demo={hotel_id:hotel.id,room:'204',guest_name:'John Doe',guest_phone:'254722000000',service:'airport_taxi',details:'JKIA Pickup 8AM',amount:2500,status:'new',created_at:new Date().toISOString()}; const {error}=await supa.from('orders').insert([demo]); if(error) alert(error.message); else loadOrders(); }
+</div>
 
-// MENU OS
-async function loadMenu(){
- const {data} = await supa.from('hotel_services').select('*').eq('hotel_id',hotel.id).order('created_at',{ascending:false});
- const box=document.getElementById('menuList');
- if(!data||data.length==0){ box.innerHTML=`<small style=color:#888>No menu yet. Guest sees demo menu until you add.</small>`; return; }
- box.innerHTML=data.map(m=>`<div class=vendor style="${!m.active?'opacity:.5':''}"><div><b>${m.title} ${!m.active?'(HIDDEN)':''}</b><br><small style=color:#888>${m.category} • ${m.description} • Ksh ${m.price}</small></div><div style=display:flex;gap:6px><button class=btn btn-d onclick="deleteMenu('${m.id}')" style=color:#ff6b6b>X</button></div></div>`).join('');
-}
-async function addMenuItem(){
- const title=document.getElementById('m_title').value.trim(); const price=parseInt(document.getElementById('m_price').value||0);
- const cat=document.getElementById('m_cat').value; const desc=document.getElementById('m_desc').value; const active=document.getElementById('m_active').checked;
- if(!title||!price) return alert('Add title + price');
- const {error}=await supa.from('hotel_services').insert([{hotel_id:hotel.id,title,price,category:cat,description:desc,active}]);
- if(error) return alert(error.message);
- document.getElementById('m_title').value=''; document.getElementById('m_price').value=''; document.getElementById('m_desc').value='';
- alert('✅ Added! Guest QR now shows your price'); loadMenu();
-}
-async function deleteMenu(id){ if(!confirm('Delete?')) return; await supa.from('hotel_services').delete().eq('id',id); loadMenu(); }
-async function saveWA(){ const payload={whatsapp_front:document.getElementById('wa_front').value,whatsapp_house:document.getElementById('wa_house').value,whatsapp_kitchen:document.getElementById('wa_kitchen').value}; const {error}=await supa.from('hotels').update(payload).eq('id',hotel.id); if(error) alert(error.message); else alert('✅ WA saved'); }
+</div>
 
-// QR
-function generateQR(){
- const room=document.getElementById('qrRoom').value||'204'; const base=window.location.origin+'/guest.html?hotel='+hotel.id+'&room='+room;
- document.getElementById('qrHotelUrl').value=base;
- const preview=document.getElementById('qrPreview'); preview.innerHTML=`<div style=background:#fff;padding:14px;border-radius:18px;display:inline-block><div id=qrcode></div></div><br><br><b>Room ${room}</b><br><small style=color:#888;word-break:break-all>${base}</small><br><br><div style=display:grid;grid-template-columns:1fr 1fr;gap:8px><button class=btn btn-a onclick="downloadQR('${room}')">⬇️ Download PNG</button><button class=btn btn-d onclick="window.open('${base}','_blank')">👁️ Test</button></div>`;
- setTimeout(()=>{ new QRCode(document.getElementById('qrcode'),{text:base,width:200,height:200}); },100);
-}
-function generateBulkQR(){
- const start=parseInt(document.getElementById('qrStart').value||101); const end=parseInt(document.getElementById('qrEnd').value||110);
- const base=window.location.origin+'/guest.html?hotel='+hotel.id; let html='<div style=display:grid;grid-template-columns:1fr 1fr;gap:12px>';
- for(let r=start;r<=end;r++){ html+=`<div style=background:#fff;color:#000;padding:10px;border-radius:12px;text-align:center><b>Room ${r}</b><div id=qr-${r} style=display:flex;justify-content:center;margin:8px 0></div><small style=font-size:7px;word-break:break-all>${base}&room=${r}</small></div>`; }
- html+='</div><br><button class=btn btn-a style=width:100% onclick="window.print()">🖨️ Print All</button>'; document.getElementById('qrBulk').innerHTML=html;
- setTimeout(()=>{ for(let r=start;r<=end;r++){ new QRCode(document.getElementById('qr-'+r),{text:base+'&room='+r,width:110,height:110}); } },400);
-}
-function downloadQR(room){ const canvas=document.querySelector('#qrcode canvas'); if(!canvas) return alert('Generate first'); const a=document.createElement('a'); a.download='GuestHub-Room-'+room+'.png'; a.href=canvas.toDataURL(); a.click(); }
+<!-- SERVICES -->
 
-init();
-</script>
-</body>
-</html>
+<div id="services" class="section">
+
+<div class="card">
+
+<b>Add Hotel Service</b>
+
+<input id="serviceTitle"
+placeholder="Service name">
+
+<input id="servicePrice"
+type="number"
+placeholder="Price">
+
+<select id="serviceCategory">
+
+<option value="food">Food</option>
+<option value="spa">Spa</option>
+<option value="taxi">Taxi</option>
+<option value="tour">Tour</option>
+
+</select>
+
+<button
+class="btn btn-green"
+style="width:100%;margin-top:10px"
+onclick="addService()">
+
++ Add Service
+
+</button>
+
+</div>
+
+<div id="serviceList"></div>
+
+</div>
+
+<!-- REVENUE -->
+
+<div id="revenue" class="section">
+
+<div class="card">
+
+<h3>Total Revenue</h3>
+
+<br>
+
+<h1 id="revenueTotal">
+Ksh 0
+</h1>
+
+<br>
+
+<p>
+GuestHub Commission (15%)
+</p>
+
+<h2 id="commissionTotal">
+Ksh 0
+</h2>
+
+</div>
+
+</div>
+
+<!-- QR -->
+
+<div id="qr" class="section">
+
+<div class="card">
+
+<b>Generate Room QR Codes</b>
+
+<br><br>
+
+<input
+id="startRoom"
+value="101"
+placeholder="Start Room">
+
+<input
+id="endRoom"
+value="110"
+placeholder="End Room">
+
+<button
+class="btn btn-gold"
+style="width:100%;margin-top:10px"
+onclick="generateQRs()">
+
+Generate QRs
+
+</button>
+
+<div class="qrbox"
+id="qrContainer">
+
+</div>
+
+</div>
+
+</div>
