@@ -1,114 +1,2278 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor OS 9.2 - Integrated</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070707">
+
+<title>GuestHub Vendor OS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#131313;--border:#222;--ok:#22c55e;--muted:#888}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
-header{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:20px;padding:18px;display:flex;justify-content:space-between}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px}
-.tabs{display:flex;gap:8px;padding:14px;overflow:auto;position:sticky;top:62px;z-index:40;background:var(--bg)}
-.tab{white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:13px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.btn{padding:12px;border:none;border-radius:12px;font-weight:900;cursor:pointer}.btn-a{background:var(--lime);color:#000}.btn-d{background:#1f1f1f;color:#fff;border:1px solid #333}.btn-c{background:#fbbf24;color:#000}
-.badge{font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;background:var(--lime);color:#000}
-.toggle{width:46px;height:26px;background:#333;border-radius:999px;position:relative;cursor:pointer}.toggle.on{background:var(--ok)}.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}.toggle.on::after{left:23px}
+:root{
+  --lime:#c6ff00;
+  --gold:#fbbf24;
+  --bg:#070707;
+  --card:#121212;
+  --card2:#0b0b0b;
+  --border:#242424;
+  --muted:#888;
+  --ok:#22c55e;
+  --danger:#ef4444;
+  --blue:#38bdf8;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:#fff;
+  font-family:Inter,sans-serif;
+  padding-bottom:90px;
+}
+
+button,
+input,
+textarea,
+select{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(7,7,7,.94);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.brand{
+  font-family:Space Grotesk;
+  font-weight:800;
+  font-size:17px;
+}
+
+.brand span{
+  color:var(--lime);
+}
+
+.vendor-mini{
+  text-align:right;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+.wallet{
+  margin:14px;
+  background:linear-gradient(135deg,#c6ff00,#fbbf24);
+  color:#000;
+  border-radius:22px;
+  padding:20px;
+  box-shadow:0 15px 40px rgba(198,255,0,.08);
+}
+
+.wallet-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
+
+.wallet small{
+  font-weight:800;
+}
+
+.wallet h1{
+  margin:5px 0 3px;
+  font-family:Space Grotesk;
+  font-size:34px;
+}
+
+.wallet-sub{
+  font-size:11px;
+  opacity:.75;
+}
+
+.wallet-actions{
+  display:flex;
+  gap:8px;
+  margin-top:16px;
+}
+
+.btn{
+  padding:11px 14px;
+  border:0;
+  border-radius:11px;
+  font-weight:800;
+  font-size:12px;
+  transition:.15s;
+}
+
+.btn:active{
+  transform:scale(.97);
+}
+
+.btn-a{
+  background:var(--lime);
+  color:#000;
+}
+
+.btn-g{
+  background:var(--gold);
+  color:#000;
+}
+
+.btn-d{
+  background:#202020;
+  color:#fff;
+  border:1px solid #333;
+}
+
+.btn-red{
+  background:#3a1111;
+  color:#ff7777;
+  border:1px solid #572020;
+}
+
+.btn-blue{
+  background:#082c3d;
+  color:#38bdf8;
+  border:1px solid #10465c;
+}
+
+.btn-full{
+  width:100%;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  padding:0 14px;
+}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:13px 8px;
+  text-align:center;
+}
+
+.stat b{
+  display:block;
+  font-family:Space Grotesk;
+  font-size:20px;
+}
+
+.stat small{
+  color:var(--muted);
+  font-size:8px;
+  font-weight:800;
+}
+
+.availability{
+  margin:12px 14px;
+  padding:13px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.availability-left b{
+  font-size:13px;
+}
+
+.availability-left small{
+  display:block;
+  color:var(--muted);
+  margin-top:3px;
+  font-size:10px;
+}
+
+.toggle{
+  width:50px;
+  height:28px;
+  background:#333;
+  border-radius:999px;
+  position:relative;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.toggle::after{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:3px;
+  top:3px;
+  border-radius:50%;
+  background:#fff;
+  transition:.2s;
+}
+
+.toggle.on{
+  background:var(--ok);
+}
+
+.toggle.on::after{
+  left:25px;
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  padding:12px 14px;
+  overflow-x:auto;
+  position:sticky;
+  top:62px;
+  z-index:80;
+  background:var(--bg);
+}
+
+.tabs::-webkit-scrollbar{
+  display:none;
+}
+
+.tab{
+  white-space:nowrap;
+  padding:10px 15px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:#fff;
+  font-weight:800;
+  font-size:11px;
+}
+
+.tab.active{
+  background:var(--lime);
+  color:#000;
+}
+
+.view{
+  padding:0 14px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:15px;
+  margin-bottom:11px;
+}
+
+.card-title{
+  font-family:Space Grotesk;
+  font-size:17px;
+  margin-bottom:5px;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+.small{
+  font-size:10px;
+}
+
+.job{
+  border-left:4px solid var(--lime);
+}
+
+.job-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.job-title{
+  font-family:Space Grotesk;
+  font-size:15px;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:900;
+  background:#242424;
+}
+
+.badge-new{
+  background:#263500;
+  color:var(--lime);
+}
+
+.badge-active{
+  background:#082c3d;
+  color:var(--blue);
+}
+
+.badge-done{
+  background:#0a2a14;
+  color:var(--ok);
+}
+
+.badge-danger{
+  background:#3a0b0b;
+  color:#ff6666;
+}
+
+.job-meta{
+  margin-top:8px;
+  line-height:1.65;
+  font-size:11px;
+  color:var(--muted);
+}
+
+.job-meta strong{
+  color:#fff;
+}
+
+.job-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+
+.service{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  margin-bottom:8px;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:13px;
+}
+
+.service-name{
+  font-weight:800;
+  font-size:12px;
+}
+
+.service-price{
+  color:var(--lime);
+  font-weight:900;
+  font-size:12px;
+}
+
+.profile-row{
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+
+.profile-row:last-child{
+  border-bottom:0;
+}
+
+.profile-label{
+  color:var(--muted);
+  font-size:9px;
+  text-transform:uppercase;
+  font-weight:900;
+}
+
+.profile-value{
+  margin-top:4px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.empty{
+  text-align:center;
+  padding:35px 15px;
+  color:var(--muted);
+}
+
+.loader{
+  text-align:center;
+  padding:35px;
+  color:var(--muted);
+}
+
+.input{
+  width:100%;
+  background:#080808;
+  color:#fff;
+  border:1px solid #303030;
+  border-radius:11px;
+  padding:12px;
+  outline:none;
+}
+
+.input:focus{
+  border-color:var(--lime);
+}
+
+.form-group{
+  margin-bottom:10px;
+}
+
+.form-group label{
+  font-size:9px;
+  color:var(--muted);
+  font-weight:900;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%) translateY(100px);
+  background:#fff;
+  color:#000;
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:11px;
+  z-index:999;
+  transition:.25s;
+  box-shadow:0 10px 40px #000;
+}
+
+.toast.show{
+  transform:translateX(-50%) translateY(0);
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(8px);
+  z-index:500;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:600px;
+  background:#111;
+  border:1px solid #333;
+  border-radius:22px 22px 0 0;
+  padding:20px;
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+@media(min-width:700px){
+  .modal{
+    align-items:center;
+  }
+
+  .modal-box{
+    border-radius:22px;
+  }
+}
+
+@media(max-width:600px){
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
 </style>
 </head>
+
 <body>
-<header><div style="font-family:Space Grotesk;font-weight:800">GuestHub <span style="color:var(--lime)">Vendor OS 9.2</span></div><div id="vendorName" style="font-size:11px;color:#888">Loading...</div></header>
 
-<div class="wallet"><div><small style="font-weight:800;opacity:.7">WALLET • <span id="status">PENDING</span></small><h2 id="bal" style="margin:4px 0 0;font-family:Space Grotesk;font-size:32px">Ksh 0</h2><small id="city">-</small></div><button class="btn" style="background:#000;color:#fff;border-radius:999px" onclick="alert('M-Pesa withdrawal: Supabase integration coming - funds after OTP')">Withdraw</button></div>
+<header>
+  <div class="brand">
+    GuestHub <span>Vendor OS</span>
+  </div>
 
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 14px">
-<div class="card" style="text-align:center"><b id="svcCount">0</b><br><small style="color:#888">SERVICES</small></div>
-<div class="card" style="text-align:center"><b>5.0⭐</b><br><small style="color:#888">NEW VENDOR</small></div>
-<div class="card" style="text-align:center"><b id="orderCount">0</b><br><small style="color:#888">ORDERS</small></div>
+  <div class="vendor-mini">
+    <div id="vendorName">Loading...</div>
+    <div id="vendorCity">—</div>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="wallet">
+
+  <div class="wallet-top">
+
+    <div>
+      <small>VENDOR WALLET • <span id="walletStatus">PENDING</span></small>
+
+      <h1 id="walletBalance">
+        Ksh 0
+      </h1>
+
+      <div class="wallet-sub">
+        Available earnings
+      </div>
+    </div>
+
+    <div style="font-size:30px">
+      💳
+    </div>
+
+  </div>
+
+  <div class="wallet-actions">
+
+    <button class="btn" style="background:#000;color:#fff"
+      onclick="openWithdraw()">
+      Withdraw
+    </button>
+
+    <button class="btn btn-d"
+      onclick="refreshDashboard()">
+      🔄 Refresh
+    </button>
+
+  </div>
+
+</section>
+
+<section class="stats">
+
+  <div class="stat">
+    <b id="statServices">0</b>
+    <small>SERVICES</small>
+  </div>
+
+  <div class="stat">
+    <b id="statNew">0</b>
+    <small>NEW JOBS</small>
+  </div>
+
+  <div class="stat">
+    <b id="statActive">0</b>
+    <small>ACTIVE</small>
+  </div>
+
+  <div class="stat">
+    <b id="statCompleted">0</b>
+    <small>COMPLETED</small>
+  </div>
+
+</section>
+
+<section class="availability">
+
+  <div class="availability-left">
+    <b>🟢 Available for jobs</b>
+    <small id="availabilityText">
+      Hotels can see your services
+    </small>
+  </div>
+
+  <div
+    id="availabilityToggle"
+    class="toggle on"
+    onclick="toggleAvailability()">
+  </div>
+
+</section>
+
+<nav class="tabs">
+
+  <button
+    class="tab active"
+    onclick="showTab('new',this)">
+    🔔 New Jobs
+  </button>
+
+  <button
+    class="tab"
+    onclick="showTab('active',this)">
+    📅 Active
+  </button>
+
+  <button
+    class="tab"
+    onclick="showTab('services',this)">
+    🛠️ Services
+  </button>
+
+  <button
+    class="tab"
+    onclick="showTab('earnings',this)">
+    💰 Earnings
+  </button>
+
+  <button
+    class="tab"
+    onclick="showTab('profile',this)">
+    👤 Profile
+  </button>
+
+</nav>
+
+<!-- NEW JOBS -->
+
+<section id="view-new" class="view">
+
+  <div id="newJobs">
+    <div class="loader">
+      Loading new jobs...
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ACTIVE -->
+
+<section id="view-active" class="view" style="display:none">
+
+  <div id="activeJobs">
+    <div class="loader">
+      Loading active jobs...
+    </div>
+  </div>
+
+</section>
+
+
+<!-- SERVICES -->
+
+<section id="view-services" class="view" style="display:none">
+
+  <div id="servicesContent">
+    <div class="loader">
+      Loading services...
+    </div>
+  </div>
+
+</section>
+
+
+<!-- EARNINGS -->
+
+<section id="view-earnings" class="view" style="display:none">
+
+  <div id="earningsContent">
+    <div class="loader">
+      Loading earnings...
+    </div>
+  </div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section id="view-profile" class="view" style="display:none">
+
+  <div id="profileContent">
+    <div class="loader">
+      Loading profile...
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- WITHDRAW MODAL -->
+
+<div id="withdrawModal" class="modal">
+
+  <div class="modal-box">
+
+    <div class="modal-head">
+
+      <b style="font-family:Space Grotesk;font-size:18px">
+        💸 Withdraw Earnings
+      </b>
+
+      <button
+        class="btn btn-d"
+        onclick="closeWithdraw()">
+        ✕
+      </button>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>
+        M-PESA PHONE
+      </label>
+
+      <input
+        id="withdrawPhone"
+        class="input"
+        placeholder="07XXXXXXXX"
+        inputmode="numeric">
+
+    </div>
+
+    <div class="form-group">
+
+      <label>
+        AMOUNT
+      </label>
+
+      <input
+        id="withdrawAmount"
+        class="input"
+        type="number"
+        placeholder="Amount">
+
+    </div>
+
+    <button
+      class="btn btn-a btn-full"
+      onclick="requestWithdrawal()">
+      Request Withdrawal
+    </button>
+
+    <p class="small muted">
+      Withdrawals are processed after the required verification and payment checks.
+    </p>
+
+  </div>
+
 </div>
 
-<div style="margin:10px 14px;background:#131313;border:1px solid #222;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center">
-<div><b>🟢 Available for jobs</b><br><small style="color:#888">Hotels see you when ON</small></div><div class="toggle on" id="avail" onclick="this.classList.toggle('on')"></div>
+
+<div id="toast" class="toast">
+  Done
 </div>
 
-<div class="tabs">
-<button class="tab active" onclick="showTab('new',this)">🔔 New Jobs</button>
-<button class="tab" onclick="showTab('active',this)">📅 Active</button>
-<button class="tab" onclick="showTab('services',this)">🛠️ My Services</button>
-<button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
-</div>
-
-<div id="view-new" style="padding:0 14px"><div id="jobsList"></div></div>
-<div id="view-active" style="padding:0 14px;display:none"><div class="card" style="text-align:center;color:#888">No active jobs yet. Accept one from New Jobs.</div></div>
-<div id="view-services" style="padding:0 14px;display:none"></div>
-<div id="view-profile" style="padding:0 14px;display:none"></div>
 
 <script src="config.js"></script>
+
 <script>
-const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentVendor=null;
+
+const supa = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+let currentVendor = null;
+let allOrders = [];
+let busy = false;
+
+
+/* =========================
+   UTILITIES
+========================= */
+
+function money(value){
+  return 'Ksh ' + Number(value || 0).toLocaleString();
+}
+
+
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+
+function toast(message){
+
+  const el = document.getElementById('toast');
+
+  el.innerText = message;
+
+  el.classList.add('show');
+
+  setTimeout(()=>{
+    el.classList.remove('show');
+  },2800);
+}
+
+
+function statusBadge(status){
+
+  const s = String(status || '').toLowerCase();
+
+  if(s === 'new'){
+    return '<span class="badge badge-new">NEW</span>';
+  }
+
+  if(
+    s === 'accepted' ||
+    s === 'confirmed' ||
+    s === 'in_progress'
+  ){
+    return '<span class="badge badge-active">ACTIVE</span>';
+  }
+
+  if(
+    s === 'completed' ||
+    s === 'delivered' ||
+    s === 'done'
+  ){
+    return '<span class="badge badge-done">COMPLETED</span>';
+  }
+
+  if(
+    s === 'cancelled' ||
+    s === 'rejected'
+  ){
+    return '<span class="badge badge-danger">'+
+      escapeHtml(status.toUpperCase())+
+    '</span>';
+  }
+
+  return '<span class="badge">'+
+    escapeHtml(status || 'UNKNOWN')+
+  '</span>';
+}
+
+
+/* =========================
+   INIT
+========================= */
 
 async function init(){
- // 1. Get vendor from localStorage or last login email
- const email = localStorage.getItem('vendor_email');
- if(!email){ document.getElementById('vendorName').innerText='Not logged in - go /vendor-signup.html'; return; }
- const {data,error} = await supa.from('vendors').select('*').eq('email',email).single();
- if(error ||!data){ document.getElementById('vendorName').innerText='Vendor not found'; return; }
- currentVendor=data;
- document.getElementById('vendorName').innerText=data.full_name+' • '+data.city;
- document.getElementById('bal').innerText='Ksh '+(data.wallet||0);
- document.getElementById('city').innerText=data.city+' • '+ (data.vehicle||'');
- document.getElementById('status').innerText=data.status.toUpperCase();
- document.getElementById('svcCount').innerText=(data.services||[]).length;
- renderServices(data);
- renderProfile(data);
- loadJobs(data);
+
+  try{
+
+    const email =
+      localStorage.getItem('vendor_email');
+
+    if(!email){
+
+      document.getElementById('vendorName')
+        .innerText = 'Not logged in';
+
+      document.getElementById('vendorCity')
+        .innerText = 'Please login';
+
+      document.getElementById('newJobs').innerHTML = `
+        <div class="card empty">
+          <div style="font-size:35px">🔐</div>
+          <b>Vendor login required</b>
+          <p class="small">
+            Please login to access your GuestHub Vendor OS.
+          </p>
+          <button
+            class="btn btn-a"
+            onclick="location.href='/vendor-login.html'">
+            Go to Vendor Login
+          </button>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    const {data,error} = await supa
+      .from('vendors')
+      .select('*')
+      .eq('email',email)
+      .maybeSingle();
+
+
+    if(error){
+
+      console.error(error);
+
+      showFatal(
+        'Unable to load vendor account.'
+      );
+
+      return;
+    }
+
+
+    if(!data){
+
+      showFatal(
+        'Vendor account not found.'
+      );
+
+      return;
+    }
+
+
+    currentVendor = data;
+
+
+    renderVendorHeader();
+
+    renderAvailability();
+
+    renderServices();
+
+    renderProfile();
+
+    await loadOrders();
+
+  }catch(error){
+
+    console.error(error);
+
+    showFatal(
+      'Something went wrong while loading your dashboard.'
+    );
+  }
 }
 
-function renderServices(v){
- const cont=document.getElementById('view-services');
- let html=`<div class=card><b>🛠️ Your Active Services (${v.services.length})</b><br><small style=color:#888>Hotels filter by these</small><div style=margin-top:12px;display:flex;flex-direction:column;gap:8px>`;
- const priceMap={airport_taxi:2500,sgr_taxi:2000,town_taxi:500,car_hire:8000,luxury_transfer:12000,boda_tuktuk:200,nairobi_tour:3500,park_day:8000,mara_safari:25000,amboseli_safari:20000,hike_guide:3000,beach_safari:7000,massage:3500,spa_nails:2000,laundry:500,gym_trainer:1500,babysitter:1000,chef:5000,photography:5000,drone:8000,shopping:1000,translator:2000,event_decor:4000,concierge:800};
- (v.services||[]).forEach(s=>{
-  const label=s.replace(/_/g,' ').toUpperCase();
-  html+=`<div style=display:flex;justify-content:space-between;background:#0a0a0a;padding:10px;border-radius:12px;border:1px solid #222><span>✅ ${label}</span><b>Ksh ${priceMap[s]||v.price||2500}</b></div>`;
- });
- html+=`</div><button class=btn style=width:100%;margin-top:12px;background:#1f1f1f;color:#fff onclick="location.href='/vendor-signup.html'">+ Edit Services</button></div>`;
- cont.innerHTML=html;
+
+/* =========================
+   HEADER
+========================= */
+
+function renderVendorHeader(){
+
+  document.getElementById('vendorName')
+    .innerText =
+      currentVendor.full_name || 'Vendor';
+
+  document.getElementById('vendorCity')
+    .innerText =
+      currentVendor.city || 'Kenya';
+
+
+  const status =
+    currentVendor.status || 'pending';
+
+  document.getElementById('walletStatus')
+    .innerText =
+      String(status).toUpperCase();
+
+
+  document.getElementById('walletBalance')
+    .innerText =
+      money(currentVendor.wallet || 0);
+
+
+  document.getElementById('withdrawPhone')
+    .value =
+      currentVendor.mpesa || '';
+
 }
 
-function renderProfile(v){
- const cont=document.getElementById('view-profile');
- cont.innerHTML=`<div class=card><b>👤 ${v.full_name}</b><br><small style=color:#888>ID: ${v.id_number} • ${v.phone}<br>Vehicle: ${v.vehicle} - ${v.plate}<br>M-Pesa: ${v.mpesa} (${v.mpesa_name})<br>Bio: ${v.bio}</small><br><br><span style=background:${v.status=='approved'?'#22c55e':'#fbbf24'};color:#000;padding:4px 10px;border-radius:999px;font-weight:900;font-size:11px>${v.status.toUpperCase()}</span><br><br><button class=btn btn-d style=width:100% onclick="localStorage.clear();location.href='/vendor-login.html'">Logout</button></div>`;
+
+/* =========================
+   AVAILABILITY
+========================= */
+
+function renderAvailability(){
+
+  const available =
+    currentVendor.available !== false &&
+    currentVendor.is_available !== false;
+
+  const toggle =
+    document.getElementById('availabilityToggle');
+
+  if(available){
+
+    toggle.classList.add('on');
+
+    document.getElementById('availabilityText')
+      .innerText =
+      'Hotels can see your services';
+
+  }else{
+
+    toggle.classList.remove('on');
+
+    document.getElementById('availabilityText')
+      .innerText =
+      'You are currently offline';
+  }
 }
 
-async function loadJobs(v){
- // Fetch orders matching vendor services
- const {data:orders} = await supa.from('orders').select('*').eq('status','new').limit(10);
- const list=document.getElementById('jobsList');
- if(!orders || orders.length==0){
-  list.innerHTML=`<div class=card style=text-align:center;color:#888>🔔 No new jobs for <b>${v.services[0]||'you'}</b> yet.<br><small>Hotels in ${v.city} will send when guest orders.<br>Keep AVAILABLE ON.</small><br><br><div style=background:#0a0a0a;border-radius:12px;padding:12px;text-align:left><b>Demo Job (test accept):</b><br>Room 305 • Airport Pickup • Ksh 2,500<br><button class=btn btn-a style=width:100%;margin-top:8px onclick="acceptDemo(this)">Accept Demo Ksh 2500</button></div></div>`;
-  document.getElementById('orderCount').innerText='0';
-  return;
- }
- document.getElementById('orderCount').innerText=orders.length;
- list.innerHTML=orders.map(o=>`
-  <div class=card style=border-left:4px solid var(--lime)>
-   <div style=display:flex;justify-content:space-between><b>Room ${o.room} • ${o.hotel_name||'Hotel'}</b><span class=badge>NEW</span></div>
-   <div style=color:#888;font-size:12px;margin-top:6px>Service: <b style=color:#fff>${o.service}</b><br>Pay: <b style=color:var(--lime)>Ksh ${o.amount}</b> • Guest: ${o.guest_name||'Guest'}</div>
-   <div style=display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px><button class=btn btn-a onclick="acceptOrder('${o.id}')">✅ Accept</button><button class=btn btn-d>Decline</button></div>
-  </div>`).join('');
+
+async function toggleAvailability(){
+
+  if(!currentVendor) return;
+
+  const toggle =
+    document.getElementById('availabilityToggle');
+
+  const newState =
+    !toggle.classList.contains('on');
+
+
+  toggle.classList.toggle('on',newState);
+
+  document.getElementById('availabilityText')
+    .innerText =
+      newState
+      ? 'Hotels can see your services'
+      : 'You are currently offline';
+
+
+  /*
+    Support either "available" or "is_available".
+    We first try available because that is the preferred field.
+  */
+
+  let {error} =
+    await supa
+      .from('vendors')
+      .update({
+        available:newState
+      })
+      .eq('id',currentVendor.id);
+
+
+  if(error){
+
+    const retry =
+      await supa
+        .from('vendors')
+        .update({
+          is_available:newState
+        })
+        .eq('id',currentVendor.id);
+
+    error = retry.error;
+  }
+
+
+  if(error){
+
+    toggle.classList.toggle('on',!newState);
+
+    toast(
+      'Could not save availability.'
+    );
+
+    return;
+  }
+
+
+  currentVendor.available = newState;
+
+  toast(
+    newState
+      ? '🟢 You are now available'
+      : '🔴 You are now offline'
+  );
 }
 
-function showTab(name,el){ document.querySelectorAll('[id^=view-]').forEach(d=>d.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function acceptDemo(btn){ btn.innerText='✅ Accepted! Check Active'; btn.style.background='#22c55e'; setTimeout(()=>showTab('active',document.querySelectorAll('.tab')[1]),600); }
-async function acceptOrder(id){ alert('✅ Order '+id+' accepted! Guest notified on WhatsApp. OTP required to complete.'); }
+
+/* =========================
+   ORDERS
+========================= */
+
+async function loadOrders(){
+
+  if(!currentVendor) return;
+
+
+  const {data,error} =
+    await supa
+      .from('orders')
+      .select('*')
+      .order('created_at',{
+        ascending:false
+      })
+      .limit(200);
+
+
+  if(error){
+
+    console.error(error);
+
+    document.getElementById('newJobs')
+      .innerHTML = `
+        <div class="card empty">
+          Unable to load jobs.
+          <br>
+          <small>${escapeHtml(error.message)}</small>
+        </div>
+      `;
+
+    return;
+  }
+
+
+  allOrders = data || [];
+
+
+  /*
+    If your orders table later receives
+    vendor_id, this automatically becomes
+    vendor-specific.
+
+    Until then, only NEW jobs are displayed
+    so one vendor cannot accidentally see
+    another vendor's accepted jobs.
+  */
+
+  const vendorId =
+    currentVendor.id;
+
+
+  const vendorEmail =
+    String(currentVendor.email || '')
+      .toLowerCase();
+
+
+  const vendorOrders =
+    allOrders.filter(o=>{
+
+      if(
+        o.vendor_id &&
+        String(o.vendor_id) === String(vendorId)
+      ){
+        return true;
+      }
+
+      if(
+        o.vendor_email &&
+        String(o.vendor_email).toLowerCase() === vendorEmail
+      ){
+        return true;
+      }
+
+      return false;
+    });
+
+
+  const newJobs =
+    allOrders.filter(o=>
+      String(o.status || '').toLowerCase() === 'new'
+    );
+
+
+  const active =
+    vendorOrders.filter(o=>
+      [
+        'accepted',
+        'confirmed',
+        'in_progress'
+      ].includes(
+        String(o.status || '').toLowerCase()
+      )
+    );
+
+
+  const completed =
+    vendorOrders.filter(o=>
+      [
+        'completed',
+        'delivered',
+        'done'
+      ].includes(
+        String(o.status || '').toLowerCase()
+      )
+    );
+
+
+  document.getElementById('statNew')
+    .innerText = newJobs.length;
+
+
+  document.getElementById('statActive')
+    .innerText = active.length;
+
+
+  document.getElementById('statCompleted')
+    .innerText = completed.length;
+
+
+  renderNewJobs(newJobs);
+
+  renderActiveJobs(active);
+
+  renderEarnings(
+    vendorOrders,
+    completed
+  );
+}
+
+
+/* =========================
+   NEW JOBS
+========================= */
+
+function renderNewJobs(orders){
+
+  const box =
+    document.getElementById('newJobs');
+
+
+  if(!orders.length){
+
+    box.innerHTML = `
+      <div class="card empty">
+
+        <div style="font-size:40px">
+          🔔
+        </div>
+
+        <b>No new jobs right now</b>
+
+        <p class="small">
+          Keep your availability ON.
+          New hotel guest requests will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    orders.map(order=>{
+
+      const service =
+        order.service_title ||
+        order.service ||
+        'Guest Service';
+
+
+      return `
+        <div class="card job">
+
+          <div class="job-top">
+
+            <div>
+              <div class="job-title">
+                ${escapeHtml(service)}
+              </div>
+
+              <small class="muted">
+                ${escapeHtml(
+                  order.hotel_name || 'Partner Hotel'
+                )}
+              </small>
+            </div>
+
+            ${statusBadge('new')}
+
+          </div>
+
+
+          <div class="job-meta">
+
+            🏨 Hotel:
+            <strong>
+              ${escapeHtml(
+                order.hotel_name || 'Hotel'
+              )}
+            </strong>
+            <br>
+
+            🚪 Room:
+            <strong>
+              ${escapeHtml(
+                order.room || '—'
+              )}
+            </strong>
+            <br>
+
+            👤 Guest:
+            <strong>
+              ${escapeHtml(
+                order.guest_name || 'Guest'
+              )}
+            </strong>
+            <br>
+
+            💰 Job value:
+            <strong style="color:var(--lime)">
+              ${money(order.amount)}
+            </strong>
+
+          </div>
+
+
+          <div class="job-actions">
+
+            <button
+              class="btn btn-a"
+              onclick="acceptOrder('${escapeHtml(order.id)}')">
+              ✅ Accept
+            </button>
+
+            <button
+              class="btn btn-red"
+              onclick="declineOrder('${escapeHtml(order.id)}')">
+              ✕ Decline
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join('');
+}
+
+
+/* =========================
+   ACCEPT
+========================= */
+
+async function acceptOrder(id){
+
+  if(busy) return;
+
+  if(!currentVendor){
+
+    toast('Vendor session unavailable.');
+
+    return;
+  }
+
+
+  const confirmAccept =
+    confirm(
+      'Accept this guest job?'
+    );
+
+  if(!confirmAccept) return;
+
+
+  busy = true;
+
+
+  const updatePayload = {
+    status:'accepted',
+    vendor_id:currentVendor.id,
+    vendor_name:currentVendor.full_name || null,
+    vendor_phone:currentVendor.phone || null
+  };
+
+
+  const {error} =
+    await supa
+      .from('orders')
+      .update(updatePayload)
+      .eq('id',id)
+      .eq('status','new');
+
+
+  busy = false;
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(
+      'Unable to accept job. It may already have been taken.'
+    );
+
+    return;
+  }
+
+
+  toast(
+    '✅ Job accepted'
+  );
+
+
+  await loadOrders();
+
+  showTab(
+    'active',
+    document.querySelectorAll('.tab')[1]
+  );
+}
+
+
+/* =========================
+   DECLINE
+========================= */
+
+async function declineOrder(id){
+
+  if(!currentVendor) return;
+
+
+  const reason =
+    prompt(
+      'Optional: Why are you declining this job?'
+    );
+
+
+  const {error} =
+    await supa
+      .from('orders')
+      .update({
+        status:'declined',
+        vendor_id:currentVendor.id,
+        decline_reason:
+          reason || null
+      })
+      .eq('id',id)
+      .eq('status','new');
+
+
+  if(error){
+
+    toast(
+      'Unable to decline job.'
+    );
+
+    console.error(error);
+
+    return;
+  }
+
+
+  toast(
+    'Job declined.'
+  );
+
+
+  loadOrders();
+}
+
+
+/* =========================
+   ACTIVE JOBS
+========================= */
+
+function renderActiveJobs(orders){
+
+  const box =
+    document.getElementById('activeJobs');
+
+
+  if(!orders.length){
+
+    box.innerHTML = `
+      <div class="card empty">
+
+        <div style="font-size:38px">
+          📅
+        </div>
+
+        <b>No active jobs</b>
+
+        <p class="small">
+          Accepted jobs will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    orders.map(order=>{
+
+      const service =
+        order.service_title ||
+        order.service ||
+        'Guest Service';
+
+
+      const status =
+        String(order.status || '')
+          .toLowerCase();
+
+
+      return `
+        <div class="card job">
+
+          <div class="job-top">
+
+            <div>
+
+              <div class="job-title">
+                ${escapeHtml(service)}
+              </div>
+
+              <small class="muted">
+                ${escapeHtml(
+                  order.hotel_name ||
+                  'Partner Hotel'
+                )}
+              </small>
+
+            </div>
+
+            ${statusBadge(status)}
+
+          </div>
+
+
+          <div class="job-meta">
+
+            🚪 Room:
+            <strong>
+              ${escapeHtml(
+                order.room || '—'
+              )}
+            </strong>
+
+            <br>
+
+            💰 Value:
+            <strong style="color:var(--lime)">
+              ${money(order.amount)}
+            </strong>
+
+          </div>
+
+
+          <div class="job-actions">
+
+            <button
+              class="btn btn-blue"
+              onclick="updateOrderStatus('${escapeHtml(order.id)}','in_progress')">
+              ▶ Start Job
+            </button>
+
+            <button
+              class="btn btn-a"
+              onclick="updateOrderStatus('${escapeHtml(order.id)}','completed')">
+              ✓ Complete
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join('');
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+async function updateOrderStatus(
+  id,
+  status
+){
+
+  if(!currentVendor) return;
+
+
+  const {error} =
+    await supa
+      .from('orders')
+      .update({
+        status
+      })
+      .eq('id',id)
+      .eq('vendor_id',currentVendor.id);
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(
+      'Could not update job status.'
+    );
+
+    return;
+  }
+
+
+  toast(
+    status === 'completed'
+      ? '🎉 Job completed'
+      : '▶ Job started'
+  );
+
+
+  await loadOrders();
+}
+
+
+/* =========================
+   SERVICES
+========================= */
+
+function renderServices(){
+
+  const services =
+    Array.isArray(currentVendor.services)
+      ? currentVendor.services
+      : [];
+
+
+  document.getElementById('statServices')
+    .innerText = services.length;
+
+
+  const priceMap = {
+
+    airport_taxi:2500,
+    sgr_taxi:2000,
+    town_taxi:500,
+    car_hire:8000,
+    luxury_transfer:12000,
+    boda_tuktuk:200,
+    nairobi_tour:3500,
+    park_day:8000,
+    mara_safari:25000,
+    amboseli_safari:20000,
+    hike_guide:3000,
+    beach_safari:7000,
+    massage:3500,
+    spa_nails:2000,
+    laundry:500,
+    gym_trainer:1500,
+    babysitter:1000,
+    chef:5000,
+    photography:5000,
+    drone:8000,
+    shopping:1000,
+    translator:2000,
+    event_decor:4000,
+    concierge:800
+
+  };
+
+
+  let html = `
+
+    <div class="card">
+
+      <div class="card-title">
+        🛠️ My Services
+      </div>
+
+      <div class="small muted">
+        These services determine which guest requests can be routed to you.
+      </div>
+
+    </div>
+  `;
+
+
+  if(!services.length){
+
+    html += `
+      <div class="card empty">
+
+        No services have been added.
+
+        <br><br>
+
+        <button
+          class="btn btn-a"
+          onclick="location.href='/vendor-signup.html'">
+          Add Services
+        </button>
+
+      </div>
+    `;
+
+  }else{
+
+    services.forEach(service=>{
+
+      const label =
+        String(service)
+          .replace(/_/g,' ')
+          .replace(/\b\w/g,
+            c=>c.toUpperCase()
+          );
+
+
+      const price =
+        priceMap[service] ||
+        currentVendor.price ||
+        0;
+
+
+      html += `
+        <div class="service">
+
+          <div>
+            <div class="service-name">
+              ${escapeHtml(label)}
+            </div>
+
+            <small class="muted">
+              Active service
+            </small>
+          </div>
+
+          <div class="service-price">
+            ${money(price)}
+          </div>
+
+        </div>
+      `;
+
+    });
+
+
+    html += `
+      <button
+        class="btn btn-d btn-full"
+        style="margin-top:5px"
+        onclick="location.href='/vendor-signup.html'">
+        ✏️ Edit Services
+      </button>
+    `;
+  }
+
+
+  document.getElementById('servicesContent')
+    .innerHTML = html;
+}
+
+
+/* =========================
+   EARNINGS
+========================= */
+
+function renderEarnings(
+  orders,
+  completed
+){
+
+  let total = 0;
+
+  completed.forEach(o=>{
+    total += Number(o.amount || 0);
+  });
+
+
+  const wallet =
+    Number(currentVendor.wallet || 0);
+
+
+  document.getElementById('walletBalance')
+    .innerText = money(wallet);
+
+
+  document.getElementById('earningsContent')
+    .innerHTML = `
+
+      <div class="card">
+
+        <div class="card-title">
+          💰 Earnings Overview
+        </div>
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Current Wallet
+          </div>
+
+          <div
+            class="profile-value"
+            style="color:var(--lime);font-size:24px">
+            ${money(wallet)}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Completed Job Value
+          </div>
+
+          <div class="profile-value">
+            ${money(total)}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Completed Jobs
+          </div>
+
+          <div class="profile-value">
+            ${completed.length}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="card-title">
+          🧾 Recent Completed Jobs
+        </div>
+
+        ${
+          completed.length
+          ?
+          completed.slice(0,20).map(o=>`
+
+            <div class="service">
+
+              <div>
+
+                <div class="service-name">
+                  ${escapeHtml(
+                    o.service_title ||
+                    o.service ||
+                    'Service'
+                  )}
+                </div>
+
+                <small class="muted">
+                  Room ${escapeHtml(o.room || '—')}
+                </small>
+
+              </div>
+
+              <div class="service-price">
+                ${money(o.amount)}
+              </div>
+
+            </div>
+
+          `).join('')
+          :
+          `<div class="empty">
+            No completed jobs yet.
+          </div>`
+        }
+
+      </div>
+    `;
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function renderProfile(){
+
+  const v =
+    currentVendor;
+
+
+  document.getElementById('profileContent')
+    .innerHTML = `
+
+      <div class="card">
+
+        <div class="card-title">
+          👤 Vendor Profile
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Full Name
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.full_name || '—')}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Phone
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.phone || '—')}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            City
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.city || '—')}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Vehicle
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.vehicle || '—')}
+            ${v.plate ? ' • '+escapeHtml(v.plate) : ''}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            M-Pesa
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.mpesa || '—')}
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Vendor Status
+          </div>
+
+          <div class="profile-value">
+
+            ${statusBadge(
+              String(v.status || 'pending')
+                .toLowerCase()
+            )}
+
+          </div>
+
+        </div>
+
+
+        <div class="profile-row">
+
+          <div class="profile-label">
+            Bio
+          </div>
+
+          <div class="profile-value">
+            ${escapeHtml(v.bio || 'No bio provided')}
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <button
+          class="btn btn-d btn-full"
+          onclick="location.href='/vendor-signup.html'">
+          ✏️ Edit Vendor Details
+        </button>
+
+        <button
+          class="btn btn-red btn-full"
+          style="margin-top:8px"
+          onclick="logoutVendor()">
+          🚪 Logout
+        </button>
+
+      </div>
+    `;
+}
+
+
+/* =========================
+   WITHDRAW
+========================= */
+
+function openWithdraw(){
+
+  if(!currentVendor) return;
+
+  document.getElementById('withdrawAmount')
+    .value =
+      Math.max(
+        0,
+        Number(currentVendor.wallet || 0)
+      );
+
+  document.getElementById('withdrawModal')
+    .classList.add('show');
+}
+
+
+function closeWithdraw(){
+
+  document.getElementById('withdrawModal')
+    .classList.remove('show');
+}
+
+
+async function requestWithdrawal(){
+
+  if(!currentVendor) return;
+
+
+  const phone =
+    document.getElementById('withdrawPhone')
+      .value.trim();
+
+
+  const amount =
+    Number(
+      document.getElementById('withdrawAmount')
+        .value
+    );
+
+
+  if(!phone){
+
+    toast(
+      'Enter your M-Pesa number.'
+    );
+
+    return;
+  }
+
+
+  if(!amount || amount <= 0){
+
+    toast(
+      'Enter a valid amount.'
+    );
+
+    return;
+  }
+
+
+  const wallet =
+    Number(currentVendor.wallet || 0);
+
+
+  if(amount > wallet){
+
+    toast(
+      'Insufficient wallet balance.'
+    );
+
+    return;
+  }
+
+
+  /*
+    Do NOT pretend that money has been paid.
+    Create a withdrawal request only if the
+    table exists in your Supabase project.
+  */
+
+  const {error} =
+    await supa
+      .from('vendor_withdrawals')
+      .insert([{
+
+        vendor_id:currentVendor.id,
+
+        amount,
+
+        phone,
+
+        status:'pending'
+
+      }]);
+
+
+  if(error){
+
+    console.error(error);
+
+    toast(
+      'Withdrawal system is not configured yet.'
+    );
+
+    return;
+  }
+
+
+  closeWithdraw();
+
+  toast(
+    '💸 Withdrawal request submitted.'
+  );
+}
+
+
+/* =========================
+   TABS
+========================= */
+
+function showTab(
+  name,
+  element
+){
+
+  document.querySelectorAll(
+    '[id^="view-"]'
+  ).forEach(section=>{
+    section.style.display='none';
+  });
+
+
+  const target =
+    document.getElementById(
+      'view-'+name
+    );
+
+
+  if(target){
+    target.style.display='block';
+  }
+
+
+  document.querySelectorAll('.tab')
+    .forEach(tab=>{
+      tab.classList.remove('active');
+    });
+
+
+  if(element){
+    element.classList.add('active');
+  }
+}
+
+
+/* =========================
+   REFRESH
+========================= */
+
+async function refreshDashboard(){
+
+  toast('Refreshing...');
+
+  await loadOrders();
+
+  renderVendorHeader();
+
+  renderAvailability();
+
+  renderServices();
+
+  renderProfile();
+
+  toast('Dashboard updated');
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+function logoutVendor(){
+
+  localStorage.removeItem(
+    'vendor_email'
+  );
+
+  localStorage.removeItem(
+    'vendor_id'
+  );
+
+  localStorage.removeItem(
+    'vendor_token'
+  );
+
+  location.href =
+    '/vendor-login.html';
+}
+
+
+/* =========================
+   FATAL
+========================= */
+
+function showFatal(message){
+
+  document.getElementById('vendorName')
+    .innerText='Error';
+
+  document.getElementById('vendorCity')
+    .innerText='GuestHub';
+
+
+  document.getElementById('newJobs')
+    .innerHTML = `
+
+      <div class="card empty">
+
+        <div style="font-size:40px">
+          ⚠️
+        </div>
+
+        <b>
+          ${escapeHtml(message)}
+        </b>
+
+        <br><br>
+
+        <button
+          class="btn btn-a"
+          onclick="location.reload()">
+          Try Again
+        </button>
+
+      </div>
+    `;
+}
+
+
+/* =========================
+   START
+========================= */
 
 init();
-// Save email from signup redirect hack
-if(!localStorage.getItem('vendor_email')){ const e=prompt('Enter your vendor email to load dashboard (once):'); if(e){ localStorage.setItem('vendor_email',e); location.reload(); } }
+
 </script>
+
 </body>
 </html>
