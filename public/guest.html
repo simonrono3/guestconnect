@@ -2,41 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080808">
-<meta name="description" content="GuestHub - Your hotel services, room service, transport, tours and concierge in one place.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070707">
+<meta name="description" content="GuestHub — your hotel, room service, tours, transport and concierge in one place.">
 
-<title>GuestHub - Your Hotel SuperApp</title>
+<title>GuestHub | Hotel SuperApp</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 
 <style>
+
 :root{
   --lime:#c6ff00;
-  --lime-soft:#d9ff66;
+  --lime2:#a8df00;
   --gold:#fbbf24;
   --green:#22c55e;
-  --red:#ef4444;
   --blue:#38bdf8;
+  --red:#ef4444;
+  --purple:#a78bfa;
 
-  --bg:#070707;
+  --bg:#060606;
+  --surface:#0d0d0d;
   --card:#121212;
   --card2:#171717;
-  --input:#0b0b0b;
-  --border:#242424;
-  --border-light:#303030;
+  --input:#090909;
+
+  --border:#252525;
+  --border2:#303030;
 
   --text:#fff;
   --muted:#929292;
-  --muted2:#666;
+  --muted2:#5f5f5f;
 
   --radius:20px;
-  --shadow:0 15px 40px rgba(0,0,0,.35);
+  --shadow:0 18px 50px rgba(0,0,0,.4);
 }
 
 *{
@@ -50,12 +54,12 @@ html{
 
 body{
   margin:0;
+  min-height:100vh;
   background:
-    radial-gradient(circle at 50% -10%,rgba(198,255,0,.08),transparent 32%),
+    radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 32%),
     var(--bg);
   color:var(--text);
   font-family:Inter,Arial,sans-serif;
-  min-height:100vh;
   padding-bottom:90px;
 }
 
@@ -65,7 +69,7 @@ input{
 }
 
 button{
-  -webkit-appearance:none;
+  cursor:pointer;
 }
 
 button:focus-visible,
@@ -74,141 +78,202 @@ input:focus-visible{
   outline-offset:2px;
 }
 
-/* =========================
-   TOP HERO
-========================= */
+/* =========================================================
+   TOP BAR
+========================================================= */
 
-.hero{
-  background:
-    radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 18%),
-    linear-gradient(135deg,#c6ff00 0%,#fbbf24 100%);
-  color:#000;
-  padding:
-    max(22px,env(safe-area-inset-top))
-    18px
-    22px;
-  border-radius:0 0 30px 30px;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 8px 35px rgba(198,255,0,.12);
-}
-
-.hero::before{
-  content:"";
-  position:absolute;
-  width:180px;
-  height:180px;
-  border:1px solid rgba(0,0,0,.1);
-  border-radius:50%;
-  right:-60px;
-  bottom:-80px;
-}
-
-.hero::after{
-  content:"✨";
-  position:absolute;
-  right:20px;
-  top:24px;
-  font-size:30px;
-}
-
-.brand{
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:64px;
   display:flex;
   align-items:center;
-  gap:8px;
-  margin-bottom:12px;
-  position:relative;
-  z-index:1;
+  justify-content:space-between;
+  padding:10px 14px;
+  background:rgba(7,7,7,.92);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.07);
 }
 
-.brandLogo{
-  width:34px;
-  height:34px;
+.logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.logoMark{
+  width:36px;
+  height:36px;
   display:grid;
   place-items:center;
-  background:#000;
-  color:var(--lime);
   border-radius:11px;
-  font-size:17px;
-  box-shadow:0 5px 15px rgba(0,0,0,.18);
+  background:var(--lime);
+  color:#000;
+  font-family:Space Grotesk;
+  font-weight:900;
+  box-shadow:0 5px 20px rgba(198,255,0,.15);
 }
 
-.brandText{
-  font-family:Space Grotesk,sans-serif;
-  font-size:14px;
-  font-weight:800;
+.logoText{
+  font-family:Space Grotesk;
+  font-size:15px;
+  font-weight:900;
   letter-spacing:.4px;
 }
 
-.hero h1{
-  font-family:Space Grotesk,sans-serif;
-  font-size:clamp(27px,8vw,38px);
-  line-height:.94;
-  margin:0;
+.logoText span{
+  color:var(--lime);
+}
+
+.roomChip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#161616;
+  border:1px solid #292929;
+  border-radius:999px;
+  padding:7px 10px;
+  font-size:10px;
   font-weight:800;
-  letter-spacing:-1px;
+  color:#aaa;
+}
+
+.roomChip b{
+  color:white;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
   position:relative;
-  z-index:1;
+  overflow:hidden;
+  margin:0;
+  padding:25px 17px 24px;
+  background:
+    radial-gradient(circle at 90% 10%,rgba(255,255,255,.25),transparent 18%),
+    linear-gradient(135deg,#c6ff00,#fbbf24);
+  color:#000;
+  border-radius:0 0 30px 30px;
+}
+
+.hero:before{
+  content:"";
+  position:absolute;
+  width:230px;
+  height:230px;
+  right:-110px;
+  bottom:-120px;
+  border:1px solid rgba(0,0,0,.13);
+  border-radius:50%;
+}
+
+.hero:after{
+  content:"✦";
+  position:absolute;
+  right:20px;
+  top:22px;
+  font-size:30px;
+  opacity:.7;
+}
+
+.heroContent{
+  position:relative;
+  z-index:2;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:#000;
+  color:var(--lime);
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.7px;
+  margin-bottom:12px;
+}
+
+.hero h1{
+  margin:0;
+  font-family:Space Grotesk;
+  font-size:clamp(30px,9vw,43px);
+  line-height:.94;
+  letter-spacing:-1.5px;
+  font-weight:900;
 }
 
 .hero h1 span{
-  word-break:break-word;
+  display:block;
 }
 
 .hero p{
-  margin:9px 0 0;
+  margin:10px 0 0;
+  max-width:330px;
+  font-size:11px;
+  line-height:1.45;
   font-weight:700;
-  opacity:.75;
-  font-size:12px;
-  line-height:1.4;
-  max-width:310px;
-  position:relative;
-  z-index:1;
+  opacity:.72;
 }
 
-.roomBadge{
+.heroBottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:15px;
+}
+
+.verified{
   display:inline-flex;
   align-items:center;
-  background:#000;
-  color:#fff;
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-  margin-top:12px;
   gap:6px;
-  position:relative;
-  z-index:1;
+  padding:8px 11px;
+  border-radius:999px;
+  background:#000;
+  color:white;
+  font-size:9px;
+  font-weight:900;
 }
 
-/* =========================
-   GUEST DETAILS
-========================= */
+.wifi{
+  font-size:9px;
+  font-weight:900;
+  opacity:.7;
+}
+
+/* =========================================================
+   GUEST PANEL
+========================================================= */
 
 .guestPanel{
   margin:12px;
-  padding:13px;
-  background:linear-gradient(145deg,#151515,#101010);
+  padding:14px;
   border:1px solid var(--border);
-  border-radius:18px;
+  background:linear-gradient(145deg,#151515,#0f0f0f);
+  border-radius:20px;
 }
 
-.panelTitle{
+.panelHead{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:10px;
-  margin-bottom:9px;
+  margin-bottom:10px;
 }
 
-.panelTitle strong{
-  font-family:Space Grotesk,sans-serif;
+.panelHead strong{
+  font-family:Space Grotesk;
   font-size:13px;
 }
 
-.panelTitle small{
-  color:var(--muted);
-  font-size:9px;
+.panelHead small{
+  color:#666;
+  font-size:8px;
+  font-weight:700;
 }
 
 .guestGrid{
@@ -224,77 +289,247 @@ input:focus-visible{
   border:1px solid #292929;
   border-radius:12px;
   color:#fff;
-  margin-top:6px;
-  font-size:13px;
-  transition:.18s ease;
+  font-size:12px;
+  transition:.18s;
 }
 
 .input::placeholder{
-  color:#555;
+  color:#505050;
 }
 
 .input:focus{
   border-color:var(--lime);
-  box-shadow:0 0 0 3px rgba(198,255,0,.08);
+  box-shadow:0 0 0 3px rgba(198,255,0,.07);
 }
 
-/* =========================
-   SEARCH
-========================= */
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
 
-.searchWrap{
-  padding:2px 12px 0;
+.quickActions{
+  padding:0 12px 3px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+}
+
+.quickAction{
+  min-height:73px;
+  background:#111;
+  border:1px solid #242424;
+  color:#fff;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-size:9px;
+  font-weight:800;
+  transition:.15s;
+}
+
+.quickAction span{
+  font-size:21px;
+}
+
+.quickAction:active{
+  transform:scale(.96);
+  border-color:var(--lime);
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search{
+  padding:10px 12px 0;
 }
 
 .searchBox{
   position:relative;
 }
 
-.searchBox span{
+.searchIcon{
   position:absolute;
   left:13px;
   top:50%;
   transform:translateY(-50%);
-  font-size:15px;
   pointer-events:none;
 }
 
-.searchBox input{
-  padding-left:40px;
-  margin-top:0;
+.search input{
+  padding-left:39px;
 }
 
-/* =========================
-   CATEGORIES
-========================= */
+/* =========================================================
+   SECTION
+========================================================= */
 
-.cat{
+.section{
   margin:12px;
+}
+
+.sectionHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.sectionTitle{
+  font-family:Space Grotesk;
+  font-size:15px;
+  font-weight:900;
+}
+
+.sectionTitle span{
+  color:var(--lime);
+}
+
+.sectionLink{
+  color:#777;
+  font-size:9px;
+  font-weight:800;
+}
+
+/* =========================================================
+   ACTIVE ORDER
+========================================================= */
+
+.activeOrder{
+  display:none;
+  padding:14px;
+  background:
+    linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));
+  border:1px solid rgba(198,255,0,.23);
+  border-radius:19px;
+  margin-bottom:12px;
+}
+
+.activeOrder.show{
+  display:block;
+}
+
+.orderTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.orderService{
+  font-family:Space Grotesk;
+  font-weight:900;
+  font-size:13px;
+}
+
+.orderRef{
+  color:#777;
+  font-size:8px;
+  margin-top:4px;
+}
+
+.status{
+  height:max-content;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:900;
+  background:#202020;
+  color:#aaa;
+}
+
+.status.new{
+  color:var(--blue);
+  background:rgba(56,189,248,.1);
+}
+
+.status.accepted{
+  color:var(--lime);
+  background:rgba(198,255,0,.09);
+}
+
+.status.preparing{
+  color:var(--gold);
+  background:rgba(251,191,36,.1);
+}
+
+.status.on_the_way,
+.status.ontheway{
+  color:var(--purple);
+  background:rgba(167,139,250,.1);
+}
+
+.status.completed{
+  color:var(--green);
+  background:rgba(34,197,94,.1);
+}
+
+.status.cancelled{
+  color:var(--red);
+  background:rgba(239,68,68,.1);
+}
+
+.progress{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  margin-top:14px;
+}
+
+.progressStep{
+  height:4px;
+  border-radius:999px;
+  background:#292929;
+}
+
+.progressStep.active{
+  background:var(--lime);
+}
+
+.orderDetails{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:11px;
+  color:#777;
+  font-size:9px;
+}
+
+.orderDetails strong{
+  color:white;
+}
+
+/* =========================================================
+   CATEGORY
+========================================================= */
+
+.category{
   background:
     linear-gradient(145deg,rgba(255,255,255,.018),transparent),
     var(--card);
   border:1px solid var(--border);
   border-radius:20px;
   padding:14px;
-  box-shadow:0 5px 20px rgba(0,0,0,.12);
+  margin-bottom:12px;
 }
 
-.catHeader{
+.categoryHeader{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:10px;
+  align-items:center;
   margin-bottom:10px;
 }
 
-.cat h3{
+.categoryHeader h3{
   margin:0;
-  font-family:Space Grotesk,sans-serif;
-  font-size:14px;
+  font-family:Space Grotesk;
   color:var(--lime);
+  font-size:13px;
+  font-weight:900;
 }
 
-.catCount{
+.count{
   min-width:22px;
   height:22px;
   display:grid;
@@ -303,103 +538,99 @@ input:focus-visible{
   background:#202020;
   color:#777;
   font-size:9px;
-  font-weight:800;
+  font-weight:900;
 }
 
-.grid2{
+.serviceGrid{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:9px;
+  gap:8px;
 }
 
-.svc{
-  appearance:none;
-  width:100%;
-  min-height:118px;
-  background:
-    linear-gradient(145deg,#101010,#090909);
+.service{
+  position:relative;
+  min-height:122px;
+  text-align:left;
   border:1px solid #242424;
   border-radius:17px;
-  padding:12px;
-  cursor:pointer;
-  transition:.18s ease;
-  position:relative;
-  text-align:left;
+  background:linear-gradient(145deg,#111,#090909);
   color:#fff;
+  padding:12px;
   overflow:hidden;
+  transition:.17s;
 }
 
-.svc:hover{
-  border-color:#4a4a4a;
+.service:hover{
+  border-color:#444;
   transform:translateY(-2px);
 }
 
-.svc:active{
+.service:active{
   transform:scale(.97);
   border-color:var(--lime);
 }
 
-.svcIcon{
-  font-style:normal;
+.serviceIcon{
+  display:block;
   font-size:22px;
-  display:block;
-  margin-bottom:8px;
+  margin-bottom:9px;
 }
 
-.svc b{
-  font-size:12px;
+.serviceName{
   display:block;
+  font-size:11px;
   line-height:1.25;
-  padding-right:8px;
+  font-weight:900;
+  padding-right:5px;
 }
 
-.svc small{
-  color:#777;
-  font-size:9px;
+.serviceDesc{
   display:block;
-  margin-top:4px;
-  line-height:1.3;
-  padding-right:5px;
+  color:#6e6e6e;
+  font-size:8px;
+  line-height:1.35;
+  margin-top:5px;
+  padding-right:4px;
 }
 
 .price{
   position:absolute;
-  top:9px;
-  right:8px;
-  background:var(--lime);
-  color:#000;
-  font-size:9px;
-  font-weight:900;
+  top:8px;
+  right:7px;
   padding:4px 7px;
   border-radius:999px;
-  max-width:90px;
+  background:var(--lime);
+  color:#000;
+  font-size:8px;
+  font-weight:900;
+  max-width:95px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
 
 .loading{
   margin:12px;
-  padding:25px;
+  padding:30px 15px;
   text-align:center;
+  color:#666;
   background:var(--card);
   border:1px solid var(--border);
   border-radius:18px;
-  color:#777;
-  font-size:12px;
+  font-size:11px;
 }
 
 .spinner{
-  width:25px;
-  height:25px;
+  width:26px;
+  height:26px;
+  margin:0 auto 10px;
   border:3px solid #292929;
   border-top-color:var(--lime);
   border-radius:50%;
-  margin:0 auto 10px;
   animation:spin .8s linear infinite;
 }
 
@@ -407,140 +638,120 @@ input:focus-visible{
   to{transform:rotate(360deg)}
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
-
-.emptyState{
+.empty{
   display:none;
   text-align:center;
-  padding:25px 12px;
-  color:#777;
-  font-size:12px;
+  padding:25px 10px;
+  color:#666;
+  font-size:10px;
 }
 
-.emptyState div{
+.emptyIcon{
   font-size:30px;
-  margin-bottom:8px;
+  margin-bottom:7px;
 }
 
-/* =========================
+/* =========================================================
    HELP
-========================= */
+========================================================= */
 
-.helpCard{
-  border-color:rgba(251,191,36,.35)!important;
+.help{
+  border-color:rgba(251,191,36,.28);
 }
 
-.helpCard h3{
+.help h3{
   color:var(--gold);
 }
 
-.helpButtons{
+.helpGrid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:9px;
+  gap:8px;
 }
 
-.helpButton{
-  min-height:100px;
+.helpBtn{
+  min-height:92px;
+  background:#101010;
+  border:1px solid #282828;
+  border-radius:15px;
+  color:white;
+  text-align:left;
+  padding:12px;
 }
 
-/* =========================
-   ACTIONS
-========================= */
+.helpBtn span{
+  display:block;
+  font-size:22px;
+  margin-bottom:7px;
+}
 
-.actions{
-  margin:12px;
+.helpBtn b{
+  display:block;
+  font-size:10px;
+}
+
+.helpBtn small{
+  display:block;
+  color:#666;
+  font-size:8px;
+  margin-top:4px;
+}
+
+/* =========================================================
+   BOTTOM NAV
+========================================================= */
+
+.bottomNav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:500;
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:9px;
+  grid-template-columns:repeat(4,1fr);
+  padding:
+    8px
+    8px
+    max(8px,env(safe-area-inset-bottom));
+  background:rgba(8,8,8,.95);
+  backdrop-filter:blur(18px);
+  border-top:1px solid #242424;
 }
 
-.actionBtn{
-  border:1px solid var(--border);
-  background:#121212;
-  color:#fff;
-  padding:13px 10px;
-  border-radius:14px;
-  font-size:11px;
-  font-weight:800;
-  cursor:pointer;
-}
-
-.actionBtn:hover{
-  border-color:#444;
-}
-
-/* =========================
-   FOOTER
-========================= */
-
-.footer{
-  text-align:center;
-  padding:18px 16px;
-  color:#555;
-  font-size:9px;
-  font-weight:700;
-  line-height:1.7;
-}
-
-.footer strong{
-  color:#777;
-}
-
-/* =========================
-   BUTTON
-========================= */
-
-.btn{
-  width:100%;
-  background:var(--lime);
-  color:#000;
-  padding:14px;
-  border:none;
-  border-radius:14px;
+.navBtn{
+  border:0;
+  background:transparent;
+  color:#666;
+  min-height:52px;
+  font-size:8px;
   font-weight:900;
-  font-size:13px;
-  cursor:pointer;
-  margin-top:10px;
-  transition:.15s ease;
+  border-radius:13px;
 }
 
-.btn:hover{
-  filter:brightness(1.06);
+.navBtn span{
+  display:block;
+  font-size:18px;
+  margin-bottom:3px;
 }
 
-.btn:active{
-  transform:scale(.98);
+.navBtn.active{
+  color:var(--lime);
+  background:rgba(198,255,0,.06);
 }
 
-.btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-  transform:none;
-}
-
-.btn.secondary{
-  background:#1d1d1d;
-  color:#fff;
-  border:1px solid #333;
-}
-
-/* =========================
+/* =========================================================
    MODALS
-========================= */
+========================================================= */
 
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.88);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  z-index:1000;
   display:none;
   place-items:end center;
-  z-index:1000;
   padding:12px;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(12px);
 }
 
 .modal.active{
@@ -548,121 +759,137 @@ input:focus-visible{
 }
 
 .modalBox{
-  background:
-    linear-gradient(145deg,#191919,#101010);
+  width:100%;
+  max-width:450px;
+  max-height:90vh;
+  overflow:auto;
+  padding:18px;
   border:1px solid #303030;
   border-radius:24px;
-  padding:18px;
-  width:100%;
-  max-width:430px;
-  max-height:90vh;
-  overflow-y:auto;
+  background:linear-gradient(145deg,#191919,#0f0f0f);
   box-shadow:var(--shadow);
-  animation:modalUp .22s ease;
+  animation:up .2s ease;
 }
 
-@keyframes modalUp{
+@keyframes up{
   from{
-    transform:translateY(25px);
     opacity:0;
+    transform:translateY(20px);
   }
   to{
-    transform:translateY(0);
     opacity:1;
+    transform:none;
   }
 }
 
-.modalTop{
+.modalHead{
   display:flex;
-  align-items:flex-start;
   justify-content:space-between;
   gap:10px;
 }
 
-.closeBtn{
+.modalTitle{
+  margin:0;
+  font-family:Space Grotesk;
+  font-size:20px;
+  font-weight:900;
+}
+
+.modalDesc{
+  margin-top:5px;
+  color:#777;
+  font-size:10px;
+  line-height:1.5;
+}
+
+.close{
   width:34px;
   height:34px;
+  flex-shrink:0;
   border-radius:50%;
   border:1px solid #333;
   background:#111;
   color:#fff;
-  cursor:pointer;
-  flex-shrink:0;
+  font-size:19px;
 }
 
-.modalTitle{
-  margin:0;
-  font-family:Space Grotesk,sans-serif;
-  font-size:20px;
-}
-
-.modalDesc{
-  color:#888;
-  font-size:11px;
-  line-height:1.5;
-  margin-top:5px;
-}
-
-.fieldLabel{
-  font-size:9px;
-  color:#777;
-  margin-top:13px;
+.label{
   display:block;
-  font-weight:700;
+  color:#777;
+  font-size:8px;
+  font-weight:800;
+  margin-top:14px;
 }
 
-.modalButtons{
+.btn{
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  background:var(--lime);
+  color:#000;
+  font-size:12px;
+  font-weight:900;
+}
+
+.btn.secondary{
+  background:#202020;
+  border:1px solid #333;
+  color:white;
+}
+
+.twoButtons{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-top:10px;
 }
 
-/* =========================
-   SUCCESS
-========================= */
+/* =========================================================
+   ORDER SUCCESS
+========================================================= */
+
+.success{
+  text-align:center;
+}
 
 .successIcon{
   width:70px;
   height:70px;
-  margin:0 auto 12px;
   display:grid;
   place-items:center;
+  margin:0 auto 12px;
   border-radius:50%;
   background:rgba(198,255,0,.1);
-  font-size:36px;
+  font-size:34px;
 }
 
-.successText{
-  color:#888;
-  font-size:12px;
-  line-height:1.6;
-}
-
-.orderCode{
-  margin:14px 0;
-  padding:12px;
+.reference{
+  margin:15px 0;
+  padding:13px;
+  background:#0a0a0a;
   border:1px dashed #3c3c3c;
-  border-radius:13px;
-  background:#0b0b0b;
+  border-radius:14px;
 }
 
-.orderCode small{
+.reference small{
   display:block;
   color:#666;
   font-size:8px;
-  margin-bottom:4px;
 }
 
-.orderCode strong{
-  font-family:Space Grotesk,sans-serif;
-  letter-spacing:1px;
+.reference strong{
+  display:block;
   color:var(--lime);
+  font-family:Space Grotesk;
+  font-size:16px;
+  margin-top:4px;
+  letter-spacing:1px;
 }
 
-/* =========================
-   ORDERS
-========================= */
+/* =========================================================
+   ORDER LIST
+========================================================= */
 
 .orderItem{
   background:#0d0d0d;
@@ -672,185 +899,215 @@ input:focus-visible{
   margin-bottom:8px;
 }
 
-.orderRow{
+.orderItemTop{
   display:flex;
   justify-content:space-between;
   gap:10px;
 }
 
 .orderItem strong{
-  font-size:12px;
+  display:block;
+  font-size:11px;
 }
 
 .orderItem small{
   display:block;
   color:#666;
-  font-size:9px;
+  font-size:8px;
+  line-height:1.5;
   margin-top:4px;
 }
 
-.status{
-  font-size:8px;
+.orderAmount{
+  color:var(--lime)!important;
   font-weight:900;
-  padding:4px 7px;
-  border-radius:999px;
-  background:#202020;
-  color:#aaa;
-  white-space:nowrap;
-  height:max-content;
 }
 
-.status.new{
-  background:rgba(56,189,248,.12);
-  color:var(--blue);
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+  text-align:center;
+  color:#555;
+  padding:15px 20px 100px;
+  font-size:8px;
+  line-height:1.7;
 }
 
-.status.completed{
-  background:rgba(34,197,94,.12);
-  color:var(--green);
+.footer strong{
+  color:#777;
 }
 
-.status.cancelled{
-  background:rgba(239,68,68,.12);
-  color:var(--red);
-}
-
-/* =========================
+/* =========================================================
    TOAST
-========================= */
+========================================================= */
 
 .toast{
   position:fixed;
   left:12px;
   right:12px;
-  bottom:20px;
+  bottom:78px;
   z-index:2000;
   display:none;
-  background:#202020;
-  border:1px solid #363636;
-  color:#fff;
   padding:13px 14px;
+  background:#202020;
+  border:1px solid #3a3a3a;
   border-radius:14px;
-  font-size:11px;
-  font-weight:700;
   box-shadow:var(--shadow);
+  font-size:10px;
+  font-weight:800;
 }
 
 .toast.show{
   display:block;
-  animation:toastIn .2s ease;
+  animation:toast .2s ease;
 }
 
-@keyframes toastIn{
+@keyframes toast{
   from{
     opacity:0;
-    transform:translateY(10px);
+    transform:translateY(8px);
   }
   to{
     opacity:1;
-    transform:translateY(0);
+    transform:none;
   }
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* =========================================================
+   DESKTOP
+========================================================= */
 
-@media(min-width:600px){
+@media(min-width:650px){
+
   body{
-    max-width:850px;
+    max-width:900px;
     margin:auto;
+  }
+
+  .bottomNav{
+    left:50%;
+    right:auto;
+    width:900px;
+    transform:translateX(-50%);
+  }
+
+  .serviceGrid{
+    grid-template-columns:repeat(3,1fr);
   }
 
   .hero{
     border-radius:0 0 35px 35px;
   }
 
-  .grid2{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-  }
-
-  .quickGrid{
-    grid-template-columns:repeat(4,minmax(0,1fr));
-  }
-
   .modal{
     place-items:center;
   }
 
-  .modalBox{
-    max-height:85vh;
-  }
 }
 
-@media(max-width:360px){
+@media(max-width:370px){
+
   .guestGrid{
     grid-template-columns:1fr;
   }
 
-  .grid2{
-    grid-template-columns:1fr 1fr;
+  .quickActions{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .svc{
-    min-height:112px;
-  }
-
-  .price{
-    font-size:8px;
-  }
 }
 
 @media(prefers-reduced-motion:reduce){
+
   *,
   *::before,
   *::after{
     animation:none!important;
     transition:none!important;
-    scroll-behavior:auto!important;
   }
+
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     HERO
-========================= -->
+<!-- =====================================================
+     TOP BAR
+===================================================== -->
 
-<header class="hero">
+<header class="topbar">
 
-  <div class="brand">
-    <div class="brandLogo">G</div>
-    <div class="brandText">GUESTHUB</div>
+  <div class="logo">
+    <div class="logoMark">G</div>
+    <div class="logoText">
+      GUEST<span>HUB</span>
+    </div>
   </div>
 
-  <h1 id="hotelTitle">
-    WELCOME TO<br>
-    <span id="hotelName">YOUR HOTEL</span>
-  </h1>
-
-  <p id="hotelTag">
-    Hotel services • Room service • Tours • Transport • Concierge
-  </p>
-
-  <div class="roomBadge" id="roomBadge">
-    🛏️ Room Guest • 📶 Free WiFi • 🔒 Verified
+  <div class="roomChip">
+    🛏️ Room <b id="topRoom">Guest</b>
   </div>
 
 </header>
 
 
-<!-- =========================
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+  <div class="heroContent">
+
+    <div class="eyebrow">
+      ✦ GUESTHUB HOTELOS
+    </div>
+
+    <h1>
+      WELCOME TO
+      <span id="hotelName">YOUR HOTEL</span>
+    </h1>
+
+    <p id="hotelTagline">
+      Everything you need during your stay — room service,
+      transport, tours, wellness and concierge.
+    </p>
+
+    <div class="heroBottom">
+
+      <div class="verified">
+        🔒 GuestHub Verified
+      </div>
+
+      <div class="wifi">
+        📶 Hotel Guest Network
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
      GUEST INFORMATION
-========================= -->
+===================================================== -->
 
 <section class="guestPanel">
 
-  <div class="panelTitle">
-    <strong>👋 Your stay</strong>
-    <small>Required before ordering</small>
+  <div class="panelHead">
+
+    <strong>👋 Your Stay</strong>
+
+    <small>
+      YOUR DETAILS
+    </small>
+
   </div>
 
   <div class="guestGrid">
@@ -858,18 +1115,15 @@ input:focus-visible{
     <input
       id="guestName"
       class="input"
-      placeholder="Your name e.g. John"
+      placeholder="Your name"
       autocomplete="name"
-      aria-label="Guest name"
     >
 
     <input
       id="roomNo"
       class="input"
-      placeholder="Room e.g. 204"
+      placeholder="Room number"
       inputmode="numeric"
-      autocomplete="off"
-      aria-label="Room number"
     >
 
   </div>
@@ -877,22 +1131,52 @@ input:focus-visible{
 </section>
 
 
-<!-- =========================
-     SEARCH
-========================= -->
+<!-- =====================================================
+     QUICK ACTIONS
+===================================================== -->
 
-<div class="searchWrap">
+<div class="quickActions">
+
+  <button class="quickAction" id="roomServiceBtn">
+    <span>🍽️</span>
+    Room Service
+  </button>
+
+  <button class="quickAction" id="taxiBtn">
+    <span>🚕</span>
+    Taxi
+  </button>
+
+  <button class="quickAction" id="tourBtn">
+    <span>🦁</span>
+    Safari
+  </button>
+
+  <button class="quickAction" id="ordersBtn">
+    <span>📋</span>
+    My Orders
+  </button>
+
+</div>
+
+
+<!-- =====================================================
+     SEARCH
+===================================================== -->
+
+<div class="search">
 
   <div class="searchBox">
 
-    <span>🔎</span>
+    <span class="searchIcon">
+      🔎
+    </span>
 
     <input
       id="searchService"
       class="input"
       placeholder="Search room service, safari, taxi..."
       autocomplete="off"
-      aria-label="Search services"
     >
 
   </div>
@@ -900,11 +1184,80 @@ input:focus-visible{
 </div>
 
 
-<!-- =========================
-     LOADING
-========================= -->
+<!-- =====================================================
+     ACTIVE ORDER
+===================================================== -->
 
-<div id="loadingState" class="loading">
+<section class="section">
+
+  <div
+    id="activeOrder"
+    class="activeOrder"
+  >
+
+    <div class="orderTop">
+
+      <div>
+
+        <div
+          id="activeService"
+          class="orderService"
+        >
+          Your active request
+        </div>
+
+        <div
+          id="activeReference"
+          class="orderRef"
+        >
+          GH-000000
+        </div>
+
+      </div>
+
+      <span
+        id="activeStatus"
+        class="status new"
+      >
+        New
+      </span>
+
+    </div>
+
+    <div
+      id="progress"
+      class="progress"
+    >
+
+      <span class="progressStep active"></span>
+      <span class="progressStep"></span>
+      <span class="progressStep"></span>
+      <span class="progressStep"></span>
+
+    </div>
+
+    <div class="orderDetails">
+
+      <span>
+        Room <strong id="activeRoom">—</strong>
+      </span>
+
+      <span>
+        <strong id="activeAmount">—</strong>
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =====================================================
+     LOADING
+===================================================== -->
+
+<div id="loading" class="loading">
 
   <div class="spinner"></div>
 
@@ -913,79 +1266,197 @@ input:focus-visible{
 </div>
 
 
-<!-- =========================
-     SERVICE SECTIONS
-========================= -->
+<!-- =====================================================
+     SERVICES
+===================================================== -->
 
-<main id="serviceArea" style="display:none;">
+<main
+  id="serviceArea"
+  style="display:none"
+>
 
-  <section class="cat">
+  <!-- INSTANT -->
 
-    <div class="catHeader">
-      <h3>⚡ Instant — 1 Tap Order</h3>
-      <span class="catCount" id="quickCount">0</span>
+  <section class="section">
+
+    <div class="sectionHeader">
+
+      <div class="sectionTitle">
+        <span>⚡</span>
+        Instant Services
+      </div>
+
+      <div class="sectionLink">
+        1 TAP
+      </div>
+
     </div>
 
-    <div class="grid2 quickGrid" id="quick"></div>
+    <div class="category">
+
+      <div class="categoryHeader">
+
+        <h3>
+          Fastest GuestHub Requests
+        </h3>
+
+        <span
+          class="count"
+          id="quickCount"
+        >
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="serviceGrid"
+        id="quick"
+      ></div>
+
+    </div>
 
   </section>
 
 
-  <section class="cat">
+  <!-- TRANSPORT -->
 
-    <div class="catHeader">
-      <h3>🚕 Transport & Taxi</h3>
-      <span class="catCount" id="g1Count">0</span>
+  <section class="section">
+
+    <div class="category">
+
+      <div class="categoryHeader">
+
+        <h3>
+          🚕 Transport & Transfers
+        </h3>
+
+        <span
+          class="count"
+          id="taxiCount"
+        >
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="serviceGrid"
+        id="taxi"
+      ></div>
+
     </div>
-
-    <div class="grid2" id="g1"></div>
 
   </section>
 
 
-  <section class="cat">
+  <!-- TOURS -->
 
-    <div class="catHeader">
-      <h3>🌍 Tours & Safari</h3>
-      <span class="catCount" id="g2Count">0</span>
+  <section class="section">
+
+    <div class="category">
+
+      <div class="categoryHeader">
+
+        <h3>
+          🌍 Tours & Safari
+        </h3>
+
+        <span
+          class="count"
+          id="tourCount"
+        >
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="serviceGrid"
+        id="tour"
+      ></div>
+
     </div>
-
-    <div class="grid2" id="g2"></div>
 
   </section>
 
 
-  <section class="cat">
+  <!-- FOOD + SPA -->
 
-    <div class="catHeader">
-      <h3>🧖 Spa, Food & Room Service</h3>
-      <span class="catCount" id="g3Count">0</span>
+  <section class="section">
+
+    <div class="category">
+
+      <div class="categoryHeader">
+
+        <h3>
+          🍽️ Food, Spa & Wellness
+        </h3>
+
+        <span
+          class="count"
+          id="foodCount"
+        >
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="serviceGrid"
+        id="food"
+      ></div>
+
     </div>
-
-    <div class="grid2" id="g3"></div>
 
   </section>
 
 
-  <section class="cat">
+  <!-- CONCIERGE -->
 
-    <div class="catHeader">
-      <h3>📸 Media & Concierge</h3>
-      <span class="catCount" id="g4Count">0</span>
+  <section class="section">
+
+    <div class="category">
+
+      <div class="categoryHeader">
+
+        <h3>
+          ✨ Concierge & Experiences
+        </h3>
+
+        <span
+          class="count"
+          id="conciergeCount"
+        >
+          0
+        </span>
+
+      </div>
+
+      <div
+        class="serviceGrid"
+        id="concierge"
+      ></div>
+
     </div>
-
-    <div class="grid2" id="g4"></div>
 
   </section>
 
 
-  <!-- SEARCH EMPTY STATE -->
+  <!-- EMPTY -->
 
-  <div id="emptySearch" class="emptyState">
+  <div
+    id="emptySearch"
+    class="empty"
+  >
 
-    <div>🔎</div>
+    <div class="emptyIcon">
+      🔎
+    </div>
 
-    <strong>No service found</strong>
+    <strong>
+      No service found
+    </strong>
 
     <br>
 
@@ -996,36 +1467,56 @@ input:focus-visible{
 
   <!-- HUMAN HELP -->
 
-  <section class="cat helpCard">
+  <section class="section">
 
-    <div class="catHeader">
+    <div class="category help">
 
-      <h3>💬 Need Help? Talk to Human</h3>
+      <div class="categoryHeader">
 
-    </div>
+        <h3>
+          💬 Need Human Help?
+        </h3>
 
-    <div class="helpButtons">
+      </div>
 
-      <button
-        class="svc helpButton"
-        type="button"
-        id="frontDeskBtn"
-      >
-        <i class="svcIcon">🏨</i>
-        <b>Front Desk</b>
-        <small>Open WhatsApp instantly</small>
-      </button>
+      <div class="helpGrid">
+
+        <button
+          class="helpBtn"
+          id="frontDeskBtn"
+        >
+
+          <span>🏨</span>
+
+          <b>
+            Front Desk
+          </b>
+
+          <small>
+            Speak to hotel reception
+          </small>
+
+        </button>
 
 
-      <button
-        class="svc helpButton"
-        type="button"
-        id="housekeepingBtn"
-      >
-        <i class="svcIcon">🧹</i>
-        <b>Housekeeping</b>
-        <small>Towels, cleaning & room help</small>
-      </button>
+        <button
+          class="helpBtn"
+          id="housekeepingBtn"
+        >
+
+          <span>🧹</span>
+
+          <b>
+            Housekeeping
+          </b>
+
+          <small>
+            Towels, cleaning & room help
+          </small>
+
+        </button>
+
+      </div>
 
     </div>
 
@@ -1034,77 +1525,98 @@ input:focus-visible{
 </main>
 
 
-<!-- =========================
-     ACTIONS
-========================= -->
-
-<div class="actions">
-
-  <button
-    class="actionBtn"
-    type="button"
-    id="ordersBtn"
-  >
-    📋 My Orders
-  </button>
-
-  <button
-    class="actionBtn"
-    type="button"
-    id="helpBtn"
-  >
-    ℹ️ How GuestHub Works
-  </button>
-
-</div>
-
-
-<!-- =========================
+<!-- =====================================================
      FOOTER
-========================= -->
+===================================================== -->
 
 <footer class="footer">
 
-  🔒 <strong>GuestHub Secure</strong><br>
+  🔒 <strong>GuestHub Secure</strong>
 
-  Your hotel coordinates the service. Payment is handled according to the hotel's approved process.<br>
+  <br>
 
-  <span>GuestHub • Hospitality made simple ✨</span>
+  Your hotel coordinates your requested service.
+
+  <br>
+
+  GuestHub • Hospitality made simple ✨
 
 </footer>
 
 
-<!-- =========================
+<!-- =====================================================
+     BOTTOM NAV
+===================================================== -->
+
+<nav class="bottomNav">
+
+  <button
+    class="navBtn active"
+    data-nav="home"
+  >
+    <span>⌂</span>
+    Home
+  </button>
+
+  <button
+    class="navBtn"
+    data-nav="services"
+  >
+    <span>◉</span>
+    Services
+  </button>
+
+  <button
+    class="navBtn"
+    id="navOrders"
+  >
+    <span>📋</span>
+    Orders
+  </button>
+
+  <button
+    class="navBtn"
+    id="navHelp"
+  >
+    <span>?</span>
+    Help
+  </button>
+
+</nav>
+
+
+<!-- =====================================================
      ORDER MODAL
-========================= -->
+===================================================== -->
 
 <div
   class="modal"
   id="orderModal"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="mTitle"
 >
 
   <div class="modalBox">
 
-    <div class="modalTop">
+    <div class="modalHead">
 
       <div>
 
-        <h3 id="mTitle" class="modalTitle">
-          Confirm Order
+        <h3
+          id="modalService"
+          class="modalTitle"
+        >
+          Confirm Request
         </h3>
 
-        <div id="mDesc" class="modalDesc"></div>
+        <div
+          id="modalDescription"
+          class="modalDesc"
+        ></div>
 
       </div>
 
       <button
-        class="closeBtn"
-        type="button"
-        id="closeOrderBtn"
-        aria-label="Close"
+        class="close"
+        id="closeOrder"
       >
         ×
       </button>
@@ -1112,7 +1624,7 @@ input:focus-visible{
     </div>
 
 
-    <label class="fieldLabel" for="guestPhone">
+    <label class="label">
       WhatsApp number
     </label>
 
@@ -1124,41 +1636,40 @@ input:focus-visible{
       autocomplete="tel"
     >
 
-    <label class="fieldLabel" for="orderNote">
-      Time / special instructions
+
+    <label class="label">
+      Special instructions
     </label>
 
     <input
       id="orderNote"
       class="input"
-      placeholder="e.g. Tomorrow 8AM, 2 bags, baby seat"
+      placeholder="Time, preference or special request"
     >
 
 
-    <div class="modalButtons">
+    <div class="twoButtons">
 
       <button
         class="btn secondary"
-        type="button"
-        id="cancelOrderBtn"
+        id="cancelOrder"
       >
         Cancel
       </button>
 
       <button
         class="btn"
-        type="button"
-        id="confirmBtn"
+        id="confirmOrder"
       >
-        ✅ Place Order
+        ✅ Place Request
       </button>
 
     </div>
 
     <small
-      style="color:#666;display:block;text-align:center;margin-top:10px;line-height:1.5"
+      style="display:block;text-align:center;color:#555;font-size:8px;margin-top:10px;line-height:1.5"
     >
-      Your request is sent securely to the hotel for processing.
+      Your request will be sent to the hotel for processing.
     </small>
 
   </div>
@@ -1166,39 +1677,38 @@ input:focus-visible{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      SUCCESS MODAL
-========================= -->
+===================================================== -->
 
 <div
   class="modal"
   id="successModal"
-  role="dialog"
-  aria-modal="true"
 >
 
-  <div class="modalBox" style="text-align:center">
+  <div class="modalBox success">
 
     <div class="successIcon">
-      ✅
+      ✓
     </div>
 
-    <h3
-      style="font-family:Space Grotesk;margin:0;font-size:21px"
-    >
+    <h3 class="modalTitle">
       Request Received!
     </h3>
 
     <p
-      class="successText"
       id="successText"
+      class="modalDesc"
+      style="font-size:11px"
     >
       Your request has been sent to the hotel.
     </p>
 
-    <div class="orderCode">
+    <div class="reference">
 
-      <small>GUESTHUB ORDER REFERENCE</small>
+      <small>
+        GUESTHUB REFERENCE
+      </small>
 
       <strong id="orderReference">
         GH-000000
@@ -1208,8 +1718,7 @@ input:focus-visible{
 
     <button
       class="btn"
-      type="button"
-      id="successCloseBtn"
+      id="successDone"
     >
       Great ✨
     </button>
@@ -1219,20 +1728,18 @@ input:focus-visible{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      ORDERS MODAL
-========================= -->
+===================================================== -->
 
 <div
   class="modal"
   id="ordersModal"
-  role="dialog"
-  aria-modal="true"
 >
 
   <div class="modalBox">
 
-    <div class="modalTop">
+    <div class="modalHead">
 
       <div>
 
@@ -1241,63 +1748,58 @@ input:focus-visible{
         </h3>
 
         <div class="modalDesc">
-          Your recent GuestHub requests for this room.
+          Track your GuestHub requests.
         </div>
 
       </div>
 
       <button
-        class="closeBtn"
-        type="button"
-        id="closeOrdersBtn"
-        aria-label="Close"
+        class="close"
+        id="closeOrders"
       >
         ×
       </button>
 
     </div>
 
-    <div id="ordersList" style="margin-top:14px">
-
-      <div class="loading" style="margin:0">
-        Loading orders...
-      </div>
-
-    </div>
+    <div
+      id="ordersList"
+      style="margin-top:14px"
+    ></div>
 
   </div>
 
 </div>
 
 
-<!-- =========================
-     INFO MODAL
-========================= -->
+<!-- =====================================================
+     HELP MODAL
+===================================================== -->
 
 <div
   class="modal"
   id="helpModal"
-  role="dialog"
-  aria-modal="true"
 >
 
   <div class="modalBox">
 
-    <div class="modalTop">
+    <div class="modalHead">
 
       <div>
 
         <h3 class="modalTitle">
-          ℹ️ How GuestHub Works
+          ℹ️ GuestHub
         </h3>
+
+        <div class="modalDesc">
+          Your hotel experience in one place.
+        </div>
 
       </div>
 
       <button
-        class="closeBtn"
-        type="button"
-        id="closeHelpBtn"
-        aria-label="Close"
+        class="close"
+        id="closeHelp"
       >
         ×
       </button>
@@ -1305,39 +1807,49 @@ input:focus-visible{
     </div>
 
 
-    <div style="margin-top:14px">
+    <div style="margin-top:15px">
 
       <div class="orderItem">
         <strong>1️⃣ Choose a service</strong>
-        <small>Select room service, transport, safari, spa or concierge.</small>
+        <small>
+          Select room service, transport, safari,
+          spa or concierge.
+        </small>
       </div>
 
       <div class="orderItem">
-        <strong>2️⃣ Enter your details</strong>
-        <small>Provide your name, room and WhatsApp number.</small>
+        <strong>2️⃣ Place your request</strong>
+        <small>
+          Confirm your room and WhatsApp number.
+        </small>
       </div>
 
       <div class="orderItem">
-        <strong>3️⃣ Hotel receives your request</strong>
-        <small>The hotel team can coordinate the requested service.</small>
+        <strong>3️⃣ Hotel receives it</strong>
+        <small>
+          The hotel team coordinates your request.
+        </small>
       </div>
 
       <div class="orderItem">
-        <strong>4️⃣ Track your request</strong>
-        <small>Use My Orders to see the latest status stored in GuestHub.</small>
+        <strong>4️⃣ Track it</strong>
+        <small>
+          Follow your request from My Orders.
+        </small>
       </div>
 
       <div class="orderItem">
         <strong>5️⃣ Enjoy your stay ✨</strong>
-        <small>GuestHub puts the services you need in one simple place.</small>
+        <small>
+          One GuestHub experience for your entire stay.
+        </small>
       </div>
 
     </div>
 
     <button
       class="btn"
-      type="button"
-      id="helpDoneBtn"
+      id="helpDone"
     >
       Got it
     </button>
@@ -1347,252 +1859,189 @@ input:focus-visible{
 </div>
 
 
-<!-- =========================
+<!-- =====================================================
      TOAST
-========================= -->
+===================================================== -->
 
 <div
   id="toast"
   class="toast"
-  role="status"
-  aria-live="polite"
 ></div>
 
 
-<!-- YOUR SUPABASE CONFIG -->
-<script src="config.js"></script>
-
-
 <script>
+
 "use strict";
 
 /* =========================================================
-   GUESTHUB PART 2
-   Guest-facing hotel service application
+   GUESTHUB PART 7
+   UPGRADED GUEST SUPERAPP
 ========================================================= */
 
 
 /* =========================================================
-   SUPABASE INITIALIZATION
+   SUPABASE
 ========================================================= */
 
-let supa = null;
+let supa=null;
 
-if(
-  window.supabase &&
-  typeof SUPABASE_URL !== "undefined" &&
-  typeof SUPABASE_KEY !== "undefined" &&
-  SUPABASE_URL &&
-  SUPABASE_KEY
-){
-  try{
-    supa = window.supabase.createClient(
+try{
+
+  if(
+    window.supabase &&
+    typeof SUPABASE_URL!=="undefined" &&
+    typeof SUPABASE_KEY!=="undefined" &&
+    SUPABASE_URL &&
+    SUPABASE_KEY
+  ){
+
+    supa=window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
     );
-  }catch(error){
-    console.error("Supabase initialization failed:",error);
+
   }
+
+}catch(error){
+
+  console.error(
+    "Supabase initialization failed:",
+    error
+  );
+
 }
 
 
 /* =========================================================
-   APPLICATION STATE
+   STATE
 ========================================================= */
 
-let hotel = null;
-let hotelId = null;
-let selectedSvc = null;
-let allServices = [];
-let toastTimer = null;
+let hotel=null;
+let hotelId=null;
+let selectedService=null;
+let allServices=[];
+let toastTimer=null;
 
 
 /* =========================================================
    DEMO SERVICES
 ========================================================= */
 
-const SERVICES = {
+const DEMO_SERVICES=[
 
-  quick:[
-    {
-      id:"airport_taxi",
-      icon:"✈️",
-      t:"Airport Taxi Now",
-      d:"JKIA / Wilson transfer",
-      price:2500,
-      cat:"taxi"
-    },
-    {
-      id:"room_food",
-      icon:"🍔",
-      t:"Room Service",
-      d:"Food & drinks",
-      price:1200,
-      cat:"food"
-    },
-    {
-      id:"laundry",
-      icon:"👕",
-      t:"Laundry Express",
-      d:"Fast hotel laundry",
-      price:500,
-      cat:"spa"
-    },
-    {
-      id:"massage",
-      icon:"🧖",
-      t:"Massage in Room",
-      d:"Swedish 60 minutes",
-      price:3500,
-      cat:"spa"
-    }
-  ],
+  {
+    id:"room_service",
+    title:"Room Service",
+    description:"Food & drinks delivered to your room",
+    price:1200,
+    category:"food",
+    icon:"🍔"
+  },
 
-  g1:[
-    {
-      id:"airport_taxi",
-      icon:"🚕",
-      t:"Airport Transfer",
-      d:"JKIA, Wilson, SGR",
-      price:2500,
-      cat:"taxi"
-    },
-    {
-      id:"town_taxi",
-      icon:"🚖",
-      t:"Town Taxi",
-      d:"Private hotel transfer",
-      price:600,
-      cat:"taxi"
-    },
-    {
-      id:"car_hire",
-      icon:"🚙",
-      t:"Car Hire + Driver",
-      d:"Daily private vehicle",
-      price:8000,
-      cat:"taxi"
-    },
-    {
-      id:"luxury_transfer",
-      icon:"✨",
-      t:"VIP Transfer",
-      d:"Premium vehicle",
-      price:12000,
-      cat:"taxi"
-    }
-  ],
+  {
+    id:"airport_transfer",
+    title:"Airport Transfer",
+    description:"JKIA / Wilson private transfer",
+    price:2500,
+    category:"taxi",
+    icon:"✈️"
+  },
 
-  g2:[
-    {
-      id:"nairobi_tour",
-      icon:"🦒",
-      t:"Nairobi City Tour",
-      d:"Giraffe Centre & Museum",
-      price:3500,
-      cat:"tour"
-    },
-    {
-      id:"park_day",
-      icon:"🦁",
-      t:"Nairobi National Park",
-      d:"Safari day trip",
-      price:8000,
-      cat:"tour"
-    },
-    {
-      id:"mara_safari",
-      icon:"🌍",
-      t:"Maasai Mara Safari",
-      d:"3-day safari",
-      price:25000,
-      cat:"tour"
-    },
-    {
-      id:"beach_safari",
-      icon:"🐬",
-      t:"Diani & Wasini",
-      d:"Coast experience",
-      price:7000,
-      cat:"tour"
-    }
-  ],
+  {
+    id:"town_taxi",
+    title:"Hotel Taxi",
+    description:"Private local transportation",
+    price:600,
+    category:"taxi",
+    icon:"🚕"
+  },
 
-  g3:[
-    {
-      id:"massage",
-      icon:"💆",
-      t:"Deep Massage",
-      d:"In-room 60 minutes",
-      price:3500,
-      cat:"spa"
-    },
-    {
-      id:"spa_nails",
-      icon:"💅",
-      t:"Nails & Hair",
-      d:"In-room beauty service",
-      price:2000,
-      cat:"spa"
-    },
-    {
-      id:"food_delivery",
-      icon:"🍕",
-      t:"Food Outside",
-      d:"Restaurant delivery",
-      price:300,
-      cat:"food"
-    },
-    {
-      id:"chef",
-      icon:"👨‍🍳",
-      t:"Private Chef",
-      d:"In-room dining",
-      price:5000,
-      cat:"food"
-    }
-  ],
+  {
+    id:"nairobi_tour",
+    title:"Nairobi City Tour",
+    description:"Giraffe Centre & city experience",
+    price:3500,
+    category:"tour",
+    icon:"🦒"
+  },
 
-  g4:[
-    {
-      id:"photography",
-      icon:"📸",
-      t:"Photography",
-      d:"Hotel & holiday portraits",
-      price:5000,
-      cat:"media"
-    },
-    {
-      id:"shopping",
-      icon:"🛍️",
-      t:"Personal Shopper",
-      d:"Shopping assistance",
-      price:1000,
-      cat:"media"
-    },
-    {
-      id:"translator",
-      icon:"🗣️",
-      t:"Translator",
-      d:"French / German",
-      price:2000,
-      cat:"media"
-    },
-    {
-      id:"concierge",
-      icon:"🔑",
-      t:"Anything Else?",
-      d:"Ask the concierge",
-      price:500,
-      cat:"media"
-    }
-  ]
+  {
+    id:"nairobi_park",
+    title:"Nairobi National Park",
+    description:"Safari day experience",
+    price:8000,
+    category:"tour",
+    icon:"🦁"
+  },
 
-};
+  {
+    id:"mara",
+    title:"Maasai Mara Safari",
+    description:"3-day safari experience",
+    price:25000,
+    category:"tour",
+    icon:"🌍"
+  },
+
+  {
+    id:"massage",
+    title:"In-Room Massage",
+    description:"Relaxing 60-minute massage",
+    price:3500,
+    category:"spa",
+    icon:"💆"
+  },
+
+  {
+    id:"spa",
+    title:"Spa & Wellness",
+    description:"Beauty and wellness services",
+    price:2000,
+    category:"spa",
+    icon:"🧖"
+  },
+
+  {
+    id:"laundry",
+    title:"Laundry Express",
+    description:"Fast hotel laundry service",
+    price:500,
+    category:"spa",
+    icon:"👕"
+  },
+
+  {
+    id:"photography",
+    title:"Photography",
+    description:"Holiday and hotel portraits",
+    price:5000,
+    category:"media",
+    icon:"📸"
+  },
+
+  {
+    id:"shopping",
+    title:"Personal Shopper",
+    description:"Shopping assistance",
+    price:1000,
+    category:"media",
+    icon:"🛍️"
+  },
+
+  {
+    id:"concierge",
+    title:"Concierge",
+    description:"Anything you need during your stay",
+    price:500,
+    category:"media",
+    icon:"🔑"
+  }
+
+];
 
 
 /* =========================================================
-   DOM HELPERS
+   DOM
 ========================================================= */
 
 function $(id){
@@ -1600,9 +2049,13 @@ function $(id){
 }
 
 
+/* =========================================================
+   ESCAPE
+========================================================= */
+
 function escapeHTML(value){
 
-  return String(value ?? "")
+  return String(value??"")
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;")
@@ -1613,34 +2066,54 @@ function escapeHTML(value){
 
 
 /* =========================================================
+   MONEY
+========================================================= */
+
+function money(value){
+
+  const n=Number(value);
+
+  if(!Number.isFinite(n) || n<=0){
+    return "Ask hotel";
+  }
+
+  return "Ksh "+n.toLocaleString("en-KE");
+
+}
+
+
+/* =========================================================
    TOAST
 ========================================================= */
 
-function showToast(message){
+function toast(message){
 
-  const toast = $("toast");
+  const el=$("toast");
 
-  toast.textContent = message;
-  toast.classList.add("show");
+  el.textContent=message;
+
+  el.classList.add("show");
 
   clearTimeout(toastTimer);
 
-  toastTimer = setTimeout(()=>{
-    toast.classList.remove("show");
+  toastTimer=setTimeout(()=>{
+
+    el.classList.remove("show");
+
   },3000);
 
 }
 
 
 /* =========================================================
-   MODAL FUNCTIONS
+   MODALS
 ========================================================= */
 
 function openModal(id){
 
-  const modal = $(id);
+  const modal=$(id);
 
-  if(!modal) return;
+  if(!modal)return;
 
   modal.classList.add("active");
 
@@ -1651,16 +2124,18 @@ function openModal(id){
 
 function closeModal(id){
 
-  const modal = $(id);
+  const modal=$(id);
 
-  if(!modal) return;
+  if(!modal)return;
 
   modal.classList.remove("active");
 
   if(
     !document.querySelector(".modal.active")
   ){
+
     document.body.style.overflow="";
+
   }
 
 }
@@ -1670,9 +2145,7 @@ function closeAllModals(){
 
   document
     .querySelectorAll(".modal.active")
-    .forEach(modal=>{
-      modal.classList.remove("active");
-    });
+    .forEach(m=>m.classList.remove("active"));
 
   document.body.style.overflow="";
 
@@ -1680,88 +2153,131 @@ function closeAllModals(){
 
 
 /* =========================================================
-   FORMAT MONEY
+   ORDER REFERENCE
 ========================================================= */
 
-function formatMoney(value){
+function reference(){
 
-  const number = Number(value);
+  const time=
+    Date.now()
+      .toString()
+      .slice(-7);
 
-  if(!Number.isFinite(number)){
-    return "Price on request";
-  }
-
-  return "Ksh "+number.toLocaleString("en-KE");
-
-}
-
-
-/* =========================================================
-   GENERATE LOCAL ORDER REFERENCE
-========================================================= */
-
-function generateOrderReference(){
-
-  const now = Date.now()
-    .toString()
-    .slice(-6);
-
-  const random =
+  const random=
     Math.floor(100+Math.random()*900);
 
-  return "GH-"+now+"-"+random;
+  return "GH-"+time+"-"+random;
 
 }
 
 
 /* =========================================================
-   CATEGORY ICON
+   CATEGORY
 ========================================================= */
 
-function categoryIcon(category){
+function category(value){
 
-  const cat = String(category||"").toLowerCase();
+  const c=
+    String(value||"")
+      .toLowerCase();
 
-  if(cat==="taxi") return "🚕";
-  if(cat==="tour") return "🌍";
-  if(cat==="spa") return "🧖";
-  if(cat==="food") return "🍔";
-  if(cat==="media") return "📸";
+  if(
+    c.includes("taxi") ||
+    c.includes("transport") ||
+    c.includes("transfer")
+  ){
 
-  return "✨";
+    return "taxi";
+
+  }
+
+  if(
+    c.includes("tour") ||
+    c.includes("safari") ||
+    c.includes("travel")
+  ){
+
+    return "tour";
+
+  }
+
+  if(
+    c.includes("spa") ||
+    c.includes("massage") ||
+    c.includes("wellness") ||
+    c.includes("laundry")
+  ){
+
+    return "spa";
+
+  }
+
+  if(
+    c.includes("food") ||
+    c.includes("restaurant") ||
+    c.includes("dining") ||
+    c.includes("room service")
+  ){
+
+    return "food";
+
+  }
+
+  return "media";
 
 }
 
 
 /* =========================================================
-   NORMALIZE SUPABASE SERVICE
+   NORMALIZE DATABASE SERVICE
 ========================================================= */
 
-function normalizeService(service){
+function normalizeService(s){
+
+  const cat=
+    String(
+      s.category ||
+      s.type ||
+      "food"
+    ).toLowerCase();
 
   return {
 
-    id:service.id,
+    id:s.id,
 
-    icon:
-      service.icon ||
-      categoryIcon(service.category),
-
-    t:
-      service.title ||
-      service.name ||
+    title:
+      s.title ||
+      s.name ||
       "Hotel Service",
 
-    d:
-      service.description ||
-      service.category ||
-      "Available service",
+    description:
+      s.description ||
+      s.details ||
+      "Available through GuestHub",
 
     price:
-      Number(service.price) || 0,
+      Number(s.price)||0,
 
-    cat:
-      String(service.category||"food").toLowerCase()
+    category:cat,
+
+    icon:
+      s.icon ||
+      (
+        cat==="taxi" ? "🚕":
+        cat==="tour" ? "🌍":
+        cat==="spa" ? "🧖":
+        cat==="food" ? "🍔":
+        "✨"
+      ),
+
+    vendor:
+      s.vendor_name ||
+      s.provider_name ||
+      "",
+
+    vendor_id:
+      s.vendor_id ||
+      null
 
   };
 
@@ -1769,55 +2285,67 @@ function normalizeService(service){
 
 
 /* =========================================================
-   CREATE SERVICE CARD SAFELY
+   SERVICE CARD
 ========================================================= */
 
-function createServiceCard(service){
+function serviceCard(service){
 
-  const button =
+  const button=
     document.createElement("button");
 
   button.type="button";
-  button.className="svc serviceCard";
+  button.className="service";
 
-  button.dataset.search =
-    `${service.t} ${service.d} ${service.cat}`.toLowerCase();
+  button.dataset.search=
+    `${service.title} ${service.description} ${service.category} ${service.vendor}`
+      .toLowerCase();
 
-  const price =
+  const price=
     document.createElement("span");
 
   price.className="price";
-  price.textContent =
-    service.price > 0
-      ? formatMoney(service.price)
+
+  price.textContent=
+    service.price>0
+      ? money(service.price)
       : "Ask hotel";
 
-  const icon =
-    document.createElement("i");
+  const icon=
+    document.createElement("span");
 
-  icon.className="svcIcon";
-  icon.textContent=service.icon;
+  icon.className="serviceIcon";
 
-  const title =
-    document.createElement("b");
+  icon.textContent=
+    service.icon;
 
-  title.textContent=service.t;
+  const title=
+    document.createElement("span");
 
-  const desc =
-    document.createElement("small");
+  title.className="serviceName";
 
-  desc.textContent=service.d;
+  title.textContent=
+    service.title;
 
-  button.appendChild(price);
-  button.appendChild(icon);
-  button.appendChild(title);
-  button.appendChild(desc);
+  const desc=
+    document.createElement("span");
+
+  desc.className="serviceDesc";
+
+  desc.textContent=
+    service.vendor
+      ? `${service.description} • ${service.vendor}`
+      : service.description;
+
+  button.append(
+    price,
+    icon,
+    title,
+    desc
+  );
 
   button.addEventListener(
     "click",
-    ()=>{
-      openOrder(service);
-    }
+    ()=>openOrder(service)
   );
 
   return button;
@@ -1832,65 +2360,87 @@ function createServiceCard(service){
 function renderServices(services){
 
   const boxes={
+
     quick:$("quick"),
-    g1:$("g1"),
-    g2:$("g2"),
-    g3:$("g3"),
-    g4:$("g4")
+    taxi:$("taxi"),
+    tour:$("tour"),
+    food:$("food"),
+    concierge:$("concierge")
+
   };
 
-  Object.values(boxes).forEach(box=>{
-    box.innerHTML="";
-  });
+
+  Object.values(boxes)
+    .forEach(el=>el.innerHTML="");
 
 
   const groups={
+
     quick:[],
-    g1:[],
-    g2:[],
-    g3:[],
-    g4:[]
+    taxi:[],
+    tour:[],
+    food:[],
+    concierge:[]
+
   };
 
 
-  /* First four services become quick services */
+  /* Fastest services */
 
-  groups.quick =
+  groups.quick=
     services.slice(0,4);
 
 
   services.forEach(service=>{
 
-    const cat =
-      String(service.cat||"").toLowerCase();
-
-    if(cat==="taxi"){
-      groups.g1.push(service);
-    }
-    else if(cat==="tour"){
-      groups.g2.push(service);
-    }
-    else if(cat==="spa" || cat==="food"){
-      groups.g3.push(service);
-    }
-    else{
-      groups.g4.push(service);
-    }
-
-  });
-
-
-  Object.keys(groups).forEach(group=>{
-
-    groups[group].forEach(service=>{
-
-      boxes[group].appendChild(
-        createServiceCard(service)
+    const cat=
+      category(
+        service.category ||
+        service.title
       );
 
-    });
+
+    if(cat==="taxi"){
+
+      groups.taxi.push(service);
+
+    }
+    else if(cat==="tour"){
+
+      groups.tour.push(service);
+
+    }
+    else if(
+      cat==="food" ||
+      cat==="spa"
+    ){
+
+      groups.food.push(service);
+
+    }
+    else{
+
+      groups.concierge.push(service);
+
+    }
 
   });
+
+
+  Object.keys(groups)
+    .forEach(group=>{
+
+      groups[group]
+        .forEach(service=>{
+
+          boxes[group]
+            .appendChild(
+              serviceCard(service)
+            );
+
+        });
+
+    });
 
 
   updateCounts();
@@ -1899,81 +2449,55 @@ function renderServices(services){
 
 
 /* =========================================================
-   DEMO RENDER
-========================================================= */
-
-function renderDemoServices(){
-
-  const services=[];
-
-  Object.keys(SERVICES).forEach(group=>{
-
-    if(group==="quick") return;
-
-    SERVICES[group].forEach(service=>{
-      services.push(service);
-    });
-
-  });
-
-
-  allServices=services;
-
-  renderServices(services);
-
-}
-
-
-/* =========================================================
-   UPDATE COUNTS
+   COUNTS
 ========================================================= */
 
 function updateCounts(){
 
-  $("quickCount").textContent =
+  $("quickCount").textContent=
     $("quick").children.length;
 
-  $("g1Count").textContent =
-    $("g1").children.length;
+  $("taxiCount").textContent=
+    $("taxi").children.length;
 
-  $("g2Count").textContent =
-    $("g2").children.length;
+  $("tourCount").textContent=
+    $("tour").children.length;
 
-  $("g3Count").textContent =
-    $("g3").children.length;
+  $("foodCount").textContent=
+    $("food").children.length;
 
-  $("g4Count").textContent =
-    $("g4").children.length;
+  $("conciergeCount").textContent=
+    $("concierge").children.length;
 
 }
 
 
 /* =========================================================
-   SEARCH SERVICES
+   SEARCH
 ========================================================= */
 
-function searchServices(){
+function search(){
 
-  const query =
+  const query=
     $("searchService")
       .value
       .trim()
       .toLowerCase();
 
-  const cards =
+  const cards=
     document.querySelectorAll(
-      ".serviceCard"
+      ".service"
     );
 
   let visible=0;
 
   cards.forEach(card=>{
 
-    const matches =
+    const matches=
       !query ||
       card.dataset.search.includes(query);
 
-    card.style.display =
+    card.style.display=
       matches ? "" : "none";
 
     if(matches){
@@ -1983,7 +2507,7 @@ function searchServices(){
   });
 
 
-  $("emptySearch").style.display =
+  $("emptySearch").style.display=
     query && visible===0
       ? "block"
       : "none";
@@ -1995,17 +2519,17 @@ function searchServices(){
    HOTEL INITIALIZATION
 ========================================================= */
 
-async function initHotel(){
+async function init(){
 
   try{
 
-    const params =
+    const params=
       new URLSearchParams(
-        window.location.search
+        location.search
       );
 
 
-    const hid =
+    const id=
       params.get("hotel") ||
       params.get("hotel_id") ||
       params.get("h") ||
@@ -2014,8 +2538,9 @@ async function initHotel(){
       );
 
 
-    const room =
+    const room=
       params.get("room") ||
+      params.get("room_no") ||
       localStorage.getItem(
         "last_room"
       ) ||
@@ -2023,109 +2548,111 @@ async function initHotel(){
 
 
     if(room){
-      $("roomNo").value=room;
+
+      $("roomNo").value=
+        room;
+
     }
 
 
-    updateRoomBadge();
+    updateRoom();
 
 
-    /* No hotel ID = demo mode */
-
-    if(!hid){
+    if(!id){
 
       hotelId="demo";
 
-      $("hotelName").textContent=
-        "DEMO HOTEL";
+      setHotel(
+        {
+          name:"DEMO HOTEL",
+          tagline:
+            "Room service • Tours • Transport • Concierge"
+        }
+      );
 
-      $("hotelTag").textContent=
-        "Experience room service, transport, tours & concierge";
+      allServices=
+        DEMO_SERVICES;
 
-      renderDemoServices();
+      renderServices(
+        allServices
+      );
 
-      finishLoading();
+      finish();
+
+      loadActiveOrder();
 
       return;
 
     }
 
 
-    hotelId=hid;
+    hotelId=id;
+
+
+    localStorage.setItem(
+      "last_hotel_id",
+      id
+    );
 
 
     if(!supa){
 
-      showToast(
-        "GuestHub is in demo mode because Supabase is not configured."
+      toast(
+        "Supabase is not configured — demo services are active."
       );
 
-      renderDemoServices();
+      allServices=
+        DEMO_SERVICES;
 
-      finishLoading();
+      renderServices(
+        allServices
+      );
+
+      finish();
 
       return;
 
     }
 
 
-    const {
-      data,
-      error
-    } = await supa
-      .from("hotels")
-      .select("*")
-      .eq("id",hid)
-      .single();
+    const result=
+      await supa
+        .from("hotels")
+        .select("*")
+        .eq("id",id)
+        .single();
 
 
-    if(error){
+    if(
+      result.error
+    ){
 
       console.error(
-        "Hotel loading error:",
-        error
+        result.error
       );
 
-      $("hotelName").textContent=
-        "HOTEL";
-
-      showToast(
-        "Hotel details could not be loaded."
-      );
+      setHotel({
+        name:"YOUR HOTEL",
+        tagline:
+          "GuestHub hotel services"
+      });
 
     }
-    else if(data){
+    else{
 
-      hotel=data;
+      hotel=
+        result.data;
 
-      $("hotelName").textContent =
-        data.name ||
-        "YOUR HOTEL";
-
-
-      const city =
-        data.city
-          ? data.city+" • "
-          : "";
-
-
-      $("hotelTag").textContent =
-        city+
-        (
-          data.tagline ||
-          "Room service • Tours • Transport • Concierge"
-        );
-
-
-      localStorage.setItem(
-        "last_hotel_id",
-        hid
+      setHotel(
+        hotel
       );
 
     }
 
 
-    await loadHotelServices();
+    await loadServices();
+
+    await loadActiveOrder();
 
 
   }
@@ -2133,16 +2660,21 @@ async function initHotel(){
 
     console.error(error);
 
-    renderDemoServices();
+    allServices=
+      DEMO_SERVICES;
 
-    showToast(
-      "Some hotel information could not be loaded."
+    renderServices(
+      allServices
+    );
+
+    toast(
+      "GuestHub loaded in safe demo mode."
     );
 
   }
   finally{
 
-    finishLoading();
+    finish();
 
   }
 
@@ -2150,14 +2682,47 @@ async function initHotel(){
 
 
 /* =========================================================
-   LOAD HOTEL SERVICES
+   SET HOTEL
 ========================================================= */
 
-async function loadHotelServices(){
+function setHotel(data){
 
-  if(!supa || hotelId==="demo"){
+  const name=
+    data?.name ||
+    "YOUR HOTEL";
 
-    renderDemoServices();
+
+  $("hotelName")
+    .textContent=
+    name.toUpperCase();
+
+
+  $("hotelTagline")
+    .textContent=
+      data?.tagline ||
+      data?.description ||
+      "Everything you need during your stay — room service, transport, tours, wellness and concierge.";
+
+}
+
+
+/* =========================================================
+   LOAD SERVICES
+========================================================= */
+
+async function loadServices(){
+
+  if(
+    !supa ||
+    hotelId==="demo"
+  ){
+
+    allServices=
+      DEMO_SERVICES;
+
+    renderServices(
+      allServices
+    );
 
     return;
 
@@ -2166,56 +2731,65 @@ async function loadHotelServices(){
 
   try{
 
-    const {
-      data,
-      error
-    } = await supa
-      .from("hotel_services")
-      .select("*")
-      .eq("hotel_id",hotelId)
-      .eq("active",true)
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
+    const result=
+      await supa
+        .from("hotel_services")
+        .select("*")
+        .eq("hotel_id",hotelId)
+        .eq("active",true)
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
 
 
-    if(error){
+    if(result.error){
 
-      console.error(
-        "Service loading error:",
-        error
-      );
-
-      renderDemoServices();
-
-      return;
+      throw result.error;
 
     }
 
 
-    if(data && data.length){
+    if(
+      result.data &&
+      result.data.length
+    ){
 
-      allServices =
-        data.map(normalizeService);
-
-      renderServices(allServices);
+      allServices=
+        result.data.map(
+          normalizeService
+        );
 
     }
     else{
 
-      renderDemoServices();
+      allServices=
+        DEMO_SERVICES;
 
     }
+
+
+    renderServices(
+      allServices
+    );
+
 
   }
   catch(error){
 
-    console.error(error);
+    console.error(
+      "Service loading:",
+      error
+    );
 
-    renderDemoServices();
+    allServices=
+      DEMO_SERVICES;
+
+    renderServices(
+      allServices
+    );
 
   }
 
@@ -2226,45 +2800,48 @@ async function loadHotelServices(){
    FINISH LOADING
 ========================================================= */
 
-function finishLoading(){
+function finish(){
 
-  $("loadingState").style.display="none";
+  $("loading")
+    .style.display="none";
 
-  $("serviceArea").style.display="block";
+  $("serviceArea")
+    .style.display="block";
 
 }
 
 
 /* =========================================================
-   UPDATE ROOM BADGE
+   ROOM
 ========================================================= */
 
-function updateRoomBadge(){
+function updateRoom(){
 
-  const room =
-    $("roomNo").value.trim();
+  const room=
+    $("roomNo")
+      .value
+      .trim();
 
 
-  $("roomBadge").textContent =
-    "🛏️ Room "+
-    (room || "Guest")+
-    " • 📶 Free WiFi • 🔒 Verified";
+  $("topRoom")
+    .textContent=
+      room || "Guest";
 
 }
 
 
 /* =========================================================
-   VALIDATE GUEST
+   GUEST VALIDATION
 ========================================================= */
 
 function validateGuest(){
 
-  const name =
+  const name=
     $("guestName")
       .value
       .trim();
 
-  const room =
+  const room=
     $("roomNo")
       .value
       .trim();
@@ -2272,8 +2849,8 @@ function validateGuest(){
 
   if(!name){
 
-    showToast(
-      "Please enter your name first."
+    toast(
+      "Please enter your name."
     );
 
     $("guestName").focus();
@@ -2285,7 +2862,7 @@ function validateGuest(){
 
   if(!room){
 
-    showToast(
+    toast(
       "Please enter your room number."
     );
 
@@ -2308,73 +2885,83 @@ function validateGuest(){
 function openOrder(service){
 
   if(!validateGuest()){
+
     return;
+
   }
 
 
-  selectedSvc=service;
+  selectedService=
+    service;
 
 
-  $("mTitle").textContent =
-    service.t;
+  $("modalService")
+    .textContent=
+      service.title;
 
 
-  $("mDesc").textContent =
-    `${service.d} • ${
-      service.price > 0
-        ? formatMoney(service.price)
-        : "Price on request"
-    }`;
+  $("modalDescription")
+    .textContent=
+      `${service.description} • ${
+        service.price>0
+          ? money(service.price)
+          : "Price on request"
+      }`;
 
 
-  $("orderNote").value="";
+  $("orderNote")
+    .value="";
 
 
-  $("guestPhone").value =
-    localStorage.getItem(
-      "guest_phone"
-    ) || "";
+  $("guestPhone")
+    .value=
+      localStorage.getItem(
+        "guest_phone"
+      ) || "";
 
 
-  openModal("orderModal");
+  openModal(
+    "orderModal"
+  );
 
 
-  setTimeout(()=>{
-    $("guestPhone").focus();
-  },100);
+  setTimeout(
+    ()=>$("guestPhone").focus(),
+    100
+  );
 
 }
 
 
 /* =========================================================
-   VALIDATE PHONE
+   PHONE
 ========================================================= */
 
 function normalizePhone(phone){
 
-  let value =
+  let value=
     String(phone||"")
       .replace(/[^\d+]/g,"");
 
 
   if(value.startsWith("+254")){
-    value =
+
+    value=
       "254"+
       value.slice(4);
+
   }
 
 
-  if(value.startsWith("07")){
-    value =
+  if(
+    value.startsWith("07") ||
+    value.startsWith("01")
+  ){
+
+    value=
       "254"+
       value.slice(1);
-  }
 
-
-  if(value.startsWith("01")){
-    value =
-      "254"+
-      value.slice(1);
   }
 
 
@@ -2383,25 +2970,39 @@ function normalizePhone(phone){
 }
 
 
-function validKenyanPhone(phone){
-
-  const normalized =
-    normalizePhone(phone);
-
+function validPhone(phone){
 
   return /^254(?:7|1)\d{8}$/
-    .test(normalized);
+    .test(
+      normalizePhone(phone)
+    );
 
 }
 
 
 /* =========================================================
-   CREATE CLIENT ORDER REFERENCE
+   LOCAL DEMO ORDER
 ========================================================= */
 
-function createReference(){
+function saveDemoOrder(order){
 
-  return generateOrderReference();
+  const list=
+    JSON.parse(
+      localStorage.getItem(
+        "guesthub_demo_orders"
+      ) || "[]"
+    );
+
+
+  list.unshift(order);
+
+
+  localStorage.setItem(
+    "guesthub_demo_orders",
+    JSON.stringify(
+      list.slice(0,30)
+    )
+  );
 
 }
 
@@ -2412,10 +3013,10 @@ function createReference(){
 
 async function placeOrder(){
 
-  if(!selectedSvc){
+  if(!selectedService){
 
-    showToast(
-      "Please select a service."
+    toast(
+      "Select a service first."
     );
 
     return;
@@ -2424,23 +3025,21 @@ async function placeOrder(){
 
 
   if(!validateGuest()){
+
     return;
+
   }
 
 
-  const btn =
-    $("confirmBtn");
-
-
-  const phone =
+  const phone=
     normalizePhone(
       $("guestPhone").value
     );
 
 
-  if(!validKenyanPhone(phone)){
+  if(!validPhone(phone)){
 
-    showToast(
+    toast(
       "Enter a valid Kenyan WhatsApp number."
     );
 
@@ -2451,26 +3050,24 @@ async function placeOrder(){
   }
 
 
-  const note =
+  const guestName=
+    $("guestName")
+      .value
+      .trim();
+
+  const room=
+    $("roomNo")
+      .value
+      .trim();
+
+  const note=
     $("orderNote")
       .value
       .trim();
 
 
-  const guestName =
-    $("guestName")
-      .value
-      .trim();
-
-
-  const room =
-    $("roomNo")
-      .value
-      .trim();
-
-
-  const reference =
-    createReference();
+  const ref=
+    reference();
 
 
   const payload={
@@ -2482,20 +3079,26 @@ async function placeOrder(){
 
     room:room,
 
-    guest_name:guestName,
+    guest_name:
+      guestName,
 
-    guest_phone:phone,
+    guest_phone:
+      phone,
 
-    service:selectedSvc.id,
+    service:
+      selectedService.id,
 
-    service_title:selectedSvc.t,
+    service_title:
+      selectedService.title,
 
     details:
       note ||
-      selectedSvc.d,
+      selectedService.description,
 
     amount:
-      Number(selectedSvc.price)||0,
+      Number(
+        selectedService.price
+      ) || 0,
 
     status:"new",
 
@@ -2505,55 +3108,56 @@ async function placeOrder(){
   };
 
 
-  btn.disabled=true;
+  const button=
+    $("confirmOrder");
 
-  btn.textContent=
-    "⏳ Sending request...";
+
+  button.disabled=true;
+
+  button.textContent=
+    "⏳ Sending...";
 
 
   try{
 
-    if(!supa){
+    if(
+      !supa ||
+      hotelId==="demo"
+    ){
 
-      /*
-       Demo mode:
-       Keep request locally so the interface
-       can still be tested before Supabase
-       is connected.
-      */
-
-      saveLocalDemoOrder(
-        payload,
-        reference
-      );
+      saveDemoOrder({
+        ...payload,
+        reference:ref
+      });
 
     }
     else{
 
-      const {
-        error
-      } = await supa
-        .from("orders")
-        .insert([payload]);
+      const result=
+        await supa
+          .from("orders")
+          .insert([
+            payload
+          ]);
 
 
-      if(error){
-        throw error;
+      if(result.error){
+
+        throw result.error;
+
       }
 
     }
 
 
-    /* Save guest details */
+    localStorage.setItem(
+      "guest_name",
+      guestName
+    );
 
     localStorage.setItem(
       "last_room",
       room
-    );
-
-    localStorage.setItem(
-      "guest_name",
-      guestName
     );
 
     localStorage.setItem(
@@ -2562,24 +3166,34 @@ async function placeOrder(){
     );
 
 
-    closeModal("orderModal");
+    closeModal(
+      "orderModal"
+    );
 
 
-    $("successText").textContent =
-      `${selectedSvc.t} for Room ${room} has been sent to ${
-        hotel?.name || "the hotel"
-      }. The hotel team can now process your request.`;
+    $("successText")
+      .textContent=
+        `${selectedService.title} has been sent to ${
+          hotel?.name ||
+          "the hotel"
+        } for Room ${room}.`;
 
 
-    $("orderReference").textContent =
-      reference;
+    $("orderReference")
+      .textContent=
+        ref;
 
 
-    openModal("successModal");
+    openModal(
+      "successModal"
+    );
+
+
+    loadActiveOrder();
 
 
     if(
-      "vibrate" in navigator
+      navigator.vibrate
     ){
 
       navigator.vibrate([
@@ -2590,27 +3204,25 @@ async function placeOrder(){
 
     }
 
-
   }
   catch(error){
 
     console.error(
-      "Order error:",
+      "Order failed:",
       error
     );
 
-
-    showToast(
-      "Order could not be sent. Please try again."
+    toast(
+      "The request could not be sent. Please try again."
     );
 
   }
   finally{
 
-    btn.disabled=false;
+    button.disabled=false;
 
-    btn.textContent=
-      "✅ Place Order";
+    button.textContent=
+      "✅ Place Request";
 
   }
 
@@ -2618,50 +3230,12 @@ async function placeOrder(){
 
 
 /* =========================================================
-   LOCAL DEMO ORDER
+   GET ORDERS
 ========================================================= */
 
-function saveLocalDemoOrder(
-  payload,
-  reference
-){
+async function getOrders(){
 
-  const existing =
-    JSON.parse(
-      localStorage.getItem(
-        "guesthub_demo_orders"
-      ) || "[]"
-    );
-
-
-  existing.unshift({
-
-    ...payload,
-
-    reference,
-
-    status:"new"
-
-  });
-
-
-  localStorage.setItem(
-    "guesthub_demo_orders",
-    JSON.stringify(
-      existing.slice(0,20)
-    )
-  );
-
-}
-
-
-/* =========================================================
-   LOAD ORDERS
-========================================================= */
-
-async function viewOrders(){
-
-  const room =
+  const room=
     $("roomNo")
       .value
       .trim();
@@ -2669,7 +3243,259 @@ async function viewOrders(){
 
   if(!room){
 
-    showToast(
+    toast(
+      "Enter your room number first."
+    );
+
+    return [];
+
+  }
+
+
+  if(
+    !supa ||
+    hotelId==="demo"
+  ){
+
+    const local=
+      JSON.parse(
+        localStorage.getItem(
+          "guesthub_demo_orders"
+        ) || "[]"
+      );
+
+
+    return local.filter(
+      o=>
+        String(o.room)===
+        String(room)
+    );
+
+  }
+
+
+  const result=
+    await supa
+      .from("orders")
+      .select("*")
+      .eq("hotel_id",hotelId)
+      .eq("room",room)
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
+      .limit(30);
+
+
+  if(result.error){
+
+    throw result.error;
+
+  }
+
+
+  return result.data || [];
+
+}
+
+
+/* =========================================================
+   LOAD ACTIVE ORDER
+========================================================= */
+
+async function loadActiveOrder(){
+
+  try{
+
+    const orders=
+      await getOrders();
+
+
+    if(!orders.length){
+
+      $("activeOrder")
+        .classList.remove("show");
+
+      return;
+
+    }
+
+
+    const active=
+      orders.find(
+        order=>
+          ![
+            "completed",
+            "cancelled",
+            "rejected"
+          ].includes(
+            String(
+              order.status||""
+            ).toLowerCase()
+          )
+      );
+
+
+    if(!active){
+
+      $("activeOrder")
+        .classList.remove("show");
+
+      return;
+
+    }
+
+
+    showActiveOrder(
+      active
+    );
+
+  }
+  catch(error){
+
+    console.error(
+      "Active order:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SHOW ACTIVE ORDER
+========================================================= */
+
+function showActiveOrder(order){
+
+  $("activeOrder")
+    .classList.add("show");
+
+
+  $("activeService")
+    .textContent=
+      order.service_title ||
+      order.service ||
+      "GuestHub Request";
+
+
+  $("activeReference")
+    .textContent=
+      order.reference ||
+      order.id ||
+      "GuestHub Request";
+
+
+  $("activeRoom")
+    .textContent=
+      order.room ||
+      "—";
+
+
+  $("activeAmount")
+    .textContent=
+      order.amount
+        ? money(order.amount)
+        : "Price on request";
+
+
+  const status=
+    String(
+      order.status ||
+      "new"
+    )
+      .toLowerCase()
+      .replace(/\s+/g,"_");
+
+
+  const statusEl=
+    $("activeStatus");
+
+
+  statusEl.className=
+    "status "+
+    status;
+
+
+  statusEl.textContent=
+    status
+      .replace(/_/g," ")
+      .replace(
+        /\b\w/g,
+        l=>l.toUpperCase()
+      );
+
+
+  const progress=
+    $("progress")
+      .querySelectorAll(
+        ".progressStep"
+      );
+
+
+  let index=0;
+
+
+  if(status==="accepted"){
+
+    index=1;
+
+  }
+  else if(
+    status==="preparing"
+  ){
+
+    index=2;
+
+  }
+  else if(
+    status==="on_the_way" ||
+    status==="ontheway"
+  ){
+
+    index=3;
+
+  }
+  else if(
+    status==="completed"
+  ){
+
+    index=4;
+
+  }
+
+
+  progress.forEach(
+    (step,i)=>{
+
+      step.classList.toggle(
+        "active",
+        i<index ||
+        (status==="new" && i===0)
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   VIEW ORDERS
+========================================================= */
+
+async function viewOrders(){
+
+  if(
+    !$("roomNo")
+      .value
+      .trim()
+  ){
+
+    toast(
       "Enter your room number first."
     );
 
@@ -2680,90 +3506,43 @@ async function viewOrders(){
   }
 
 
-  openModal("ordersModal");
+  openModal(
+    "ordersModal"
+  );
 
 
-  $("ordersList").innerHTML =
+  $("ordersList").innerHTML=
     `
       <div class="loading" style="margin:0">
         <div class="spinner"></div>
-        Loading your orders...
+        Loading your requests...
       </div>
     `;
 
 
   try{
 
-    let orders=[];
+    const orders=
+      await getOrders();
 
 
-    /* Demo/local orders */
-
-    const localOrders =
-      JSON.parse(
-        localStorage.getItem(
-          "guesthub_demo_orders"
-        ) || "[]"
-      );
-
-
-    if(
-      hotelId==="demo" ||
-      !supa
-    ){
-
-      orders =
-        localOrders.filter(
-          order =>
-            String(order.room)===
-            String(room)
-        );
-
-    }
-    else{
-
-      const {
-        data,
-        error
-      } = await supa
-        .from("orders")
-        .select("*")
-        .eq("hotel_id",hotelId)
-        .eq("room",room)
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        )
-        .limit(20);
-
-
-      if(error){
-        throw error;
-      }
-
-
-      orders=data||[];
-
-    }
-
-
-    renderOrders(orders);
+    renderOrders(
+      orders
+    );
 
   }
   catch(error){
 
-    console.error(error);
+    console.error(
+      error
+    );
 
-    $("ordersList").innerHTML =
+
+    $("ordersList").innerHTML=
       `
-        <div class="emptyState"
-             style="display:block">
-          <div>⚠️</div>
-          <strong>Unable to load orders</strong>
-          <br>
-          Please try again.
+        <div class="empty" style="display:block">
+          <div class="emptyIcon">⚠️</div>
+          Unable to load orders.
         </div>
       `;
 
@@ -2780,11 +3559,10 @@ function renderOrders(orders){
 
   if(!orders.length){
 
-    $("ordersList").innerHTML =
+    $("ordersList").innerHTML=
       `
-        <div class="emptyState"
-             style="display:block">
-          <div>📋</div>
+        <div class="empty" style="display:block">
+          <div class="emptyIcon">📋</div>
           <strong>No orders yet</strong>
           <br>
           Your GuestHub requests will appear here.
@@ -2796,91 +3574,129 @@ function renderOrders(orders){
   }
 
 
-  $("ordersList").innerHTML="";
+  $("ordersList")
+    .innerHTML="";
 
 
   orders.forEach(order=>{
 
-    const item =
-      document.createElement("div");
+    const item=
+      document.createElement(
+        "div"
+      );
 
-    item.className="orderItem";
-
-
-    const row =
-      document.createElement("div");
-
-    row.className="orderRow";
+    item.className=
+      "orderItem";
 
 
-    const left =
-      document.createElement("div");
+    const top=
+      document.createElement(
+        "div"
+      );
+
+    top.className=
+      "orderItemTop";
 
 
-    const title =
-      document.createElement("strong");
+    const left=
+      document.createElement(
+        "div"
+      );
 
-    title.textContent =
+
+    const title=
+      document.createElement(
+        "strong"
+      );
+
+    title.textContent=
       order.service_title ||
       order.service ||
-      "Hotel service";
+      "Hotel Service";
 
 
-    const details =
-      document.createElement("small");
+    const details=
+      document.createElement(
+        "small"
+      );
 
-    details.textContent =
+    details.textContent=
       order.details ||
       "Request submitted";
 
 
-    left.appendChild(title);
-    left.appendChild(details);
+    left.append(
+      title,
+      details
+    );
 
 
-    const status =
-      document.createElement("span");
+    const status=
+      document.createElement(
+        "span"
+      );
 
-    const statusText =
+
+    const state=
       String(
-        order.status||"new"
-      ).toLowerCase();
+        order.status ||
+        "new"
+      )
+        .toLowerCase()
+        .replace(/\s+/g,"_");
 
 
-    status.className =
+    status.className=
       "status "+
-      statusText;
+      state;
 
 
-    status.textContent =
-      statusText
-        .charAt(0)
-        .toUpperCase()+
-      statusText
-        .slice(1);
+    status.textContent=
+      state
+        .replace(/_/g," ")
+        .replace(
+          /\b\w/g,
+          l=>l.toUpperCase()
+        );
 
 
-    row.appendChild(left);
-    row.appendChild(status);
+    top.append(
+      left,
+      status
+    );
 
-    item.appendChild(row);
+
+    item.appendChild(
+      top
+    );
 
 
     if(order.amount){
 
-      const amount =
-        document.createElement("small");
+      const amount=
+        document.createElement(
+          "small"
+        );
 
-      amount.textContent =
-        formatMoney(order.amount);
+      amount.className=
+        "orderAmount";
 
-      item.appendChild(amount);
+      amount.textContent=
+        money(
+          order.amount
+        );
+
+      item.appendChild(
+        amount
+      );
 
     }
 
 
     $("ordersList")
-      .appendChild(item);
+      .appendChild(
+        item
+      );
 
   });
 
@@ -2888,12 +3704,12 @@ function renderOrders(orders){
 
 
 /* =========================================================
-   WHATSAPP CONTACT
+   WHATSAPP
 ========================================================= */
 
-function contact(type){
+function whatsapp(type){
 
-  const room =
+  const room=
     $("roomNo")
       .value
       .trim();
@@ -2901,11 +3717,9 @@ function contact(type){
 
   if(!room){
 
-    showToast(
+    toast(
       "Enter your room number first."
     );
-
-    $("roomNo").focus();
 
     return;
 
@@ -2917,15 +3731,16 @@ function contact(type){
 
   if(type==="front"){
 
-    phone =
+    phone=
       hotel?.whatsapp_front ||
       hotel?.front_desk_phone ||
+      hotel?.whatsapp ||
       "";
 
   }
   else{
 
-    phone =
+    phone=
       hotel?.whatsapp_house ||
       hotel?.housekeeping_phone ||
       "";
@@ -2933,15 +3748,18 @@ function contact(type){
   }
 
 
-  phone =
+  phone=
     String(phone)
-      .replace(/[^\d]/g,"");
+      .replace(
+        /[^\d]/g,
+        ""
+      );
 
 
   if(!phone){
 
-    showToast(
-      "This hotel has not configured its WhatsApp number yet."
+    toast(
+      "This hotel has not configured this WhatsApp contact yet."
     );
 
     return;
@@ -2949,17 +3767,19 @@ function contact(type){
   }
 
 
-  const message =
+  const message=
     type==="front"
-      ? `Hi, I am GuestHub guest in Room ${room}. I need assistance from the front desk.`
-      : `Hi, I am GuestHub guest in Room ${room}. I need housekeeping assistance.`;
+      ? `Hi, I am a GuestHub guest in Room ${room}. I need assistance from the front desk.`
+      : `Hi, I am a GuestHub guest in Room ${room}. I need housekeeping assistance.`;
 
 
-  const url =
+  const url=
     "https://wa.me/"+
     phone+
     "?text="+
-    encodeURIComponent(message);
+    encodeURIComponent(
+      message
+    );
 
 
   window.open(
@@ -2972,28 +3792,96 @@ function contact(type){
 
 
 /* =========================================================
-   HELP MODAL
+   QUICK CATEGORY FILTER
 ========================================================= */
 
-function openHelp(){
+function filterCategory(cat){
 
-  openModal("helpModal");
+  const searchInput=
+    $("searchService");
+
+
+  searchInput.value=
+    cat;
+
+
+  search();
+
+
+  document
+    .querySelector(
+      "#serviceArea"
+    )
+    ?.scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
 
 }
 
 
 /* =========================================================
-   LOCAL STORAGE LISTENERS
+   NAV
+========================================================= */
+
+document
+  .querySelectorAll(
+    ".navBtn"
+  )
+  .forEach(btn=>{
+
+    btn.addEventListener(
+      "click",
+      ()=>{
+
+        document
+          .querySelectorAll(
+            ".navBtn"
+          )
+          .forEach(
+            b=>
+              b.classList.remove(
+                "active"
+              )
+          );
+
+        btn.classList.add(
+          "active"
+        );
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   INPUT RESTORATION
+========================================================= */
+
+$("guestName").value=
+  localStorage.getItem(
+    "guest_name"
+  ) || "";
+
+$("guestPhone").value=
+  localStorage.getItem(
+    "guest_phone"
+  ) || "";
+
+
+/* =========================================================
+   INPUT EVENTS
 ========================================================= */
 
 $("guestName")
   .addEventListener(
     "input",
-    event=>{
+    e=>{
 
       localStorage.setItem(
         "guest_name",
-        event.target.value
+        e.target.value
       );
 
     }
@@ -3003,14 +3891,14 @@ $("guestName")
 $("roomNo")
   .addEventListener(
     "input",
-    event=>{
+    e=>{
 
       localStorage.setItem(
         "last_room",
-        event.target.value
+        e.target.value
       );
 
-      updateRoomBadge();
+      updateRoom();
 
     }
   );
@@ -3019,11 +3907,11 @@ $("roomNo")
 $("guestPhone")
   .addEventListener(
     "input",
-    event=>{
+    e=>{
 
       localStorage.setItem(
         "guest_phone",
-        event.target.value
+        e.target.value
       );
 
     }
@@ -3033,39 +3921,38 @@ $("guestPhone")
 $("searchService")
   .addEventListener(
     "input",
-    searchServices
+    search
   );
 
 
 /* =========================================================
-   BUTTON EVENTS
+   BUTTONS
 ========================================================= */
 
-$("closeOrderBtn")
+$("roomServiceBtn")
   .addEventListener(
     "click",
-    ()=>closeModal("orderModal")
+    ()=>{
+      filterCategory("food");
+    }
   );
 
 
-$("cancelOrderBtn")
+$("taxiBtn")
   .addEventListener(
     "click",
-    ()=>closeModal("orderModal")
+    ()=>{
+      filterCategory("taxi");
+    }
   );
 
 
-$("confirmBtn")
+$("tourBtn")
   .addEventListener(
     "click",
-    placeOrder
-  );
-
-
-$("successCloseBtn")
-  .addEventListener(
-    "click",
-    ()=>closeModal("successModal")
+    ()=>{
+      filterCategory("tour");
+    }
   );
 
 
@@ -3076,69 +3963,136 @@ $("ordersBtn")
   );
 
 
-$("closeOrdersBtn")
+$("navOrders")
   .addEventListener(
     "click",
-    ()=>closeModal("ordersModal")
+    viewOrders
   );
 
 
-$("helpBtn")
+$("navHelp")
   .addEventListener(
     "click",
-    openHelp
+    ()=>{
+      openModal(
+        "helpModal"
+      );
+    }
   );
 
 
-$("closeHelpBtn")
+$("closeOrder")
   .addEventListener(
     "click",
-    ()=>closeModal("helpModal")
+    ()=>{
+      closeModal(
+        "orderModal"
+      );
+    }
   );
 
 
-$("helpDoneBtn")
+$("cancelOrder")
   .addEventListener(
     "click",
-    ()=>closeModal("helpModal")
+    ()=>{
+      closeModal(
+        "orderModal"
+      );
+    }
+  );
+
+
+$("confirmOrder")
+  .addEventListener(
+    "click",
+    placeOrder
+  );
+
+
+$("successDone")
+  .addEventListener(
+    "click",
+    ()=>{
+      closeModal(
+        "successModal"
+      );
+    }
+  );
+
+
+$("closeOrders")
+  .addEventListener(
+    "click",
+    ()=>{
+      closeModal(
+        "ordersModal"
+      );
+    }
+  );
+
+
+$("closeHelp")
+  .addEventListener(
+    "click",
+    ()=>{
+      closeModal(
+        "helpModal"
+      );
+    }
+  );
+
+
+$("helpDone")
+  .addEventListener(
+    "click",
+    ()=>{
+      closeModal(
+        "helpModal"
+      );
+    }
   );
 
 
 $("frontDeskBtn")
   .addEventListener(
     "click",
-    ()=>contact("front")
+    ()=>{
+      whatsapp("front");
+    }
   );
 
 
 $("housekeepingBtn")
   .addEventListener(
     "click",
-    ()=>contact("house")
+    ()=>{
+      whatsapp("house");
+    }
   );
 
 
 /* =========================================================
-   CLOSE MODAL WHEN BACKDROP IS CLICKED
+   BACKDROP
 ========================================================= */
 
 document
-  .querySelectorAll(".modal")
+  .querySelectorAll(
+    ".modal"
+  )
   .forEach(modal=>{
 
     modal.addEventListener(
       "click",
-      event=>{
+      e=>{
 
         if(
-          event.target===modal
+          e.target===modal
         ){
 
-          modal.classList.remove(
-            "active"
+          closeModal(
+            modal.id
           );
-
-          document.body.style.overflow="";
 
         }
 
@@ -3149,14 +4103,16 @@ document
 
 
 /* =========================================================
-   ESCAPE KEY
+   ESCAPE
 ========================================================= */
 
 document.addEventListener(
   "keydown",
-  event=>{
+  e=>{
 
-    if(event.key==="Escape"){
+    if(
+      e.key==="Escape"
+    ){
 
       closeAllModals();
 
@@ -3167,26 +4123,10 @@ document.addEventListener(
 
 
 /* =========================================================
-   RESTORE GUEST DETAILS
+   START
 ========================================================= */
 
-$("guestName").value =
-  localStorage.getItem(
-    "guest_name"
-  ) || "";
-
-
-$("guestPhone").value =
-  localStorage.getItem(
-    "guest_phone"
-  ) || "";
-
-
-/* =========================================================
-   START APPLICATION
-========================================================= */
-
-initHotel();
+init();
 
 </script>
 
