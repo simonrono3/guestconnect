@@ -531,6 +531,63 @@ button{
 
 } 
 
+/* Fix mobile centering */
+
+.hero,
+.hero *{
+  text-align:center;
+}
+
+.hero h1{
+  display:block;
+  width:100%;
+  max-width:700px;
+  margin:0 auto;
+}
+
+.hero p{
+  width:100%;
+  max-width:600px;
+  margin:20px auto;
+}
+
+.search-wrap{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.dashboard-stats{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+@media(max-width:768px){
+
+  .header{
+    flex-direction:column;
+    gap:15px;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .header-right{
+    width:100%;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .hero h1{
+    font-size:44px;
+    text-align:center;
+  }
+
+  .hero p{
+    font-size:18px;
+    text-align:center;
+  }
+
+}
+  
   
 </style>
 </head>
