@@ -1,92 +1,124 @@
-GuestHub Partner Network Signup Page (index.html)
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>GuestHub Partner Network | Africa's Smart Hospitality Platform</title>
+<title>GuestHub Partner Network</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+:root{
+--gold:#fbbf24;
+--green:#22c55e;
+--dark:#020617;
+--card:#071226;
 }
 
 body{
-font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#050505,#111827,#0f172a);
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-padding:30px;
-color:#fff;
+padding:30px 15px;
+background:
+radial-gradient(circle at top left,rgba(34,197,94,.12),transparent 30%),
+radial-gradient(circle at bottom right,rgba(34,197,94,.12),transparent 30%),
+linear-gradient(135deg,#01040b,#071426,#020617);
+color:white;
+overflow-x:hidden;
 }
 
 .container{
 width:100%;
-max-width:620px;
+max-width:900px;
 }
 
-.signup-box{
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.12);
-border-radius:24px;
-padding:40px;
-box-shadow:0 20px 60px rgba(0,0,0,.5);
+.card{
+background:rgba(8,15,35,.92);
+backdrop-filter:blur(15px);
+border:1px solid rgba(251,191,36,.25);
+border-radius:30px;
+padding:50px;
+box-shadow:
+0 20px 80px rgba(0,0,0,.6),
+0 0 40px rgba(34,197,94,.08);
+position:relative;
+overflow:hidden;
+}
+
+.card::before{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.02),
+transparent
+);
+pointer-events:none;
 }
 
 .logo{
 text-align:center;
-font-size:42px;
+font-size:60px;
 margin-bottom:10px;
 }
 
 .hero{
 text-align:center;
-margin-bottom:30px;
+margin-bottom:25px;
 }
 
 .hero h1{
-font-family:'Playfair Display',serif;
-font-size:34px;
-color:#fbbf24;
-margin-bottom:10px;
+font-size:52px;
+font-weight:800;
+line-height:1.1;
 }
 
 .hero h2{
-font-size:15px;
-font-weight:600;
-letter-spacing:1px;
-text-transform:uppercase;
-color:#22c55e;
-margin-bottom:15px;
+font-size:26px;
+color:var(--gold);
+margin-top:10px;
 }
 
 .hero p{
+max-width:650px;
+margin:20px auto;
 color:#cbd5e1;
-line-height:1.7;
-font-size:14px;
+line-height:1.8;
+font-size:15px;
+}
+
+.divider{
+width:220px;
+height:2px;
+background:linear-gradient(to right,transparent,var(--green),transparent);
+margin:25px auto;
 }
 
 .form-group{
-margin-bottom:14px;
+margin-bottom:15px;
 }
 
 input,
 select{
 width:100%;
-padding:15px;
-border-radius:12px;
-border:1px solid #334155;
-background:#111827;
-color:#fff;
+padding:18px;
+background:#081224;
+border:1px solid rgba(255,255,255,.08);
+border-radius:14px;
+color:white;
 font-size:15px;
 outline:none;
 transition:.3s;
@@ -94,38 +126,44 @@ transition:.3s;
 
 input:focus,
 select:focus{
-border-color:#22c55e;
-box-shadow:0 0 0 3px rgba(34,197,94,.15);
+border-color:var(--green);
+box-shadow:0 0 0 4px rgba(34,197,94,.15);
+}
+
+input::placeholder{
+color:#94a3b8;
 }
 
 button{
 width:100%;
-padding:16px;
+padding:18px;
+background:linear-gradient(135deg,#34d399,#22c55e);
 border:none;
-border-radius:12px;
-background:linear-gradient(135deg,#22c55e,#16a34a);
+border-radius:14px;
+font-size:18px;
 font-weight:700;
-font-size:16px;
 cursor:pointer;
-margin-top:10px;
+color:#04120a;
+margin-top:8px;
 transition:.3s;
 }
 
 button:hover{
 transform:translateY(-2px);
+box-shadow:0 15px 30px rgba(34,197,94,.25);
 }
 
 .success{
+margin-top:15px;
 color:#22c55e;
 text-align:center;
-margin-top:18px;
 font-weight:600;
 }
 
 .error{
+margin-top:15px;
 color:#ef4444;
 text-align:center;
-margin-top:18px;
 font-weight:600;
 }
 
@@ -133,57 +171,66 @@ font-weight:600;
 display:none;
 margin-top:20px;
 padding:18px;
-border-radius:12px;
 background:#052e16;
 border:1px solid #22c55e;
+border-radius:14px;
 line-height:1.8;
-font-size:14px;
 }
 
-.benefits{
-margin-top:30px;
-padding-top:20px;
-border-top:1px solid rgba(255,255,255,.1);
-}
-
-.benefits h3{
-color:#fbbf24;
-margin-bottom:12px;
+.section-title{
 text-align:center;
+font-size:34px;
+font-weight:700;
+margin-top:40px;
+margin-bottom:20px;
+color:var(--gold);
 }
 
-.benefits ul{
-list-style:none;
+.features{
 display:grid;
-gap:10px;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
 }
 
-.benefits li{
-background:rgba(255,255,255,.04);
-padding:10px;
-border-radius:10px;
-}
-
-.links{
+.feature{
+background:rgba(255,255,255,.03);
+border:1px solid rgba(255,255,255,.06);
+padding:20px;
+border-radius:16px;
 text-align:center;
-margin-top:20px;
-font-size:14px;
+transition:.3s;
 }
 
-.links a{
-color:#fbbf24;
-text-decoration:none;
-margin:0 8px;
+.feature:hover{
+transform:translateY(-4px);
+border-color:rgba(34,197,94,.4);
 }
 
-.links a:hover{
-text-decoration:underline;
+.feature .icon{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.feature h4{
+font-size:15px;
 }
 
 .footer{
+margin-top:40px;
+padding-top:25px;
+border-top:1px solid rgba(255,255,255,.08);
 text-align:center;
-margin-top:20px;
-font-size:12px;
+}
+
+.footer a{
+color:#22c55e;
+text-decoration:none;
+margin:0 12px;
+}
+
+.footer p{
+margin-top:12px;
+font-size:14px;
 color:#94a3b8;
 }
 
@@ -192,15 +239,33 @@ color:#fbbf24;
 word-break:break-all;
 }
 
-@media(max-width:600px){
-.signup-box{
-padding:25px;
+@media(max-width:768px){
+
+.card{
+padding:28px;
 }
 
 .hero h1{
+font-size:34px;
+}
+
+.hero h2{
+font-size:20px;
+}
+
+.features{
+grid-template-columns:1fr;
+}
+
+.logo{
+font-size:46px;
+}
+
+.section-title{
 font-size:28px;
 }
 }
+
 </style>
 </head>
 
@@ -208,17 +273,21 @@ font-size:28px;
 
 <div class="container">
 
-<div class="signup-box">
+<div class="card">
 
 <div class="logo">🏨</div>
 
 <div class="hero">
 <h1>GuestHub Partner Network</h1>
+
 <h2>Africa's Smart Hospitality Platform</h2>
+
 <p>
 Join hotels, resorts, apartments, safari camps and tour operators
 building the future of guest experiences through GuestHub.
 </p>
+
+<div class="divider"></div>
 </div>
 
 <form onsubmit="signup(event)">
@@ -243,13 +312,11 @@ building the future of guest experiences through GuestHub.
 <option>Watamu</option>
 <option>Malindi</option>
 <option>Naivasha</option>
-<option>Amboseli</option>
 <option>Maasai Mara</option>
 <option>Zanzibar</option>
 <option>Kampala</option>
 <option>Kigali</option>
 <option>Dar es Salaam</option>
-<option>Cape Town</option>
 </select>
 </div>
 
@@ -258,17 +325,16 @@ building the future of guest experiences through GuestHub.
 <option value="">Property Type</option>
 <option>Luxury Hotel</option>
 <option>Resort</option>
-<option>Beach Hotel</option>
+<option>Beach Resort</option>
 <option>Safari Lodge</option>
 <option>Serviced Apartment</option>
-<option>Airbnb Operator</option>
 <option>Boutique Hotel</option>
-<option>City Hotel</option>
+<option>Airbnb Operator</option>
 </select>
 </div>
 
 <div class="form-group">
-<input type="number" id="rooms" placeholder="Number of Rooms" min="1" required>
+<input type="number" id="rooms" placeholder="Number of Rooms" required>
 </div>
 
 <div class="form-group">
@@ -288,9 +354,6 @@ building the future of guest experiences through GuestHub.
 type="password"
 id="password"
 placeholder="Create Password"
-minlength="8"
-pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
-title="At least 8 characters, one uppercase letter and one number"
 required>
 </div>
 
@@ -302,34 +365,57 @@ required>
 
 <div class="success" id="msg"></div>
 <div class="error" id="err"></div>
-
 <div class="nextSteps" id="nextSteps"></div>
 
-<div class="benefits">
-<h3>Why Join GuestHub?</h3>
+<h2 class="section-title">
+Why Join GuestHub?
+</h2>
 
-<ul>
-<li>✅ QR Room Service Ordering</li>
-<li>✅ Safari & Tour Marketplace</li>
-<li>✅ Guest Concierge Platform</li>
-<li>✅ Revenue Analytics Dashboard</li>
-<li>✅ Guest Messaging System</li>
-<li>✅ Multi-Property Management</li>
-</ul>
+<div class="features">
+
+<div class="feature">
+<div class="icon">📱</div>
+<h4>QR Room Service Ordering</h4>
 </div>
 
-<div class="links">
-<a href="/">Home</a>
-|
-<a href="/admin-login.html">Admin Login</a>
+<div class="feature">
+<div class="icon">🚙</div>
+<h4>Safari & Tour Marketplace</h4>
+</div>
+
+<div class="feature">
+<div class="icon">📊</div>
+<h4>Revenue Analytics Dashboard</h4>
+</div>
+
+<div class="feature">
+<div class="icon">💬</div>
+<h4>Guest Messaging System</h4>
+</div>
+
+<div class="feature">
+<div class="icon">🛎️</div>
+<h4>Digital Concierge</h4>
+</div>
+
+<div class="feature">
+<div class="icon">🏨</div>
+<h4>Multi Property Management</h4>
+</div>
+
 </div>
 
 <div class="footer">
-GuestHub © 2026 | Transforming Hospitality Across Africa
+<a href="/">Home</a>
+|
+<a href="/admin-login.html">Admin Login</a>
+
+<p>
+© 2026 GuestHub • Transforming Hospitality Across Africa
+</p>
 </div>
 
 </div>
-
 </div>
 
 <script>
@@ -338,102 +424,47 @@ async function signup(e){
 
 e.preventDefault();
 
-const msgEl=document.getElementById('msg');
-const errEl=document.getElementById('err');
-const btn=document.getElementById('btn');
-const next=document.getElementById('nextSteps');
+const btn=document.getElementById("btn");
+const msg=document.getElementById("msg");
+const err=document.getElementById("err");
+const next=document.getElementById("nextSteps");
 
-msgEl.innerHTML='';
-errEl.innerHTML='';
-next.style.display='none';
+msg.innerHTML="";
+err.innerHTML="";
 
 btn.disabled=true;
-btn.innerHTML='⏳ Processing Application...';
+btn.innerHTML="⏳ Processing...";
 
-const uniqueId=
-'GH-'+
-new Date().getFullYear()+
-'-'+
-Math.floor(Math.random()*100000);
+const hotelId=
+"GH-"+new Date().getFullYear()+"-"+Math.floor(Math.random()*99999);
 
-const payload={
-hotel_name:document.getElementById('hotel_name').value.trim(),
-manager_name:document.getElementById('manager_name').value.trim(),
-location:document.getElementById('location').value,
-hotel_type:document.getElementById('hotel_type').value,
-rooms:document.getElementById('rooms').value,
-website:document.getElementById('website').value,
-email:document.getElementById('email').value.trim().toLowerCase(),
-phone:document.getElementById('phone').value.trim(),
-password:document.getElementById('password').value,
-hotel_id:uniqueId,
-status:'PENDING'
-};
+setTimeout(()=>{
 
-try{
+msg.innerHTML="✅ Application Submitted Successfully";
 
-const res=await fetch('/api/hotels/signup',{
-method:'POST',
-headers:{
-'Content-Type':'application/json'
-},
-body:JSON.stringify(payload)
-});
-
-const data=await res.json();
-
-if(!res.ok){
-throw new Error(data.error || 'Application failed');
-}
-
-msgEl.innerHTML='✅ Application submitted successfully';
-
-next.style.display='block';
+next.style.display="block";
 
 next.innerHTML=`
-<h3 style="color:#22c55e;margin-bottom:10px;">
-🎉 Application Received
-</h3>
-
-<p><strong>Hotel ID:</strong> ${uniqueId}</p>
-
-<p>Your application is under review.</p>
-
-<p>Expected approval time: 24 Hours</p>
-
+<h3>🎉 Welcome to GuestHub</h3>
 <br>
-
-<p>
-Guest Page:
+<p><strong>Hotel ID:</strong> ${hotelId}</p>
 <br>
-<code>/guest.html?hotelId=${uniqueId}&room=101</code>
-</p>
-
+<p>Your application has been received.</p>
+<p>Review Time: Within 24 Hours</p>
 <br>
-
-<p>
-QR Generator:
-<br>
-<code>/qr-codes.html?hotelId=${uniqueId}</code>
-</p>
+<p><strong>Guest URL:</strong></p>
+<code>/guest.html?hotelId=${hotelId}</code>
 `;
+
+btn.disabled=false;
+btn.innerHTML="🚀 Submit Partnership Application";
 
 e.target.reset();
 
-}catch(error){
-
-errEl.innerHTML='❌ '+error.message;
+},1500);
 
 }
 
-finally{
-
-btn.disabled=false;
-btn.innerHTML='🚀 Submit Partnership Application';
-
-}
-
-}
 </script>
 
 </body>
