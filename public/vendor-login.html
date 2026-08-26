@@ -1,91 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor Login - GuestHub</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>GuestHub Vendor Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-:root{--lime:#c6ff00;--bg:#080808;--card:#141414;--border:#222}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;display:grid;place-items:center;min-height:100vh;padding:16px}
-.box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px}
-.logo{font-family:Space Grotesk;font-weight:800;font-size:22px;text-align:center;margin-bottom:6px}.logo span{color:var(--lime)}
-.sub{color:#888;font-size:12px;text-align:center;margin-bottom:18px;font-weight:700}
-label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:12px;display:block}
-input{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px}
-input:focus{border-color:var(--lime);outline:none}
-.btn{width:100%;background:var(--lime);color:#000;padding:15px;border:none;border-radius:12px;font-weight:900;font-size:15px;margin-top:16px;cursor:pointer}
-.btn2{width:100%;background:#1f1f1f;color:#fff;padding:13px;border:1px solid #333;border-radius:12px;font-weight:800;font-size:13px;margin-top:10px;cursor:pointer}
-.alert{padding:10px;border-radius:10px;font-size:12px;font-weight:700;margin-top:12px;display:none}
-.alert.ok{background:#0a2a14;border:1px solid #14532d;color:#22c55e}
-.alert.err{background:#2a0a0a;border:1px solid #7f1d1d;color:#ff6b6b}
+
+:root{
+    --lime:#c6ff00;
+    --bg:#050505;
+    --card:rgba(20,20,20,.75);
+    --border:rgba(255,255,255,.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+    background:
+    radial-gradient(circle at top left,#1c1c1c 0%,#050505 50%),
+    radial-gradient(circle at bottom right,#101010 0%,#050505 50%);
+    color:white;
+    font-family:Inter,sans-serif;
+}
+
+.login-card{
+    width:100%;
+    max-width:440px;
+
+    background:var(--card);
+    backdrop-filter:blur(20px);
+
+    border:1px solid var(--border);
+
+    border-radius:28px;
+    padding:34px;
+    box-shadow:
+    0 0 40px rgba(0,0,0,.4),
+    0 0 80px rgba(198,255,0,.05);
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:12px;
+}
+
+.logo h1{
+    font-family:"Space Grotesk";
+    font-size:32px;
+    font-weight:800;
+}
+
+.logo span{
+    color:var(--lime);
+}
+
+.subtitle{
+    text-align:center;
+    color:#8d8d8d;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:28px;
+}
+
+.badges{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:28px;
+}
+
+.badge{
+    background:#111;
+    border:1px solid #222;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:11px;
+    color:#aaa;
+    font-weight:700;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    margin-top:18px;
+
+    font-size:12px;
+    font-weight:800;
+    color:#999;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.input{
+    width:100%;
+    background:#0b0b0b;
+    border:1px solid #262626;
+    color:white;
+    padding:15px;
+    border-radius:14px;
+    font-size:15px;
+    transition:.25s;
+}
+
+.input:focus{
+    outline:none;
+    border-color:var(--lime);
+    box-shadow:0 0 0 4px rgba(198,255,0,.08);
+}
+
+.password-wrap{
+    position:relative;
+}
+
+.eye{
+    position:absolute;
+    right:14px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#888;
+    font-size:13px;
+}
+
+.options{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:14px;
+}
+
+.options label{
+    margin:0;
+    text-transform:none;
+    letter-spacing:0;
+    font-size:13px;
+    color:#888;
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.options a{
+    color:var(--lime);
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+}
+
+.btn{
+    width:100%;
+    margin-top:22px;
+
+    border:none;
+    cursor:pointer;
+
+    background:var(--lime);
+    color:black;
+
+    padding:16px;
+
+    border-radius:14px;
+
+    font-weight:900;
+    font-size:15px;
+
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-secondary{
+    width:100%;
+    margin-top:12px;
+
+    background:#121212;
+    color:white;
+
+    border:1px solid #2c2c2c;
+
+    padding:15px;
+    border-radius:14px;
+
+    cursor:pointer;
+    font-weight:700;
+}
+
+.alert{
+    display:none;
+    margin-bottom:18px;
+    padding:12px;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:700;
+}
+
+.ok{
+    background:#0d2a15;
+    color:#4ade80;
+    border:1px solid #166534;
+}
+
+.err{
+    background:#2a0d0d;
+    color:#ff7b7b;
+    border:1px solid #7f1d1d;
+}
+
+.footer{
+    text-align:center;
+    margin-top:22px;
+    color:#666;
+    font-size:12px;
+    line-height:1.7;
+}
+
+.footer strong{
+    color:#999;
+}
+
 </style>
 </head>
+
 <body>
-<div class="box">
-<div class="logo">GuestHub <span>Vendor</span></div>
-<div class="sub">Login to get jobs from 5-star hotels</div>
+
+<div class="login-card">
+
+<div class="logo">
+<h1>GuestHub <span>Vendor</span></h1>
+</div>
+
+<div class="subtitle">
+Access hospitality opportunities from hotels,
+resorts and premium accommodation partners.
+</div>
+
+<div class="badges">
+<div class="badge">Verified Hotels</div>
+<div class="badge">Secure Portal</div>
+<div class="badge">Trusted Vendors</div>
+</div>
 
 <div id="msg" class="alert"></div>
 
-<label>Email</label>
-<input id="email" type="email" placeholder="kevin@gmail.com" required>
+<label>Email Address</label>
+<input
+id="email"
+class="input"
+type="email"
+placeholder="name@example.com">
 
 <label>Password</label>
-<input id="password" type="password" placeholder="Your password" required>
 
-<button class="btn" id="loginBtn" onclick="login()">🔓 Login → Dashboard</button>
-<button class="btn2" onclick="location.href='/vendor-signup.html'">Don't have account? Join & Earn Ksh 80k</button>
-<button class="btn2" style="border:none;background:transparent;color:#666" onclick="location.href='/'">← Back to Home</button>
+<div class="password-wrap">
+<input
+id="password"
+class="input"
+type="password"
+placeholder="Enter your password">
 
-<div style="margin-top:14px;text-align:center;color:#555;font-size:11px">
-Demo: Use email you signed up with<br>
-Status PENDING = can login but no jobs yet<br>
-Status APPROVED = jobs flowing
+<span class="eye" onclick="togglePassword()">Show</span>
 </div>
+
+<div class="options">
+<label>
+<input type="checkbox">
+Remember me
+</label>
+
+<a href="#">Forgot Password?</a>
+</div>
+
+<button
+class="btn"
+id="loginBtn"
+onclick="login()">
+Sign In to Dashboard
+</button>
+
+<button
+class="btn-secondary"
+onclick="location.href='/vendor-signup.html'">
+Create Vendor Account
+</button>
+
+<button
+class="btn-secondary"
+onclick="location.href='/'">
+Back to Home
+</button>
+
+<div class="footer">
+<strong>GuestHub Vendor Network</strong><br>
+Pending Review → Account active but awaiting approval.<br>
+Approved Vendors → Eligible for hotel opportunities.
+</div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+
 <script>
-const supa = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-function show(t,ok){
- const m=document.getElementById('msg'); m.style.display='block'; m.innerText=t;
- m.className='alert '+(ok?'ok':'err');
+
+const supa = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+function show(message,success){
+
+const box=document.getElementById("msg");
+
+box.style.display="block";
+box.innerHTML=message;
+
+box.className=
+"alert "+(success ? "ok":"err");
+}
+
+function togglePassword(){
+
+const p=document.getElementById("password");
+
+p.type =
+p.type==="password"
+? "text"
+: "password";
 }
 
 async function login(){
- const email=document.getElementById('email').value.trim();
- const pass=document.getElementById('password').value.trim();
- if(!email||!pass) return show('Enter email + password','');
- const btn=document.getElementById('loginBtn'); btn.innerText='⏳ Checking...'; btn.disabled=true;
- try{
-  const {data,error} = await supa.from('vendors').select('*').eq('email',email).single();
-  if(error || !data) throw new Error('Vendor not found. Sign up first.');
-  if(data.password !== pass) throw new Error('Wrong password mkuu.');
 
-  // Save session
-  localStorage.setItem('vendor_email', data.email);
-  localStorage.setItem('vendor_name', data.full_name);
-  localStorage.setItem('vendor_city', data.city);
-  localStorage.setItem('vendor_services', JSON.stringify(data.services||[]));
-  localStorage.setItem('vendor_status', data.status);
-  localStorage.setItem('vendor_id', data.id);
+const email=
+document.getElementById("email")
+.value.trim();
 
-  show('✅ Welcome '+data.full_name+'! Status: '+data.status.toUpperCase()+' → Loading dashboard...',true);
+const pass=
+document.getElementById("password")
+.value.trim();
 
-  setTimeout(()=>location.href='/vendor-dashboard.html',800);
+if(!email || !pass){
 
- }catch(err){
-  show('❌ '+err.message,'');
-  btn.innerText='🔓 Login → Dashboard'; btn.disabled=false;
- }
+show(
+"Please enter your email and password.",
+false
+);
+
+return;
 }
 
-// Auto fill if just signed up
+const btn=
+document.getElementById("loginBtn");
+
+btn.disabled=true;
+btn.innerHTML="Signing In...";
+
+try{
+
+const {data,error} =
+await supa
+.from("vendors")
+.select("*")
+.eq("email",email)
+.single();
+
+if(error || !data){
+
+throw new Error(
+"Vendor account not found."
+);
+}
+
+if(data.password !== pass){
+
+throw new Error(
+"Incorrect password."
+);
+}
+
+localStorage.setItem(
+"vendor_email",
+data.email
+);
+
+localStorage.setItem(
+"vendor_name",
+data.full_name
+);
+
+localStorage.setItem(
+"vendor_city",
+data.city
+);
+
+localStorage.setItem(
+"vendor_services",
+JSON.stringify(
+data.services || []
+)
+);
+
+localStorage.setItem(
+"vendor_status",
+data.status
+);
+
+localStorage.setItem(
+"vendor_id",
+data.id
+);
+
+show(
+"Welcome back, "
++ data.full_name +
+". Redirecting to dashboard...",
+true
+);
+
+setTimeout(()=>{
+location.href=
+"/vendor-dashboard.html";
+},1000);
+
+}
+catch(err){
+
+show(err.message,false);
+
+btn.disabled=false;
+btn.innerHTML=
+"Sign In to Dashboard";
+}
+
+}
+
 window.onload=()=>{
- const e=localStorage.getItem('vendor_email');
- if(e) document.getElementById('email').value=e;
+
+const email=
+localStorage.getItem(
+"vendor_email"
+);
+
+if(email){
+
+document.getElementById(
+"email"
+).value=email;
 }
+
+}
+
 </script>
+
 </body>
 </html>
