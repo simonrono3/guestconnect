@@ -16,6 +16,28 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// --- FIX: CONFIG.JS ROUTE - ADD HAPA ---
+app.get('/config.js', (req, res) => {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_KEY;
+  
+  if (!url || !key) {
+    return res.type('application/javascript').send(`console.error("Missing env vars");`);
+  }
+  
+  res.type('application/javascript');
+  res.send(`
+    const SUPABASE_URL = "${url}";
+    const SUPABASE_KEY = "${key}";
+    const SUPABASE_ANON_KEY = "${key}";
+    window.SUPABASE_URL = "${url}";
+    window.SUPABASE_KEY = "${key}";
+    window.SUPABASE_ANON_KEY = "${key}";
+  `);
+});
+// --- END FIX ---
+
+
 /* =========================================================
    CONFIG
 ========================================================= */
