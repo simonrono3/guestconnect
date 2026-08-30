@@ -1,57 +1,101 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotel Login - GuestHub8.5</title>
+<title>Hotel Login - GuestHub</title>
 <style>
 body{background:#0a0a0a; color:#fff; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;}
 .login-box{background:#1a1a1a; padding:30px; border-radius:15px; border:2px solid #B8860B; width:90%; max-width:400px;}
 h1{text-align:center; color:#B8860B; margin-bottom:20px;}
 label{display:block; margin-top:15px; color:#DAA520; font-weight:bold;}
-input{width:100%; padding:12px; margin-top:5px; background:#222; border:1px solid #333; border-radius:8px; color:#fff;}
+input{width:100%; padding:12px; margin-top:5px; background:#222; border:1px solid #333; border-radius:8px; color:#fff; box-sizing:border-box;}
 button{background:#B8860B; color:#000; padding:15px; width:100%; border:none; border-radius:10px; font-weight:bold; font-size:16px; margin-top:20px; cursor:pointer;}
 button:hover{background:#DAA520;}
+button:disabled{opacity:.6; cursor:not-allowed;}
 .note{font-size:12px; color:#aaa; text-align:center; margin-top:15px;}
+.msg{margin-top:14px; padding:10px; border-radius:8px; font-size:13px; font-weight:700; display:none; text-align:center;}
+.msg.err{display:block; background:#2a0d0d; color:#ff7b7b; border:1px solid #7f1d1d;}
+.msg.ok{display:block; background:#0d2a15; color:#4ade80; border:1px solid #166534;}
 </style>
 </head>
 <body>
 
 <div class="login-box">
   <h1>🏨 Hotel Dashboard Login</h1>
-  
+
   <form onsubmit="login(event)">
-    <label>Hotel Email</label>
-    <input type="email" id="email" required placeholder="gm@prideinn.co.ke">
+    <label>Hotel ID</label>
+    <input type="text" id="hotelId" required placeholder="e.g. grandhotel">
 
     <label>Password</label>
     <input type="password" id="password" required placeholder="********">
 
-    <button type="submit">Login to Dashboard</button>
+    <button type="submit" id="btn">Login to Dashboard</button>
   </form>
-  
-  <p class="note">Don't have an account? <a href="/" style="color:#00FF7F;">Contact GuestHub8.5</a></p>
+
+  <div class="msg" id="msg"></div>
+
+  <p class="note">Your Hotel ID was shown when you signed up. Don't have an account? <a href="/hotel-signup.html" style="color:#00FF7F;">Register your hotel</a></p>
 </div>
 
 <script>
-function login(e){
+
+async function login(e){
+
   e.preventDefault();
-  // Kwa sasa tuna-demo. Baadaye tuna-connect na database
-  alert("Login Successful! 🎉 \nRedirecting to Hotel Dashboard...");
-  window.location.href = '/hotel-dashboard.html';
+
+  const btn = document.getElementById("btn");
+  const msg = document.getElementById("msg");
+
+  const hotelId = document.getElementById("hotelId").value.trim();
+  const password = document.getElementById("password").value;
+
+  msg.className = "msg";
+  msg.innerHTML = "";
+
+  btn.disabled = true;
+  btn.innerHTML = "Signing In...";
+
+  try{
+
+    const res = await fetch("/api/hotel/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ hotelId, password })
+    });
+
+    const data = await res.json();
+
+    if(!res.ok || !data.ok){
+      throw new Error(data.error || "Login failed. Please try again.");
+    }
+
+    localStorage.setItem("hotel_token", data.token);
+    localStorage.setItem("hotel_id", data.hotel.hotel_id || data.hotel.id);
+    localStorage.setItem("hotel_name", data.hotel.name || data.hotel.hotel_name || "");
+
+    msg.className = "msg ok";
+    msg.innerHTML = "Welcome back! Redirecting...";
+
+    setTimeout(()=>{
+      location.href = "/hotel-dashboard.html";
+    }, 700);
+
+  }catch(ex){
+
+    msg.className = "msg err";
+    msg.innerHTML = ex.message;
+
+    btn.disabled = false;
+    btn.innerHTML = "Login to Dashboard";
+  }
+
 }
+
 </script>
 
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script> <!-- Weka hii kwanza -->
-<script>
-    // Code yako yote ya supabase inaenda hapa chini
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-</script>
-
-
-
-  
 </body>
 </html>
+
