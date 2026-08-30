@@ -1,3 +1,7 @@
+Gmail	Simon rono <simonrono3@gmail.com>
+Server.js new
+Simon rono <simonrono3@gmail.com>	Sun, Aug 30, 2026 at 6:30 PM
+To: Simon rono <simonrono3@gmail.com>
 import express from "express";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
@@ -47,6 +51,32 @@ const PORT = process.env.PORT || 10000;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
+/*
+  SUPABASE_KEY is the anon/public key — it gets served directly to
+  every visitor's browser via /config.js above, so it must NEVER be
+  the service_role key.
+
+  SUPABASE_SERVICE_KEY is a separate, secret key used only here on
+  the server for privileged operations (inserting hotel signups,
+  approving hotels, etc.) that must bypass Row Level Security.
+  Set this in Render's environment variables — it's the
+  "service_role" key from Supabase (Project Settings > API).
+*/
+
+const SUPABASE_SERVICE_KEY =
+  process.env.SUPABASE_SERVICE_KEY;
+
+if (!SUPABASE_SERVICE_KEY) {
+  console.warn(
+    "⚠️ WARNING: SUPABASE_SERVICE_KEY is not set. Falling back to " +
+    "SUPABASE_KEY for backend database access. If SUPABASE_KEY is your " +
+    "anon key (it should be, since /config.js exposes it to browsers), " +
+    "backend inserts/updates that rely on bypassing RLS (hotel signup, " +
+    "approvals) may fail once RLS is locked down. Set SUPABASE_SERVICE_KEY " +
+    "in Render to your Supabase service_role key to fix this."
+  );
+}
+
 const JWT_SECRET =
   process.env.JWT_SECRET ||
   "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_IN_RENDER";
@@ -79,7 +109,7 @@ if (
 
 const supa = createClient(
   SUPABASE_URL,
-  SUPABASE_KEY,
+  SUPABASE_SERVICE_KEY || SUPABASE_KEY,
   {
     auth: {
       persistSession: false,
@@ -506,9 +536,12 @@ app.post(
       const {
         hotel_name,
         name,
+        manager_name,
         location,
         city,
         hotel_type,
+        rooms,
+        website,
         email,
         phone,
         password
@@ -648,6 +681,21 @@ app.post(
           cleanText(
             hotel_type || "Upendo",
             30
+          ),
+
+        manager_name:
+          cleanText(
+            manager_name,
+            100
+          ),
+
+        rooms:
+          safePositiveNumber(rooms),
+
+        website:
+          cleanText(
+            website,
+            200
           ),
 
         email: finalEmail,
@@ -3286,3 +3334,4 @@ app.listen(
 
   }
 );
+
