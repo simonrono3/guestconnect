@@ -1,1969 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#060606">
-
-<title>GuestHub HotelOS 10.2</title>
-
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GuestHub HotelOS 11.0 — Professional</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="config.js"></script>
-
 <style>
-:root{
- --lime:#c6ff00;
- --gold:#fbbf24;
- --green:#22c55e;
- --red:#ef4444;
- --blue:#38bdf8;
- --bg:#050505;
- --card:#111;
- --card2:#0a0a0a;
- --border:#252525;
- --muted:#888;
-}
-
-*{box-sizing:border-box}
-
-html{scroll-behavior:smooth}
-
-body{
- margin:0;
- background:
- radial-gradient(circle at 20% -10%,rgba(198,255,0,.07),transparent 30%),
- radial-gradient(circle at 90% 10%,rgba(251,191,36,.06),transparent 25%),
- var(--bg);
- color:#fff;
- font-family:Inter,sans-serif;
- padding-bottom:100px;
-}
-
-button,input,select,textarea{font-family:inherit}
-
-button{cursor:pointer}
-
-header{
- position:sticky;
- top:0;
- z-index:100;
- background:rgba(5,5,5,.92);
- backdrop-filter:blur(18px);
- border-bottom:1px solid var(--border);
- padding:13px 14px;
- display:flex;
- justify-content:space-between;
- align-items:center;
-}
-
-.logo{
- font-family:"Space Grotesk",sans-serif;
- font-weight:800;
- font-size:20px;
-}
-
-.logo span{color:var(--lime)}
-
-.hotelTag{
- text-align:right;
- font-size:10px;
- color:var(--muted);
- max-width:150px;
- overflow:hidden;
- white-space:nowrap;
- text-overflow:ellipsis;
-}
-
-.headerActions{
- display:flex;
- gap:6px;
- align-items:center;
-}
-
-.iconBtn{
- width:36px;
- height:36px;
- border-radius:10px;
- border:1px solid var(--border);
- background:#111;
- color:#fff;
-}
-
-.hero{
- margin:14px;
- padding:18px;
- border-radius:22px;
- border:1px solid var(--border);
- background:
- linear-gradient(135deg,rgba(198,255,0,.11),rgba(251,191,36,.06)),
- #111;
-}
-
-.heroTop{
- display:flex;
- justify-content:space-between;
- gap:12px;
- align-items:flex-start;
-}
-
-.hero h1{
- margin:3px 0;
- font-family:"Space Grotesk";
- font-size:25px;
-}
-
-.hero small{
- color:var(--muted);
-}
-
-.status{
- padding:6px 9px;
- border-radius:999px;
- font-size:9px;
- font-weight:900;
- background:#17220b;
- color:var(--lime);
- border:1px solid rgba(198,255,0,.2);
-}
-
-.stats{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
- padding:0 14px 14px;
-}
-
-.stat{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:17px;
- padding:14px;
- min-height:78px;
-}
-
-.stat b{
- display:block;
- font-family:"Space Grotesk";
- font-size:21px;
- margin-bottom:4px;
-}
-
-.stat small{
- color:var(--muted);
- font-size:9px;
- font-weight:900;
-}
-
-.stat.money{
- border-color:rgba(198,255,0,.3);
- background:linear-gradient(135deg,#111,#161b05);
-}
-
-.tabs{
- display:flex;
- gap:8px;
- padding:2px 14px 14px;
- overflow-x:auto;
- position:sticky;
- top:62px;
- z-index:80;
- background:rgba(5,5,5,.94);
- backdrop-filter:blur(15px);
-}
-
-.tabs::-webkit-scrollbar{display:none}
-
-.tab{
- white-space:nowrap;
- padding:10px 15px;
- border-radius:999px;
- border:1px solid var(--border);
- background:#111;
- color:#fff;
- font-weight:800;
- font-size:11px;
-}
-
-.tab.active{
- background:var(--lime);
- color:#000;
- border-color:var(--lime);
-}
-
-.section{
- display:none;
- padding:0 14px;
-}
-
-.section.active{display:block}
-
-.card{
- background:var(--card);
- border:1px solid var(--border);
- border-radius:18px;
- padding:14px;
- margin-bottom:12px;
-}
-
-.cardTitle{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin-bottom:10px;
-}
-
-.cardTitle b{
- font-family:"Space Grotesk";
- font-size:15px;
-}
-
-.muted{color:var(--muted)}
-
-.btn{
- padding:10px 13px;
- border:none;
- border-radius:11px;
- font-weight:900;
- font-size:11px;
-}
-
-.btn-green{
- background:var(--lime);
- color:#000;
-}
-
-.btn-gold{
- background:var(--gold);
- color:#000;
-}
-
-.btn-dark{
- background:#1d1d1d;
- color:#fff;
- border:1px solid #333;
-}
-
-.btn-red{
- background:#3a1111;
- color:#ff6666;
- border:1px solid #552222;
-}
-
-.btn-blue{
- background:#092331;
- color:var(--blue);
- border:1px solid #16465e;
-}
-
-.full{width:100%}
-
-.grid2{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:8px;
-}
-
-.grid3{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:8px;
-}
-
-input,select,textarea{
- width:100%;
- padding:12px;
- margin-top:6px;
- background:#080808;
- color:#fff;
- border:1px solid #303030;
- border-radius:11px;
- outline:none;
-}
-
-input:focus,select:focus,textarea:focus{
- border-color:var(--lime);
-}
-
-label{
- display:block;
- color:#aaa;
- font-size:10px;
- font-weight:800;
- margin-top:9px;
-}
-
-.order{
- background:var(--card2);
- border:1px solid #242424;
- border-left:4px solid var(--lime);
- border-radius:15px;
- padding:13px;
- margin-top:9px;
-}
-
-.orderTop{
- display:flex;
- justify-content:space-between;
- gap:8px;
-}
-
-.orderTitle{
- font-weight:900;
- font-size:13px;
-}
-
-.orderMeta{
- color:#888;
- font-size:10px;
- line-height:1.7;
- margin-top:5px;
-}
-
-.orderActions{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:7px;
- margin-top:10px;
-}
-
-.badge{
- display:inline-block;
- padding:4px 8px;
- border-radius:999px;
- font-size:8px;
- font-weight:900;
-}
-
-.badge-new{
- background:#392600;
- color:#ffb52e;
-}
-
-.badge-progress{
- background:#062d17;
- color:#35df78;
-}
-
-.badge-done{
- background:#092331;
- color:#38bdf8;
-}
-
-.badge-cancel{
- background:#351010;
- color:#ff6666;
-}
-
-.service,.vendorRow,.settingRow{
- background:var(--card2);
- border:1px solid #242424;
- border-radius:14px;
- padding:12px;
- margin-top:8px;
-}
-
-.service{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
-}
-
-.serviceName{
- font-weight:800;
- font-size:12px;
-}
-
-.serviceMeta{
- color:#888;
- font-size:9px;
- margin-top:4px;
-}
-
-.vendorRow{
- display:flex;
- justify-content:space-between;
- gap:10px;
- align-items:center;
-}
-
-.vendorName{
- font-weight:800;
- font-size:12px;
-}
-
-.vendorMeta{
- color:#888;
- font-size:9px;
- margin-top:4px;
-}
-
-.online{
- color:var(--green);
-}
-
-.offline{
- color:#777;
-}
-
-.qrbox{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
- margin-top:12px;
-}
-
-.qrCard{
- background:#fff;
- color:#000;
- border-radius:15px;
- padding:12px;
- text-align:center;
-}
-
-.qrCode{
- min-height:128px;
- display:flex;
- justify-content:center;
- align-items:center;
-}
-
-.qrCard b{
- font-size:13px;
-}
-
-.qrCard small{
- display:block;
- margin-top:5px;
- font-size:8px;
-}
-
-.empty{
- text-align:center;
- color:#777;
- padding:30px 15px;
-}
-
-.emptyIcon{
- font-size:28px;
- margin-bottom:7px;
-}
-
-.wallet{
- background:linear-gradient(135deg,var(--lime),var(--gold));
- color:#000;
- border-radius:20px;
- padding:18px;
- margin-bottom:12px;
-}
-
-.walletLabel{
- font-size:9px;
- font-weight:900;
- opacity:.65;
-}
-
-.walletValue{
- font-family:"Space Grotesk";
- font-size:31px;
- margin:3px 0;
-}
-
-.progress{
- height:7px;
- background:#222;
- border-radius:999px;
- overflow:hidden;
- margin-top:8px;
-}
-
-.progress span{
- display:block;
- height:100%;
- width:0;
- background:var(--lime);
-}
-
-.alert{
- padding:12px;
- border-radius:13px;
- background:#201900;
- color:#ffc84d;
- border:1px solid #4c3a00;
- font-size:10px;
- margin-bottom:10px;
-}
-
-.toast{
- position:fixed;
- bottom:20px;
- left:50%;
- transform:translateX(-50%) translateY(120px);
- background:#fff;
- color:#000;
- padding:12px 18px;
- border-radius:999px;
- font-weight:900;
- font-size:11px;
- z-index:999;
- transition:.3s;
- box-shadow:0 10px 30px #000;
-}
-
-.toast.show{
- transform:translateX(-50%) translateY(0);
-}
-
-.loading{
- color:#777;
- font-size:11px;
- padding:20px;
- text-align:center;
-}
-
-@media(min-width:700px){
- .stats{grid-template-columns:repeat(4,1fr)}
- .section{max-width:900px;margin:auto}
- .hero{max-width:900px;margin:14px auto}
- .tabs{justify-content:center}
- .qrbox{grid-template-columns:repeat(4,1fr)}
-}
+:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--bg:#050505;--card:#111;--card2:#0a0a0a;--border:#252525;--muted:#888}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% -10%,rgba(198,255,0,.07),transparent 30%),var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:100px}
+header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:13px 14px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:Space Grotesk;font-weight:800;font-size:20px}.logo span{color:var(--lime)}.hotelTag{text-align:right;font-size:10px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.iconBtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:#111;color:#fff;cursor:pointer}
+.hero{margin:14px;padding:18px;border-radius:22px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(198,255,0,.11),rgba(251,191,36,.06)),#111}
+.heroTop{display:flex;justify-content:space-between;gap:12px}.hero h1{margin:3px 0;font-family:Space Grotesk;font-size:25px}.status{padding:6px 9px;border-radius:999px;font-size:9px;font-weight:900;background:#17220b;color:var(--lime);border:1px solid rgba(198,255,0,.2)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px 14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:14px;min-height:78px}.stat b{display:block;font-family:Space Grotesk;font-size:21px;margin-bottom:4px}.stat small{color:var(--muted);font-size:9px;font-weight:900}.stat.money{border-color:rgba(198,255,0,.3);background:linear-gradient(135deg,#111,#161b05)}
+.tabs{display:flex;gap:8px;padding:2px 14px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px)}.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:#111;color:#fff;font-weight:800;font-size:11px;cursor:pointer}.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
+.section{display:none;padding:0 14px}.section.active{display:block}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px}.cardTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cardTitle b{font-family:Space Grotesk;font-size:15px}
+.btn{padding:10px 13px;border:none;border-radius:11px;font-weight:900;font-size:11px;cursor:pointer}.btn-green{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#1d1d1d;color:#fff;border:1px solid #333}.btn-red{background:#3a1111;color:#ff6666;border:1px solid #552}.btn-blue{background:#092331;color:var(--blue);border:1px solid #16465e}.full{width:100%}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;outline:none}input:focus{border-color:var(--lime)}label{display:block;color:#aaa;font-size:10px;font-weight:800;margin-top:9px}
+.order{background:var(--card2);border:1px solid #242424;border-left:4px solid var(--lime);border-radius:15px;padding:13px;margin-top:9px}.orderTop{display:flex;justify-content:space-between;gap:8px}.orderTitle{font-weight:900;font-size:13px}.orderMeta{color:#888;font-size:10px;line-height:1.7;margin-top:5px}.orderActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:8px;font-weight:900}.badge-new{background:#392600;color:#ffb52e}.badge-progress{background:#062d17;color:#35df78}.badge-done{background:#092331;color:#38bdf8}.badge-cancel{background:#351010;color:#ff6666}
+.service,.vendorRow,.settingRow{background:var(--card2);border:1px solid #242424;border-radius:14px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.qrbox{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}.qrCard{background:#fff;color:#000;border-radius:15px;padding:12px;text-align:center}.qrCode{min-height:128px;display:flex;justify-content:center;align-items:center}
+.empty{text-align:center;color:#777;padding:30px 15px}.wallet{background:linear-gradient(135deg,var(--lime),var(--gold));color:#000;border-radius:20px;padding:18px;margin-bottom:12px}.walletValue{font-family:Space Grotesk;font-size:31px;margin:3px 0}.progress{height:7px;background:#222;border-radius:999px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:var(--lime)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:900;font-size:11px;z-index:999;transition:.3s}.toast.show{transform:translateX(-50%) translateY(0)}.loading{color:#777;font-size:11px;padding:20px;text-align:center}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.section{max-width:900px;margin:auto}.hero{max-width:900px;margin:14px auto}.qrbox{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
-
 <body>
-
-<header>
- <div class="logo">
-  GuestHub <span>HotelOS</span>
- </div>
-
- <div class="headerActions">
-  <div class="hotelTag" id="hotelName">Loading...</div>
-  <button class="iconBtn" onclick="refreshAll()">↻</button>
-  <button class="iconBtn" onclick="logout()">⎋</button>
- </div>
-</header>
-
-<!-- HERO -->
-
-<div class="hero">
- <div class="heroTop">
-  <div>
-   <small>WELCOME TO YOUR COMMAND CENTER</small>
-   <h1 id="heroHotel">Loading Hotel...</h1>
-   <small id="heroLocation">Hotel operations • GuestHub</small>
-  </div>
-
-  <span class="status" id="hotelStatus">CONNECTING</span>
- </div>
-
- <div style="margin-top:15px">
-  <small>Guest Experience Engine</small>
-  <div class="progress">
-   <span id="experienceProgress"></span>
-  </div>
- </div>
-</div>
-
-<!-- STATS -->
-
-<div class="stats">
-
- <div class="stat money">
-  <b id="todayRevenue">Ksh 0</b>
-  <small>TODAY REVENUE</small>
- </div>
-
- <div class="stat">
-  <b id="monthRevenue">Ksh 0</b>
-  <small>MONTH REVENUE</small>
- </div>
-
- <div class="stat">
-  <b id="totalOrders">0</b>
-  <small>TOTAL ORDERS</small>
- </div>
-
- <div class="stat">
-  <b id="activeVendors">0</b>
-  <small>AVAILABLE VENDORS</small>
- </div>
-
-</div>
-
-<!-- TABS -->
-
+<header><div class="logo">GuestHub <span>HotelOS</span></div><div style="display:flex;gap:6px;align-items:center"><div class="hotelTag" id="hotelName">Loading...</div><button class="iconBtn" onclick="refreshAll()">↻</button><button class="iconBtn" onclick="logout()">⎋</button></div></header>
+<div class="hero"><div class="heroTop"><div><small>WELCOME TO YOUR COMMAND CENTER</small><h1 id="heroHotel">Loading Hotel...</h1><small id="heroLocation">Hotel operations • GuestHub</small></div><span class="status" id="hotelStatus">SECURE</span></div><div style="margin-top:15px"><small>Guest Experience Engine</small><div class="progress"><span id="experienceProgress"></span></div></div></div>
+<div class="stats"><div class="stat money"><b id="todayRevenue">Ksh 0</b><small>TODAY REVENUE</small></div><div class="stat"><b id="monthRevenue">Ksh 0</b><small>MONTH REVENUE</small></div><div class="stat"><b id="totalOrders">0</b><small>TOTAL ORDERS</small></div><div class="stat"><b id="activeVendors">0</b><small>AVAILABLE VENDORS</small></div></div>
 <div class="tabs">
-
- <button class="tab active" onclick="openTab('orders',this)">
-  🔔 Orders
- </button>
-
- <button class="tab" onclick="openTab('vendors',this)">
-  🚚 Vendors
- </button>
-
- <button class="tab" onclick="openTab('services',this)">
-  🍽 Services
- </button>
-
- <button class="tab" onclick="openTab('revenue',this)">
-  💰 Revenue
- </button>
-
- <button class="tab" onclick="openTab('qr',this)">
-  📱 QR
- </button>
-
- <button class="tab" onclick="openTab('whatsapp',this)">
-  💬 WhatsApp
- </button>
-
- <button class="tab" onclick="openTab('profile',this)">
-  ⚙️ Hotel
- </button>
-
+<button class="tab active" onclick="openTab('orders',this)">🔔 Orders</button>
+<button class="tab" onclick="openTab('vendors',this)">🚚 Vendors</button>
+<button class="tab" onclick="openTab('services',this)">🍽 Services</button>
+<button class="tab" onclick="openTab('revenue',this)">💰 Revenue</button>
+<button class="tab" onclick="openTab('qr',this)">📱 QR</button>
+<button class="tab" onclick="openTab('whatsapp',this)">💬 WhatsApp</button>
+<button class="tab" onclick="openTab('profile',this)">⚙️ Hotel</button>
 </div>
 
-<!-- ================= ORDERS ================= -->
-
-<div id="orders" class="section active">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>🔔 Live Guest Orders</b>
-   <button class="btn btn-dark" onclick="loadOrders()">Refresh</button>
-  </div>
-
-  <div id="ordersList">
-   <div class="loading">Loading orders...</div>
-  </div>
-
- </div>
-
-</div>
-
-<!-- ================= VENDORS ================= -->
-
-<div id="vendors" class="section">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>🚚 Vendor Network</b>
-   <span class="badge badge-progress">LIVE</span>
-  </div>
-
-  <div class="alert">
-   Vendors can receive hotel requests based on their registered services and availability.
-  </div>
-
-  <div id="vendorsList">
-   <div class="loading">Loading vendors...</div>
-  </div>
-
- </div>
-
-</div>
-
-<!-- ================= SERVICES ================= -->
-
-<div id="services" class="section">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>🍽 Guest Service Builder</b>
-  </div>
-
-  <small class="muted">
-   Everything added here can appear on your GuestHub room dashboard.
-  </small>
-
-  <label>Service name</label>
-  <input id="serviceTitle" placeholder="e.g. Pilau Beef">
-
-  <div class="grid2">
-
-   <div>
-    <label>Price</label>
-    <input id="servicePrice" type="number" placeholder="650">
-   </div>
-
-   <div>
-    <label>Category</label>
-    <select id="serviceCategory">
-     <option value="food">🍽 Food</option>
-     <option value="drink">🥤 Drinks</option>
-     <option value="room_service">🛎 Room Service</option>
-     <option value="spa">🧖 Spa</option>
-     <option value="taxi">🚕 Taxi</option>
-     <option value="tour">🌍 Tour</option>
-     <option value="laundry">🧺 Laundry</option>
-     <option value="media">📸 Media</option>
-     <option value="other">✨ Other</option>
-    </select>
-   </div>
-
-  </div>
-
-  <label>Description</label>
-  <input id="serviceDescription" placeholder="Delivered to room in 20 minutes">
-
-  <button
-   class="btn btn-green full"
-   style="margin-top:12px"
-   onclick="addService()">
-   + Add To Guest Marketplace
-  </button>
-
- </div>
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>Your Guest Services</b>
-   <span id="serviceCount" class="badge badge-progress">0</span>
-  </div>
-
-  <div id="serviceList">
-   <div class="loading">Loading services...</div>
-  </div>
-
- </div>
-
-</div>
-
-<!-- ================= REVENUE ================= -->
-
-<div id="revenue" class="section">
-
- <div class="wallet">
-
-  <div class="walletLabel">HOTEL REVENUE</div>
-
-  <div class="walletValue" id="revenueTotal">
-   Ksh 0
-  </div>
-
-  <div style="font-size:10px">
-   Gross value generated through GuestHub
-  </div>
-
- </div>
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>💰 Revenue Intelligence</b>
-  </div>
-
-  <div class="grid2">
-
-   <div>
-    <small class="muted">GuestHub Commission</small>
-    <h2 id="commissionTotal">Ksh 0</h2>
-   </div>
-
-   <div>
-    <small class="muted">Hotel Net</small>
-    <h2 id="hotelNet">Ksh 0</h2>
-   </div>
-
-  </div>
-
- </div>
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>📊 Revenue Breakdown</b>
-  </div>
-
-  <div id="revenueBreakdown">
-   <div class="loading">Calculating...</div>
-  </div>
-
- </div>
-
-</div>
-
-<!-- ================= QR ================= -->
-
-<div id="qr" class="section">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>📱 Room QR Command Center</b>
-  </div>
-
-  <small class="muted">
-   Each QR opens the GuestHub dashboard directly for that room.
-  </small>
-
-  <div class="grid2">
-
-   <div>
-    <label>Start room</label>
-    <input id="startRoom" value="101">
-   </div>
-
-   <div>
-    <label>End room</label>
-    <input id="endRoom" value="110">
-   </div>
-
-  </div>
-
-  <button
-   class="btn btn-gold full"
-   style="margin-top:10px"
-   onclick="generateQRs()">
-   Generate Room QR Codes
-  </button>
-
-  <div class="qrbox" id="qrContainer"></div>
-
- </div>
-
-</div>
-
-<!-- ================= WHATSAPP ================= -->
-
-<div id="whatsapp" class="section">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>💬 WhatsApp Department Routing</b>
-  </div>
-
-  <small class="muted">
-   Guest requests can be routed to the correct hotel department.
-  </small>
-
-  <label>🍽 Kitchen</label>
-  <input id="wa_k" placeholder="2547XXXXXXXX">
-
-  <label>🧹 Housekeeping</label>
-  <input id="wa_h" placeholder="2547XXXXXXXX">
-
-  <label>🧺 Laundry</label>
-  <input id="wa_l" placeholder="2547XXXXXXXX">
-
-  <label>🧖 Spa</label>
-  <input id="wa_s" placeholder="2547XXXXXXXX">
-
-  <label>🚕 Taxi / Transport</label>
-  <input id="wa_t" placeholder="2547XXXXXXXX">
-
-  <label>🛎 Front Desk</label>
-  <input id="wa_f" placeholder="2547XXXXXXXX">
-
-  <button
-   class="btn btn-green full"
-   style="margin-top:12px"
-   onclick="saveWhatsApp()">
-   💾 Save Department Routing
-  </button>
-
- </div>
-
-</div>
-
-<!-- ================= HOTEL PROFILE ================= -->
-
-<div id="profile" class="section">
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>⚙️ Hotel Profile</b>
-  </div>
-
-  <label>Hotel name</label>
-  <input id="profileName">
-
-  <label>Location / City</label>
-  <input id="profileLocation">
-
-  <label>Hotel phone</label>
-  <input id="profilePhone">
-
-  <label>Hotel email</label>
-  <input id="profileEmail" disabled>
-
-  <label>Hotel plan</label>
-  <input id="profilePlan" disabled>
-
-  <button
-   class="btn btn-green full"
-   style="margin-top:12px"
-   onclick="saveHotelProfile()">
-   💾 Save Hotel Profile
-  </button>
-
- </div>
-
- <div class="card">
-
-  <div class="cardTitle">
-   <b>🔐 Account</b>
-  </div>
-
-  <button
-   class="btn btn-red full"
-   onclick="logout()">
-   Logout From HotelOS
-  </button>
-
- </div>
-
-</div>
-
+<div id="orders" class="section active"><div class="card"><div class="cardTitle"><b>🔔 Live Guest Orders</b><button class="btn btn-dark" onclick="loadOrders()">Refresh</button></div><div id="ordersList"><div class="loading">Loading orders...</div></div></div></div>
+<div id="vendors" class="section"><div class="card"><div class="cardTitle"><b>🚚 Vendor Network</b><span class="badge badge-progress">LIVE</span></div><div id="vendorsList"><div class="loading">Loading vendors...</div></div></div></div>
+<div id="services" class="section"><div class="card"><div class="cardTitle"><b>🍽 Guest Service Builder</b></div><label>Service name</label><input id="serviceTitle" placeholder="e.g. Pilau Beef"><div class="grid2"><div><label>Price</label><input id="servicePrice" type="number" placeholder="650"></div><div><label>Category</label><select id="serviceCategory"><option value="food">🍽 Food</option><option value="drink">🥤 Drinks</option><option value="spa">🧖 Spa</option><option value="taxi">🚕 Taxi</option><option value="tour">🌍 Tour</option><option value="laundry">🧺 Laundry</option><option value="media">📸 Media</option><option value="other">✨ Other</option></select></div></div><label>Description</label><input id="serviceDescription" placeholder="Delivered in 20 min"><button class="btn btn-green full" style="margin-top:12px" onclick="addService()">+ Add To Guest Marketplace</button></div><div class="card"><div class="cardTitle"><b>Your Guest Services</b><span id="serviceCount" class="badge badge-progress">0</span></div><div id="serviceList"><div class="loading">Loading services...</div></div></div></div>
+<div id="revenue" class="section"><div class="wallet"><div style="font-size:9px;font-weight:900;opacity:.65">HOTEL REVENUE</div><div class="walletValue" id="revenueTotal">Ksh 0</div></div><div class="card"><div class="cardTitle"><b>💰 Revenue Intelligence</b></div><div class="grid2"><div><small>Commission 15%</small><h2 id="commissionTotal">Ksh 0</h2></div><div><small>Hotel Net</small><h2 id="hotelNet">Ksh 0</h2></div></div></div><div class="card"><div id="revenueBreakdown"><div class="loading">Calculating...</div></div></div></div>
+<div id="qr" class="section"><div class="card"><div class="cardTitle"><b>📱 Room QR Command Center</b></div><div class="grid2"><div><label>Start room</label><input id="startRoom" value="101"></div><div><label>End room</label><input id="endRoom" value="110"></div></div><button class="btn btn-gold full" style="margin-top:10px" onclick="generateQRs()">Generate Room QR Codes</button><div class="qrbox" id="qrContainer"></div></div></div>
+<div id="whatsapp" class="section"><div class="card"><div class="cardTitle"><b>💬 WhatsApp Routing</b></div><label>🍽 Kitchen</label><input id="wa_k" placeholder="2547XXXXXXXX"><label>🧹 Housekeeping</label><input id="wa_h" placeholder="2547XXXXXXXX"><label>🧺 Laundry</label><input id="wa_l" placeholder="2547XXXXXXXX"><label>🧖 Spa</label><input id="wa_s" placeholder="2547XXXXXXXX"><label>🚕 Taxi</label><input id="wa_t" placeholder="2547XXXXXXXX"><label>🛎 Front Desk</label><input id="wa_f" placeholder="2547XXXXXXXX"><button class="btn btn-green full" style="margin-top:12px" onclick="saveWhatsApp()">💾 Save Routing</button></div></div>
+<div id="profile" class="section"><div class="card"><div class="cardTitle"><b>⚙️ Hotel Profile</b></div><label>Hotel name</label><input id="profileName"><label>Location</label><input id="profileLocation"><label>Phone</label><input id="profilePhone"><label>Email</label><input id="profileEmail" disabled><label>Plan</label><input id="profilePlan" disabled><button class="btn btn-green full" style="margin-top:12px" onclick="saveHotelProfile()">💾 Save Profile</button></div><div class="card"><button class="btn btn-red full" onclick="logout()">Logout</button></div></div>
 <div id="toast" class="toast"></div>
 
 <script>
-
-const supa = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
-
-let currentHotel = null;
-let ordersCache = [];
-let servicesCache = [];
-let vendorsCache = [];
-
-/* ================= HELPERS ================= */
-
-function money(value){
- return 'Ksh ' + Number(value || 0).toLocaleString();
-}
-
-function escapeHTML(value){
- return String(value ?? '')
-  .replace(/&/g,'&amp;')
-  .replace(/</g,'&lt;')
-  .replace(/>/g,'&gt;')
-  .replace(/"/g,'&quot;')
-  .replace(/'/g,'&#039;');
-}
-
-function toast(message){
- const t=document.getElementById('toast');
- t.innerText=message;
- t.classList.add('show');
-
- setTimeout(()=>{
-  t.classList.remove('show');
- },2500);
-}
-
-function getHotelId(){
-
- return (
-  localStorage.getItem('hotel_id') ||
-  localStorage.getItem('hotelId') ||
-  localStorage.getItem('hotel_email')
- );
-
-}
-
-/* ================= INIT ================= */
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let currentHotel=null, ordersCache=[], servicesCache=[], vendorsCache=[];
+function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function getToken(){return localStorage.getItem('hotel_token')||localStorage.getItem('admin_token')||''}
+async function secureFetch(url,opts={}){const token=getToken(); if(!token){ location.href='/hotel-login.html'; throw new Error('No token'); } opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body && !(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; const r=await fetch(url,opts); if(r.status===401||r.status===403){ localStorage.removeItem('hotel_token'); location.href='/hotel-login.html'; throw new Error('Unauthorized'); } return r;}
 
 async function init(){
-
- const hotelRef=getHotelId();
-
- if(!hotelRef){
-
-  toast('Hotel session not found');
-
-  setTimeout(()=>{
-   location.href='/hotel-login.html';
-  },1200);
-
-  return;
- }
-
- await loadHotel(hotelRef);
-
- if(!currentHotel) return;
-
- await Promise.all([
-  loadOrders(),
-  loadServices(),
-  loadVendors()
- ]);
-
- renderHotelProfile();
- loadWhatsApp();
-
-}
-
-/* ================= HOTEL ================= */
-
-async function loadHotel(ref){
-
+ const token=getToken();
+ if(!token){ location.href='/hotel-login.html'; return; }
  try{
-
-  let query=supa
-   .from('hotels')
-   .select('*');
-
-  if(ref.includes('@')){
-
-   query=query.eq('email',ref).single();
-
-  }else{
-
-   query=query
-    .or(`id.eq.${ref},hotel_id.eq.${ref}`)
-    .limit(1)
-    .maybeSingle();
-
-  }
-
-  const {data,error}=await query;
-
-  if(error || !data){
-
-   console.error(error);
-
-   toast('Hotel account not found');
-
-   return;
-  }
-
-  currentHotel=data;
-
-  document.getElementById('hotelName').innerText =
-   data.name || data.hotel_name || 'Hotel';
-
-  document.getElementById('heroHotel').innerText =
-   data.name || data.hotel_name || 'Your Hotel';
-
-  document.getElementById('heroLocation').innerText =
-   (data.location || data.city || 'Kenya') +
-   ' • GuestHub HotelOS';
-
-  document.getElementById('hotelStatus').innerText =
-   String(data.status || 'ACTIVE').toUpperCase();
-
- }catch(e){
-
-  console.error(e);
-
-  toast('Could not load hotel');
-
- }
-
+  const meRes = await secureFetch('/api/auth/me');
+  const meData = await meRes.json();
+  if(!meData.ok) throw new Error('Auth failed');
+  currentHotel = meData.hotel || meData.user;
+  // Load dashboard via secured backend - NOT direct Supabase
+  await refreshAll();
+  renderHotelProfile(); loadWhatsApp();
+  startRealtime();
+ }catch(e){ console.error(e); toast('Session expired, please login'); setTimeout(()=>location.href='/hotel-login.html',1000); }
 }
-
-/* ================= ORDERS ================= */
-
-async function loadOrders(){
-
- if(!currentHotel) return;
-
- const list=document.getElementById('ordersList');
-
- list.innerHTML='<div class="loading">Loading live orders...</div>';
-
- const {data,error}=await supa
-  .from('orders')
-  .select('*')
-  .eq('hotel_id',currentHotel.id)
-  .order('created_at',{ascending:false})
-  .limit(100);
-
- if(error){
-
-  console.error(error);
-
-  list.innerHTML=
-   '<div class="empty">Unable to load orders.</div>';
-
-  return;
- }
-
- ordersCache=data||[];
-
- renderOrders();
- updateRevenue();
-
-}
-
-/* ================= RENDER ORDERS ================= */
-
-function renderOrders(){
-
- const list=document.getElementById('ordersList');
-
- if(!ordersCache.length){
-
-  list.innerHTML=`
-   <div class="empty">
-    <div class="emptyIcon">🛎️</div>
-    No guest orders yet.<br>
-    <small>Orders from room QR dashboards will appear here.</small>
-   </div>`;
-
-  return;
- }
-
- list.innerHTML=ordersCache.map(o=>{
-
-  const status=String(o.status||'new').toLowerCase();
-
-  let badge='badge-new';
-
-  if(status.includes('progress') || status==='accepted')
-   badge='badge-progress';
-
-  if(status.includes('complete') || status==='completed')
-   badge='badge-done';
-
-  if(status.includes('cancel'))
-   badge='badge-cancel';
-
-  return `
-
-   <div class="order">
-
-    <div class="orderTop">
-
-     <div class="orderTitle">
-      🛎 Room ${escapeHTML(o.room || '—')}
-      • ${escapeHTML(o.service_title || o.service || 'Guest Request')}
-     </div>
-
-     <span class="badge ${badge}">
-      ${escapeHTML(status.toUpperCase())}
-     </span>
-
-    </div>
-
-    <div class="orderMeta">
-
-     Guest:
-     <b style="color:#fff">
-      ${escapeHTML(o.guest_name || 'Guest')}
-     </b>
-
-     <br>
-
-     Amount:
-     <b style="color:var(--lime)">
-      ${money(o.amount)}
-     </b>
-
-     <br>
-
-     ${o.created_at ?
-      new Date(o.created_at).toLocaleString() : ''}
-
-    </div>
-
-    <div class="orderActions">
-
-     ${
-      status==='new'
-      ?
-      `<button class="btn btn-green"
-       onclick="updateOrder('${o.id}','accepted')">
-       ✅ Accept
-       </button>`
-      :
-      `<button class="btn btn-dark"
-       onclick="updateOrder('${o.id}','completed')">
-       ✓ Complete
-       </button>`
-     }
-
-     <button class="btn btn-dark"
-      onclick="sendOrderWhatsApp('${o.id}')">
-      💬 WhatsApp
-     </button>
-
-    </div>
-
-   </div>
-
-  `;
-
- }).join('');
-
- document.getElementById('totalOrders').innerText=
-  ordersCache.length;
-
-}
-
-/* ================= UPDATE ORDER ================= */
-
-async function updateOrder(id,status){
-
- const {error}=await supa
-  .from('orders')
-  .update({status})
-  .eq('id',id)
-  .eq('hotel_id',currentHotel.id);
-
- if(error){
-
-  toast(error.message);
-
-  return;
- }
-
- toast('Order updated');
-
- await loadOrders();
-
-}
-
-/* ================= SERVICES ================= */
-
-async function loadServices(){
-
- if(!currentHotel) return;
-
- const {data,error}=await supa
-  .from('hotel_services')
-  .select('*')
-  .eq('hotel_id',currentHotel.id)
-  .order('created_at',{ascending:false});
-
- if(error){
-
-  console.error(error);
-
-  servicesCache=[];
-
- }else{
-
-  servicesCache=data||[];
-
- }
-
- renderServices();
-
-}
-
-/* ================= ADD SERVICE ================= */
-
-async function addService(){
-
- const title=document
-  .getElementById('serviceTitle')
-  .value.trim();
-
- const price=Number(
-  document.getElementById('servicePrice').value
- );
-
- const category=document
-  .getElementById('serviceCategory')
-  .value;
-
- const description=document
-  .getElementById('serviceDescription')
-  .value.trim();
-
- if(!title || !price){
-
-  toast('Enter service name and price');
-
-  return;
- }
-
- const {error}=await supa
-  .from('hotel_services')
-  .insert([{
-   hotel_id:currentHotel.id,
-   title,
-   price,
-   category,
-   description,
-   active:true
-  }]);
-
- if(error){
-
-  toast(error.message);
-
-  return;
- }
-
- document.getElementById('serviceTitle').value='';
- document.getElementById('servicePrice').value='';
- document.getElementById('serviceDescription').value='';
-
- toast('Service added to GuestHub');
-
- loadServices();
-
-}
-
-/* ================= SERVICE LIST ================= */
-
-function renderServices(){
-
- const list=document.getElementById('serviceList');
-
- document.getElementById('serviceCount').innerText=
-  servicesCache.length;
-
- if(!servicesCache.length){
-
-  list.innerHTML=`
-   <div class="empty">
-    No services yet.<br>
-    Add your first guest service above.
-   </div>`;
-
-  return;
- }
-
- list.innerHTML=servicesCache.map(s=>`
-
-  <div class="service">
-
-   <div>
-
-    <div class="serviceName">
-     ${escapeHTML(s.title)}
-    </div>
-
-    <div class="serviceMeta">
-     ${escapeHTML(s.category||'service')}
-     • ${escapeHTML(s.description||'')}
-    </div>
-
-   </div>
-
-   <div style="text-align:right">
-
-    <b style="color:var(--lime)">
-     ${money(s.price)}
-    </b>
-
-    <br>
-
-    <button
-     class="btn btn-red"
-     style="margin-top:6px;padding:6px 9px"
-     onclick="deleteService('${s.id}')">
-     Delete
-    </button>
-
-   </div>
-
-  </div>
-
- `).join('');
-
-}
-
-/* ================= DELETE SERVICE ================= */
-
-async function deleteService(id){
-
- if(!confirm('Remove this service from GuestHub?')) return;
-
- const {error}=await supa
-  .from('hotel_services')
-  .delete()
-  .eq('id',id)
-  .eq('hotel_id',currentHotel.id);
-
- if(error){
-
-  toast(error.message);
-
-  return;
- }
-
- toast('Service removed');
-
- loadServices();
-
-}
-
-/* ================= VENDORS ================= */
-
-async function loadVendors(){
-
- const list=document.getElementById('vendorsList');
-
- list.innerHTML=
-  '<div class="loading">Finding available vendors...</div>';
-
- const {data,error}=await supa
-  .from('vendors')
-  .select('*')
-  .eq('status','approved')
-  .limit(50);
-
- if(error){
-
-  console.error(error);
-
-  list.innerHTML=
-   '<div class="empty">Vendor network unavailable.</div>';
-
-  return;
- }
-
- vendorsCache=data||[];
-
- const hotelCity=
-  String(
-   currentHotel.location ||
-   currentHotel.city ||
-   ''
-  ).toLowerCase();
-
- const relevant=vendorsCache.filter(v=>{
-
-  if(!hotelCity) return true;
-
-  return String(v.city||'')
-   .toLowerCase()
-   .includes(hotelCity);
-
- });
-
- document.getElementById('activeVendors').innerText=
-  relevant.length;
-
- if(!relevant.length){
-
-  list.innerHTML=`
-   <div class="empty">
-    <div class="emptyIcon">🚚</div>
-    No approved vendors found nearby yet.
-   </div>`;
-
-  return;
- }
-
- list.innerHTML=relevant.map(v=>`
-
-  <div class="vendorRow">
-
-   <div>
-
-    <div class="vendorName">
-     ${escapeHTML(v.full_name)}
-    </div>
-
-    <div class="vendorMeta">
-     ${escapeHTML(v.city||'')} •
-     ${(v.services||[])
-      .slice(0,3)
-      .map(escapeHTML)
-      .join(', ')}
-    </div>
-
-    <div class="${v.available===false?'offline':'online'}"
-     style="font-size:9px;font-weight:800;margin-top:4px">
-     ${v.available===false?'● OFFLINE':'● AVAILABLE'}
-    </div>
-
-   </div>
-
-   <button
-    class="btn btn-blue"
-    onclick="contactVendor('${v.phone||''}')">
-    💬
-   </button>
-
-  </div>
-
- `).join('');
-
-}
-
-/* ================= REVENUE ================= */
-
-function updateRevenue(){
-
- const now=new Date();
-
- let total=0;
- let today=0;
- let month=0;
-
- ordersCache.forEach(o=>{
-
-  const amount=Number(o.amount)||0;
-
-  total+=amount;
-
-  if(o.created_at){
-
-   const d=new Date(o.created_at);
-
-   if(
-    d.getFullYear()===now.getFullYear() &&
-    d.getMonth()===now.getMonth()
-   ){
-
-    month+=amount;
-
-   }
-
-   if(
-    d.getFullYear()===now.getFullYear() &&
-    d.getMonth()===now.getMonth() &&
-    d.getDate()===now.getDate()
-   ){
-
-    today+=amount;
-
-   }
-
-  }
-
- });
-
- const commission=Math.floor(total*.15);
-
- const net=total-commission;
-
- document.getElementById('todayRevenue').innerText=
-  money(today);
-
- document.getElementById('monthRevenue').innerText=
-  money(month);
-
- document.getElementById('revenueTotal').innerText=
-  money(total);
-
- document.getElementById('commissionTotal').innerText=
-  money(commission);
-
- document.getElementById('hotelNet').innerText=
-  money(net);
-
- const completed=ordersCache.filter(o=>
-  ['completed','complete','delivered']
-  .includes(String(o.status||'').toLowerCase())
- ).length;
-
- const progress=
-  Math.min(
-   100,
-   ordersCache.length
-   ?
-   Math.round((completed/ordersCache.length)*100)
-   :
-   0
-  );
-
- document.getElementById('experienceProgress')
-  .style.width=progress+'%';
-
- document.getElementById('revenueBreakdown').innerHTML=`
-
-  <div class="settingRow">
-   <span>Gross GMV</span>
-   <b>${money(total)}</b>
-  </div>
-
-  <div class="settingRow">
-   <span>GuestHub 15%</span>
-   <b style="color:var(--gold)">
-    ${money(commission)}
-   </b>
-  </div>
-
-  <div class="settingRow">
-   <span>Estimated Hotel Net</span>
-   <b style="color:var(--lime)">
-    ${money(net)}
-   </b>
-  </div>
-
- `;
-
-}
-
-/* ================= WHATSAPP ================= */
-
-function loadWhatsApp(){
-
- if(!currentHotel) return;
-
- document.getElementById('wa_k').value=
-  currentHotel.whatsapp_kitchen||'';
-
- document.getElementById('wa_h').value=
-  currentHotel.whatsapp_house||'';
-
- document.getElementById('wa_l').value=
-  currentHotel.whatsapp_laundry||'';
-
- document.getElementById('wa_s').value=
-  currentHotel.whatsapp_spa||'';
-
- document.getElementById('wa_t').value=
-  currentHotel.whatsapp_taxi||'';
-
- document.getElementById('wa_f').value=
-  currentHotel.whatsapp_front||'';
-
-}
-
-async function saveWhatsApp(){
-
- const payload={
-
-  whatsapp_kitchen:
-   document.getElementById('wa_k').value.trim(),
-
-  whatsapp_house:
-   document.getElementById('wa_h').value.trim(),
-
-  whatsapp_laundry:
-   document.getElementById('wa_l').value.trim(),
-
-  whatsapp_spa:
-   document.getElementById('wa_s').value.trim(),
-
-  whatsapp_taxi:
-   document.getElementById('wa_t').value.trim(),
-
-  whatsapp_front:
-   document.getElementById('wa_f').value.trim()
-
- };
-
- const {error}=await supa
-  .from('hotels')
-  .update(payload)
-  .eq('id',currentHotel.id);
-
- if(error){
-
-  toast(error.message);
-
-  return;
- }
-
- Object.assign(currentHotel,payload);
-
- toast('WhatsApp routing saved');
-
-}
-
-/* ================= PROFILE ================= */
-
-function renderHotelProfile(){
-
- document.getElementById('profileName').value=
-  currentHotel.name ||
-  currentHotel.hotel_name ||
-  '';
-
- document.getElementById('profileLocation').value=
-  currentHotel.location ||
-  currentHotel.city ||
-  '';
-
- document.getElementById('profilePhone').value=
-  currentHotel.phone ||
-  '';
-
- document.getElementById('profileEmail').value=
-  currentHotel.email ||
-  '';
-
- document.getElementById('profilePlan').value=
-  currentHotel.plan ||
-  'GuestHub';
-
-}
-
-async function saveHotelProfile(){
-
- const name=document
-  .getElementById('profileName')
-  .value.trim();
-
- const location=document
-  .getElementById('profileLocation')
-  .value.trim();
-
- const phone=document
-  .getElementById('profilePhone')
-  .value.trim();
-
- if(!name){
-
-  toast('Hotel name required');
-
-  return;
- }
-
- const payload={
-  name,
-  hotel_name:name,
-  location,
-  phone
- };
-
- const {error}=await supa
-  .from('hotels')
-  .update(payload)
-  .eq('id',currentHotel.id);
-
- if(error){
-
-  toast(error.message);
-
-  return;
- }
-
- Object.assign(currentHotel,payload);
-
- document.getElementById('hotelName').innerText=name;
- document.getElementById('heroHotel').innerText=name;
- document.getElementById('heroLocation').innerText=
-  location+' • GuestHub HotelOS';
-
- toast('Hotel profile updated');
-
-}
-
-/* ================= QR SYSTEM ================= */
-
-function generateQRs(){
-
- const start=parseInt(
-  document.getElementById('startRoom').value
- );
-
- const end=parseInt(
-  document.getElementById('endRoom').value
- );
-
- if(
-  isNaN(start) ||
-  isNaN(end) ||
-  start>end ||
-  end-start>100
- ){
-
-  toast('Enter a valid room range');
-
-  return;
- }
-
- const container=
-  document.getElementById('qrContainer');
-
- container.innerHTML='';
-
- const hotelId=
-  currentHotel.id ||
-  currentHotel.hotel_id;
-
- for(let room=start;room<=end;room++){
-
-  const card=document.createElement('div');
-
-  card.className='qrCard';
-
-  const code=document.createElement('div');
-
-  code.className='qrCode';
-
-  card.innerHTML=`
-   <b>ROOM ${room}</b>
-   <small>Scan for GuestHub</small>
-  `;
-
-  card.prepend(code);
-
-  container.appendChild(card);
-
-  const url=
-   location.origin+
-   '/guest.html?hotel='+
-   encodeURIComponent(hotelId)+
-   '&room='+
-   encodeURIComponent(room);
-
-  new QRCode(code,{
-   text:url,
-   width:120,
-   height:120,
-   colorDark:'#000000',
-   colorLight:'#ffffff',
-   correctLevel:QRCode.CorrectLevel.H
-  });
-
- }
-
- toast('QR codes generated');
-
-}
-
-/* ================= CONTACT ================= */
-
-function contactVendor(phone){
-
- if(!phone){
-
-  toast('Vendor phone unavailable');
-
-  return;
- }
-
- const cleanPhone=
-  String(phone).replace(/\D/g,'');
-
- window.open(
-  'https://wa.me/'+cleanPhone,
-  '_blank'
- );
-
-}
-
-function sendOrderWhatsApp(id){
-
- const order=ordersCache.find(o=>o.id===id);
-
- if(!order){
-
-  toast('Order not found');
-
-  return;
- }
-
- const phone=
-  currentHotel.whatsapp_front ||
-  currentHotel.phone;
-
- if(!phone){
-
-  toast('Hotel WhatsApp number not configured');
-
-  return;
- }
-
- const cleanPhone=
-  String(phone).replace(/\D/g,'');
-
- const message=
-  `GuestHub Order%0ARoom: ${order.room||'-'}%0AService: ${order.service_title||order.service||'-'}%0AAmount: Ksh ${order.amount||0}%0AStatus: ${order.status||'new'}`;
-
- window.open(
-  'https://wa.me/'+
-  cleanPhone+
-  '?text='+
-  message,
-  '_blank'
- );
-
-}
-
-/* ================= NAVIGATION ================= */
-
-function openTab(name,button){
-
- document
-  .querySelectorAll('.section')
-  .forEach(s=>s.classList.remove('active'));
-
- document
-  .getElementById(name)
-  .classList.add('active');
-
- document
-  .querySelectorAll('.tab')
-  .forEach(t=>t.classList.remove('active'));
-
- button.classList.add('active');
-
- window.scrollTo({
-  top:0,
-  behavior:'smooth'
- });
-
-}
-
-/* ================= REFRESH ================= */
-
 async function refreshAll(){
-
- toast('Refreshing HotelOS...');
-
- await Promise.all([
-  loadOrders(),
-  loadServices(),
-  loadVendors()
- ]);
-
- toast('HotelOS updated');
-
+ try{
+  const r = await secureFetch('/api/gm/dashboard');
+  const d = await r.json();
+  if(!d.ok) throw new Error('Dashboard failed');
+  currentHotel = d.hotel || currentHotel;
+  ordersCache = d.orders || [];
+  servicesCache = d.services || d.items || [];
+  document.getElementById('hotelName').innerText = currentHotel.name || currentHotel.hotel_name || 'Hotel';
+  document.getElementById('heroHotel').innerText = currentHotel.name || currentHotel.hotel_name || 'Hotel';
+  document.getElementById('heroLocation').innerText = (currentHotel.location||currentHotel.city||'Kenya')+' • GuestHub HotelOS 11.0 SECURED';
+  document.getElementById('hotelStatus').innerText = 'SECURED • '+(currentHotel.status||'APPROVED');
+  renderOrders(); renderServices(); updateRevenue();
+  loadVendors();
+ }catch(e){ console.error(e); toast('Could not load dashboard'); }
 }
-
-/* ================= LOGOUT ================= */
-
-function logout(){
-
- localStorage.removeItem('hotel_email');
- localStorage.removeItem('hotel_id');
- localStorage.removeItem('hotelId');
-
- location.href='/hotel-login.html';
-
+async function loadOrders(){
+ try{
+  const r = await secureFetch('/api/gm/orders');
+  const d = await r.json();
+  ordersCache = d.orders || [];
+  renderOrders(); updateRevenue();
+ }catch(e){ document.getElementById('ordersList').innerHTML='<div class="empty">Unable to load orders</div>'; }
 }
-
-/* ================= REALTIME ================= */
-
-function startRealtime(){
-
+function renderOrders(){
+ const list=document.getElementById('ordersList');
+ if(!ordersCache.length){ list.innerHTML=`<div class="empty">No guest orders yet.<br><small>QR orders will appear LIVE here</small></div>`; document.getElementById('totalOrders').innerText='0'; return; }
+ list.innerHTML=ordersCache.map(o=>{
+  const status=String(o.status||'new').toLowerCase();
+  let badge='badge-new'; if(status.includes('progress')||status==='accepted') badge='badge-progress'; if(status.includes('complete')) badge='badge-done'; if(status.includes('cancel')) badge='badge-cancel';
+  return `<div class="order"><div class="orderTop"><div class="orderTitle">🛎 Room ${esc(o.room||'—')} • ${esc(o.service_title||o.service||'Request')}</div><span class="badge ${badge}">${esc(status.toUpperCase())}</span></div><div class="orderMeta">Guest: <b style="color:#fff">${esc(o.guest_name||'Guest')}</b><br>Amount: <b style="color:var(--lime)">${money(o.amount)}</b><br>${o.created_at?new Date(o.created_at).toLocaleString():''}</div><div class="orderActions">${status==='new'?`<button class="btn btn-green" onclick="updateOrder('${o.id}','accepted')">✅ Accept</button>`:`<button class="btn btn-dark" onclick="updateOrder('${o.id}','completed')">✓ Complete</button>`}<button class="btn btn-dark" onclick="sendOrderWhatsApp('${o.id}')">💬 WhatsApp</button></div></div>`;
+ }).join(''); document.getElementById('totalOrders').innerText=ordersCache.length;
+}
+async function updateOrder(id,status){
+ try{ const r=await secureFetch('/api/orders/'+id+'/status', {method:'PATCH', body: JSON.stringify({status})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Order '+status); await loadOrders(); }catch(e){ // fallback direct
+  const {error}=await supa.from('orders').update({status}).eq('id',id).eq('hotel_id',currentHotel.id||currentHotel.hotel_id); if(error) toast(error.message); else {toast('Order updated'); await loadOrders();}
+ }
+}
+async function loadServices(){
+ try{
+  const r=await secureFetch('/api/gm/services');
+  const d=await r.json();
+  servicesCache=d.services||[];
+  renderServices();
+ }catch(e){ document.getElementById('serviceList').innerHTML='<div class="empty">No services</div>'; }
+}
+function renderServices(){
+ const list=document.getElementById('serviceList');
+ document.getElementById('serviceCount').innerText=servicesCache.length;
+ if(!servicesCache.length){ list.innerHTML='<div class="empty">No services yet</div>'; return; }
+ list.innerHTML=servicesCache.map(s=>`<div class="service"><div><div style="font-weight:800;font-size:12px">${esc(s.title)}</div><div style="color:#888;font-size:9px">${esc(s.category||'')}${s.description?' • '+esc(s.description):''}</div></div><div style="text-align:right"><b style="color:var(--lime)">${money(s.price)}</b><br><button class="btn btn-red" style="margin-top:6px;padding:6px 9px" onclick="deleteService('${s.id}')">Delete</button></div></div>`).join('');
+}
+async function addService(){
+ const title=document.getElementById('serviceTitle').value.trim();
+ const price=Number(document.getElementById('servicePrice').value);
+ const category=document.getElementById('serviceCategory').value;
+ const description=document.getElementById('serviceDescription').value.trim();
+ if(!title||!price){ toast('Enter name and price'); return; }
+ try{
+  const r=await secureFetch('/api/admin/services', {method:'POST', body: JSON.stringify({hotel_id: currentHotel.id||currentHotel.hotel_id, title, price, category, description, active:true})});
+  const d=await r.json(); if(!d.ok) throw new Error(d.error);
+  document.getElementById('serviceTitle').value=''; document.getElementById('servicePrice').value=''; document.getElementById('serviceDescription').value='';
+  toast('Service added'); loadServices();
+ }catch(e){ toast(e.message); }
+}
+async function deleteService(id){
+ if(!confirm('Remove service?')) return;
+ try{
+  const r=await secureFetch('/api/admin/services/'+id, {method:'DELETE'});
+  const d=await r.json(); if(!d.ok) throw new Error(d.error);
+  toast('Service removed'); loadServices();
+ }catch(e){ toast(e.message); }
+}
+async function loadVendors(){
+ const list=document.getElementById('vendorsList');
+ try{
+  const {data,error}=await supa.from('vendors').select('*').eq('status','approved').limit(50);
+  if(error) throw error;
+  vendorsCache=data||[];
+  const city=String(currentHotel.city||currentHotel.location||'').toLowerCase();
+  const relevant=vendorsCache.filter(v=>!city||String(v.city||'').toLowerCase().includes(city));
+  document.getElementById('activeVendors').innerText=relevant.length;
+  if(!relevant.length){ list.innerHTML='<div class="empty">No approved vendors nearby yet</div>'; return; }
+  list.innerHTML=relevant.map(v=>`<div class="vendorRow"><div><div style="font-weight:800;font-size:12px">${esc(v.full_name)}</div><div style="color:#888;font-size:9px">${esc(v.city||'')} • ${(v.services||[]).slice(0,3).map(esc).join(', ')}</div></div><button class="btn btn-blue" onclick="contactVendor('${v.phone||''}')">💬</button></div>`).join('');
+ }catch(e){ list.innerHTML='<div class="empty">Vendor network unavailable</div>'; }
+}
+function updateRevenue(){
+ let total=0,today=0,month=0; const now=new Date();
+ ordersCache.forEach(o=>{ const a=Number(o.amount)||0; total+=a; if(o.created_at){ const d=new Date(o.created_at); if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()) month+=a; if(d.getDate()===now.getDate()&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()) today+=a; } });
+ const commission=Math.floor(total*.15), net=total-commission;
+ document.getElementById('todayRevenue').innerText=money(today);
+ document.getElementById('monthRevenue').innerText=money(month);
+ document.getElementById('revenueTotal').innerText=money(total);
+ document.getElementById('commissionTotal').innerText=money(commission);
+ document.getElementById('hotelNet').innerText=money(net);
+ const completed=ordersCache.filter(o=>['completed','complete','delivered'].includes(String(o.status||'').toLowerCase())).length;
+ const progress=Math.min(100, ordersCache.length?Math.round((completed/ordersCache.length)*100):0);
+ document.getElementById('experienceProgress').style.width=progress+'%';
+ document.getElementById('revenueBreakdown').innerHTML=`<div class="settingRow"><span>Gross GMV</span><b>${money(total)}</b></div><div class="settingRow"><span>GuestHub 15%</span><b style="color:var(--gold)">${money(commission)}</b></div><div class="settingRow"><span>Hotel Net</span><b style="color:var(--lime)">${money(net)}</b></div>`;
+}
+function loadWhatsApp(){
  if(!currentHotel) return;
-
- supa
-  .channel('guesthub-hotel-orders-'+currentHotel.id)
-
-  .on(
-   'postgres_changes',
-   {
-    event:'*',
-    schema:'public',
-    table:'orders',
-    filter:'hotel_id=eq.'+currentHotel.id
-   },
-   ()=>{
-    loadOrders();
-    toast('🔔 New order activity');
-   }
-  )
-
-  .subscribe();
-
+ document.getElementById('wa_k').value=currentHotel.whatsapp_kitchen||'';
+ document.getElementById('wa_h').value=currentHotel.whatsapp_house||'';
+ document.getElementById('wa_l').value=currentHotel.whatsapp_laundry||'';
+ document.getElementById('wa_s').value=currentHotel.whatsapp_spa||'';
+ document.getElementById('wa_t').value=currentHotel.whatsapp_taxi||'';
+ document.getElementById('wa_f').value=currentHotel.whatsapp_front||'';
 }
-
-/* ================= START ================= */
-
-init().then(()=>{
- startRealtime();
-});
-
+async function saveWhatsApp(){
+ const payload={whatsapp_kitchen:document.getElementById('wa_k').value.trim(),whatsapp_house:document.getElementById('wa_h').value.trim(),whatsapp_laundry:document.getElementById('wa_l').value.trim(),whatsapp_spa:document.getElementById('wa_s').value.trim(),whatsapp_taxi:document.getElementById('wa_t').value.trim(),whatsapp_front:document.getElementById('wa_f').value.trim()};
+ try{ const r=await secureFetch('/api/gm/whatsapp',{method:'PATCH', body: JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,payload); toast('WhatsApp saved'); }catch(e){ toast(e.message); }
+}
+function renderHotelProfile(){
+ document.getElementById('profileName').value=currentHotel.name||currentHotel.hotel_name||'';
+ document.getElementById('profileLocation').value=currentHotel.location||currentHotel.city||'';
+ document.getElementById('profilePhone').value=currentHotel.phone||'';
+ document.getElementById('profileEmail').value=currentHotel.email||'';
+ document.getElementById('profilePlan').value=currentHotel.plan||'GuestHub';
+}
+async function saveHotelProfile(){
+ const name=document.getElementById('profileName').value.trim();
+ const location=document.getElementById('profileLocation').value.trim();
+ const phone=document.getElementById('profilePhone').value.trim();
+ if(!name){ toast('Hotel name required'); return; }
+ try{ const r=await secureFetch('/api/admin/hotels/'+(currentHotel.id||currentHotel.hotel_id), {method:'PATCH', body: JSON.stringify({name, hotel_name:name, location, phone})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,{name,hotel_name:name,location,phone}); document.getElementById('hotelName').innerText=name; document.getElementById('heroHotel').innerText=name; toast('Profile updated'); }catch(e){ toast(e.message); }
+}
+function generateQRs(){
+ const start=parseInt(document.getElementById('startRoom').value);
+ const end=parseInt(document.getElementById('endRoom').value);
+ if(isNaN(start)||isNaN(end)||start>end||end-start>100){ toast('Enter valid room range'); return; }
+ const container=document.getElementById('qrContainer'); container.innerHTML='';
+ const hotelId=currentHotel.id||currentHotel.hotel_id;
+ for(let room=start;room<=end;room++){
+  const card=document.createElement('div'); card.className='qrCard';
+  const code=document.createElement('div'); code.className='qrCode';
+  card.innerHTML=`<b>ROOM ${room}</b><small>Scan for GuestHub</small>`; card.prepend(code); container.appendChild(card);
+  const url=location.origin+'/guest.html?hotel='+encodeURIComponent(hotelId)+'&room='+encodeURIComponent(room);
+  new QRCode(code,{text:url,width:120,height:120,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
+ } toast('QR codes generated');
+}
+function contactVendor(phone){ if(!phone){toast('No phone');return;} window.open('https://wa.me/'+String(phone).replace(/\D/g,''),'_blank'); }
+function sendOrderWhatsApp(id){ const o=ordersCache.find(o=>o.id===id); if(!o) return; const phone=currentHotel.whatsapp_front||currentHotel.phone; if(!phone){toast('No WhatsApp configured');return;} const msg=`GuestHub Order%0ARoom: ${o.room||'-'}%0AService: ${o.service_title||o.service||'-'}%0AAmount: Ksh ${o.amount||0}%0AStatus: ${o.status||'new'}`; window.open('https://wa.me/'+String(phone).replace(/\D/g,'')+'?text='+msg,'_blank'); }
+function openTab(name,btn){ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(name).classList.add('active'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+async function refreshAll(){ toast('Refreshing...'); const r=await secureFetch('/api/gm/dashboard'); const d=await r.json(); ordersCache=d.orders||[]; servicesCache=d.services||[]; renderOrders(); renderServices(); updateRevenue(); toast('Updated'); }
+function logout(){ localStorage.removeItem('hotel_token'); localStorage.removeItem('hotel_id'); localStorage.removeItem('hotel_email'); location.href='/hotel-login.html'; }
+function startRealtime(){ if(!currentHotel) return; supa.channel('hotel-'+(currentHotel.id||currentHotel.hotel_id)).on('postgres_changes',{event:'*',schema:'public',table:'orders',filter:'hotel_id=eq.'+(currentHotel.id||currentHotel.hotel_id)},()=>{loadOrders(); toast('🔔 New order');}).subscribe(); }
+init();
 </script>
-
 </body>
 </html>
