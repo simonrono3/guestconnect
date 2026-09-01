@@ -3,1303 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GuestHub | Kenya's digital touristshub </title>
-
-<meta name="description"
-content="GuestHub connects hotel guests, hotel departments and local vendors through one digital marketplace.">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+<title>GuestHub | Kenya's Digital Tourists Hub</title>
+<meta name="description" content="GuestHub connects hotel guests, hotel departments and local vendors through one digital marketplace.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+:root{--orange:#FF6B35;--green:#0F9D58;--gold:#FFD700;--gold2:#FFA500;--black:#070709;--card:#121214;--border:#232328}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #2a2215 0%, #0a0a0c 55%, #070709 100%);color:#fff;overflow-x:hidden;letter-spacing:-0.01em}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit}
+.container{max-width:1240px;margin:auto;padding:20px}
 
-:root{
-  --orange:#FF6B35;
-  --green:#0F9D58;
-  --gold:#FFD700;
-  --black:#0A0A0A;
-  --card:#141414;
-  --border:#252525;
-}
+/* HEADER - WORLD CLASS GLASS */
+.header{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:16px 4%;background:rgba(10,10,12,0.75);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);letter-spacing:-1px;line-height:0.9}
+.logo span{display:block;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:3.5px;font-weight:700;margin-top:4px;font-family:'Inter'}
+.header-right{display:flex;gap:10px;align-items:center}
+.btn-small{padding:11px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-weight:800;font-size:13px;backdrop-filter:blur(10px);transition:.25s}
+.btn-small:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);transform:translateY(-1px)}
+.order-online-btn{border:none;cursor:pointer;border-radius:12px;padding:12px 20px;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 24px rgba(255,215,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);transition:.25s;font-size:14px}
+.order-online-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,215,0,0.35)}
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+/* HERO - ULTRA PREMIUM */
+.hero{padding:90px 20px 70px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse, rgba(255,215,0,0.15) 0%, rgba(255,107,53,0.08) 40%, transparent 70%);pointer-events:none;filter:blur(20px)}
+.live{display:inline-flex;align-items:center;gap:10px;color:#00FF7F;font-size:13px;letter-spacing:4px;font-weight:900;margin-bottom:22px;background:rgba(0,255,127,0.08);border:1px solid rgba(0,255,127,0.18);padding:8px 16px;border-radius:999px;backdrop-filter:blur(10px)}
+.live-dot{width:8px;height:8px;background:#00FF7F;border-radius:50%;box-shadow:0 0 12px #00FF7F;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.15)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:68px;line-height:0.92;max-width:980px;margin:auto;font-weight:900;letter-spacing:-2px;text-wrap:balance}
+.hero h1 b{background:linear-gradient(135deg,var(--gold) 20%, #fff 60%, var(--gold2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{max-width:760px;margin:24px auto;font-size:20px;line-height:1.7;opacity:.8;font-weight:500}
+.search-wrap{max-width:860px;margin:36px auto;display:flex;gap:10px;padding:10px;background:rgba(24,24,27,0.9);border-radius:20px;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)}
+.search-wrap input{flex:1;border:none;outline:none;background:transparent;color:#fff;padding:14px 16px;font-size:17px;font-weight:600}
+.search-wrap input::placeholder{color:rgba(255,255,255,0.45)}
+.search-wrap select{background:#0f0f11;border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}
 
-html{
-  scroll-behavior:smooth;
-}
+/* STATS - PREMIUM */
+.dashboard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:32px auto 0}
+.d-stat{background:linear-gradient(180deg, rgba(26,26,30,0.9), rgba(14,14,16,0.9));border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:26px;position:relative;overflow:hidden;backdrop-filter:blur(16px)}
+.d-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent)}
+.d-stat h3{font-family:'Playfair Display';color:var(--gold);font-size:42px;font-weight:900;letter-spacing:-1px}
+.d-stat p{margin-top:8px;opacity:.65;font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:800}
 
-body{
-  font-family:'Inter',sans-serif;
-  background:#0A0A0A;
-  color:#fff;
-  overflow-x:hidden;
-}
+.section-title{font-family:'Playfair Display';font-size:38px;font-weight:900;letter-spacing:-1px;margin-bottom:22px}
+.category-filter{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:26px}
+.cat-btn{border:none;cursor:pointer;padding:12px 20px;border-radius:999px;background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.12);font-weight:800;font-size:14px;transition:.25s;backdrop-filter:blur(10px)}
+.cat-btn.active{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 8px 24px rgba(255,215,0,0.3)}
+.cat-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.1)}
 
-a{
-  text-decoration:none;
-  color:inherit;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px}
+.hotel-card{background:linear-gradient(180deg, #18181b, #121214);border:1px solid rgba(255,255,255,0.08);border-radius:24px;overflow:hidden;transition:.4s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative}
+.hotel-card::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1px;background:linear-gradient(135deg, rgba(255,215,0,0.0), rgba(255,215,0,0.3), rgba(255,255,255,0.0));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.4s}
+.hotel-card:hover{transform:translateY(-8px) scale(1.01);border-color:rgba(255,215,0,0.25);box-shadow:0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.15) inset}
+.hotel-card:hover::before{opacity:1}
+.hotel-card img{width:100%;height:230px;object-fit:cover;transition:.6s}
+.hotel-card:hover img{transform:scale(1.05)}
+.hotel-body{padding:20px}
+.hotel-body h3{font-family:'Playfair Display';margin-bottom:8px;font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.location{opacity:.65;margin-bottom:14px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.tag{display:inline-block;margin:4px 4px 0 0;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:11px;font-weight:800;letter-spacing:0.5px}
+.btn{width:100%;margin-top:16px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 10px 24px rgba(255,215,0,0.25);font-size:15px;transition:.25s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(255,215,0,0.35)}
 
-button{
-  font-family:inherit;
-}
+.footer{margin-top:90px;text-align:center;padding:60px 20px;border-top:1px solid rgba(255,255,255,0.08);background:radial-gradient(600px 200px at 50% 0%, rgba(255,215,0,0.06), transparent)}
+.footer h2{color:var(--gold);font-family:'Playfair Display';font-size:28px;letter-spacing:-0.5px}
+.footer p{opacity:.6;margin-top:8px;font-weight:500}
 
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:20px;
-}
-
-.header{
-  position:sticky;
-  top:0;
-  z-index:1000;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:16px 5%;
-  background:rgba(10,10,10,.95);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid #222;
-}
-
-.logo{
-  font-family:'Playfair Display',serif;
-  font-size:30px;
-  font-weight:900;
-  color:var(--gold);
-}
-
-.logo span{
-  display:block;
-  font-size:11px;
-  color:#fff;
-  letter-spacing:3px;
-  font-weight:500;
-}
-
-.header-right{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.order-online-btn{
-  border:none;
-  cursor:pointer;
-  border-radius:12px;
-  padding:12px 20px;
-  font-weight:800;
-  color:#000;
-  background:linear-gradient(
-    135deg,
-    var(--gold),
-    var(--orange)
-  );
-}
-
-.btn-small{
-  padding:10px 14px;
-  border-radius:10px;
-  border:1px solid #333;
-  background:#181818;
-  color:#fff;
-  cursor:pointer;
-  font-weight:700;
-}
-
-.hero{
-  padding:80px 20px 60px;
-  text-align:center;
-  background:
-  radial-gradient(
-    ellipse at top,
-    #2d2418 0%,
-    #0a0a0a 60%
-  );
-}
-
-.live{
-  color:#00FF7F;
-  font-size:13px;
-  letter-spacing:3px;
-  font-weight:800;
-  margin-bottom:15px;
-}
-
-.live-dot{
-  width:8px;
-  height:8px;
-  background:#00FF7F;
-  border-radius:50%;
-  display:inline-block;
-  margin-right:8px;
-}
-
-.hero h1{
-  font-family:'Playfair Display',serif;
-  font-size:58px;
-  line-height:1;
-  max-width:900px;
-  margin:auto;
-}
-
-.hero h1 b{
-  color:var(--gold);
-}
-
-.hero p{
-  max-width:750px;
-  margin:20px auto;
-  opacity:.75;
-  line-height:1.7;
-}
-
-.search-wrap{
-  max-width:800px;
-  margin:30px auto;
-  display:flex;
-  gap:10px;
-  padding:8px;
-  background:#181818;
-  border-radius:16px;
-  border:1px solid var(--border);
-}
-
-.search-wrap input{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-  color:#fff;
-  padding:12px;
-}
-
-.search-wrap select{
-  background:#111;
-  border:1px solid #333;
-  color:#fff;
-  border-radius:10px;
-  padding:10px;
-}
-
-.dashboard-stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-  max-width:800px;
-  margin:30px auto 0;
-}
-
-.d-stat{
-  background:linear-gradient(
-    180deg,
-    #1a1a1a,
-    #121212
-  );
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:20px;
-}
-
-.d-stat h3{
-  font-family:'Playfair Display';
-  color:var(--gold);
-  font-size:30px;
-}
-
-.d-stat p{
-  margin-top:6px;
-  opacity:.6;
-  font-size:12px;
-  text-transform:uppercase;
-}
-
-.section-title{
-  font-family:'Playfair Display';
-  font-size:32px;
-  margin-bottom:20px;
-}
-
-.category-filter{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
-  padding:20px;
-}
-
-.cat-btn{
-  border:none;
-  cursor:pointer;
-  padding:10px 18px;
-  border-radius:30px;
-  background:#1a1a1a;
-  color:#fff;
-  border:1px solid #333;
-}
-
-.cat-btn.active{
-  background:var(--gold);
-  color:#000;
-  border-color:var(--gold);
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:
-  repeat(auto-fill,minmax(320px,1fr));
-  gap:20px;
-}
-
-.hotel-card{
-  background:#141414;
-  border:1px solid var(--border);
-  border-radius:20px;
-  overflow:hidden;
-  transition:.3s;
-  cursor:pointer;
-}
-
-.hotel-card:hover{
-  transform:translateY(-6px);
-  border-color:var(--gold);
-}
-
-.hotel-card img{
-  width:100%;
-  height:220px;
-  object-fit:cover;
-}
-
-.hotel-body{
-  padding:18px;
-}
-
-.hotel-body h3{
-  font-family:'Playfair Display';
-  margin-bottom:8px;
-}
-
-.location{
-  opacity:.6;
-  margin-bottom:12px;
-}
-
-.tag{
-  display:inline-block;
-  margin:4px;
-  padding:4px 8px;
-  border-radius:20px;
-  background:#1a1a1a;
-  border:1px solid #333;
-  font-size:11px;
-}
-
-.btn{
-  width:100%;
-  margin-top:12px;
-  border:none;
-  border-radius:12px;
-  padding:12px;
-  cursor:pointer;
-  font-weight:800;
-  color:#000;
-  background:
-  linear-gradient(
-    135deg,
-    var(--gold),
-    orange
-  );
-}
-
-.footer{
-  margin-top:80px;
-  text-align:center;
-  padding:50px 20px;
-  border-top:1px solid #222;
-  opacity:.75;
-}
+/* MODAL PREMIUM */
+#orderModal{backdrop-filter:blur(18px)}
+.modal-box{background:linear-gradient(180deg,#1c1c20,#121214)!important;border:1px solid rgba(255,255,255,0.12)!important;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+.modal-box input,.modal-box select,.modal-box textarea{width:100%;background:#0f0f11;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:14px;border-radius:12px;margin-top:10px;font-size:15px;font-weight:600;outline:none}
+.modal-box textarea{resize:none}
 
 @media(max-width:768px){
-
-.hero h1{
-  font-size:34px;
+.hero{padding:70px 18px 50px}
+.hero h1{font-size:42px;line-height:0.95}
+.hero p{font-size:18px}
+.dashboard-stats{grid-template-columns:1fr;gap:14px}
+.search-wrap{flex-direction:column}
+.header{padding:16px 4%;flex-direction:column;gap:14px}
+.header-right{width:100%;justify-content:center;flex-wrap:wrap}
+.grid{grid-template-columns:1fr}
 }
-
-.dashboard-stats{
-  grid-template-columns:1fr;
-}
-
-.search-wrap{
-  flex-direction:column;
-}
-
-.logo{
-  font-size:24px;
-}
-
-}
-
- /* ===== GUESTHUB PREMIUM TYPOGRAPHY UPGRADE ===== */
-
-.hero{
-  padding:100px 20px 80px;
-}
-
-.hero h1{
-  font-size:72px;
-  line-height:0.95;
-  max-width:1000px;
-  margin:auto;
-}
-
-.hero p{
-  font-size:22px;
-  line-height:1.8;
-  max-width:850px;
-  margin:30px auto;
-  opacity:.9;
-}
-
-.live{
-  font-size:18px;
-  letter-spacing:5px;
-}
-
-.logo{
-  font-size:42px;
-}
-
-.logo span{
-  font-size:14px;
-  letter-spacing:4px;
-}
-
-.order-online-btn{
-  padding:16px 28px;
-  font-size:18px;
-}
-
-.btn-small{
-  padding:14px 20px;
-  font-size:15px;
-}
-
-.section-title{
-  font-size:42px;
-}
-
-.search-wrap{
-  max-width:900px;
-}
-
-.search-wrap input{
-  font-size:18px;
-  padding:18px;
-}
-
-.search-wrap select{
-  font-size:17px;
-  padding:16px;
-}
-
-.d-stat{
-  padding:30px;
-}
-
-.d-stat h3{
-  font-size:52px;
-}
-
-.d-stat p{
-  font-size:15px;
-  letter-spacing:2px;
-}
-
-.hotel-body h3{
-  font-size:26px;
-}
-
-.location{
-  font-size:15px;
-}
-
-.tag{
-  font-size:12px;
-  padding:6px 12px;
-}
-
-.btn{
-  font-size:16px;
-  padding:15px;
-}
-
-/* ===== MOBILE ===== */
-
-@media(max-width:768px){
-
-.header{
-  padding:18px 4%;
-}
-
-.logo{
-  font-size:34px;
-}
-
-.logo span{
-  font-size:13px;
-  line-height:1.5;
-}
-
-.hero{
-  padding:70px 20px 50px;
-}
-
-.hero h1{
-  font-size:58px;
-  line-height:0.95;
-}
-
-.hero p{
-  font-size:22px;
-  line-height:1.7;
-}
-
-.live{
-  font-size:18px;
-}
-
-.search-wrap{
-  flex-direction:column;
-}
-
-.search-wrap input,
-.search-wrap select{
-  font-size:18px;
-}
-
-.dashboard-stats{
-  grid-template-columns:1fr;
-  gap:18px;
-}
-
-.d-stat h3{
-  font-size:50px;
-}
-
-.d-stat p{
-  font-size:15px;
-}
-
-.order-online-btn{
-  font-size:17px;
-}
-
-.btn-small{
-  font-size:15px;
-}
-
-.section-title{
-  font-size:36px;
-}
-
-.hotel-body h3{
-  font-size:24px;
-}
-
-}
-
-/* ===== LARGE SCREENS ===== */
-
-@media(min-width:1200px){
-
-.hero h1{
-  font-size:86px;
-}
-
-.hero p{
-  font-size:24px;
-}
-
-} 
-
-/* Fix mobile centering */
-
-.hero,
-.hero *{
-  text-align:center;
-}
-
-.hero h1{
-  display:block;
-  width:100%;
-  max-width:700px;
-  margin:0 auto;
-}
-
-.hero p{
-  width:100%;
-  max-width:600px;
-  margin:20px auto;
-}
-
-.search-wrap{
-  margin-left:auto;
-  margin-right:auto;
-}
-
-.dashboard-stats{
-  margin-left:auto;
-  margin-right:auto;
-}
-
-@media(max-width:768px){
-
-  .header{
-    flex-direction:column;
-    gap:15px;
-    justify-content:center;
-    align-items:center;
-  }
-
-  .header-right{
-    width:100%;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-
-  .hero h1{
-    font-size:44px;
-    text-align:center;
-  }
-
-  .hero p{
-    font-size:18px;
-    text-align:center;
-  }
-
-}
-  
-  
 </style>
 </head>
 <body>
+
 <div class="header">
-
-  <div class="logo">
-    GUESTHUB
-    <span>KENYA'S HOTEL MARKETPLACE</span>
-  </div>
-
+  <div class="logo">GUESTHUB<span>KENYA'S HOTEL MARKETPLACE</span></div>
   <div class="header-right">
-
-    <button
-      class="btn-small"
-      onclick="location.href='/hotel-signup.html'">
-      Partner Hotel
-    </button>
-
-    <button
-      class="btn-small"
-      onclick="location.href='/vendor-signup.html'">
-      Vendor Join
-    </button>
-
-
-<button
- class="btn-small"
- onclick="location.href='/vendor-login.html'">
- Vendor Login
-</button>
-    
-    
-    <button
-      class="order-online-btn"
-      onclick="openOrder()">
-      🛒 Guest Order
-    </button>
-
-    <select
-      id="langSelect"
-      onchange="changeLang(this.value)"
-      style="
-      background:#1A1A1A;
-      color:#fff;
-      border:1px solid #333;
-      border-radius:8px;
-      padding:8px;">
-      <option value="en">EN</option>
-      <option value="sw">SW</option>
+    <button class="btn-small" onclick="location.href='/hotel-signup.html'">Partner Hotel</button>
+    <button class="btn-small" onclick="location.href='/vendor-signup.html'">Vendor Join</button>
+    <button class="btn-small" onclick="location.href='/vendor-login.html'">Vendor Login</button>
+    <button class="order-online-btn" onclick="openOrder()">🛒 Guest Order</button>
+    <select id="langSelect" onchange="changeLang(this.value)" style="background:#1A1A1A;color:#fff;border:1px solid #333;border-radius:10px;padding:10px;font-weight:800">
+      <option value="en">EN</option><option value="sw">SW</option>
     </select>
-
   </div>
-
 </div>
 
 <section class="hero">
-
-  <div class="live">
-    <span class="live-dot"></span>
-    LIVE FROM DIANI KENYA 🇰🇪 
-  </div>
-
-  <h1 id="heroTitle">
-    CONNECTING EVERY GUEST 
-    <b>TO EVERYTHING</b>
-  </h1>
-
-  <p id="heroSub">
-    GuestHub connects hotel guests,
-    hotel departments and local vendors
-    through one powerful QR-powered platform.
-  </p>
-
+  <div class="live"><span class="live-dot"></span>LIVE FROM DIANI KENYA 🇰🇪</div>
+  <h1 id="heroTitle">CONNECTING EVERY GUEST <b>TO EVERYTHING</b></h1>
+  <p id="heroSub">GuestHub connects hotel guests, hotel departments and local vendors through one powerful QR-powered platform.</p>
   <div class="search-wrap">
-
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="Search hotel or destination..."
-      onkeyup="filterHotels()">
-
-    <select
-      id="locationFilter"
-      onchange="filterHotels()">
-      <option value="">
-        All Destinations
-      </option>
-    </select>
-
+    <input id="searchInput" type="text" placeholder="Search hotel or destination..." onkeyup="filterHotels()">
+    <select id="locationFilter" onchange="filterHotels()"><option value="">All Destinations</option></select>
   </div>
-
   <div class="dashboard-stats">
-
-    <div class="d-stat">
-      <h3 id="hotelCount">0</h3>
-      <p>Partner Hotels</p>
-    </div>
-
-    <div class="d-stat">
-      <h3>24/7</h3>
-      <p>Guest Support</p>
-    </div>
-
-    <div class="d-stat">
-      <h3>100%</h3>
-      <p>WhatsApp Enabled</p>
-    </div>
-
+    <div class="d-stat"><h3 id="hotelCount">0</h3><p>Partner Hotels</p></div>
+    <div class="d-stat"><h3>24/7</h3><p>Guest Support</p></div>
+    <div class="d-stat"><h3>100%</h3><p>WhatsApp Enabled</p></div>
   </div>
-
 </section>
 
 <section class="container">
-
-  <div style="
-  text-align:center;
-  margin-bottom:30px;">
-
-    <button
-      class="btn-small"
-      onclick="location.href='/hotel-signup.html'">
-      🏨 Hotel Signup
-    </button>
-
-    <button
-      class="btn-small"
-      onclick="location.href='/hotel-login.html'">
-      🏢 Hotel Login
-    </button>
-
-    <button
-      class="btn-small"
-      onclick="location.href='/vendor-signup.html'">
-      🚚 Vendor Network
-    </button>
-
+  <div style="text-align:center;margin-bottom:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button class="btn-small" onclick="location.href='/hotel-signup.html'">🏨 Hotel Signup</button>
+    <button class="btn-small" onclick="location.href='/hotel-login.html'">🏢 Hotel Login</button>
+    <button class="btn-small" onclick="location.href='/vendor-signup.html'">🚚 Vendor Network</button>
   </div>
-
 </section>
 
 <div class="category-filter">
-
-  <button
-    class="cat-btn active"
-    onclick="filterByCategory('All',this)">
-    All Hotels
-  </button>
-
-  <button
-    class="cat-btn"
-    onclick="filterByCategory('5Star',this)">
-    ⭐ Luxury
-  </button>
-
-  <button
-    class="cat-btn"
-    onclick="filterByCategory('Safari',this)">
-    🦁 Safari
-  </button>
-
-  <button
-    class="cat-btn"
-    onclick="filterByCategory('Beach',this)">
-    🏖 Beach
-  </button>
-
-  <button
-    class="cat-btn"
-    onclick="filterByCategory('City',this)">
-    🏙 City
-  </button>
-
+  <button class="cat-btn active" onclick="filterByCategory('All',this)">All Hotels</button>
+  <button class="cat-btn" onclick="filterByCategory('5Star',this)">⭐ Luxury</button>
+  <button class="cat-btn" onclick="filterByCategory('Safari',this)">🦁 Safari</button>
+  <button class="cat-btn" onclick="filterByCategory('Beach',this)">🏖 Beach</button>
+  <button class="cat-btn" onclick="filterByCategory('City',this)">🏙 City</button>
 </div>
 
 <section class="container">
-
-  <h2
-    class="section-title"
-    id="sectionTitle">
-    Partner Hotels
-  </h2>
-
-  <div
-    id="hotelsGrid"
-    class="grid">
-  </div>
-
-  <div
-    id="noResults"
-    style="
-    display:none;
-    text-align:center;
-    padding:60px;
-    opacity:.6;">
-    No hotels found.
-  </div>
-
+  <h2 class="section-title" id="sectionTitle">Partner Hotels</h2>
+  <div id="hotelsGrid" class="grid"></div>
+  <div id="noResults" style="display:none;text-align:center;padding:60px;opacity:.6">No hotels found.</div>
 </section>
 
-  <!-- GUEST ORDER MODAL -->
-
-<div id="orderModal"
-style="
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.85);
-backdrop-filter:blur(10px);
-z-index:9999;
-justify-content:center;
-align-items:center;
-padding:20px;"
-onclick="if(event.target===this)closeOrder()">
-
-  <div class="modal-box"
-  style="
-  width:100%;
-  max-width:500px;
-  background:#141414;
-  border:1px solid #333;
-  border-radius:20px;
-  padding:24px;">
-
-    <h2 style="
-    color:#FFD700;
-    margin-bottom:15px;
-    font-family:'Playfair Display';">
-      Guest Order
-    </h2>
-
-    <p style="opacity:.6;margin-bottom:15px;">
-      Send requests directly to hotel departments through WhatsApp.
-    </p>
-
+<div id="orderModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;justify-content:center;align-items:center;padding:20px" onclick="if(event.target===this)closeOrder()">
+  <div class="modal-box" style="width:100%;max-width:500px;background:#141414;border:1px solid #333;border-radius:20px;padding:24px">
+    <h2 style="color:#FFD700;margin-bottom:15px;font-family:'Playfair Display'">Guest Order</h2>
+    <p style="opacity:.6;margin-bottom:15px">Send requests directly to hotel departments through WhatsApp.</p>
     <select id="orderHotel"></select>
-
-    <div style="
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:10px;">
-
-      <input
-      id="roomNo"
-      placeholder="Room Number">
-
-      <input
-      id="guestName"
-      placeholder="Guest Name">
-
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <input id="roomNo" placeholder="Room Number">
+      <input id="guestName" placeholder="Guest Name">
     </div>
-
-    <select
-    id="deptSelect"
-    style="margin-top:10px;">
-
-      <option value="kitchen">
-        Kitchen / Room Service
-      </option>
-
-      <option value="housekeeping">
-        Housekeeping
-      </option>
-
-      <option value="laundry">
-        Laundry
-      </option>
-
-      <option value="spa">
-        Spa
-      </option>
-
-      <option value="taxi">
-        Taxi & Tours
-      </option>
-
-      <option value="front">
-        Front Office
-      </option>
-
+    <select id="deptSelect" style="margin-top:10px">
+      <option value="kitchen">Kitchen / Room Service</option><option value="housekeeping">Housekeeping</option><option value="laundry">Laundry</option><option value="spa">Spa</option><option value="taxi">Taxi & Tours</option><option value="front">Front Office</option>
     </select>
-
-    <textarea
-    id="orderText"
-    placeholder="Type your request..."
-    style="
-    width:100%;
-    margin-top:10px;
-    min-height:100px;"></textarea>
-
-    <button
-    class="btn"
-    onclick="sendWA()">
-      Send to WhatsApp
-    </button>
-
-    <button
-    onclick="closeOrder()"
-    style="
-    width:100%;
-    margin-top:10px;
-    background:none;
-    border:none;
-    color:#888;
-    cursor:pointer;">
-      Close
-    </button>
-
+    <textarea id="orderText" placeholder="Type your request..." style="width:100%;margin-top:10px;min-height:100px"></textarea>
+    <button class="btn" onclick="sendWA()">Send to WhatsApp</button>
+    <button onclick="closeOrder()" style="width:100%;margin-top:10px;background:none;border:none;color:#888;cursor:pointer;font-weight:700">Close</button>
   </div>
-
 </div>
 
 <footer class="footer">
-
-  <h2 style="
-  color:#FFD700;
-  font-family:'Playfair Display';">
-    GUESTHUB
-  </h2>
-
-  <p>
-    Africa's In-Room Digital Marketplace
-  </p>
-
-  <p>
-    Hotels • Resorts • Safari Lodges • Apartments • Camps
-  </p>
-
-  <p style="margin-top:10px;">
-    © 2026 GuestHub Technologies
-  </p>
-
+  <h2>GUESTHUB</h2>
+  <p>Africa's In-Room Digital Marketplace</p>
+  <p>Hotels • Resorts • Safari Lodges • Apartments • Camps</p>
+  <p style="margin-top:10px">© 2026 GuestHub Technologies</p>
 </footer>
 
 <script>
-
-let allHotels = [];
-let currentCategory = "All";
-
-const translations = {
-
-  en:{
-    heroTitle:
-      "Africa's Leading <b>In-Room Digital Marketplace</b>",
-
-    heroSub:
-      "GuestHub connects hotel guests, departments and local vendors through one QR-powered platform.",
-
-    sectionTitle:
-      "Partner Hotels"
-  },
-
-  sw:{
-    heroTitle:
-      "Soko Kubwa la <b>Huduma za Hoteli Afrika</b>",
-
-    heroSub:
-      "GuestHub inaunganisha wageni wa hoteli, idara za hoteli na wauzaji kupitia mfumo mmoja.",
-
-    sectionTitle:
-      "Hoteli Washirika"
-  }
-
-};
-
-function changeLang(lang){
-
-  localStorage.setItem(
-    "guesthub_lang",
-    lang
-  );
-
-  const t = translations[lang];
-
-  if(!t) return;
-
-  document.getElementById(
-    "heroTitle"
-  ).innerHTML = t.heroTitle;
-
-  document.getElementById(
-    "heroSub"
-  ).innerText = t.heroSub;
-
-  document.getElementById(
-    "sectionTitle"
-  ).innerText = t.sectionTitle;
-
-}
-
-function openOrder(){
-  document.getElementById(
-    "orderModal"
-  ).style.display = "flex";
-}
-
-function closeOrder(){
-  document.getElementById(
-    "orderModal"
-  ).style.display = "none";
-}
-
-function goToHotel(id){
-  window.location.href =
-  `/guest.html?hotelId=${id}`;
-}
-
-function filterByCategory(category,el){
-
-  currentCategory = category;
-
-  document
-  .querySelectorAll(".cat-btn")
-  .forEach(btn=>{
-    btn.classList.remove("active");
-  });
-
-  el.classList.add("active");
-
-  filterHotels();
-}
-
-function filterHotels(){
-
-  const search =
-  document
-  .getElementById("searchInput")
-  .value
-  .toLowerCase();
-
-  const location =
-  document
-  .getElementById("locationFilter")
-  .value;
-
-  let filtered =
-  allHotels.filter(h=>{
-
-    const name =
-    (h.hotel_name || h.name || "")
-    .toLowerCase();
-
-    const loc =
-    (h.location || "")
-    .toLowerCase();
-
-    return (
-      name.includes(search) ||
-      loc.includes(search)
-    );
-
-  });
-
-  if(location){
-
-    filtered =
-    filtered.filter(
-      h=>h.location===location
-    );
-
-  }
-
-  if(currentCategory!=="All"){
-
-    filtered =
-    filtered.filter(
-      h=>
-      (h.hotel_type ||
-       h.category) === currentCategory
-    );
-
-  }
-
-  renderHotels(filtered);
-}
-
-function renderHotels(hotels){
-
-  document.getElementById(
-    "hotelCount"
-  ).innerText =
-  allHotels.length;
-
-  const grid =
-  document.getElementById(
-    "hotelsGrid"
-  );
-
-  if(!hotels.length){
-
-    grid.innerHTML = "";
-
-    document.getElementById(
-      "noResults"
-    ).style.display="block";
-
-    return;
-  }
-
-  document.getElementById(
-    "noResults"
-  ).style.display="none";
-
-  grid.innerHTML =
-  hotels.map(h=>`
-
-  <div
-  class="hotel-card"
-  onclick="goToHotel('${h.hotel_id || h.id}')">
-
-    <img
-    src="${
-      h.image ||
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'
-    }"
-    onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'">
-
-    <div class="hotel-body">
-
-      <h3>
-        ${h.hotel_name || h.name}
-      </h3>
-
-      <div class="location">
-        📍 ${h.location || 'Kenya'}
-      </div>
-
-      <div>
-        <span class="tag">Food</span>
-        <span class="tag">Spa</span>
-        <span class="tag">Laundry</span>
-      </div>
-
-      <button class="btn">
-        Enter Hotel
-      </button>
-
-    </div>
-
-  </div>
-
-  `).join("");
-
-}
-
-function sendWA(){
-
-  const hotelId =
-  document.getElementById(
-    "orderHotel"
-  ).value;
-
-  const hotel =
-  allHotels.find(
-    h=>
-    (h.hotel_id||h.id)
-    == hotelId
-  );
-
-  const room =
-  document.getElementById(
-    "roomNo"
-  ).value || "N/A";
-
-  const guest =
-  document.getElementById(
-    "guestName"
-  ).value || "Guest";
-
-  const dept =
-  document.getElementById(
-    "deptSelect"
-  ).value;
-
-  const order =
-  document.getElementById(
-    "orderText"
-  ).value;
-
-  let phone =
-  (hotel?.phone ||
-  "254700000000")
-  .replace(/\D/g,'');
-
-  const message =
-  encodeURIComponent(
-
-`GUESTHUB ORDER
-
-Hotel: ${hotel?.hotel_name || hotel?.name}
-
-Room: ${room}
-
-Guest: ${guest}
-
-Department: ${dept}
-
-Request:
-${order}`
-
-  );
-
-  window.open(
-    `https://wa.me/${phone}?text=${message}`,
-    "_blank"
-  );
-}
-
-fetch('/api/data')
-
-.then(r=>{
-
-  if(!r.ok){
-    throw new Error();
-  }
-
-  return r.json();
-
-})
-
-.then(data=>{
-
-  allHotels =
-  data.hotels || data;
-
-  const locationSelect =
-  document.getElementById(
-    "locationFilter"
-  );
-
-  const orderHotel =
-  document.getElementById(
-    "orderHotel"
-  );
-
-  const locations =
-  [...new Set(
-    allHotels
-    .map(h=>h.location)
-    .filter(Boolean)
-  )];
-
-  locations.forEach(loc=>{
-
-    locationSelect.innerHTML +=
-    `<option value="${loc}">
-      ${loc}
-    </option>`;
-
-  });
-
-  allHotels.forEach(h=>{
-
-    orderHotel.innerHTML +=
-    `<option value="${h.hotel_id || h.id}">
-      ${h.hotel_name || h.name}
-    </option>`;
-
-  });
-
-  renderHotels(allHotels);
-
-})
-
-.catch(()=>{
-
-  allHotels=[{
-
-    id:'demo',
-
-    hotel_name:
-    'Baobab Beach Resort',
-
-    location:'Diani',
-
-    hotel_type:'Beach',
-
-    phone:'254712345678'
-
-  }];
-
-  document.getElementById(
-    "orderHotel"
-  ).innerHTML=
-  `<option value="demo">
-    Baobab Beach Resort
-  </option>`;
-
-  renderHotels(allHotels);
-
-});
-
-const savedLang =
-localStorage.getItem(
-  "guesthub_lang"
-) || "en";
-
-document.getElementById(
-  "langSelect"
-).value = savedLang;
-
-changeLang(savedLang);
-
+let allHotels = []; let currentCategory = "All";
+const translations = {en:{heroTitle:"CONNECTING EVERY GUEST <b>TO EVERYTHING</b>",heroSub:"GuestHub connects hotel guests, hotel departments and local vendors through one powerful QR-powered platform.",sectionTitle:"Partner Hotels"},sw:{heroTitle:"Soko Kubwa la <b>Huduma za Hoteli Afrika</b>",heroSub:"GuestHub inaunganisha wageni wa hoteli, idara za hoteli na wauzaji kupitia mfumo mmoja.",sectionTitle:"Hoteli Washirika"}};
+function changeLang(lang){localStorage.setItem("guesthub_lang",lang);const t=translations[lang];if(!t)return;document.getElementById("heroTitle").innerHTML=t.heroTitle;document.getElementById("heroSub").innerText=t.heroSub;document.getElementById("sectionTitle").innerText=t.sectionTitle;}
+function openOrder(){document.getElementById("orderModal").style.display="flex"}
+function closeOrder(){document.getElementById("orderModal").style.display="none"}
+function goToHotel(id){window.location.href=`/guest.html?hotelId=${id}`}
+function filterByCategory(category,el){currentCategory=category;document.querySelectorAll(".cat-btn").forEach(btn=>btn.classList.remove("active"));el.classList.add("active");filterHotels()}
+function filterHotels(){const search=document.getElementById("searchInput").value.toLowerCase();const location=document.getElementById("locationFilter").value;let filtered=allHotels.filter(h=>{const name=(h.hotel_name||h.name||"").toLowerCase();const loc=(h.location||"").toLowerCase();return(name.includes(search)||loc.includes(search))});if(location){filtered=filtered.filter(h=>h.location===location)}if(currentCategory!=="All"){filtered=filtered.filter(h=>(h.hotel_type||h.category)===currentCategory)}renderHotels(filtered)}
+function renderHotels(hotels){document.getElementById("hotelCount").innerText=allHotels.length;const grid=document.getElementById("hotelsGrid");if(!hotels.length){grid.innerHTML="";document.getElementById("noResults").style.display="block";return}document.getElementById("noResults").style.display="none";grid.innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.hotel_id||h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'"><div class="hotel-body"><h3>${h.hotel_name||h.name}</h3><div class="location">📍 ${h.location||'Kenya'}</div><div><span class="tag">Food</span><span class="tag">Spa</span><span class="tag">Laundry</span></div><button class="btn">Enter Hotel</button></div></div>`).join("")}
+function sendWA(){const hotelId=document.getElementById("orderHotel").value;const hotel=allHotels.find(h=>(h.hotel_id||h.id)==hotelId);const room=document.getElementById("roomNo").value||"N/A";const guest=document.getElementById("guestName").value||"Guest";const dept=document.getElementById("deptSelect").value;const order=document.getElementById("orderText").value;let phone=(hotel?.phone||"254700000000").replace(/\D/g,'');const message=encodeURIComponent(`GUESTHUB ORDER\n\nHotel: ${hotel?.hotel_name||hotel?.name}\nRoom: ${room}\nGuest: ${guest}\nDepartment: ${dept}\nRequest:\n${order}`);window.open(`https://wa.me/${phone}?text=${message}`,"_blank")}
+fetch('/api/data').then(r=>{if(!r.ok)throw new Error();return r.json()}).then(data=>{allHotels=data.hotels||data;const locationSelect=document.getElementById("locationFilter");const orderHotel=document.getElementById("orderHotel");const locations=[...new Set(allHotels.map(h=>h.location).filter(Boolean))];locations.forEach(loc=>{locationSelect.innerHTML+=`<option value="${loc}">${loc}</option>`});allHotels.forEach(h=>{orderHotel.innerHTML+=`<option value="${h.hotel_id||h.id}">${h.hotel_name||h.name}</option>`});renderHotels(allHotels)}).catch(()=>{allHotels=[{id:'demo',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach',phone:'254712345678'}];document.getElementById("orderHotel").innerHTML=`<option value="demo">Baobab Beach Resort</option>`;renderHotels(allHotels)});
+const savedLang=localStorage.getItem("guesthub_lang")||"en";document.getElementById("langSelect").value=savedLang;changeLang(savedLang);
 </script>
-
 </body>
 </html>
-
-  
-
-  
-
-  
-  
