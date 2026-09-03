@@ -1,157 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GuestHub | Kenya's Digital Tourists Hub</title>
-<meta name="description" content="GuestHub connects hotel guests, hotel departments and local vendors through one digital marketplace.">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GuestHub | Hotel OS - Kenya's Hotel Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--orange:#FF6B35;--green:#0F9D58;--gold:#FFD700;--gold2:#FFA500;--black:#070709;--card:#121214;--border:#232328}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #2a2215 0%, #0a0a0c 55%, #070709 100%);color:#fff;overflow-x:hidden;letter-spacing:-0.01em}
+:root{--gold:#FFD700;--gold2:#FFA500;--lime:#c6ff00;--black:#070709;--card:#121214;--border:#232328}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:radial-gradient(1200px 600px at 50% -10%, #2a2215 0%, #0a0a0c 55%, #070709 100%);color:#fff;overflow-x:hidden}
 a{text-decoration:none;color:inherit}
-button{font-family:inherit}
 .container{max-width:1240px;margin:auto;padding:20px}
-
-/* HEADER - WORLD CLASS GLASS */
-.header{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:16px 4%;background:rgba(10,10,12,0.75);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.08)}
-.logo{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);letter-spacing:-1px;line-height:0.9}
-.logo span{display:block;font-size:11px;color:rgba(255,255,255,0.7);letter-spacing:3.5px;font-weight:700;margin-top:4px;font-family:'Inter'}
-.header-right{display:flex;gap:10px;align-items:center}
-.btn-small{padding:11px 16px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-weight:800;font-size:13px;backdrop-filter:blur(10px);transition:.25s}
-.btn-small:hover{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.25);transform:translateY(-1px)}
-.btn-gold{border:none;cursor:pointer;border-radius:12px;padding:12px 20px;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 24px rgba(255,215,0,0.25), inset 0 1px 0 rgba(255,255,255,0.6);transition:.25s;font-size:14px}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(255,215,0,0.35)}
-
-/* HERO - ULTRA PREMIUM */
-.hero{padding:90px 20px 70px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse, rgba(255,215,0,0.15) 0%, rgba(255,107,53,0.08) 40%, transparent 70%);pointer-events:none;filter:blur(20px)}
-.live{display:inline-flex;align-items:center;gap:10px;color:#00FF7F;font-size:13px;letter-spacing:4px;font-weight:900;margin-bottom:22px;background:rgba(0,255,127,0.08);border:1px solid rgba(0,255,127,0.18);padding:8px 16px;border-radius:999px;backdrop-filter:blur(10px)}
-.live-dot{width:8px;height:8px;background:#00FF7F;border-radius:50%;box-shadow:0 0 12px #00FF7F;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.15)}}
-.hero h1{font-family:'Playfair Display',serif;font-size:68px;line-height:0.92;max-width:980px;margin:auto;font-weight:900;letter-spacing:-2px;text-wrap:balance}
+.header{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:14px 4%;background:rgba(10,10,12,0.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--gold);letter-spacing:-1px;line-height:.9}
+.logo span{display:block;font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:3.5px;font-weight:700;margin-top:4px;font-family:'Inter'}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-small{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-weight:800;font-size:12px;backdrop-filter:blur(10px)}
+.btn-gold{border:none;cursor:pointer;border-radius:12px;padding:11px 18px;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 24px rgba(255,215,0,0.25);font-size:13px}
+.btn-lime{border:none;cursor:pointer;border-radius:12px;padding:11px 18px;font-weight:900;color:#000;background:var(--lime);font-size:13px}
+.hero{padding:70px 20px 30px;text-align:center;position:relative}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#141414;border:1px solid rgba(198,255,0,.35);padding:7px 14px;border-radius:999px;font-size:10px;font-weight:900;color:var(--lime);letter-spacing:1px}
+.dot{width:7px;height:7px;background:var(--lime);border-radius:50%;box-shadow:0 0 10px var(--lime);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6;transform:scale(1.2)}}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(38px,8vw,68px);line-height:0.92;max-width:980px;margin:18px auto;font-weight:900;letter-spacing:-2px}
 .hero h1 b{background:linear-gradient(135deg,var(--gold) 20%, #fff 60%, var(--gold2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero p{max-width:760px;margin:24px auto;font-size:20px;line-height:1.7;opacity:.8;font-weight:500}
-.search-wrap{max-width:860px;margin:36px auto;display:flex;gap:10px;padding:10px;background:rgba(24,24,27,0.9);border-radius:20px;border:1px solid rgba(255,255,255,0.1);backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)}
-.search-wrap input{flex:1;border:none;outline:none;background:transparent;color:#fff;padding:14px 16px;font-size:17px;font-weight:600}
-.search-wrap input::placeholder{color:rgba(255,255,255,0.45)}
-.search-wrap select{background:#0f0f11;border:1px solid rgba(255,255,255,0.12);color:#fff;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14px}
-
-/* STATS - PREMIUM */
-.dashboard-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:860px;margin:32px auto 0}
-.d-stat{background:linear-gradient(180deg, rgba(26,26,30,0.9), rgba(14,14,16,0.9));border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:26px;position:relative;overflow:hidden;backdrop-filter:blur(16px)}
-.d-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent)}
-.d-stat h3{font-family:'Playfair Display';color:var(--gold);font-size:42px;font-weight:900;letter-spacing:-1px}
-.d-stat p{margin-top:8px;opacity:.65;font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:800}
-
-.section-title{font-family:'Playfair Display';font-size:38px;font-weight:900;letter-spacing:-1px;margin-bottom:22px}
-.category-filter{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:26px}
-.cat-btn{border:none;cursor:pointer;padding:12px 20px;border-radius:999px;background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.12);font-weight:800;font-size:14px;transition:.25s;backdrop-filter:blur(10px)}
-.cat-btn.active{background:var(--gold);color:#000;border-color:var(--gold);box-shadow:0 8px 24px rgba(255,215,0,0.3)}
-.cat-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,0.1)}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:22px}
-.hotel-card{background:linear-gradient(180deg, #18181b, #121214);border:1px solid rgba(255,255,255,0.08);border-radius:24px;overflow:hidden;transition:.4s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative}
-.hotel-card::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1px;background:linear-gradient(135deg, rgba(255,215,0,0.0), rgba(255,215,0,0.3), rgba(255,255,255,0.0));-webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.4s}
-.hotel-card:hover{transform:translateY(-8px) scale(1.01);border-color:rgba(255,215,0,0.25);box-shadow:0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,215,0,0.15) inset}
-.hotel-card:hover::before{opacity:1}
-.hotel-card img{width:100%;height:230px;object-fit:cover;transition:.6s}
-.hotel-card:hover img{transform:scale(1.05)}
-.hotel-body{padding:20px}
-.hotel-body h3{font-family:'Playfair Display';margin-bottom:8px;font-size:24px;font-weight:800;letter-spacing:-0.5px}
-.location{opacity:.65;margin-bottom:14px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
-.tag{display:inline-block;margin:4px 4px 0 0;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:11px;font-weight:800;letter-spacing:0.5px}
-.btn{width:100%;margin-top:16px;border:none;border-radius:14px;padding:14px;cursor:pointer;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 10px 24px rgba(255,215,0,0.25);font-size:15px;transition:.25s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(255,215,0,0.35)}
-
-.footer{margin-top:90px;text-align:center;padding:60px 20px;border-top:1px solid rgba(255,255,255,0.08);background:radial-gradient(600px 200px at 50% 0%, rgba(255,215,0,0.06), transparent)}
-.footer h2{color:var(--gold);font-family:'Playfair Display';font-size:28px;letter-spacing:-0.5px}
-.footer p{opacity:.6;margin-top:8px;font-weight:500}
-
-@media(max-width:768px){
-.hero{padding:70px 18px 50px}
-.hero h1{font-size:42px;line-height:0.95}
-.hero p{font-size:18px}
-.dashboard-stats{grid-template-columns:1fr;gap:14px}
-.search-wrap{flex-direction:column}
-.header{padding:16px 4%;flex-direction:column;gap:14px}
-.header-right{width:100%;justify-content:center;flex-wrap:wrap}
-.grid{grid-template-columns:1fr}
-}
+.hero h1 span.lime{color:var(--lime);-webkit-text-fill-color:var(--lime)}
+.hero p{max-width:720px;margin:18px auto;font-size:17px;line-height:1.6;opacity:.75}
+.heroBtns{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.social{margin-top:28px;font-size:10px;letter-spacing:2px;font-weight:800;opacity:.7}.social b{color:var(--lime)}
+.logos{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.logos span{background:#111;border:1px solid #222;padding:7px 12px;border-radius:999px;font-size:11px;font-weight:800;opacity:.8}
+.os-demo{margin:30px auto;max-width:1000px;background:linear-gradient(145deg,#18181b,#0f0f11);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.os-card{background:#0f0f11;border:1px solid #222;border-radius:16px;padding:14px;text-align:left}
+.os-card b{font-family:'Space Grotesk';font-size:13px;display:block;margin-top:6px}
+.os-card small{opacity:.5;font-size:11px;line-height:1.4;display:block;margin-top:4px}
+.code{margin-top:10px;background:#000;border-radius:10px;padding:8px;font-size:9px;font-family:monospace;opacity:.8}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:900px;margin:28px auto 0}
+.stat{background:linear-gradient(180deg, rgba(26,26,30,0.9), rgba(14,14,16,0.9));border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:20px}
+.stat h3{font-family:'Playfair Display';color:var(--gold);font-size:34px;font-weight:900}
+.stat p{margin-top:4px;opacity:.6;font-size:10px;text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.section-title{font-family:'Playfair Display';font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:18px}
+.section{padding:30px 16px;max-width:1240px;margin:auto}
+.pricing{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:18px}
+.priceCard{background:#121214;border:1px solid #232328;border-radius:20px;padding:20px}
+.priceCard.featured{border-color:var(--gold);background:linear-gradient(145deg,#1a180a,#121214);box-shadow:0 0 30px rgba(255,215,0,.15)}
+.price{font-family:'Space Grotesk';font-size:30px;font-weight:800;margin:8px 0}.price small{font-size:12px;opacity:.6}
+.priceCard ul{list-style:none;padding:0;margin:12px 0;opacity:.7;font-size:12px;line-height:2}
+.cat-filter{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:20px}
+.cat-btn{border:none;cursor:pointer;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,0.06);color:#fff;border:1px solid rgba(255,255,255,0.12);font-weight:800;font-size:13px}
+.cat-btn.active{background:var(--gold);color:#000;border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+.hotel-card{background:linear-gradient(180deg, #18181b, #121214);border:1px solid rgba(255,255,255,0.08);border-radius:22px;overflow:hidden;transition:.35s;cursor:pointer}
+.hotel-card:hover{transform:translateY(-6px);border-color:rgba(255,215,0,0.25);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.hotel-card img{width:100%;height:210px;object-fit:cover}
+.hotel-body{padding:18px}.hotel-body h3{font-family:'Playfair Display';font-size:20px;font-weight:800}
+.location{opacity:.6;margin:6px 0 10px;font-size:13px;font-weight:600}
+.tag{display:inline-block;margin:3px 3px 0 0;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);font-size:10px;font-weight:800}
+.btn{width:100%;margin-top:14px;border:none;border-radius:12px;padding:12px;cursor:pointer;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));font-size:14px}
+.search-wrap{max-width:800px;margin:24px auto;display:flex;gap:8px;padding:8px;background:rgba(24,24,27,0.9);border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
+.search-wrap input{flex:1;border:none;outline:none;background:transparent;color:#fff;padding:12px 14px;font-size:15px;font-weight:600}
+.footer{margin-top:70px;text-align:center;padding:50px 20px;border-top:1px solid rgba(255,255,255,0.08);opacity:.5;font-size:11px}
+@media(max-width:768px){.os-demo,.pricing,.stats{grid-template-columns:1fr}.hero{padding:50px 16px 20px;text-align:left}.heroBtns{justify-content:flex-start}.header{flex-direction:column;gap:12px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div class="logo">GUESTHUB<span>KENYA'S HOTEL MARKETPLACE</span></div>
+  <div class="logo">GUESTHUB<span>KENYA'S HOTEL OS</span></div>
   <div class="header-right">
     <button class="btn-small" onclick="location.href='/hotel-signup.html'">Partner Hotel</button>
+    <button class="btn-small" onclick="window.open('/guest.html?hotel=BAOBAB&room=101','_blank')">👀 Guest Demo</button>
     <button class="btn-small" onclick="location.href='/vendor-signup.html'">Vendor Join</button>
-    <button class="btn-small" onclick="location.href='/vendor-login.html'">Vendor Login</button>
-    <button class="btn-gold" onclick="location.href='/hotel-login.html'">Hotel Login</button>
-    <select id="langSelect" onchange="changeLang(this.value)" style="background:#1A1A1A;color:#fff;border:1px solid #333;border-radius:10px;padding:10px;font-weight:800">
-      <option value="en">EN</option><option value="sw">SW</option>
-    </select>
+    <button class="btn-gold" onclick="location.href='/gm-dashboard.html?hotel=BAOBAB'">GM Login →</button>
   </div>
 </div>
 
 <section class="hero">
-  <div class="live"><span class="live-dot"></span>LIVE FROM DIANI KENYA 🇰🇪</div>
-  <h1 id="heroTitle">CONNECTING EVERY GUEST <b>TO EVERYTHING</b></h1>
-  <p id="heroSub">GuestHub connects hotel guests, hotel departments and local vendors through one powerful QR-powered platform. For Hotels & Vendors to grow revenue.</p>
-  <div class="search-wrap">
-    <input id="searchInput" type="text" placeholder="Search hotel or destination..." onkeyup="filterHotels()">
-    <select id="locationFilter" onchange="filterHotels()"><option value="">All Destinations</option></select>
+  <div class="badge"><span class="dot"></span> LIVE IN DIANI • 12 HOTELS • 2,341 ORDERS TODAY</div>
+  <h1>YOUR HOTEL <b>ON AUTOPILOT</b> <span class="lime">.</span></h1>
+  <p>One QR per room & table. Guest scans, orders food, taxi, safari. You track LIVE. Vendors pay you 15%. No app download. This is your Hotel OS.</p>
+  <div class="heroBtns">
+    <a href="/gm-dashboard.html?hotel=BAOBAB" class="btn-lime" style="text-decoration:none">⚡ View GM OS Demo →</a>
+    <a href="/hotel-signup.html" class="btn-gold" style="text-decoration:none">🏨 List Your Hotel - 14 Days Free</a>
+    <a href="#hotelsGrid" class="btn-small" style="text-decoration:none;padding:11px 18px">View Partner Hotels ↓</a>
   </div>
-  <div class="dashboard-stats">
-    <div class="d-stat"><h3 id="hotelCount">0</h3><p>Partner Hotels</p></div>
-    <div class="d-stat"><h3>24/7</h3><p>Guest Support</p></div>
-    <div class="d-stat"><h3>100%</h3><p>QR-Powered</p></div>
+
+  <div class="social"><b>TRUSTED BY 12 HOTELS IN DIANI</b></div>
+  <div class="logos"><span>🌴 BAOBAB BEACH</span><span>🏖️ SWAHILI BEACH</span><span>🌊 DIANI SEA</span><span>⭐ 9 MORE</span></div>
+
+  <div class="os-demo">
+    <div class="os-card"><div style="font-size:24px">📱</div><b>1. Guest Scans QR</b><small>Room 101 or Table T05 opens SuperApp in 1 sec</small><div class="code">/guest.html?hotel=BAOBAB&room=101</div></div>
+    <div class="os-card"><div style="font-size:24px">⚡</div><b>2. Order LIVE to GM OS</b><small>Dashboard dings! Kitchen & vendors auto-assigned</small><div class="code" style="color:var(--lime);border:1px solid rgba(198,255,0,.2)">🔔 Room 101 - Pilau Beef Ksh 650</div></div>
+    <div class="os-card"><div style="font-size:24px">💰</div><b>3. You Earn 15% Auto</b><small>Taxi 2,500 → You keep 375. Weekly billing.</small><div class="code">💳 Earnings: <span style="color:var(--lime)">Ksh 18,450/week</span></div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><h3 id="hotelCount">0</h3><p>Partner Hotels</p></div>
+    <div class="stat"><h3>24/7</h3><p>Guest Support</p></div>
+    <div class="stat"><h3>100%</h3><p>QR-Powered OS</p></div>
   </div>
 </section>
 
-<section class="container">
-  <div style="text-align:center;margin-bottom:30px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-    <button class="btn-small" onclick="location.href='/hotel-signup.html'">🏨 List Your Hotel - 14 Days Free</button>
-    <button class="btn-small" onclick="window.open('/guest.html?hotel=BAOBAB&room=101','_blank')">👀 Live Guest Demo</button>
-    <button class="btn-small" onclick="location.href='/vendor-signup.html'">🚚 Join as Vendor</button>
+<section class="section" id="pricing">
+  <h2 class="section-title">Pricing <span style="color:var(--gold)">Transparent</span></h2>
+  <p style="opacity:.6;font-size:13px">You keep 100% food + 15% vendor commission. No hidden fees.</p>
+  <div class="pricing">
+    <div class="priceCard"><b>STARTER</b><div class="price">Ksh 2,999 <small>/mo</small></div><ul><li>✓ 50 Rooms + 20 Tables QR</li><li>✓ Unlimited menu</li><li>✓ M-Pesa Till</li><li>✓ Basic reports</li></ul><a href="/hotel-signup.html?plan=starter" class="btn-small" style="display:block;text-align:center">Start Starter</a></div>
+    <div class="priceCard featured"><b>🔥 GROWTH - POPULAR</b><div class="price">Ksh 5,999 <small>/mo</small></div><ul><li>✓ Everything Starter</li><li>✓ Vendors (taxi, spa, tours)</li><li>✓ 15% commission engine</li><li>✓ STK Push + WhatsApp + sound alerts</li><li>✓ Vendor billing</li></ul><a href="/hotel-signup.html?plan=growth" class="btn" style="display:block;text-align:center">Start Growth →</a></div>
+    <div class="priceCard"><b>ENTERPRISE</b><div class="price">Ksh 12,000 <small>/mo</small></div><ul><li>✓ White label</li><li>✓ PMS integration</li><li>✓ Multi-hotel OS</li><li>✓ Priority support</li></ul><a href="/hotel-signup.html?plan=enterprise" class="btn-small" style="display:block;text-align:center">Contact Sales</a></div>
   </div>
 </section>
 
-<div class="category-filter">
+<div class="container" style="padding-bottom:0">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <h2 class="section-title" style="margin:0">Partner Hotels</h2>
+    <div class="search-wrap" style="margin:0;max-width:400px;flex:1"><input id="searchInput" type="text" placeholder="Search hotel..." onkeyup="filterHotels()"></div>
+  </div>
+</div>
+<div class="cat-filter">
   <button class="cat-btn active" onclick="filterByCategory('All',this)">All Hotels</button>
   <button class="cat-btn" onclick="filterByCategory('5Star',this)">⭐ Luxury</button>
-  <button class="cat-btn" onclick="filterByCategory('Safari',this)">🦁 Safari</button>
   <button class="cat-btn" onclick="filterByCategory('Beach',this)">🏖 Beach</button>
+  <button class="cat-btn" onclick="filterByCategory('Safari',this)">🦁 Safari</button>
   <button class="cat-btn" onclick="filterByCategory('City',this)">🏙 City</button>
 </div>
-
-<section class="container">
-  <h2 class="section-title" id="sectionTitle">Partner Hotels</h2>
+<section class="container" style="padding-top:0">
   <div id="hotelsGrid" class="grid"></div>
   <div id="noResults" style="display:none;text-align:center;padding:60px;opacity:.6">No hotels found.</div>
 </section>
 
 <footer class="footer">
-  <h2>GUESTHUB</h2>
-  <p>Africa's In-Room Digital Marketplace</p>
-  <p>Hotels • Resorts • Safari Lodges • Apartments • Camps</p>
-  <p style="margin-top:10px;font-size:12px;opacity:.4">Guests scan QR in room - No app download needed</p>
-  <p style="margin-top:10px">© 2026 GuestHub Technologies</p>
+  <h2 style="color:var(--gold);font-family:'Playfair Display';font-size:26px">GUESTHUB OS 12.0</h2>
+  <p style="margin-top:8px">Built in Diani, Kenya 🌴 • One QR. One OS. Zero download.</p>
+  <p>guestconnect-ap2q.onrender.com • 12 Hotels Live • GM OS + Guest SuperApp + Vendor Billing</p>
+  <p style="margin-top:12px">© 2026 GuestHub Technologies</p>
 </footer>
 
 <script>
-let allHotels = []; let currentCategory = "All";
-const translations = {en:{heroTitle:"CONNECTING EVERY GUEST <b>TO EVERYTHING</b>",heroSub:"GuestHub connects hotel guests, hotel departments and local vendors through one powerful QR-powered platform. For Hotels & Vendors to grow revenue.",sectionTitle:"Partner Hotels"},sw:{heroTitle:"Soko Kubwa la <b>Huduma za Hoteli Afrika</b>",heroSub:"GuestHub inaunganisha wageni wa hoteli, idara za hoteli na wauzaji kupitia mfumo mmoja. Kwa hoteli na vendors kuongeza mapato.",sectionTitle:"Hoteli Washirika"}};
-function changeLang(lang){localStorage.setItem("guesthub_lang",lang);const t=translations[lang];if(!t)return;document.getElementById("heroTitle").innerHTML=t.heroTitle;document.getElementById("heroSub").innerText=t.heroSub;document.getElementById("sectionTitle").innerText=t.sectionTitle;}
+let allHotels=[];let currentCategory="All";
 function goToHotel(id){window.location.href=`/gm-dashboard.html?hotel=${id}` }
-function filterByCategory(category,el){currentCategory=category;document.querySelectorAll(".cat-btn").forEach(btn=>btn.classList.remove("active"));el.classList.add("active");filterHotels()}
-function filterHotels(){const search=document.getElementById("searchInput").value.toLowerCase();const location=document.getElementById("locationFilter").value;let filtered=allHotels.filter(h=>{const name=(h.hotel_name||h.name||"").toLowerCase();const loc=(h.location||"").toLowerCase();return(name.includes(search)||loc.includes(search))});if(location){filtered=filtered.filter(h=>h.location===location)}if(currentCategory!=="All"){filtered=filtered.filter(h=>(h.hotel_type||h.category)===currentCategory)}renderHotels(filtered)}
-function renderHotels(hotels){document.getElementById("hotelCount").innerText=allHotels.length;const grid=document.getElementById("hotelsGrid");if(!hotels.length){grid.innerHTML="";document.getElementById("noResults").style.display="block";return}document.getElementById("noResults").style.display="none";grid.innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.hotel_id||h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'"><div class="hotel-body"><h3>${h.hotel_name||h.name}</h3><div class="location">📍 ${h.location||'Kenya'}</div><div><span class="tag">Food</span><span class="tag">Spa</span><span class="tag">Laundry</span><span class="tag">Taxi</span></div><button class="btn">Manage Hotel →</button></div></div>`).join("")}
-fetch('/api/data').then(r=>{if(!r.ok)throw new Error();return r.json()}).then(data=>{allHotels=data.hotels||data;const locationSelect=document.getElementById("locationFilter");const locations=[...new Set(allHotels.map(h=>h.location).filter(Boolean))];locations.forEach(loc=>{locationSelect.innerHTML+=`<option value="${loc}">${loc}</option>`});renderHotels(allHotels)}).catch(()=>{allHotels=[{id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach',phone:'254712345678'}];renderHotels(allHotels)});
-const savedLang=localStorage.getItem("guesthub_lang")||"en";document.getElementById("langSelect").value=savedLang;changeLang(savedLang);
+function filterByCategory(cat,el){currentCategory=cat;document.querySelectorAll(".cat-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");filterHotels()}
+function filterHotels(){const search=document.getElementById("searchInput").value.toLowerCase();let filtered=allHotels.filter(h=>{const name=(h.hotel_name||h.name||"").toLowerCase();const loc=(h.location||"").toLowerCase();return name.includes(search)||loc.includes(search)});if(currentCategory!=="All"){filtered=filtered.filter(h=>(h.hotel_type||h.category)===currentCategory)}renderHotels(filtered)}
+function renderHotels(hotels){document.getElementById("hotelCount").innerText=allHotels.length;const grid=document.getElementById("hotelsGrid");if(!hotels.length){grid.innerHTML="";document.getElementById("noResults").style.display="block";return}document.getElementById("noResults").style.display="none";grid.innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.hotel_id||h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'}" onerror="this.src='https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'"><div class="hotel-body"><h3>${h.hotel_name||h.name}</h3><div class="location">📍 ${h.location||'Kenya'} • OS LIVE</div><div><span class="tag">Food</span><span class="tag">Rooms ${h.rooms||'50'}</span><span class="tag" style="border-color:var(--lime);color:var(--lime)">15% Vendor</span></div><button class="btn">Manage Hotel OS →</button></div></div>`).join("")}
+fetch('/api/data').then(r=>r.json()).then(data=>{allHotels=data.hotels||data;renderHotels(allHotels)}).catch(()=>{allHotels=[{id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach',rooms:120},{id:'SWAHILI',hotel_name:'Swahili Beach Resort',location:'Diani',hotel_type:'Beach',rooms:80},{id:'DIANISEA',hotel_name:'Diani Sea Resort',location:'Diani',hotel_type:'Beach',rooms:60}];renderHotels(allHotels)});
 </script>
 </body>
 </html>
