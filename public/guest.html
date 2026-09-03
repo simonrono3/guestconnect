@@ -1,270 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070707">
-<title>GuestHub | Hotel SuperApp</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuestHub - Eat, Ride, Explore</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--blue:#38bdf8;--red:#ef4444;--purple:#a78bfa;--bg:#060606;--card:#121212;--card2:#171717;--input:#0f0f0f;--border:#252525;--muted:#929292}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 32%),var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
-.topbar{position:sticky;top:0;z-index:100;height:62px;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(7,7,7,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.07)}
-.logo{display:flex;align-items:center;gap:9px}.logoMark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:var(--lime);color:#000;font-family:Space Grotesk;font-weight:900}.logoText{font-family:Space Grotesk;font-size:15px;font-weight:900}.logoText span{color:var(--lime)}
-.roomChip{display:flex;align-items:center;gap:6px;background:#161616;border:1px solid #292929;border-radius:999px;padding:7px 12px;font-size:11px;font-weight:800}
-.hero{position:relative;overflow:hidden;padding:26px 18px 22px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:0 0 28px 28px}
-.hero h1{margin:0;font-family:Space Grotesk;font-size:32px;line-height:.94;letter-spacing:-1px;font-weight:900}
-.hero p{margin:10px 0 0;max-width:360px;font-size:13px;line-height:1.5;font-weight:600;opacity:.75}
-.heroBottom{display:flex;justify-content:space-between;margin-top:14px;font-size:10px;font-weight:900}
-.guestPanel{margin:12px;padding:14px;border:1px solid var(--border);background:#111;border-radius:18px}
-.panelHead{display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;font-weight:800}
-.guestGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.input{width:100%;padding:13px;background:var(--input);border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:13px}
-.input:focus{border-color:var(--lime);outline:none}
-.payBox{margin:12px;padding:14px;background:linear-gradient(135deg,#101010,#18160a);border:1px solid rgba(198,255,0,.25);border-radius:16px;display:none}
-.payBox b{color:var(--lime)}
-.quickActions{padding:0 12px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.quickAction{min-height:72px;background:#111;border:1px solid #242424;color:#fff;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:9px;font-weight:800}
-.search{padding:10px 12px 0}.searchBox{position:relative}.searchIcon{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-.search input{padding-left:36px}
-.section{margin:12px}.sectionHeader{display:flex;justify-content:space-between;margin-bottom:8px}
-.sectionTitle{font-family:Space Grotesk;font-size:14px;font-weight:900}.sectionTitle span{color:var(--lime)}
-.category{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px;margin-bottom:12px}
-.categoryHeader{display:flex;justify-content:space-between;margin-bottom:10px}
-.categoryHeader h3{margin:0;font-family:Space Grotesk;color:var(--lime);font-size:13px}
-.count{background:#222;color:#777;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:900}
-.serviceGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
-.service{position:relative;text-align:left;border:1px solid #242424;border-radius:16px;background:#0e0e0e;color:#fff;padding:12px;min-height:118px}
-.serviceIcon{font-size:22px}.serviceName{font-size:11px;font-weight:900;display:block;margin-top:6px}.serviceDesc{font-size:9px;color:#777;margin-top:4px;line-height:1.3;display:block}
-.price{position:absolute;top:8px;right:8px;background:var(--lime);color:#000;border-radius:999px;padding:4px 8px;font-size:9px;font-weight:900}
-.activeOrder{display:none;padding:14px;background:rgba(198,255,0,.07);border:1px solid rgba(198,255,0,.2);border-radius:18px;margin-bottom:12px}.activeOrder.show{display:block}
-.status{padding:5px 9px;border-radius:999px;font-size:8px;font-weight:900;background:#222;color:#aaa}
-.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:12px}.progressStep{height:4px;background:#292929;border-radius:999px}.progressStep.active{background:var(--lime)}
-.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px;background:rgba(8,8,8,.96);backdrop-filter:blur(18px);border-top:1px solid #242424}
-.navBtn{border:0;background:transparent;color:#666;min-height:50px;font-size:8px;font-weight:900;border-radius:12px}.navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
-.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(10px)}.modal.active{display:grid}
-.modalBox{width:100%;max-width:440px;max-height:90vh;overflow:auto;padding:18px;border:1px solid #303030;border-radius:22px;background:#181818}
-.btn{width:100%;margin-top:10px;padding:14px;border:0;border-radius:12px;background:var(--lime);color:#000;font-weight:900}
-.btn.secondary{background:#222;color:#fff;border:1px solid #333}
-.toast{position:fixed;left:12px;right:12px;bottom:78px;z-index:2000;display:none;padding:12px;background:#202020;border:1px solid #333;border-radius:12px;font-size:11px;font-weight:800}.toast.show{display:block}
-.loading{text-align:center;padding:30px;color:#666;background:var(--card);border-radius:18px;margin:12px}
-.spinner{width:26px;height:26px;margin:0 auto 10px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin.8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-@media(min-width:650px){body{max-width:900px;margin:auto}.bottomNav{left:50%;width:900px;transform:translateX(-50%)}.serviceGrid{grid-template-columns:repeat(3,1fr)}.modal{place-items:center}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050507;color:#fff;font-family:'Inter',sans-serif;padding-bottom:110px}
+.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Playfair Display';font-weight:900;font-size:20px}.logo span{color:#c6ff00}
+.pill{background:#15151a;border:1px solid #2a2a34;padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px}
+.hero{margin:14px;background:linear-gradient(135deg,#c6ff00 0%,#a6e22e 100%);border-radius:24px;padding:18px;color:#000}
+.hero b{font-size:20px;font-weight:900;display:block}.hero p{font-size:13px;opacity:.7;margin-top:4px;font-weight:700}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;position:sticky;top:62px;z-index:90;background:#050507}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;padding:11px 16px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:13px;cursor:pointer;transition:.2s}
+.tab.active{background:#c6ff00;color:#000;border-color:#c6ff00}
+.content{padding:0 14px}
+.group{margin:18px 0;background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:14px}
+.group-title{color:#c6ff00;font-size:13px;font-weight:900;letter-spacing:1px;margin:4px 6px 12px;display:flex;align-items:center;gap:8px}
+.group-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(198,255,0,0.3),transparent);margin-left:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#0e0e12;border:1px solid #1e1e26;border-radius:18px;padding:14px;position:relative;min-height:92px;cursor:pointer;transition:.25s}
+.card:active{transform:scale(0.97)}
+.card.active{border-color:#c6ff00;background:#1a2208}
+.card-icon{font-size:24px;margin-bottom:6px}
+.card h3{font-size:15px;font-weight:900;line-height:1.15}
+.card p{font-size:12px;opacity:.5;margin-top:4px}
+.card-price{position:absolute;bottom:10px;right:10px;background:rgba(198,255,0,0.12);border:1px solid rgba(198,255,0,0.2);color:#c6ff00;padding:4px 8px;border-radius:999px;font-weight:900;font-size:10px}
+.item-row{background:#101014;border:1px solid #1e1e26;border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:10px;cursor:pointer}
+.item-img{width:64px;height:64px;background:#1a1a20;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.item-info{flex:1}.item-info h3{font-size:16px;font-weight:900}.item-info p{font-size:12px;opacity:.5;margin-top:2px}
+.add{width:36px;height:36px;background:#fff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;border:0}
+.section{display:none}.section.active{display:block}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,14,0.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 0 18px;z-index:100}
+.bottom-nav div{text-align:center;opacity:.4;cursor:pointer}.bottom-nav div.active{opacity:1;color:#c6ff00}
+.bottom-nav i{font-size:20px;display:block}.bottom-nav b{font-size:10px;margin-top:3px;display:block;font-weight:800}
+.cart-float{position:fixed;bottom:84px;left:14px;right:14px;background:#c6ff00;color:#000;padding:14px 18px;border-radius:999px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:14px;box-shadow:0 10px 30px rgba(198,255,0,0.3);z-index:99;cursor:pointer;transform:translateY(100px);transition:.35s cubic-bezier(.16,1,.3,1)}
+.cart-float.show{transform:translateY(0)}
+.cart-sheet{position:fixed;bottom:0;left:0;right:0;background:#0e0e12;border-top:1px solid #1e1e26;border-radius:26px 26px 0 0;padding:18px;transform:translateY(100%);transition:.4s cubic-bezier(.16,1,.3,1);z-index:200;max-height:85vh;overflow:auto}
+.cart-sheet.open{transform:translateY(0)}
+.pay-box{background:#111114;border:1px solid #22222a;border-radius:14px;padding:12px;margin-top:10px}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="logo"><div class="logoMark">G</div><div class="logoText">GUEST<span>HUB</span></div></div><div class="roomChip">🛏️ <b id="topRoom">Guest</b> • <span id="topHotel" style="opacity:.6">Hotel</span></div></header>
-<section class="hero"><div class="eyebrow" style="background:#000;color:#c6ff00;padding:6px 10px;border-radius:999px;font-size:9px;font-weight:900;display:inline-block;margin-bottom:10px">✦ GUESTHUB HOTEL OS 11.0 • VERIFIED</div><h1 id="hotelName">WELCOME TO YOUR HOTEL</h1><p id="hotelTagline">Room service, transport, tours, wellness - one QR, one app. No download.</p><div class="heroBottom"><span id="verified">🔒 Live Orders • Real Tracking</span><span id="tableMode" style="display:none;background:#000;color:#fff;padding:5px 9px;border-radius:999px">🍽️ TABLE MODE</span></div></section>
+<div class="top"><div class="logo">GUEST<span>HUB</span></div><div class="pill">🍽️ Table <b id="tableLabel">T01</b> • 🛏️ Guest Mode</div></div>
+<div class="hero"><b id="heroTitle">Karibu! Eat, Ride, Explore</b><p id="heroSub">Order food • Book taxi • Safari tomorrow • All in one scan</p></div>
 
-<div id="payBox" class="payBox"><div style="display:flex;justify-content:space-between"><div><b>💳 Lipa Direct Kwa Hotel</b><br><small id="payName" style="opacity:.7">Hotel Till</small></div><span style="background:#c6ff00;color:#000;padding:6px 10px;border-radius:999px;font-size:10px;font-weight:900">M-PESA</span></div><div style="margin-top:10px;font-family:Space Grotesk;font-size:14px"><span id="payTill">Till: -</span> • <span id="payBill">Paybill: -</span></div><small style="opacity:.6">Show M-Pesa message to waiter to confirm</small></div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('menu',this)">🍽️ MENU</div>
+  <div class="tab" onclick="switchTab('rides',this)">🚕 RIDES & TOURS</div>
+  <div class="tab" onclick="switchTab('services',this)">🧖 SERVICES</div>
+  <div class="tab" onclick="switchTab('orders',this)">📋 MY ORDERS</div>
+</div>
 
-<section class="guestPanel"><div class="panelHead"><strong>👋 Your Stay</strong><small>SECURED</small></div><div class="guestGrid"><input id="guestName" class="input" placeholder="Your name"><input id="roomNo" class="input" placeholder="Room / Table"></div></section>
+<div class="content">
+  <!-- MENU -->
+  <div class="section active" id="sec-menu"><div id="menuContainer">Loading menu...</div></div>
+  <!-- RIDES & TOURS - SAME AS ROOM GUEST -->
+  <div class="section" id="sec-rides"><div id="ridesContainer"></div></div>
+  <!-- SERVICES -->
+  <div class="section" id="sec-services"><div id="servicesContainer"></div></div>
+  <!-- ORDERS -->
+  <div class="section" id="sec-orders"><div id="myOrders">No orders yet. Order food or book a ride!</div></div>
+</div>
 
-<div class="quickActions"><button class="quickAction" onclick="filterCat('food')"><span>🍽️</span>Food</button><button class="quickAction" onclick="filterCat('taxi')"><span>🚕</span>Taxi</button><button class="quickAction" onclick="filterCat('tour')"><span>🦁</span>Safari</button><button class="quickAction" id="ordersBtn"><span>📋</span>My Orders</button></div>
+<div class="cart-float" id="cartFloat" onclick="openCart()"><span>🛒 <b id="cartCount">0</b> items • Ksh <b id="cartTotal">0</b></span><span>View →</span></div>
 
-<div class="search"><div class="searchBox"><span class="searchIcon">🔎</span><input id="searchService" class="input" placeholder="Search pilau, taxi, massage..."></div></div>
+<div class="cart-sheet" id="cartSheet">
+  <div style="width:36px;height:4px;background:#2a2a34;border-radius:999px;margin:0 auto 14px"></div>
+  <h2 style="font-size:20px;font-weight:900">Your Cart - Table <span id="cartTable">T01</span></h2>
+  <div id="cartItems" style="margin-top:12px"></div>
+  <div class="pay-box"><small style="opacity:.5">PAY TO HOTEL</small><b id="payInfo" style="display:block;margin-top:4px">Loading...</b><small style="opacity:.6;display:block;margin-top:4px">Use Table as Account Number</small></div>
+  <input id="guestName" placeholder="Your name" style="width:100%;background:#1a1a20;border:1px solid #2a2a34;border-radius:12px;padding:14px;color:#fff;margin-top:10px">
+  <button onclick="checkout()" style="width:100%;background:#c6ff00;color:#000;border:0;padding:16px;border-radius:14px;font-weight:900;font-size:16px;margin-top:12px">💳 ORDER & PAY • M-PESA</button>
+  <button onclick="closeCart()" style="width:100%;background:transparent;border:1px solid #2a2a34;color:#fff;padding:12px;border-radius:12px;margin-top:8px;font-weight:800">Continue</button>
+</div>
 
-<section class="section"><div id="activeOrder" class="activeOrder"><div style="display:flex;justify-content:space-between"><div><b id="activeService">Your active order</b><br><small id="activeReference" style="opacity:.6">GH-000000</small></div><span id="activeStatus" class="status">New</span></div><div class="progress"><span class="progressStep active"></span><span class="progressStep"></span><span class="progressStep"></span><span class="progressStep"></span></div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;opacity:.7"><span>Room <b id="activeRoom" style="color:#fff">—</b></span><span><b id="activeAmount" style="color:#c6ff00">—</b></span></div></div></section>
-
-<div id="loading" class="loading"><div class="spinner"></div>Loading hotel menu...</div>
-<main id="serviceArea" style="display:none"></main>
-
-<nav class="bottomNav"><button class="navBtn active"><span>⌂</span>Home</button><button class="navBtn" onclick="document.getElementById('serviceArea').scrollIntoView({behavior:'smooth'})"><span>◉</span>Services</button><button class="navBtn" id="navOrders"><span>📋</span>Orders</button><button class="navBtn" onclick="window.open('https://wa.me/'+(hotelData?.whatsapp_front||'254700000000'))"><span>💬</span>Help</button></nav>
-
-<div class="modal" id="orderModal"><div class="modalBox"><h3 id="modalService">Confirm Order</h3><small id="modalDescription" style="opacity:.6;display:block;margin:6px 0">Details</small><input id="guestPhone" class="input" style="margin-top:12px" placeholder="M-Pesa / WhatsApp 2547..."><input id="orderNote" class="input" style="margin-top:8px" placeholder="Special request, e.g. no chili"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn secondary" onclick="closeModal('orderModal')">Cancel</button><button class="btn" id="confirmOrder">✅ Place Order</button></div><small style="display:block;text-align:center;opacity:.5;margin-top:8px;font-size:9px">Order goes LIVE to hotel OS + WhatsApp</small></div></div>
-
-<div class="modal" id="successModal"><div class="modalBox" style="text-align:center"><div style="font-size:40px">✓</div><h3>Order Received!</h3><p id="successText" style="opacity:.7;font-size:12px;margin-top:6px"></p><div style="margin:14px 0;padding:12px;border:1px dashed #444;border-radius:12px"><small>REFERENCE</small><br><b id="orderReference" style="color:#c6ff00;font-size:18px">GH-000000</b></div><button class="btn" onclick="closeModal('successModal');viewOrders()">Track My Order ✨</button></div></div>
-
-<div class="modal" id="ordersModal"><div class="modalBox"><div style="display:flex;justify-content:space-between"><h3>📋 My Orders</h3><button onclick="closeModal('ordersModal')" style="background:#222;color:#fff;border:1px solid #333;border-radius:50%;width:32px;height:32px">×</button></div><div id="ordersList" style="margin-top:12px"></div></div></div>
-
-<div id="toast" class="toast"></div>
+<div class="bottom-nav">
+  <div class="active" onclick="switchTab('menu',document.querySelectorAll('.tab')[0])"><i>🍽️</i><b>Menu</b></div>
+  <div onclick="switchTab('rides',document.querySelectorAll('.tab')[1])"><i>🚕</i><b>Rides</b></div>
+  <div onclick="switchTab('services',document.querySelectorAll('.tab')[2])"><i>🧖</i><b>Services</b></div>
+  <div onclick="switchTab('orders',document.querySelectorAll('.tab')[3])"><i>📋</i><b>Orders</b></div>
+</div>
 
 <script>
-let supa=null; try{ if(window.supabase&&typeof SUPABASE_URL!=='undefined'&&SUPABASE_KEY){ supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);} }catch(e){}
-let hotelData=null, allServices=[], selectedService=null, hotelId=null, tableNumber=null;
+const params=new URLSearchParams(location.search);
+const hotel_id=params.get('hotel')||'BAOBAB';
+const table=params.get('table')||'T01';
+document.getElementById('tableLabel').textContent=table;
+document.getElementById('cartTable').textContent=table;
 
-function $(id){return document.getElementById(id)}
-function toast(m){const el=$('toast'); el.textContent=m; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),3000)}
-function closeModal(id){$(id).classList.remove('active'); document.body.style.overflow=''}
-function openModal(id){$(id).classList.add('active'); document.body.style.overflow='hidden'}
-function money(v){const n=Number(v); return n>0?'Ksh '+n.toLocaleString():'Ask Hotel'}
-function ref(){return 'GH-'+Date.now().toString().slice(-6)}
+let cart=[], menuItems=[], hotelServices=[], payInfo={};
+let myOrdersList=[];
 
-async function init(){
- const p=new URLSearchParams(location.search);
- hotelId=p.get('hotel')||p.get('hotel_id')||localStorage.getItem('last_hotel_id')||'BAOBAB';
- tableNumber=p.get('table')||p.get('table_number')||null;
- const roomParam=p.get('room')||p.get('room_no')||'';
-
- if(roomParam){ $('roomNo').value=roomParam; }
- if(tableNumber){ $('roomNo').value=tableNumber; $('tableMode').style.display='inline-block'; $('topRoom').textContent=tableNumber; }
-
- // 1. Load hotel info + payment + services via YOUR GM OS endpoints (INTEGRATED!)
- try{
-  let hotel=null, menus=null, items=null, services=null;
-  try{
-    const r=await fetch(`/api/guest/init?hotel_id=${hotelId}&room=${roomParam||''}&table=${tableNumber||''}`).then(r=>r.json());
-    if(r.ok){ hotel=r.hotel; menus=r.menus; items=r.items; services=r.services; hotelData=r.hotel; }
-  }catch(e){}
-
-  // Fallback legacy
-  if(!hotelData){
-    const d=await fetch(`/api/data`).then(r=>r.json()).catch(()=>null);
-    if(d){ hotelData=(d.hotels||[]).find(h=>(h.hotel_id||h.id)===hotelId)||d.hotels?.[0]; }
-  }
-  if(!hotelData) hotelData={name:hotelId, hotel_name:hotelId, location:'Kenya', paybill_number:'', till_number:'', whatsapp_front:'254700000000'};
-
-  $('hotelName').textContent=(hotelData.name||hotelData.hotel_name||hotelId).toUpperCase();
-  $('topHotel').textContent=hotelData.name||hotelId;
-  $('topRoom').textContent=tableNumber||roomParam||'Guest';
-
-  // PayBox - INTEGRATED WITH GM OS MENU & PAY
-  if(hotelData.till_number||hotelData.paybill_number||menus?.[0]?.till_number){
-    $('payBox').style.display='block';
-    $('payTill').textContent='Till: '+(menus?.[0]?.till_number||hotelData.till_number||'Ask Waiter');
-    $('payBill').textContent='Paybill: '+(menus?.[0]?.paybill_number||hotelData.paybill_number||'-');
-    $('payName').textContent=menus?.[0]?.m_pesa_name||hotelData.name||'Hotel';
-  }
-
-  // Services - INTEGRATED
-  let all=[];
-  if(items) all=all.concat(items.map(i=>({id:i.id, title:i.name, description:i.description||i.category, price:i.price, category:i.category||'food', icon:i.category==='Drink'?'🥤':'🍽️', type:'menu'})));
-  if(services) all=all.concat(services.map(s=>({id:s.id, title:s.title, description:s.description, price:s.price, category:s.category, icon:s.icon||'🏨', type:'service'})));
-
-  // If still empty, use Supabase
-  if(all.length===0 && supa){
-    try{
-      const {data:svc}=await supa.from('services').select('*').eq('hotel_id',hotelId).limit(50);
-      if(svc) all=all.concat(svc.map(s=>({id:s.id, title:s.title, description:s.description, price:s.price, category:s.category, icon:s.icon||'🏨', type:'service'})));
-      const {data:menu}=await supa.from('menu_items').select('*').eq('hotel_id',hotelId).limit(50);
-      if(menu) all=all.concat(menu.map(m=>({id:m.id, title:m.name, description:m.description, price:m.price, category:m.category||'food', icon:'🍽️', type:'menu'})));
-    }catch(e){}
-  }
-
-  if(all.length===0) all=[{id:'demo1',title:'Nyama Choma',description:'Grilled meat + kachumbari',price:1200,category:'Food',icon:'🍖',type:'menu'},{id:'demo2',title:'Pilau Beef',description:'Coastal pilau',price:650,category:'Food',icon:'🍛',type:'menu'},{id:'demo3',title:'Airport Taxi',description:'Transfer to Moi Airport',price:2500,category:'Transport',icon:'🚕',type:'service'},{id:'demo4',title:'Spa Massage',description:'60min relaxing',price:3000,category:'Wellness',icon:'🧖',type:'service'}];
-
-  allServices=all;
-  renderServices(allServices);
-
- }catch(e){ console.error(e); toast('Loaded demo menu'); renderServices([{id:'demo',title:'Nyama Choma',description:'Test',price:1200,category:'Food',icon:'🍖'}]); }
- $('loading').style.display='none'; $('serviceArea').style.display='block';
- loadActive();
+function switchTab(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.bottom-nav div').forEach((d,i)=>{
+    d.classList.remove('active');
+    if((name==='menu'&&i===0)||(name==='rides'&&i===1)||(name==='services'&&i===2)||(name==='orders'&&i===3)) d.classList.add('active');
+  });
+  if(name==='orders') renderMyOrders();
 }
 
-function renderServices(list){
- const area=$('serviceArea'); area.innerHTML='';
- const groups={};
- list.forEach(s=>{ const cat=(s.category||'Other'); if(!groups[cat]) groups[cat]=[]; groups[cat].push(s); });
- Object.keys(groups).forEach(cat=>{
-   const div=document.createElement('section'); div.className='section';
-   div.innerHTML=`<div class="category"><div class="categoryHeader"><h3>${cat==='Food'||cat==='Drink'?'🍽️ '+cat: cat==='Transport'?'🚕 '+cat: cat==='Wellness'?'🧖 '+cat:'✨ '+cat}</h3><span class="count">${groups[cat].length}</span></div><div class="serviceGrid" id="grid-${cat}"></div></div>`;
-   area.appendChild(div);
-   const grid=div.querySelector('.serviceGrid');
-   groups[cat].forEach(s=>{
-     const b=document.createElement('button'); b.className='service';
-     b.innerHTML=`<span class="price">${money(s.price)}</span><span class="serviceIcon">${s.icon||'✨'}</span><span class="serviceName">${s.title}</span><span class="serviceDesc">${s.description||''}</span>`;
-     b.onclick=()=>openOrder(s);
-     grid.appendChild(b);
-   });
- });
-}
-
-function filterCat(q){
- $('searchService').value=q;
- const cards=document.querySelectorAll('.service');
- cards.forEach(c=>{ c.style.display=c.textContent.toLowerCase().includes(q.toLowerCase())?'':'none'; });
- $('serviceArea').scrollIntoView({behavior:'smooth'});
-}
-$('searchService').addEventListener('input',e=>{
-  const q=e.target.value.toLowerCase();
-  document.querySelectorAll('.service').forEach(c=>{ c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'; });
+// LOAD ALL DATA - MENU + HOTEL SERVICES (same as room guest)
+Promise.all([
+  fetch(`/api/menu?hotel_id=${hotel_id}`).then(r=>r.json()),
+  fetch(`/api/services?hotel_id=${hotel_id}`).then(r=>r.json())
+]).then(([menuData, svcData])=>{
+  menuItems=menuData.items||[];
+  payInfo=menuData.menus?.[0]||{};
+  document.getElementById('payInfo').textContent=`${payInfo.paybill_number?'Paybill '+payInfo.paybill_number: payInfo.till_number?'Till '+payInfo.till_number:'Till - Ask Waiter'} • ${payInfo.m_pesa_name||hotel_id}`;
+  hotelServices=svcData.data||[];
+  renderMenu();
+  renderRidesAndServices();
 });
 
-function openOrder(s){
- if(!$('guestName').value.trim()){ toast('Enter your name first'); $('guestName').focus(); return; }
- if(!$('roomNo').value.trim()){ toast('Enter room / table number'); $('roomNo').focus(); return; }
- selectedService=s;
- $('modalService').textContent=s.title;
- $('modalDescription').textContent=`${s.description||''} • ${money(s.price)}`;
- $('guestPhone').value=localStorage.getItem('guest_phone')||'';
- openModal('orderModal');
+function renderMenu(){
+  if(menuItems.length===0){document.getElementById('menuContainer').innerHTML='<div style="opacity:.5;padding:20px;text-align:center">Menu coming soon - Ask GM to add in dashboard</div>';return}
+  const cats=[...new Set(menuItems.map(i=>i.category))];
+  let html=`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px">`+`<div class="tab active" onclick="filterMenu('All',this)">All</div>`+cats.map(c=>`<div class="tab" onclick="filterMenu('${c}',this)">${c}</div>`).join('')+`</div>`;
+  html+=`<div id="menuGrid">`+menuItems.map(it=>`
+    <div class="item-row" onclick="addToCart('${it.id}','menu')">
+      <div class="item-img">${it.category==='Drink'?'🥤':it.category==='Dessert'?'🍰':'🍛'}</div>
+      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:#c6ff00">Ksh ${it.price}</b></div>
+      <button class="add">+</button>
+    </div>
+  `).join('')+`</div>`;
+  document.getElementById('menuContainer').innerHTML=html;
+}
+function filterMenu(cat,el){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+  const filtered=cat==='All'?menuItems:menuItems.filter(i=>i.category===cat);
+  document.getElementById('menuGrid').innerHTML=filtered.map(it=>`
+    <div class="item-row" onclick="addToCart('${it.id}','menu')">
+      <div class="item-img">${it.category==='Drink'?'🥤':it.category==='Dessert'?'🍰':'🍛'}</div>
+      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:#c6ff00">Ksh ${it.price}</b></div>
+      <button class="add">+</button>
+    </div>
+  `).join('');
 }
 
-async function placeOrder(){
- const phone=$('guestPhone').value.trim();
- const room=$('roomNo').value.trim();
- const name=$('guestName').value.trim();
- const note=$('orderNote').value.trim();
- if(!phone){ toast('Enter WhatsApp / M-Pesa number'); return; }
- const reference=ref();
- $('confirmOrder').textContent='⏳ Sending...'; $('confirmOrder').disabled=true;
+function renderRidesAndServices(){
+  const rides=hotelServices.filter(s=>['Transport','Tours','Concierge'].includes(s.category));
+  const services=hotelServices.filter(s=>['Wellness','RoomService','Media'].includes(s.category));
 
- try{
-   // INTEGRATED - Same endpoint GM OS reads!
-   const payload={hotel_id:hotelId, room: tableNumber?null:room, table_number: tableNumber|| (room.startsWith('T')?room:null), guest_name:name, guest_phone:phone, service:selectedService.id, service_title:selectedService.title, amount:selectedService.price||0, notes:note, category:selectedService.category, reference};
-   let ok=false;
-   try{
-     const r=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
-     if(r.ok||r.id) ok=true;
-   }catch(e){}
-   if(!ok && supa){
-     await supa.from('orders').insert([{hotel_id:hotelId, room:room, guest_name:name, guest_phone:phone, service_title:selectedService.title, amount:selectedService.price||0, status:'new'}]);
-   }
+  // RIDES
+  if(rides.length===0){
+    document.getElementById('ridesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">GM bado haja-add Rides. Lakini unaeza order food! 🍽️</div>`;
+  } else {
+    const groups={};
+    rides.forEach(r=>{if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r)});
+    let html='';
+    for(let cat in groups){
+      html+=`<div class="group"><div class="group-title">${cat==='Transport'?'🚕':'🌍'} ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`
+        <div class="card" onclick="addToCart('${s.id}','service')">
+          <div class="card-icon">${s.icon||'🏨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span>
+        </div>
+      `).join('')+`</div></div>`;
+    }
+    document.getElementById('ridesContainer').innerHTML=html;
+  }
 
-   localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone); localStorage.setItem('last_room',room);
-   closeModal('orderModal');
-   $('orderReference').textContent=reference;
-   $('successText').textContent=`${selectedService.title} sent to ${hotelData?.name||hotelId} for ${tableNumber?'Table '+tableNumber:'Room '+room}. You'll get WhatsApp confirmation.`;
-   openModal('successModal');
-   loadActive();
-
-   // Auto WhatsApp to hotel
-   if(hotelData?.whatsapp_front){
-     const wa=String(hotelData.whatsapp_front).replace(/\D/g,'');
-     const msg=encodeURIComponent(`GuestHub NEW ORDER\n${tableNumber?'Table: '+tableNumber:'Room: '+room}\nGuest: ${name} (${phone})\nOrder: ${selectedService.title} - ${money(selectedService.price)}\nNotes: ${note}\nRef: ${reference}`);
-     setTimeout(()=>window.open('https://wa.me/'+wa+'?text='+msg,'_blank'),1000);
-   }
-
- }catch(e){ toast('Failed to send - try again'); }
- $('confirmOrder').textContent='✅ Place Order'; $('confirmOrder').disabled=false;
+  // SERVICES
+  if(services.length===0){
+    document.getElementById('servicesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">Services coming soon</div>`;
+  } else {
+    const groups={};
+    services.forEach(r=>{if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r)});
+    let html='';
+    for(let cat in groups){
+      html+=`<div class="group"><div class="group-title">🧖 ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`
+        <div class="card" onclick="addToCart('${s.id}','service')">
+          <div class="card-icon">${s.icon||'✨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span>
+        </div>
+      `).join('')+`</div></div>`;
+    }
+    document.getElementById('servicesContainer').innerHTML=html;
+  }
 }
 
-async function loadActive(){
- const room=$('roomNo').value.trim(); if(!room) return;
- try{
-   const r=await fetch(`/api/orders?hotel_id=${hotelId}&room=${room}`).then(r=>r.json()).catch(()=>({data:[]}));
-   const orders=r.data||r||[];
-   if(!orders.length) return;
-   const active=orders.find(o=>!['completed','cancelled'].includes((o.status||'').toLowerCase()));
-   if(!active) return;
-   $('activeOrder').classList.add('show');
-   $('activeService').textContent=active.service_title||active.service||'Order';
-   $('activeReference').textContent=active.reference||active.id;
-   $('activeRoom').textContent=active.room||active.table_number||room;
-   $('activeAmount').textContent=money(active.amount||active.total);
-   $('activeStatus').textContent=(active.status||'new').toUpperCase();
- }catch(e){}
+function addToCart(id,type){
+  let item;
+  if(type==='menu') item=menuItems.find(i=>i.id==id);
+  else item=hotelServices.find(i=>i.id==id);
+  if(!item) return;
+  const price=parseFloat(item.price||item.amount||0);
+  const name=item.name||item.title;
+  const ex=cart.find(c=>c.id==id);
+  if(ex) ex.qty++; else cart.push({id,name,price,qty:1,type});
+  updateCartUI();
+  if(navigator.vibrate) navigator.vibrate(30);
+  // Keep guest - show suggestion
+  if(type==='menu' && cart.length===1){
+    setTimeout(()=>{if(confirm('🍽️ Food added! Unataka pia u-book Taxi ya kesho?')) switchTab('rides',document.querySelectorAll('.tab')[1]);},600);
+  }
+}
+function updateCartUI(){
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cartCount').textContent=count;
+  document.getElementById('cartTotal').textContent=total.toLocaleString();
+  const floatEl=document.getElementById('cartFloat');
+  if(count>0) floatEl.classList.add('show'); else floatEl.classList.remove('show');
+  document.getElementById('cartItems').innerHTML=cart.map(i=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a20"><div><b>${i.name} x${i.qty}</b><br><small style="opacity:.5">${i.type}</small></div><div><b>Ksh ${i.price*i.qty}</b> <button onclick="removeFromCart('${i.id}')" style="margin-left:8px;background:#222;border:0;color:#fff;width:24px;height:24px;border-radius:50%">x</button></div></div>`).join('')+`<div style="display:flex;justify-content:space-between;font-weight:900;font-size:18px;padding-top:12px"><span>Total</span><span>Ksh ${total.toLocaleString()}</span></div>`;
+}
+function removeFromCart(id){cart=cart.filter(c=>c.id!=id); updateCartUI()}
+function openCart(){document.getElementById('cartSheet').classList.add('open')}
+function closeCart(){document.getElementById('cartSheet').classList.remove('open')}
+
+function checkout(){
+  if(cart.length===0) return alert('Cart empty');
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const foodItems=cart.filter(c=>c.type==='menu');
+  const serviceItems=cart.filter(c=>c.type==='service');
+
+  // 1. Save table order for food
+  if(foodItems.length>0){
+    fetch('/api/table-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id,table_number:table,guest_name:document.getElementById('guestName').value||'Guest '+table,items:foodItems,total:foodItems.reduce((s,i)=>s+i.price*i.qty,0)})}).then(r=>r.json());
+  }
+  // 2. Save room-style orders for services
+  serviceItems.forEach(it=>{
+    fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id,room:'TABLE-'+table,guest_name:document.getElementById('guestName').value||'Guest '+table,service_title:it.name,amount:it.price,category:'table-service'})});
+  });
+
+  myOrdersList.push({time:new Date().toLocaleTimeString(),items:[...cart],total});
+  alert(`✅ ORDER CONFIRMED! Table ${table}\n\nTotal Ksh ${total.toLocaleString()}\n\nFood: ${foodItems.length} items -> Kitchen\nServices: ${serviceItems.length} items -> Hotel Team\n\nLipa: ${document.getElementById('payInfo').textContent}\nAccount: ${table}\n\nAsante! Stay in GuestHub for tracking 📋`);
+  cart=[]; updateCartUI(); closeCart(); switchTab('orders',document.querySelectorAll('.tab')[3]);
 }
 
-async function viewOrders(){
- const room=$('roomNo').value.trim(); if(!room){ toast('Enter room/table first'); return; }
- openModal('ordersModal'); $('ordersList').innerHTML='<div class="loading"><div class="spinner"></div>Loading...</div>';
- try{
-   const r=await fetch(`/api/orders?hotel_id=${hotelId}&room=${room}`).then(r=>r.json()).catch(()=>({data:[]}));
-   const orders=r.data||r||[];
-   if(!orders.length){ $('ordersList').innerHTML='<div style="text-align:center;padding:20px;color:#777">No orders yet for '+(room)+'</div>'; return; }
-   $('ordersList').innerHTML=orders.map(o=>`<div style="background:#111;border:1px solid #242424;border-radius:12px;padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between"><b>${o.service_title||o.service||'Order'}</b><span class="status">${(o.status||'new').toUpperCase()}</span></div><small style="opacity:.6">${new Date(o.created_at||Date.now()).toLocaleString()} • ${money(o.amount||o.total)}</small></div>`).join('');
- }catch(e){ $('ordersList').innerHTML='Failed to load'; }
+function renderMyOrders(){
+  if(myOrdersList.length===0){document.getElementById('myOrders').innerHTML='<div style="opacity:.6;padding:30px;text-align:center">Bado huja-order. Anza na Menu 🍽️</div>';return}
+  document.getElementById('myOrders').innerHTML=myOrdersList.map(o=>`
+    <div class="group"><div class="group-title">🕒 ${o.time} • Ksh ${o.total.toLocaleString()}</div>
+      ${o.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:8px 0"><span>${i.name} x${i.qty}</span><span>Ksh ${i.price*i.qty}</span></div>`).join('')}
+    </div>
+  `).join('');
 }
-
-$('confirmOrder').addEventListener('click',placeOrder);
-$('ordersBtn').addEventListener('click',viewOrders);
-$('navOrders').addEventListener('click',viewOrders);
-document.querySelectorAll('.modal').forEach(m=>{ m.addEventListener('click',e=>{ if(e.target===m) closeModal(m.id); }); });
-$('guestName').value=localStorage.getItem('guest_name')||'';
-$('guestPhone').value=localStorage.getItem('guest_phone')||'';
-init();
 </script>
 </body>
 </html>
