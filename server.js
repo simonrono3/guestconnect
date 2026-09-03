@@ -148,3 +148,47 @@ app.get("*", (req,res)=>{
 });
 
 app.listen(PORT, ()=>console.log(`👑 GuestHub OS 11.0 WORLD CLASS running on ${PORT} - public: ${publicPath}`));
+
+
+
+// HOTEL SERVICES (GM adds taxis, tours etc)
+app.get('/api/services', async (req,res)=>{
+  const {hotel_id}=req.query;
+  const {data}=await supabase.from('hotel_services').select('*').eq('hotel_id',hotel_id).order('created_at',{ascending:false});
+  res.json({data:data||[]});
+});
+app.post('/api/services', async (req,res)=>{
+  const {hotel_id,title,description,price,category,icon}=req.body;
+  const {data,error}=await supabase.from('hotel_services').insert({hotel_id,title,description,price,category,icon}).select();
+  if(error) return res.json({ok:false,error:error.message});
+  res.json({ok:true,data});
+});
+app.delete('/api/services/:id', async (req,res)=>{
+  await supabase.from('hotel_services').delete().eq('id',req.params.id);
+  res.json({ok:true});
+});
+
+// REPORTS
+app.get('/api/reports', async (req,res)=>{
+  const {hotel_id}=req.query;
+  const {data:orders}=await supabase.from('orders').select('*').eq('hotel_id',hotel_id);
+  const {data:tables}=await supabase.from('table_orders').select('*').eq('hotel_id',hotel_id);
+  const all=[...(orders||[]),...(tables||[])];
+  const today=new Date().toISOString().slice(0,10);
+  const todayRev=all.filter(o=>o.created_at?.startsWith(today)).reduce((s,o)=>s+parseFloat(o.total||o.amount||0),0);
+  const weekRev=all.reduce((s,o)=>s+parseFloat(o.total||o.amount||0),0);
+  res.json({today:todayRev, week:weekRev, month:weekRev, totalOrders:all.length});
+});
+
+app.get('/api/table-orders', async (req,res)=>{
+  const {hotel_id}=req.query;
+  const {data}=await supabase.from('table_orders').select('*').eq('hotel_id',hotel_id).order('created_at',{ascending:false});
+  res.json({data:data||[]});
+});
+app.get('/api/orders', async (req,res)=>{
+  const {hotel_id}=req.query;
+  const {data}=await supabase.from('orders').select('*').eq('hotel_id',hotel_id).order('created_at',{ascending:false});
+  res.json({data:data||[]});
+});
+
+
