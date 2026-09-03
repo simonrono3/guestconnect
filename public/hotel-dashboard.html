@@ -1,192 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GuestHub HotelOS 11.0 — Professional</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuestHub GM OS - Secured</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=JetBrains+Mono:wght@700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="config.js"></script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--bg:#050505;--card:#111;--card2:#0a0a0a;--border:#252525;--muted:#888}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% -10%,rgba(198,255,0,.07),transparent 30%),var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:100px}
-header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:13px 14px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:Space Grotesk;font-weight:800;font-size:20px}.logo span{color:var(--lime)}.hotelTag{text-align:right;font-size:10px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis}
-.iconBtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:#111;color:#fff;cursor:pointer}
-.hero{margin:14px;padding:18px;border-radius:22px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(198,255,0,.11),rgba(251,191,36,.06)),#111}
-.heroTop{display:flex;justify-content:space-between;gap:12px}.hero h1{margin:3px 0;font-family:Space Grotesk;font-size:25px}.status{padding:6px 9px;border-radius:999px;font-size:9px;font-weight:900;background:#17220b;color:var(--lime);border:1px solid rgba(198,255,0,.2)}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 14px 14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:14px;min-height:78px}.stat b{display:block;font-family:Space Grotesk;font-size:21px;margin-bottom:4px}.stat small{color:var(--muted);font-size:9px;font-weight:900}.stat.money{border-color:rgba(198,255,0,.3);background:linear-gradient(135deg,#111,#161b05)}
-.tabs{display:flex;gap:8px;padding:2px 14px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px)}.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:#111;color:#fff;font-weight:800;font-size:11px;cursor:pointer}.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
-.section{display:none;padding:0 14px}.section.active{display:block}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px;margin-bottom:12px}.cardTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.cardTitle b{font-family:Space Grotesk;font-size:15px}
-.btn{padding:10px 13px;border:none;border-radius:11px;font-weight:900;font-size:11px;cursor:pointer}.btn-green{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#1d1d1d;color:#fff;border:1px solid #333}.btn-red{background:#3a1111;color:#ff6666;border:1px solid #552}.btn-blue{background:#092331;color:var(--blue);border:1px solid #16465e}.full{width:100%}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-input,select,textarea{width:100%;padding:12px;margin-top:6px;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;outline:none}input:focus{border-color:var(--lime)}label{display:block;color:#aaa;font-size:10px;font-weight:800;margin-top:9px}
-.order{background:var(--card2);border:1px solid #242424;border-left:4px solid var(--lime);border-radius:15px;padding:13px;margin-top:9px}.orderTop{display:flex;justify-content:space-between;gap:8px}.orderTitle{font-weight:900;font-size:13px}.orderMeta{color:#888;font-size:10px;line-height:1.7;margin-top:5px}.orderActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:8px;font-weight:900}.badge-new{background:#392600;color:#ffb52e}.badge-progress{background:#062d17;color:#35df78}.badge-done{background:#092331;color:#38bdf8}.badge-cancel{background:#351010;color:#ff6666}
-.service,.vendorRow,.settingRow{background:var(--card2);border:1px solid #242424;border-radius:14px;padding:12px;margin-top:8px;display:flex;justify-content:space-between;gap:10px;align-items:center}
-.qrbox{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}.qrCard{background:#fff;color:#000;border-radius:15px;padding:12px;text-align:center}.qrCode{min-height:128px;display:flex;justify-content:center;align-items:center}
-.empty{text-align:center;color:#777;padding:30px 15px}.wallet{background:linear-gradient(135deg,var(--lime),var(--gold));color:#000;border-radius:20px;padding:18px;margin-bottom:12px}.walletValue{font-family:Space Grotesk;font-size:31px;margin:3px 0}.progress{height:7px;background:#222;border-radius:999px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:var(--lime)}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:900;font-size:11px;z-index:999;transition:.3s}.toast.show{transform:translateX(-50%) translateY(0)}.loading{color:#777;font-size:11px;padding:20px;text-align:center}
-@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.section{max-width:900px;margin:auto}.hero{max-width:900px;margin:14px auto}.qrbox{grid-template-columns:repeat(4,1fr)}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050507;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;padding-bottom:90px}
+.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Space Grotesk';font-weight:900;font-size:20px;letter-spacing:-0.5px}.logo span{color:#c6ff00}
+.hotel-id{background:#c6ff00;color:#000;padding:8px 14px;border-radius:999px;font-weight:900;font-size:12px;font-family:'JetBrains Mono'}
+.iconBtn{width:36px;height:36px;border-radius:10px;border:1px solid #222;background:#111;color:#fff;cursor:pointer}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;background:#0a0a0e;border-bottom:1px solid rgba(255,255,255,0.05);position:sticky;top:62px;z-index:90}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;padding:11px 16px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:12px;cursor:pointer;transition:.2s}
+.tab.active{background:#c6ff00;color:#000;border-color:#c6ff00;box-shadow:0 0 20px rgba(198,255,0,0.3)}
+.content{padding:16px;max-width:900px;margin:auto}
+.card{background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+.card h3{font-family:'Space Grotesk';font-size:15px;font-weight:900;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:#0e0e14;border:1px solid #1e1e26;border-radius:18px;padding:16px;text-align:center}
+.stat b{font-size:24px;font-weight:900;display:block;color:#c6ff00;font-family:'Space Grotesk'}.stat small{opacity:.5;font-size:10px;font-weight:800;letter-spacing:1px}
+input,select,textarea{width:100%;background:#111114;border:1px solid #22222a;border-radius:12px;padding:13px;color:#fff;font-size:13px;margin:6px 0;outline:none}
+input:focus{border-color:#c6ff00}
+.btn{width:100%;background:#c6ff00;color:#000;border:0;padding:13px;border-radius:12px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px;transition:.2s}
+.btn:active{transform:scale(0.98)}
+.btn-outline{background:transparent;border:1px solid #2a2a34;color:#fff}
+.btn-red{background:#3a1111;color:#ff6666;border:1px solid #552}
+.btn-dark{background:#1d1d1d;color:#fff;border:1px solid #333}
+.list-item{background:#0e0e12;border:1px solid #1a1a22;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:10px}
+.badge{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:900}
+.badge-new{background:#c6ff00;color:#000}.badge-paid{background:#00ff88;color:#000}.badge-progress{background:#062d17;color:#35df78}.badge-overdue{background:#351010;color:#ff6666}
+.section{display:none}.section.active{display:block}
+.qr-box{background:#fff;padding:10px;border-radius:14px;display:inline-block;margin:6px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:900;font-size:11px;z-index:999;transition:.3s}.toast.show{transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;color:#777;padding:26px 15px;font-size:12px}
+.progress{height:7px;background:#222;border-radius:999px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:#c6ff00}
+.wallet{background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:20px;padding:18px;margin-bottom:12px}.walletValue{font-family:'Space Grotesk';font-size:30px;margin:3px 0}
 </style>
 </head>
 <body>
-<header><div class="logo">GuestHub <span>HotelOS</span></div><div style="display:flex;gap:6px;align-items:center"><div class="hotelTag" id="hotelName">Loading...</div><button class="iconBtn" onclick="refreshAll()">↻</button><button class="iconBtn" onclick="logout()">⎋</button></div></header>
-<div class="hero"><div class="heroTop"><div><small>WELCOME TO YOUR COMMAND CENTER</small><h1 id="heroHotel">Loading Hotel...</h1><small id="heroLocation">Hotel operations • GuestHub</small></div><span class="status" id="hotelStatus">SECURE</span></div><div style="margin-top:15px"><small>Guest Experience Engine</small><div class="progress"><span id="experienceProgress"></span></div></div></div>
-<div class="stats"><div class="stat money"><b id="todayRevenue">Ksh 0</b><small>TODAY REVENUE</small></div><div class="stat"><b id="monthRevenue">Ksh 0</b><small>MONTH REVENUE</small></div><div class="stat"><b id="totalOrders">0</b><small>TOTAL ORDERS</small></div><div class="stat"><b id="activeVendors">0</b><small>AVAILABLE VENDORS</small></div></div>
+<div class="top"><div class="logo">GUEST<span>HUB</span> OS <small style="font-size:10px;opacity:.5;margin-left:6px">SECURED 11.0</small></div><div style="display:flex;gap:6px;align-items:center"><div class="hotel-id" id="hotelIdDisplay">LOADING</div><button class="iconBtn" onclick="refreshAll()">↻</button><button class="iconBtn" onclick="logout()">⎋</button></div></div>
+
 <div class="tabs">
-<button class="tab active" onclick="openTab('orders',this)">🔔 Orders</button>
-<button class="tab" onclick="openTab('vendors',this)">🚚 Vendors</button>
-<button class="tab" onclick="openTab('services',this)">🍽 Services</button>
-<button class="tab" onclick="openTab('revenue',this)">💰 Revenue</button>
-<button class="tab" onclick="openTab('qr',this)">📱 QR</button>
-<button class="tab" onclick="openTab('whatsapp',this)">💬 WhatsApp</button>
-<button class="tab" onclick="openTab('profile',this)">⚙️ Hotel</button>
+  <div class="tab active" onclick="switchTab('dash',this)">📊 DASH</div>
+  <div class="tab" onclick="switchTab('menu',this)">🍽️ MENU & PAY</div>
+  <div class="tab" onclick="switchTab('services',this)">🏨 SERVICES</div>
+  <div class="tab" onclick="switchTab('vendors',this)">🚕 VENDORS</div>
+  <div class="tab" onclick="switchTab('orders',this)">📋 ROOM ORDERS</div>
+  <div class="tab" onclick="switchTab('tables',this)">🍽️ TABLE ORDERS</div>
+  <div class="tab" onclick="switchTab('vendorBilling',this)">💳 VENDOR BILLING</div>
+  <div class="tab" onclick="switchTab('qr',this)">📱 QR</div>
+  <div class="tab" onclick="switchTab('whatsapp',this)">💬 WHATSAPP</div>
+  <div class="tab" onclick="switchTab('profile',this)">⚙️ PROFILE</div>
+  <div class="tab" onclick="switchTab('reports',this)">💰 REPORTS</div>
 </div>
 
-<div id="orders" class="section active"><div class="card"><div class="cardTitle"><b>🔔 Live Guest Orders</b><button class="btn btn-dark" onclick="loadOrders()">Refresh</button></div><div id="ordersList"><div class="loading">Loading orders...</div></div></div></div>
-<div id="vendors" class="section"><div class="card"><div class="cardTitle"><b>🚚 Vendor Network</b><span class="badge badge-progress">LIVE</span></div><div id="vendorsList"><div class="loading">Loading vendors...</div></div></div></div>
-<div id="services" class="section"><div class="card"><div class="cardTitle"><b>🍽 Guest Service Builder</b></div><label>Service name</label><input id="serviceTitle" placeholder="e.g. Pilau Beef"><div class="grid2"><div><label>Price</label><input id="servicePrice" type="number" placeholder="650"></div><div><label>Category</label><select id="serviceCategory"><option value="food">🍽 Food</option><option value="drink">🥤 Drinks</option><option value="spa">🧖 Spa</option><option value="taxi">🚕 Taxi</option><option value="tour">🌍 Tour</option><option value="laundry">🧺 Laundry</option><option value="media">📸 Media</option><option value="other">✨ Other</option></select></div></div><label>Description</label><input id="serviceDescription" placeholder="Delivered in 20 min"><button class="btn btn-green full" style="margin-top:12px" onclick="addService()">+ Add To Guest Marketplace</button></div><div class="card"><div class="cardTitle"><b>Your Guest Services</b><span id="serviceCount" class="badge badge-progress">0</span></div><div id="serviceList"><div class="loading">Loading services...</div></div></div></div>
-<div id="revenue" class="section"><div class="wallet"><div style="font-size:9px;font-weight:900;opacity:.65">HOTEL REVENUE</div><div class="walletValue" id="revenueTotal">Ksh 0</div></div><div class="card"><div class="cardTitle"><b>💰 Revenue Intelligence</b></div><div class="grid2"><div><small>Commission 15%</small><h2 id="commissionTotal">Ksh 0</h2></div><div><small>Hotel Net</small><h2 id="hotelNet">Ksh 0</h2></div></div></div><div class="card"><div id="revenueBreakdown"><div class="loading">Calculating...</div></div></div></div>
-<div id="qr" class="section"><div class="card"><div class="cardTitle"><b>📱 Room QR Command Center</b></div><div class="grid2"><div><label>Start room</label><input id="startRoom" value="101"></div><div><label>End room</label><input id="endRoom" value="110"></div></div><button class="btn btn-gold full" style="margin-top:10px" onclick="generateQRs()">Generate Room QR Codes</button><div class="qrbox" id="qrContainer"></div></div></div>
-<div id="whatsapp" class="section"><div class="card"><div class="cardTitle"><b>💬 WhatsApp Routing</b></div><label>🍽 Kitchen</label><input id="wa_k" placeholder="2547XXXXXXXX"><label>🧹 Housekeeping</label><input id="wa_h" placeholder="2547XXXXXXXX"><label>🧺 Laundry</label><input id="wa_l" placeholder="2547XXXXXXXX"><label>🧖 Spa</label><input id="wa_s" placeholder="2547XXXXXXXX"><label>🚕 Taxi</label><input id="wa_t" placeholder="2547XXXXXXXX"><label>🛎 Front Desk</label><input id="wa_f" placeholder="2547XXXXXXXX"><button class="btn btn-green full" style="margin-top:12px" onclick="saveWhatsApp()">💾 Save Routing</button></div></div>
-<div id="profile" class="section"><div class="card"><div class="cardTitle"><b>⚙️ Hotel Profile</b></div><label>Hotel name</label><input id="profileName"><label>Location</label><input id="profileLocation"><label>Phone</label><input id="profilePhone"><label>Email</label><input id="profileEmail" disabled><label>Plan</label><input id="profilePlan" disabled><button class="btn btn-green full" style="margin-top:12px" onclick="saveHotelProfile()">💾 Save Profile</button></div><div class="card"><button class="btn btn-red full" onclick="logout()">Logout</button></div></div>
+<div class="content">
+  <!-- DASH -->
+  <div class="section active" id="sec-dash">
+    <div class="card" style="background:linear-gradient(135deg,rgba(198,255,0,.11),rgba(251,191,36,.06)),#111"><div style="display:flex;justify-content:space-between"><div><small>WELCOME TO YOUR COMMAND CENTER</small><h1 id="heroHotel" style="font-family:Space Grotesk;font-size:22px;margin:4px 0">Loading...</h1><small id="heroLocation">Hotel operations • GuestHub</small></div><span class="badge badge-new" id="hotelStatus">SECURE</span></div><div style="margin-top:12px"><small>Guest Experience Engine</small><div class="progress"><span id="experienceProgress"></span></div></div></div>
+    <div class="grid2"><div class="stat"><b id="statRevenue">Ksh 0</b><small>TODAY REVENUE</small></div><div class="stat"><b id="statOrders">0</b><small>TOTAL ORDERS</small></div><div class="stat"><b id="statTables">0</b><small>TABLE ORDERS</small></div><div class="stat"><b id="statGuests">0</b><small>ACTIVE GUESTS</small></div></div>
+    <div class="card"><h3>🔴 LIVE ACTIVITY <button class="btn-dark" style="padding:6px 10px;font-size:10px" onclick="refreshAll()">Refresh</button></h3><div id="liveFeed">Loading...</div></div>
+  </div>
+
+  <!-- MENU & PAY -->
+  <div class="section" id="sec-menu">
+    <div class="card"><h3>💳 M-PESA PAYMENT (GM) - Till Direct</h3><input id="paybill" placeholder="Paybill e.g. 522522"><input id="till" placeholder="Till e.g. 123456 (Buy Goods)"><input id="mName" placeholder="M-Pesa Name e.g. BAOBAB HOTEL"><button class="btn" onclick="savePay()">💾 SAVE PAYBILL / TILL</button><small style="opacity:.5;display:block;margin-top:8px">Pesa ya Food inaingia DIRECT kwa hotel. Wewe unalipa GuestHub subscription monthly.</small></div>
+    <div class="card"><h3>➕ ADD MENU ITEM</h3><input id="itemName" placeholder="Name e.g. Nyama Choma"><input id="itemPrice" type="number" placeholder="Price"><input id="itemDesc" placeholder="Description"><select id="itemCat"><option>Food</option><option>Drink</option><option>Dessert</option><option>Breakfast</option></select><button class="btn" onclick="addItem()">Add to Menu</button></div>
+    <div id="menuList"></div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="section" id="sec-services">
+    <div class="card"><h3>➕ ADD HOTEL SERVICE (Guest App)</h3><input id="svcTitle" placeholder="e.g. Taxi / Uber"><input id="svcDesc" placeholder="e.g. Airport Transfer"><input id="svcPrice" type="number" placeholder="Price Ksh"><select id="svcCat"><option>Transport</option><option>Tours</option><option>Wellness</option><option>Media</option><option>RoomService</option><option>Concierge</option></select><input id="svcIcon" placeholder="Icon e.g. 🚕"><button class="btn" onclick="addService()">Add Service</button></div>
+    <div id="svcList"></div>
+  </div>
+
+  <!-- VENDORS -->
+  <div class="section" id="sec-vendors">
+    <div class="card"><h3>👥 VENDORS & DRIVERS <span class="badge badge-progress" id="activeVendors">0</span></h3><div id="vendorList">Loading...</div></div>
+  </div>
+
+  <!-- ROOM ORDERS -->
+  <div class="section" id="sec-orders"><div class="card"><h3>🏨 ROOM ORDERS LIVE</h3><div id="orderList"></div></div></div>
+
+  <!-- TABLE ORDERS -->
+  <div class="section" id="sec-tables"><div class="card"><h3>🍽️ TABLE ORDERS LIVE</h3><div id="tableOrderList"></div></div></div>
+
+  <!-- VENDOR BILLING OPTION A -->
+  <div class="section" id="sec-vendorBilling">
+    <div class="wallet"><div style="font-size:9px;font-weight:900;opacity:.65">VENDOR COMMISSION OWED - OPTION A</div><div class="walletValue" id="totalOwed">Ksh 0</div><small id="totalVendors">0 Vendors</small></div>
+    <div class="card"><h3>📅 GENERATE WEEKLY INVOICES</h3><div class="grid2"><input type="date" id="weekStart"><input type="date" id="weekEnd"></div><button class="btn" onclick="generateInvoices()">🔥 GENERATE INVOICES</button><button class="btn btn-outline" onclick="loadVendorBilling()">Refresh</button></div>
+    <div class="card"><h3>🚕 WHO OWES WHAT?</h3><div id="vendorsBillingList">Loading...</div></div>
+    <div class="card"><h3>💳 MARK PAID - Vendor Amelipa Till Yako</h3><input id="vendorPhonePaid" placeholder="Vendor Phone"><input id="mpesaCode" placeholder="M-Pesa Code"><input id="amountPaid" type="number" placeholder="Amount Paid"><button class="btn" onclick="markPaid()">✅ MARK PAID + ACTIVATE</button></div>
+    <div class="card"><h3>📱 SMS - Copy to WhatsApp Group</h3><div id="smsTemplate" style="background:#111114;border:1px dashed #2a2a34;border-radius:10px;padding:12px;font-size:11px;white-space:pre-wrap">Generate invoices kwanza</div><button class="btn btn-outline" onclick="copySMS()">Copy SMS</button></div>
+  </div>
+
+  <!-- QR -->
+  <div class="section" id="sec-qr">
+    <div class="card"><h3>📱 ROOM QRs</h3><div class="grid2"><input id="roomFrom" value="101"><input id="roomTo" value="120"></div><button class="btn" onclick="genRoomQR()">Generate Room QRs</button><div id="roomQRs"></div></div>
+    <div class="card"><h3>🍽️ TABLE QRs</h3><div class="grid2"><input id="tableFrom" value="T01"><input id="tableTo" value="T20"></div><button class="btn" onclick="genTableQR()">Generate Table QRs</button><div id="tableQRs"></div></div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <div class="section" id="sec-whatsapp"><div class="card"><h3>💬 WhatsApp Routing</h3><label>🍽 Kitchen</label><input id="wa_k" placeholder="2547XXXXXXXX"><label>🧹 Housekeeping</label><input id="wa_h" placeholder="2547XXXXXXXX"><label>🧺 Laundry</label><input id="wa_l" placeholder="2547XXXXXXXX"><label>🧖 Spa</label><input id="wa_s" placeholder="2547XXXXXXXX"><label>🚕 Taxi</label><input id="wa_t" placeholder="2547XXXXXXXX"><label>🛎 Front Desk</label><input id="wa_f" placeholder="2547XXXXXXXX"><button class="btn" onclick="saveWhatsApp()">💾 Save Routing</button></div></div>
+
+  <!-- PROFILE -->
+  <div class="section" id="sec-profile"><div class="card"><h3>⚙️ Hotel Profile</h3><label>Hotel name</label><input id="profileName"><label>Location</label><input id="profileLocation"><label>Phone</label><input id="profilePhone"><label>Email</label><input id="profileEmail" disabled><label>Plan</label><input id="profilePlan" disabled><button class="btn" onclick="saveHotelProfile()">💾 Save Profile</button></div><div class="card"><button class="btn btn-red" onclick="logout()">Logout</button></div></div>
+
+  <!-- REPORTS -->
+  <div class="section" id="sec-reports"><div class="card"><h3>💰 Revenue Intelligence</h3><div class="grid2"><div><small>Commission 15%</small><h2 id="commissionTotal">Ksh 0</h2></div><div><small>Hotel Net</small><h2 id="hotelNet">Ksh 0</h2></div></div><div id="reportData" style="margin-top:12px"></div><button class="btn btn-outline" onclick="refreshAll()">Refresh Reports</button></div></div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let currentHotel=null, ordersCache=[], servicesCache=[], vendorsCache=[];
+let currentHotel=null, ordersCache=[], servicesCache=[], tableCache=[];
 function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 function getToken(){return localStorage.getItem('hotel_token')||localStorage.getItem('admin_token')||''}
-async function secureFetch(url,opts={}){const token=getToken(); if(!token){ location.href='/hotel-login.html'; throw new Error('No token'); } opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body && !(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; const r=await fetch(url,opts); if(r.status===401||r.status===403){ localStorage.removeItem('hotel_token'); location.href='/hotel-login.html'; throw new Error('Unauthorized'); } return r;}
+async function secureFetch(url,opts={}){const token=getToken(); if(!token){ location.href='/hotel-login.html'; throw new Error('No token'); } opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body &&!(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; const r=await fetch(url,opts); if(r.status===401||r.status===403){ localStorage.removeItem('hotel_token'); location.href='/hotel-login.html'; throw new Error('Unauthorized'); } return r;}
+const hotel_id_param=new URLSearchParams(location.search).get('hotel')||localStorage.getItem('hotel_id')||'BAOBAB';
+document.getElementById('hotelIdDisplay').textContent=hotel_id_param;
+document.getElementById('weekStart').value=new Date(Date.now()-7*24*60*60*1000).toISOString().slice(0,10);
+document.getElementById('weekEnd').value=new Date().toISOString().slice(0,10);
+
+function switchTab(name,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(name==='dash') refreshAll();
+  if(name==='menu') loadMenu();
+  if(name==='services') loadServices();
+  if(name==='vendors') loadVendors();
+  if(name==='orders') loadOrders();
+  if(name==='tables') loadTableOrders();
+  if(name==='vendorBilling') loadVendorBilling();
+  if(name==='reports') refreshAll();
+}
 
 async function init(){
- const token=getToken();
- if(!token){ location.href='/hotel-login.html'; return; }
+ const token=getToken(); if(!token){ location.href='/hotel-login.html'; return; }
  try{
-  const meRes = await secureFetch('/api/auth/me');
-  const meData = await meRes.json();
+  const meRes=await secureFetch('/api/auth/me'); const meData=await meRes.json();
   if(!meData.ok) throw new Error('Auth failed');
-  currentHotel = meData.hotel || meData.user;
-  // Load dashboard via secured backend - NOT direct Supabase
-  await refreshAll();
-  renderHotelProfile(); loadWhatsApp();
-  startRealtime();
- }catch(e){ console.error(e); toast('Session expired, please login'); setTimeout(()=>location.href='/hotel-login.html',1000); }
+  currentHotel=meData.hotel||meData.user;
+  await refreshAll(); renderHotelProfile(); loadWhatsApp(); startRealtime();
+ }catch(e){ console.error(e); toast('Session expired'); setTimeout(()=>location.href='/hotel-login.html',1000); }
 }
+
 async function refreshAll(){
  try{
-  const r = await secureFetch('/api/gm/dashboard');
-  const d = await r.json();
+  toast('Refreshing...');
+  const r=await secureFetch('/api/gm/dashboard'); const d=await r.json();
   if(!d.ok) throw new Error('Dashboard failed');
-  currentHotel = d.hotel || currentHotel;
-  ordersCache = d.orders || [];
-  servicesCache = d.services || d.items || [];
-  document.getElementById('hotelName').innerText = currentHotel.name || currentHotel.hotel_name || 'Hotel';
-  document.getElementById('heroHotel').innerText = currentHotel.name || currentHotel.hotel_name || 'Hotel';
-  document.getElementById('heroLocation').innerText = (currentHotel.location||currentHotel.city||'Kenya')+' • GuestHub HotelOS 11.0 SECURED';
-  document.getElementById('hotelStatus').innerText = 'SECURED • '+(currentHotel.status||'APPROVED');
-  renderOrders(); renderServices(); updateRevenue();
-  loadVendors();
- }catch(e){ console.error(e); toast('Could not load dashboard'); }
+  currentHotel=d.hotel||currentHotel;
+  ordersCache=d.orders||[]; servicesCache=d.services||d.items||[]; tableCache=d.table_orders||[];
+  document.getElementById('hotelIdDisplay').innerText=currentHotel.id||currentHotel.hotel_id||hotel_id_param;
+  document.getElementById('heroHotel').innerText=currentHotel.name||currentHotel.hotel_name||'Hotel';
+  document.getElementById('heroLocation').innerText=(currentHotel.location||currentHotel.city||'Kenya')+' • SECURED 11.0';
+  document.getElementById('hotelStatus').innerText='SECURED • '+(currentHotel.status||'APPROVED');
+  renderDash(); loadVendors(); loadVendorBilling();
+  toast('Updated');
+ }catch(e){ console.error(e); toast('Dashboard error - trying legacy'); legacyDash(); }
 }
-async function loadOrders(){
+
+function renderDash(){
+  const all=[...ordersCache,...tableCache];
+  const rev=all.reduce((s,o)=>s+(parseFloat(o.total||o.amount||0)),0);
+  const todayRev=all.filter(o=>{ if(!o.created_at) return false; const d=new Date(o.created_at); const n=new Date(); return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth(); }).reduce((s,o)=>s+(parseFloat(o.total||o.amount||0)),0);
+  document.getElementById('statRevenue').textContent=money(todayRev);
+  document.getElementById('statOrders').textContent=ordersCache.length;
+  document.getElementById('statTables').textContent=tableCache.length;
+  document.getElementById('statGuests').textContent=new Set(all.map(o=>o.room||o.table_number)).size;
+  document.getElementById('liveFeed').innerHTML=all.slice(0,6).map(o=>`<div class="list-item"><span>${o.room?'🛏️ Room '+esc(o.room):'🍽️ Table '+esc(o.table_number||'')} • ${esc(o.service_title||o.items?.[0]?.name||'Order')}</span><span class="badge badge-new">${money(o.total||o.amount)}</span></div>`).join('')||'<div class="empty">No activity yet - QR orders will appear LIVE</div>';
+  // revenue
+  const total=rev; const comm=Math.floor(total*0.15); const net=total-comm;
+  document.getElementById('commissionTotal').textContent=money(comm);
+  document.getElementById('hotelNet').textContent=money(net);
+  document.getElementById('reportData').innerHTML=`<div class="list-item"><span>Gross GMV</span><b>${money(total)}</b></div><div class="list-item"><span>GuestHub 15%</span><b style="color:#fbbf24">${money(comm)}</b></div><div class="list-item"><span>Hotel Net</span><b style="color:#c6ff00">${money(net)}</b></div>`;
+  const completed=ordersCache.filter(o=>['completed','complete','delivered'].includes(String(o.status||'').toLowerCase())).length;
+  document.getElementById('experienceProgress').style.width=(ordersCache.length?Math.round((completed/ordersCache.length)*100):0)+'%';
+}
+
+async function legacyDash(){
+  try{
+    const hotel_id=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+    const [o,t]=await Promise.all([fetch(`/api/orders?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({data:[]})), fetch(`/api/table-orders?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({data:[]}))]);
+    ordersCache=o.data||o||[]; tableCache=t.data||t||[]; renderDash();
+  }catch(e){}
+}
+
+// MENU & PAY
+async function savePay(){
  try{
-  const r = await secureFetch('/api/gm/orders');
-  const d = await r.json();
-  ordersCache = d.orders || [];
-  renderOrders(); updateRevenue();
- }catch(e){ document.getElementById('ordersList').innerHTML='<div class="empty">Unable to load orders</div>'; }
+  const payload={hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param, paybill_number:document.getElementById('paybill').value, till_number:document.getElementById('till').value, m_pesa_name:document.getElementById('mName').value};
+  const r=await secureFetch('/api/menu/settings',{method:'POST',body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Paybill Saved! ✅');
+ }catch(e){ // fallback legacy
+  fetch('/api/menu/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel_id_param,paybill_number:document.getElementById('paybill').value,till_number:document.getElementById('till').value,m_pesa_name:document.getElementById('mName').value})}).then(r=>r.json()).then(d=>toast(d.ok?'Saved ✅':'Failed'))}
 }
-function renderOrders(){
- const list=document.getElementById('ordersList');
- if(!ordersCache.length){ list.innerHTML=`<div class="empty">No guest orders yet.<br><small>QR orders will appear LIVE here</small></div>`; document.getElementById('totalOrders').innerText='0'; return; }
- list.innerHTML=ordersCache.map(o=>{
-  const status=String(o.status||'new').toLowerCase();
-  let badge='badge-new'; if(status.includes('progress')||status==='accepted') badge='badge-progress'; if(status.includes('complete')) badge='badge-done'; if(status.includes('cancel')) badge='badge-cancel';
-  return `<div class="order"><div class="orderTop"><div class="orderTitle">🛎 Room ${esc(o.room||'—')} • ${esc(o.service_title||o.service||'Request')}</div><span class="badge ${badge}">${esc(status.toUpperCase())}</span></div><div class="orderMeta">Guest: <b style="color:#fff">${esc(o.guest_name||'Guest')}</b><br>Amount: <b style="color:var(--lime)">${money(o.amount)}</b><br>${o.created_at?new Date(o.created_at).toLocaleString():''}</div><div class="orderActions">${status==='new'?`<button class="btn btn-green" onclick="updateOrder('${o.id}','accepted')">✅ Accept</button>`:`<button class="btn btn-dark" onclick="updateOrder('${o.id}','completed')">✓ Complete</button>`}<button class="btn btn-dark" onclick="sendOrderWhatsApp('${o.id}')">💬 WhatsApp</button></div></div>`;
- }).join(''); document.getElementById('totalOrders').innerText=ordersCache.length;
+async function addItem(){
+ try{
+  const r=await secureFetch('/api/menu/items',{method:'POST',body:JSON.stringify({hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param,name:document.getElementById('itemName').value,price:document.getElementById('itemPrice').value,description:document.getElementById('itemDesc').value,category:document.getElementById('itemCat').value})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Added!'); loadMenu();
+ }catch(e){ fetch('/api/menu/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel_id_param,name:document.getElementById('itemName').value,price:document.getElementById('itemPrice').value,description:document.getElementById('itemDesc').value,category:document.getElementById('itemCat').value})}).then(()=>{toast('Added!');loadMenu()})}
 }
-async function updateOrder(id,status){
- try{ const r=await secureFetch('/api/orders/'+id+'/status', {method:'PATCH', body: JSON.stringify({status})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Order '+status); await loadOrders(); }catch(e){ // fallback direct
-  const {error}=await supa.from('orders').update({status}).eq('id',id).eq('hotel_id',currentHotel.id||currentHotel.hotel_id); if(error) toast(error.message); else {toast('Order updated'); await loadOrders();}
- }
+async function loadMenu(){
+ try{
+  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+  let d; try{ const r=await secureFetch(`/api/gm/menu?hotel_id=${hotel}`); d=await r.json(); }catch{ d=await fetch(`/api/menu?hotel_id=${hotel}`).then(r=>r.json()); }
+  if(d.menus?.[0]){document.getElementById('paybill').value=d.menus[0].paybill_number||'';document.getElementById('till').value=d.menus[0].till_number||'';document.getElementById('mName').value=d.menus[0].m_pesa_name||''}
+  document.getElementById('menuList').innerHTML=(d.items||[]).map(i=>`<div class="list-item"><span><b>${esc(i.name)}</b> • ${money(i.price)} (${esc(i.category)})</span><button onclick="delItem('${i.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No menu items</div>';
+ }catch(e){ document.getElementById('menuList').innerHTML='<div class="empty">No menu</div>'; }
+}
+async function delItem(id){ try{ await secureFetch(`/api/menu/items/${id}`,{method:'DELETE'}); }catch{ await fetch(`/api/menu/items/${id}`,{method:'DELETE'});} loadMenu(); }
+
+// SERVICES
+async function addService(){
+ try{
+  const r=await secureFetch('/api/admin/services',{method:'POST',body:JSON.stringify({hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param,title:document.getElementById('svcTitle').value,description:document.getElementById('svcDesc').value,price:document.getElementById('svcPrice').value,category:document.getElementById('svcCat').value,icon:document.getElementById('svcIcon').value,active:true})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Service Added!'); loadServices();
+ }catch(e){ toast(e.message); }
 }
 async function loadServices(){
  try{
-  const r=await secureFetch('/api/gm/services');
-  const d=await r.json();
-  servicesCache=d.services||[];
-  renderServices();
- }catch(e){ document.getElementById('serviceList').innerHTML='<div class="empty">No services</div>'; }
+  const r=await secureFetch('/api/gm/services'); const d=await r.json(); servicesCache=d.services||[]; document.getElementById('svcList').innerHTML=servicesCache.map(s=>`<div class="list-item"><span>${esc(s.icon||'🏨')} <b>${esc(s.title)}</b> - ${money(s.price)} (${esc(s.category)})</span><button onclick="delSvc('${s.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No services</div>';
+ }catch(e){ const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param; const d=await fetch(`/api/services?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); document.getElementById('svcList').innerHTML=(d.data||[]).map(s=>`<div class="list-item"><span>${esc(s.icon||'🏨')} <b>${esc(s.title)}</b> - ${money(s.price)}</span><button onclick="delSvc('${s.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No services</div>'; }
 }
-function renderServices(){
- const list=document.getElementById('serviceList');
- document.getElementById('serviceCount').innerText=servicesCache.length;
- if(!servicesCache.length){ list.innerHTML='<div class="empty">No services yet</div>'; return; }
- list.innerHTML=servicesCache.map(s=>`<div class="service"><div><div style="font-weight:800;font-size:12px">${esc(s.title)}</div><div style="color:#888;font-size:9px">${esc(s.category||'')}${s.description?' • '+esc(s.description):''}</div></div><div style="text-align:right"><b style="color:var(--lime)">${money(s.price)}</b><br><button class="btn btn-red" style="margin-top:6px;padding:6px 9px" onclick="deleteService('${s.id}')">Delete</button></div></div>`).join('');
-}
-async function addService(){
- const title=document.getElementById('serviceTitle').value.trim();
- const price=Number(document.getElementById('servicePrice').value);
- const category=document.getElementById('serviceCategory').value;
- const description=document.getElementById('serviceDescription').value.trim();
- if(!title||!price){ toast('Enter name and price'); return; }
+async function delSvc(id){ try{ const r=await secureFetch('/api/admin/services/'+id,{method:'DELETE'}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Removed'); loadServices(); }catch(e){ toast(e.message); }}
+
+// ORDERS
+async function loadOrders(){
  try{
-  const r=await secureFetch('/api/admin/services', {method:'POST', body: JSON.stringify({hotel_id: currentHotel.id||currentHotel.hotel_id, title, price, category, description, active:true})});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error);
-  document.getElementById('serviceTitle').value=''; document.getElementById('servicePrice').value=''; document.getElementById('serviceDescription').value='';
-  toast('Service added'); loadServices();
- }catch(e){ toast(e.message); }
+  const r=await secureFetch('/api/gm/orders'); const d=await r.json(); ordersCache=d.orders||[]; renderOrders();
+ }catch(e){
+  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+  const d=await fetch(`/api/orders?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); ordersCache=d.data||d||[]; renderOrders();
+ }
 }
-async function deleteService(id){
- if(!confirm('Remove service?')) return;
+function renderOrders(){
+ const list=document.getElementById('orderList');
+ if(!ordersCache.length){ list.innerHTML='<div class="empty">No room orders yet</div>'; return; }
+ list.innerHTML=ordersCache.slice(0,30).map(o=>{
+  const status=String(o.status||'new').toLowerCase();
+  return `<div class="list-item"><div><b>Room ${esc(o.room||'—')}</b> - ${esc(o.service_title||'Order')}<br><small>${o.created_at?new Date(o.created_at).toLocaleString():''}</small></div><div style="text-align:right"><b>${money(o.amount||o.total)}</b><br><span class="badge badge-new">${esc(status)}</span><br><div style="margin-top:6px;display:flex;gap:4px"><button class="btn btn-dark" style="padding:6px 8px;font-size:10px" onclick="updateOrder('${o.id}','completed')">✓ Done</button><button class="btn btn-dark" style="padding:6px 8px;font-size:10px" onclick="sendOrderWA('${o.id}')">💬</button></div></div></div>`;
+ }).join('');
+}
+async function updateOrder(id,status){
+ try{ const r=await secureFetch('/api/orders/'+id+'/status',{method:'PATCH',body:JSON.stringify({status})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Order '+status); loadOrders(); }catch(e){ const {error}=await supa.from('orders').update({status}).eq('id',id); if(error) toast(error.message); else {toast('Updated'); loadOrders();} }
+}
+async function loadTableOrders(){
  try{
-  const r=await secureFetch('/api/admin/services/'+id, {method:'DELETE'});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error);
-  toast('Service removed'); loadServices();
- }catch(e){ toast(e.message); }
+  const r=await secureFetch('/api/gm/table-orders'); const d=await r.json(); tableCache=d.table_orders||d.data||[]; renderTableOrders();
+ }catch{
+  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+  const d=await fetch(`/api/table-orders?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); tableCache=d.data||d||[]; renderTableOrders();
+ }
 }
+function renderTableOrders(){
+ const list=document.getElementById('tableOrderList');
+ if(!tableCache.length){ list.innerHTML='<div class="empty">No table orders</div>'; return; }
+ list.innerHTML=tableCache.slice(0,30).map(o=>`<div class="list-item"><div><b>Table ${esc(o.table_number||'—')}</b> - ${o.items?.length||1} items<br><small>${esc(o.guest_name||'Guest')} • ${o.created_at?new Date(o.created_at).toLocaleString():''}</small></div><div style="text-align:right"><b>${money(o.total)}</b><br><span class="badge badge-new">${esc(o.status||'new')}</span></div></div>`).join('');
+}
+
+// VENDORS
 async function loadVendors(){
- const list=document.getElementById('vendorsList');
+ const list=document.getElementById('vendorList');
  try{
   const {data,error}=await supa.from('vendors').select('*').eq('status','approved').limit(50);
   if(error) throw error;
-  vendorsCache=data||[];
-  const city=String(currentHotel.city||currentHotel.location||'').toLowerCase();
-  const relevant=vendorsCache.filter(v=>!city||String(v.city||'').toLowerCase().includes(city));
+  const city=String(currentHotel?.city||currentHotel?.location||'').toLowerCase();
+  const relevant=(data||[]).filter(v=>!city||String(v.city||'').toLowerCase().includes(city));
   document.getElementById('activeVendors').innerText=relevant.length;
-  if(!relevant.length){ list.innerHTML='<div class="empty">No approved vendors nearby yet</div>'; return; }
-  list.innerHTML=relevant.map(v=>`<div class="vendorRow"><div><div style="font-weight:800;font-size:12px">${esc(v.full_name)}</div><div style="color:#888;font-size:9px">${esc(v.city||'')} • ${(v.services||[]).slice(0,3).map(esc).join(', ')}</div></div><button class="btn btn-blue" onclick="contactVendor('${v.phone||''}')">💬</button></div>`).join('');
+  if(!relevant.length){ list.innerHTML='<div class="empty">No approved vendors nearby</div>'; return; }
+  list.innerHTML=relevant.map(v=>`<div class="list-item"><div><b>${esc(v.full_name)}</b><br><small>${esc(v.city||'')} • ${(v.services||[]).slice(0,3).map(esc).join(', ')}</small></div><button class="btn btn-dark" style="width:auto;padding:8px 10px" onclick="window.open('https://wa.me/'+String(v.phone||'').replace(/\\D/g,''),'_blank')">💬</button></div>`).join('');
  }catch(e){ list.innerHTML='<div class="empty">Vendor network unavailable</div>'; }
 }
-function updateRevenue(){
- let total=0,today=0,month=0; const now=new Date();
- ordersCache.forEach(o=>{ const a=Number(o.amount)||0; total+=a; if(o.created_at){ const d=new Date(o.created_at); if(d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()) month+=a; if(d.getDate()===now.getDate()&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()) today+=a; } });
- const commission=Math.floor(total*.15), net=total-commission;
- document.getElementById('todayRevenue').innerText=money(today);
- document.getElementById('monthRevenue').innerText=money(month);
- document.getElementById('revenueTotal').innerText=money(total);
- document.getElementById('commissionTotal').innerText=money(commission);
- document.getElementById('hotelNet').innerText=money(net);
- const completed=ordersCache.filter(o=>['completed','complete','delivered'].includes(String(o.status||'').toLowerCase())).length;
- const progress=Math.min(100, ordersCache.length?Math.round((completed/ordersCache.length)*100):0);
- document.getElementById('experienceProgress').style.width=progress+'%';
- document.getElementById('revenueBreakdown').innerHTML=`<div class="settingRow"><span>Gross GMV</span><b>${money(total)}</b></div><div class="settingRow"><span>GuestHub 15%</span><b style="color:var(--gold)">${money(commission)}</b></div><div class="settingRow"><span>Hotel Net</span><b style="color:var(--lime)">${money(net)}</b></div>`;
+
+// VENDOR BILLING - OPTION A
+async function loadVendorBilling(){
+ try{
+  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+  const r=await fetch(`/api/vendor-billing/vendors?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({vendors:[]}));
+  const vendors=r.vendors||[];
+  let total=0; vendors.forEach(v=>total+=parseFloat(v.balance_owed||0));
+  document.getElementById('totalOwed').textContent=money(total);
+  document.getElementById('totalVendors').textContent=vendors.length+' Vendors • Till Direct';
+  document.getElementById('vendorsBillingList').innerHTML=vendors.map(v=>{
+    const overdue=v.balance_owed>2000;
+    return `<div class="list-item" style="${overdue?'border-color:#ff3b30;background:#1a0a0a':''}"><div><b>${esc(v.vendor_name)}</b> • ${esc(v.vendor_phone||'')}<br><small>Earned: ${money(v.total_earned)} • Owes: <b style="color:${v.balance_owed>0?'#ff3b30':'#00ff88'}">${money(v.balance_owed)}</b> • ${esc(v.status)}</small></div><div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-dark" style="padding:6px 10px;font-size:10px" onclick="sendSingleSMS('${esc(v.vendor_name)}','${esc(v.vendor_phone||'')}',${v.balance_owed})">SMS</button>${v.balance_owed>0?`<button class="btn btn-red" style="padding:6px 10px;font-size:10px" onclick="pauseVendor('${v.vendor_id}')">PAUSE</button>`:`<button class="btn btn-dark" style="padding:6px 10px;font-size:10px;background:#00ff88;color:#000">ACTIVE</button>`}</div></div>`;
+  }).join('')||'<div class="empty">No vendor commissions yet - Orders zikija ndio invoice ita-generate</div>';
+  let sms=`GUESTHUB WEEKLY BILLING - Week ${document.getElementById('weekStart').value} to ${document.getElementById('weekEnd').value}\n\n`;
+  vendors.filter(v=>v.balance_owed>0).forEach(v=>{ sms+=`${v.vendor_name} (${v.vendor_phone}) - Commission = ${money(v.balance_owed)} - Lipa kwa Till ${document.getElementById('till').value||'123456'} (GuestHub) by Wed.\n\n`; });
+  document.getElementById('smsTemplate').textContent=sms;
+ }catch(e){ document.getElementById('vendorsBillingList').innerHTML='<div class="empty">No data</div>'; }
 }
+async function generateInvoices(){
+ const week_start=document.getElementById('weekStart').value; const week_end=document.getElementById('weekEnd').value;
+ const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
+ try{
+  const r=await secureFetch('/api/vendor-billing/generate',{method:'POST',body:JSON.stringify({hotel_id:hotel,week_start,week_end})});
+  const d=await r.json(); if(!d.ok) throw new Error(d.error);
+  toast(`✅ ${d.count} invoices generated`); loadVendorBilling();
+ }catch(e){
+  const r=await fetch('/api/vendor-billing/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel,week_start,week_end})}).then(r=>r.json());
+  toast(r.ok?`✅ ${r.count} invoices`:'Failed: '+(r.error||''));
+  loadVendorBilling();
+ }
+}
+async function markPaid(){
+ const phone=document.getElementById('vendorPhonePaid').value; const code=document.getElementById('mpesaCode').value; const amount=document.getElementById('amountPaid').value;
+ if(!phone||!amount) return toast('Weka phone na amount');
+ try{
+  const r=await secureFetch('/api/vendor-billing/mark-paid',{method:'POST',body:JSON.stringify({vendor_phone:phone,mpesa_receipt:code,amount})});
+  const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('✅ PAID & Activated!'); loadVendorBilling();
+ }catch(e){
+  const r=await fetch('/api/vendor-billing/mark-paid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_phone:phone,mpesa_receipt:code,amount})}).then(r=>r.json());
+  toast(r.ok?'✅ PAID':'Failed');
+  loadVendorBilling();
+ }
+}
+async function pauseVendor(vendor_id){
+ if(!confirm('Pause vendor? Hata-pata orders!')) return;
+ await fetch('/api/vendor-billing/pause',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_id})}).then(()=>{toast('Paused'); loadVendorBilling();});
+}
+function sendSingleSMS(name,phone,amount){
+ const till=document.getElementById('till').value||'123456';
+ const msg=`Habari ${name}, GuestHub: Commission yako ni ${money(amount)}. Lipa kwa Till ${till} by Wed. Tuma M-Pesa code. Asante!`;
+ window.open(`https://wa.me/${String(phone).replace('0','254')}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function copySMS(){ const text=document.getElementById('smsTemplate').textContent; navigator.clipboard.writeText(text).then(()=>toast('Copied! Paste WhatsApp')); }
+
+// WHATSAPP & PROFILE (from 11.0 SECURED)
 function loadWhatsApp(){
  if(!currentHotel) return;
- document.getElementById('wa_k').value=currentHotel.whatsapp_kitchen||'';
- document.getElementById('wa_h').value=currentHotel.whatsapp_house||'';
- document.getElementById('wa_l').value=currentHotel.whatsapp_laundry||'';
- document.getElementById('wa_s').value=currentHotel.whatsapp_spa||'';
- document.getElementById('wa_t').value=currentHotel.whatsapp_taxi||'';
- document.getElementById('wa_f').value=currentHotel.whatsapp_front||'';
+ document.getElementById('wa_k').value=currentHotel.whatsapp_kitchen||''; document.getElementById('wa_h').value=currentHotel.whatsapp_house||'';
+ document.getElementById('wa_l').value=currentHotel.whatsapp_laundry||''; document.getElementById('wa_s').value=currentHotel.whatsapp_spa||'';
+ document.getElementById('wa_t').value=currentHotel.whatsapp_taxi||''; document.getElementById('wa_f').value=currentHotel.whatsapp_front||'';
 }
 async function saveWhatsApp(){
  const payload={whatsapp_kitchen:document.getElementById('wa_k').value.trim(),whatsapp_house:document.getElementById('wa_h').value.trim(),whatsapp_laundry:document.getElementById('wa_l').value.trim(),whatsapp_spa:document.getElementById('wa_s').value.trim(),whatsapp_taxi:document.getElementById('wa_t').value.trim(),whatsapp_front:document.getElementById('wa_f').value.trim()};
- try{ const r=await secureFetch('/api/gm/whatsapp',{method:'PATCH', body: JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,payload); toast('WhatsApp saved'); }catch(e){ toast(e.message); }
+ try{ const r=await secureFetch('/api/gm/whatsapp',{method:'PATCH',body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,payload); toast('WhatsApp saved'); }catch(e){ toast(e.message); }
 }
 function renderHotelProfile(){
  document.getElementById('profileName').value=currentHotel.name||currentHotel.hotel_name||'';
@@ -196,32 +356,25 @@ function renderHotelProfile(){
  document.getElementById('profilePlan').value=currentHotel.plan||'GuestHub';
 }
 async function saveHotelProfile(){
- const name=document.getElementById('profileName').value.trim();
- const location=document.getElementById('profileLocation').value.trim();
- const phone=document.getElementById('profilePhone').value.trim();
+ const name=document.getElementById('profileName').value.trim(); const location=document.getElementById('profileLocation').value.trim(); const phone=document.getElementById('profilePhone').value.trim();
  if(!name){ toast('Hotel name required'); return; }
- try{ const r=await secureFetch('/api/admin/hotels/'+(currentHotel.id||currentHotel.hotel_id), {method:'PATCH', body: JSON.stringify({name, hotel_name:name, location, phone})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,{name,hotel_name:name,location,phone}); document.getElementById('hotelName').innerText=name; document.getElementById('heroHotel').innerText=name; toast('Profile updated'); }catch(e){ toast(e.message); }
+ try{ const r=await secureFetch('/api/admin/hotels/'+(currentHotel.id||currentHotel.hotel_id),{method:'PATCH',body:JSON.stringify({name,hotel_name:name,location,phone})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,{name,hotel_name:name,location,phone}); document.getElementById('hotelIdDisplay').innerText=name; document.getElementById('heroHotel').innerText=name; toast('Profile updated'); }catch(e){ toast(e.message); }
 }
-function generateQRs(){
- const start=parseInt(document.getElementById('startRoom').value);
- const end=parseInt(document.getElementById('endRoom').value);
- if(isNaN(start)||isNaN(end)||start>end||end-start>100){ toast('Enter valid room range'); return; }
- const container=document.getElementById('qrContainer'); container.innerHTML='';
- const hotelId=currentHotel.id||currentHotel.hotel_id;
- for(let room=start;room<=end;room++){
-  const card=document.createElement('div'); card.className='qrCard';
-  const code=document.createElement('div'); code.className='qrCode';
-  card.innerHTML=`<b>ROOM ${room}</b><small>Scan for GuestHub</small>`; card.prepend(code); container.appendChild(card);
-  const url=location.origin+'/guest.html?hotel='+encodeURIComponent(hotelId)+'&room='+encodeURIComponent(room);
-  new QRCode(code,{text:url,width:120,height:120,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H});
- } toast('QR codes generated');
+
+// QR
+function genRoomQR(){
+ const from=parseInt(document.getElementById('roomFrom').value); const to=parseInt(document.getElementById('roomTo').value);
+ let h=''; for(let i=from;i<=to;i++){ const link=location.origin+'/guest.html?hotel='+(currentHotel?.id||hotel_id_param)+'&room='+i; h+=`<div style="margin:12px 0;padding:12px;background:#0e0e12;border-radius:14px"><b>Room ${i}</b><br><a href="${link}" target="_blank" style="color:#c6ff00;font-size:11px;word-break:break-all">${link}</a><br><div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(link)}"></div></div>`} document.getElementById('roomQRs').innerHTML=h;
 }
-function contactVendor(phone){ if(!phone){toast('No phone');return;} window.open('https://wa.me/'+String(phone).replace(/\D/g,''),'_blank'); }
-function sendOrderWhatsApp(id){ const o=ordersCache.find(o=>o.id===id); if(!o) return; const phone=currentHotel.whatsapp_front||currentHotel.phone; if(!phone){toast('No WhatsApp configured');return;} const msg=`GuestHub Order%0ARoom: ${o.room||'-'}%0AService: ${o.service_title||o.service||'-'}%0AAmount: Ksh ${o.amount||0}%0AStatus: ${o.status||'new'}`; window.open('https://wa.me/'+String(phone).replace(/\D/g,'')+'?text='+msg,'_blank'); }
-function openTab(name,btn){ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(name).classList.add('active'); document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
-async function refreshAll(){ toast('Refreshing...'); const r=await secureFetch('/api/gm/dashboard'); const d=await r.json(); ordersCache=d.orders||[]; servicesCache=d.services||[]; renderOrders(); renderServices(); updateRevenue(); toast('Updated'); }
-function logout(){ localStorage.removeItem('hotel_token'); localStorage.removeItem('hotel_id'); localStorage.removeItem('hotel_email'); location.href='/hotel-login.html'; }
+function genTableQR(){
+ const s=parseInt(document.getElementById('tableFrom').value.slice(1)), e=parseInt(document.getElementById('tableTo').value.slice(1));
+ let h=''; for(let i=s;i<=e;i++){ const t='T'+String(i).padStart(2,'0'); const link=location.origin+'/menu.html?hotel='+(currentHotel?.id||hotel_id_param)+'&table='+t; h+=`<div style="margin:12px 0;padding:12px;background:#0e0e12;border-radius:14px"><b>Table ${t}</b><br><a href="${link}" target="_blank" style="color:#c6ff00;font-size:11px;word-break:break-all">${link}</a><br><div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(link)}"></div></div>`} document.getElementById('tableQRs').innerHTML=h;
+}
+
+function sendOrderWA(id){ const o=ordersCache.find(o=>o.id===id); if(!o) return; const phone=currentHotel.whatsapp_front||currentHotel.phone; if(!phone){toast('No WhatsApp');return;} const msg=`GuestHub Order%0ARoom: ${o.room||'-'}%0AService: ${o.service_title||'-'}%0AAmount: Ksh ${o.amount||0}`; window.open('https://wa.me/'+String(phone).replace(/\\D/g,'')+'?text='+msg,'_blank'); }
+function logout(){ localStorage.removeItem('hotel_token'); localStorage.removeItem('hotel_id'); location.href='/hotel-login.html'; }
 function startRealtime(){ if(!currentHotel) return; supa.channel('hotel-'+(currentHotel.id||currentHotel.hotel_id)).on('postgres_changes',{event:'*',schema:'public',table:'orders',filter:'hotel_id=eq.'+(currentHotel.id||currentHotel.hotel_id)},()=>{loadOrders(); toast('🔔 New order');}).subscribe(); }
+
 init();
 </script>
 </body>
