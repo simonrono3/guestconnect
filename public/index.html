@@ -13,9 +13,12 @@ a{text-decoration:none;color:inherit}
 .header{position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:14px 4%;background:rgba(10,10,12,0.82);backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid rgba(255,255,255,0.08)}
 .logo{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;color:var(--gold);letter-spacing:-1px;line-height:.9}
 .logo span{display:block;font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:3.5px;font-weight:700;margin-top:4px;font-family:'Inter'}
-.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;max-width:520px}
+.header-top-row{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.header-bottom-row{display:flex;gap:8px;width:100%}
 .btn-small{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-weight:800;font-size:12px;backdrop-filter:blur(10px)}
-.btn-gold{border:none;cursor:pointer;border-radius:12px;padding:11px 18px;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 24px rgba(255,215,0,0.25);font-size:13px}
+.btn-gold{flex:1;border:none;cursor:pointer;border-radius:12px;padding:12px 18px;font-weight:900;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 8px 24px rgba(255,215,0,0.25);font-size:13px;text-align:center}
+.btn-vendor{flex:1;border:1px solid var(--lime);background:rgba(198,255,0,0.1);color:var(--lime);cursor:pointer;border-radius:12px;padding:12px 18px;font-weight:900;font-size:13px;text-align:center;box-shadow:0 0 20px rgba(198,255,0,0.15)}
 .btn-lime{border:none;cursor:pointer;border-radius:12px;padding:11px 18px;font-weight:900;color:#000;background:var(--lime);font-size:13px}
 .hero{padding:70px 20px 30px;text-align:center;position:relative}
 .badge{display:inline-flex;align-items:center;gap:8px;background:#141414;border:1px solid rgba(198,255,0,.35);padding:7px 14px;border-radius:999px;font-size:10px;font-weight:900;color:var(--lime);letter-spacing:1px}
@@ -59,7 +62,7 @@ a{text-decoration:none;color:inherit}
 .search-wrap{max-width:800px;margin:24px auto;display:flex;gap:8px;padding:8px;background:rgba(24,24,27,0.9);border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
 .search-wrap input{flex:1;border:none;outline:none;background:transparent;color:#fff;padding:12px 14px;font-size:15px;font-weight:600}
 .footer{margin-top:70px;text-align:center;padding:50px 20px;border-top:1px solid rgba(255,255,255,0.08);opacity:.5;font-size:11px}
-@media(max-width:768px){.os-demo,.pricing,.stats{grid-template-columns:1fr}.hero{padding:50px 16px 20px;text-align:left}.heroBtns{justify-content:flex-start}.header{flex-direction:column;gap:12px}.grid{grid-template-columns:1fr}}
+@media(max-width:768px){.os-demo,.pricing,.stats{grid-template-columns:1fr}.hero{padding:50px 16px 20px;text-align:left}.heroBtns{justify-content:flex-start}.header{flex-direction:column;gap:12px;align-items:flex-start}.header-right{max-width:100%;width:100%}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -67,10 +70,15 @@ a{text-decoration:none;color:inherit}
 <div class="header">
   <div class="logo">GUESTHUB<span>KENYA'S HOTEL OS</span></div>
   <div class="header-right">
-    <button class="btn-small" onclick="location.href='/hotel-signup.html'">Partner Hotel</button>
-    <button class="btn-small" onclick="window.open('/guest.html?hotel=BAOBAB&room=101','_blank')">👀 Guest Demo</button>
-    <button class="btn-small" onclick="location.href='/vendor-signup.html'">Vendor Join</button>
-    <button class="btn-gold" onclick="location.href='/gm-dashboard.html?hotel=BAOBAB'">GM Login →</button>
+    <div class="header-top-row">
+      <button class="btn-small" onclick="location.href='/hotel-signup.html'">Partner Hotel</button>
+      <button class="btn-small" onclick="window.open('/guest.html?hotel=BAOBAB&room=101','_blank')">👀 Guest Demo</button>
+      <button class="btn-small" onclick="location.href='/vendor-signup.html'">Vendor Join</button>
+    </div>
+    <div class="header-bottom-row">
+      <button class="btn-gold" onclick="location.href='/gm-dashboard.html?hotel=BAOBAB'">GM Login →</button>
+      <button class="btn-vendor" onclick="location.href='/vendor-login.html'">Vendor Login →</button>
+    </div>
   </div>
 </div>
 
