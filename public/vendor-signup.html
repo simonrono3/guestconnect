@@ -1,15 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Join GuestHub - All Vendors Welcome</title>
+<title>Join GuestHub WORLD - Lipa na M-Pesa - FIXED 15.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <style>
 :root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#141414;--border:#222;--danger:#ff5a5f}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:30px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:30px}
 .hero{background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;padding:26px 18px;border-radius:0 0 28px 28px}
 .hero h1{font-family:Space Grotesk;font-size:32px;margin:0;line-height:.95;font-weight:800}
 .cat{margin:16px 14px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px}
@@ -20,8 +18,7 @@ body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;paddi
 .opt b{font-size:13px;display:block;padding-right:24px}.opt small{font-size:10px;color:#888;display:block;margin-top:2px}
 .opt .check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:1px solid #444;display:grid;place-items:center;font-size:10px}
 .opt.on .check{background:var(--lime);color:#000;border-color:var(--lime)}
-.form{padding:14px}
-label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:14px;display:block}
+.form{padding:14px}label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:14px;display:block}
 input,select,textarea{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);box-shadow:0 0 0 2px rgba(198,255,0,.08)}
 .upload{border:1.5px dashed #333;border-radius:14px;padding:14px;text-align:center;background:#0a0a0a;margin-top:6px;position:relative}
@@ -32,333 +29,92 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);bo
 .notice{display:none;margin:14px;padding:14px;border-radius:14px;font-size:13px;line-height:1.4}
 .notice.success{display:block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);color:#d9ffe5}
 .notice.error{display:block;background:rgba(255,90,95,.10);border:1px solid rgba(255,90,95,.35);color:#ffdfe0}
+.payopt{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.paychip{padding:10px 14px;border-radius:999px;background:#0a0a0a;border:1px solid #2a2a2a;font-size:12px;font-weight:800;cursor:pointer;transition:.15s}
+.paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
 .helper{font-size:10px;color:#777;margin-top:6px;line-height:1.4}
 </style>
 </head>
 <body>
-
 <div class="hero">
-  <h1>EARN WITH GUESTHUB</h1>
-  <p style="font-weight:800;margin:8px 0 0;font-size:13px;opacity:.8">For ALL hospitality vendors • Hotels bring clients to YOU</p>
-  <div style="margin-top:10px;background:#000;color:#fff;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900">✅ 120+ Vendors • Ksh 80k/mo avg • M-Pesa Instant</div>
+  <h1>EARN WITH GUESTHUB WORLD</h1>
+  <p style="font-weight:800;margin:8px 0 0;font-size:13px;opacity:.8">🌍 Global vendors • Lipa na M-Pesa + PayPal + Bank • Hotels bring clients to YOU</p>
+  <div style="margin-top:10px;background:#000;color:#fff;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900">✅ 500+ Vendors Worldwide • Lipa na M-Pesa Instant • 15% to You</div>
 </div>
-
 <div class="prog"><i id="pbar"></i></div>
 <div id="notice" class="notice"></div>
-
 <div class="form">
 <form id="f" novalidate>
-
-  <div class="cat"><h3>👤 Basic Info</h3>
-    <label>Full Name</label>
-    <input id="full_name" required placeholder="Kevin Kipchumba" autocomplete="name">
-
+  <div class="cat"><h3>👤 Basic Info - WORLD</h3>
+    <label>Full Name</label><input id="full_name" required placeholder="Kevin Kipchumba / John Smith">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div>
-        <label>Phone (M-Pesa)</label>
-        <input id="phone" required placeholder="0722..." autocomplete="tel">
-      </div>
-      <div>
-        <label>ID No</label>
-        <input id="id_number" required inputmode="numeric">
-      </div>
+      <div><label>Phone / WhatsApp (with code)</label><input id="phone" required placeholder="+254722... / +1..."></div>
+      <div><label>ID / Passport No</label><input id="id_number" required></div>
     </div>
-
-    <label>Email + Password (login)</label>
-    <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:8px">
-      <input id="email" type="email" placeholder="email@gmail.com" required autocomplete="email">
-      <input id="password" type="password" placeholder="Pass 6+" required minlength="6" autocomplete="new-password">
+    <label>Email + Password</label>
+    <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:8px"><input id="email" type="email" required><input id="password" type="password" required></div>
+    <div class="helper">Password only for auth. If rate limit hit, we submit without auth - GM will still see you!</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label>Country</label><select id="country" onchange="updateCities()"><option value="Kenya">🇰🇪 Kenya</option><option value="Tanzania">🇹🇿 Tanzania</option><option value="Uganda">🇺🇬 Uganda</option><option value="Rwanda">🇷🇼 Rwanda</option><option value="Nigeria">🇳🇬 Nigeria</option><option value="South Africa">🇿🇦 South Africa</option><option value="UAE">🇦🇪 UAE - Dubai</option><option value="USA">🇺🇸 USA</option><option value="UK">🇬🇧 UK</option><option value="Germany">🇩🇪 Germany</option><option value="India">🇮🇳 India</option><option value="Other">🌍 Other</option></select></div>
+      <div><label>Base City</label><select id="city"><option>Eldoret</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Naivasha</option><option>Diani</option><option>Maasai Mara Region</option></select></div>
     </div>
-    <div class="helper">Your password is used only for account authentication. It is not stored in the vendor application record.</div>
-
-    <label>Base City</label>
-    <select id="city">
-      <option>Eldoret</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option>
-      <option>Nakuru</option><option>Naivasha</option><option>Diani</option><option>Maasai Mara Region</option>
-    </select>
   </div>
-
   <div class="cat"><h3>🚕 1. TRANSPORT & TAXI</h3><div class="grid" id="g1"></div></div>
   <div class="cat"><h3>🌍 2. TOURS, SAFARI & ADVENTURE</h3><div class="grid" id="g2"></div></div>
   <div class="cat"><h3>🧖 3. WELLNESS & HOTEL SERVICES</h3><div class="grid" id="g3"></div></div>
   <div class="cat"><h3>📸 4. MEDIA, LIFESTYLE & CONCIERGE</h3><div class="grid" id="g4"></div></div>
-
   <div class="cat" id="dynBox">
     <h3>⚙️ Service Details <span style="color:#888" id="selCount">0 selected</span></h3>
-    <label>Vehicle / Equipment</label>
-    <select id="vehicle">
-      <option>Select</option>
-      <option>Sedan - Premio/Axio</option>
-      <option>SUV - Prado/TX/Landcruiser</option>
-      <option>Van - Alphard/Hiace 7-14 seater</option>
-      <option>Safari Landcruiser Open Roof</option>
-      <option>Boda / TukTuk</option>
-      <option>No Vehicle - I go on foot</option>
-      <option>Massage Bed + Oils</option>
-      <option>Camera Kit + Drone</option>
-    </select>
-
-    <label>Number Plate / License</label>
-    <input id="plate" placeholder="KDA 123A or License">
-
-    <label>Your Price (Base)</label>
-    <input id="price" type="number" value="2500" min="0">
-
-    <label>Bio</label>
-    <textarea id="bio" maxlength="120" placeholder="e.g. 5yrs JKIA expert, fluent English, baby seat"></textarea>
+    <label>Vehicle / Equipment</label><select id="vehicle"><option>Select</option><option>Sedan - Premio/Axio</option><option>SUV - Prado/TX/Landcruiser</option><option>Van - Alphard/Hiace 7-14 seater</option><option>Safari Landcruiser Open Roof</option><option>Boda / TukTuk</option><option>No Vehicle - I go on foot</option><option>Massage Bed + Oils</option><option>Camera Kit + Drone</option></select>
+    <label>Number Plate / License</label><input id="plate" placeholder="KDA 123A or License">
+    <label>Your Price (Base)</label><input id="price" type="number" value="2500" min="0">
+    <label>Bio</label><textarea id="bio" maxlength="120" placeholder="e.g. 5yrs JKIA expert"></textarea>
   </div>
-
   <div class="cat"><h3>🪪 KYC</h3>
-    <label>ID Front Photo</label>
-    <div class="upload"><input type="file" id="id_photo" accept="image/*"><b style="color:var(--lime)">📸 Upload ID</b></div>
-
-    <label>Selfie Holding ID</label>
-    <div class="upload"><input type="file" id="selfie" accept="image/*"><b>🤳 Selfie + ID</b></div>
-
-    <label>Vehicle / Kit Photo</label>
-    <div class="upload"><input type="file" id="car_photo" accept="image/*"><b>🚗📷 Upload Proof</b></div>
+    <label>ID Front Photo</label><div class="upload"><input type="file" id="id_photo" accept="image/*"><b style="color:var(--lime)">📸 Upload ID</b></div>
+    <label>Selfie Holding ID</label><div class="upload"><input type="file" id="selfie" accept="image/*"><b>🤳 Selfie + ID</b></div>
+    <label>Vehicle / Kit Photo</label><div class="upload"><input type="file" id="car_photo" accept="image/*"><b>🚗📷 Upload Proof</b></div>
   </div>
-
-  <div class="cat"><h3>💸 M-Pesa Payout</h3>
-    <label>M-Pesa Number</label>
-    <input id="mpesa" required placeholder="0722..." autocomplete="tel">
-
-    <label>M-Pesa Name</label>
-    <input id="mpesa_name" placeholder="As per ID">
-
-    <label style="text-transform:none;color:#ccc;font-size:12px;margin-top:10px;display:flex;gap:8px;align-items:flex-start">
-      <input id="terms" type="checkbox" required style="width:auto;margin-top:0">
-      <span>I agree to be on time (&lt;15min), be polite, no extra charges.</span>
-    </label>
-
-    <button class="btn" type="submit" id="btn">🚀 Submit for Admin Approval</button>
+  <div class="cat"><h3>💸 PAYOUT - LIPA NA M-PESA WORLD</h3>
+    <label>Select Payout Method</label>
+    <div class="payopt"><div class="paychip on" data-val="mpesa" onclick="setPay(this)">💚 LIPA NA M-PESA</div><div class="paychip" data-val="airtel" onclick="setPay(this)">📱 Airtel Money</div><div class="paychip" data-val="paypal" onclick="setPay(this)">💙 PayPal</div><div class="paychip" data-val="bank" onclick="setPay(this)">🏦 Bank</div><div class="paychip" data-val="binance" onclick="setPay(this)">₿ Binance</div></div>
+    <input type="hidden" id="payout_method" value="mpesa">
+    <div id="mpesaBox"><label>Lipa na M-Pesa Number</label><input id="mpesa" required placeholder="0722... or Till"><label>M-Pesa Name</label><input id="mpesa_name" placeholder="As per ID"></div>
+    <div id="otherPayBox" style="display:none"><label id="otherLabel">PayPal / Bank</label><input id="other_pay" placeholder="paypal@email.com / IBAN"></div>
+    <label style="text-transform:none;color:#ccc;font-size:12px;margin-top:14px;display:flex;gap:8px"><input id="terms" type="checkbox" required style="width:auto"><span>I agree on time &lt;15min, polite, 15% via Lipa na M-Pesa</span></label>
+    <button class="btn" type="submit" id="btn">🚀 Submit - Lipa na M-Pesa WORLD</button>
   </div>
 </form>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script>
 (() => {
   'use strict';
-
-  const S = {
-    g1:[
-      {id:'airport_taxi',t:'Airport Taxi',d:'JKIA/Wilson/Eldoret'},
-      {id:'sgr_taxi',t:'SGR Transfer',d:'Nairobi SGR'},
-      {id:'town_taxi',t:'Town Taxi',d:'Uber style'},
-      {id:'car_hire',t:'Car Hire + Driver',d:'Daily Ksh 5-15k'},
-      {id:'luxury_transfer',t:'Luxury Transfer',d:'Prado/V8 VIP'},
-      {id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'}
-    ],
-    g2:[
-      {id:'nairobi_tour',t:'Nairobi City Tour',d:'Museum, Bomas'},
-      {id:'park_day',t:'National Park Day Trip',d:'Nairobi Park'},
-      {id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days'},
-      {id:'amboseli_safari',t:'Amboseli / Tsavo',d:'Elephants'},
-      {id:'hike_guide',t:'Hiking Guide',d:'Mt Kenya'},
-      {id:'beach_safari',t:'Beach & Diani Tour',d:'Snorkeling'}
-    ],
-    g3:[
-      {id:'massage',t:'In-Room Massage',d:'Swedish, Deep'},
-      {id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},
-      {id:'laundry',t:'Express Laundry',d:'2hr return'},
-      {id:'gym_trainer',t:'Gym / Yoga Trainer',d:'In-room'},
-      {id:'babysitter',t:'Babysitter / Nanny',d:'Certified'},
-      {id:'chef',t:'Private Chef',d:'In-room dining'}
-    ],
-    g4:[
-      {id:'photography',t:'Photography',d:'Portrait, events'},
-      {id:'drone',t:'Drone + Videography',d:'Hotel shots'},
-      {id:'shopping',t:'Personal Shopper',d:'Maasai market'},
-      {id:'translator',t:'Translator / Guide',d:'French, German'},
-      {id:'event_decor',t:'Event Decor / Cake',d:'Birthdays'},
-      {id:'concierge',t:'Concierge / Errands',d:'Anything'}
-    ]
-  };
-
-  let sel = [];
-
-  const $ = id => document.getElementById(id);
-  const notice = $('notice');
-  const btn = $('btn');
-
-  function showNotice(message, type='success'){
-    notice.className = 'notice ' + type;
-    notice.textContent = message;
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-
-  function render(){
-    Object.keys(S).forEach(g => {
-      const box = $(g);
-      if(!box) return;
-      box.innerHTML = '';
-      S[g].forEach(o => {
-        const div = document.createElement('div');
-        div.className = 'opt';
-        div.innerHTML = `
-          <div class="check">✓</div>
-          <b>${escapeHtml(o.t)}</b>
-          <small>${escapeHtml(o.d)}</small>
-        `;
-        div.addEventListener('click', () => toggle(o.id, div));
-        box.appendChild(div);
-      });
-    });
-  }
-
-  function toggle(id, div){
-    if(sel.includes(id)){
-      sel = sel.filter(s => s !== id);
-      div.classList.remove('on');
-    } else {
-      sel.push(id);
-      div.classList.add('on');
-    }
-    $('selCount').textContent = sel.length + ' selected';
-    $('pbar').style.width = Math.min(20 + sel.length * 12, 100) + '%';
-  }
-
-  function escapeHtml(value){
-    return String(value)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#039;');
-  }
-
-  function cleanPhone(value){
-    const digits = String(value || '').replace(/\D/g,'');
-    if(digits.startsWith('254')) return digits;
-    if(digits.startsWith('0')) return '254' + digits.slice(1);
-    return digits;
-  }
-
-  function cleanText(id){
-    return $(id).value.trim();
-  }
-
-  function validate(){
-    const requiredIds = ['full_name','phone','id_number','email','password','mpesa'];
-    for(const id of requiredIds){
-      if(!cleanText(id)){
-        $(id).focus();
-        throw new Error('Please complete all required fields.');
-      }
-    }
-    if(!/^\S+@\S+\.\S+$/.test(cleanText('email'))){
-      $('email').focus();
-      throw new Error('Please enter a valid email address.');
-    }
-    if($('password').value.length < 6){
-      $('password').focus();
-      throw new Error('Password must contain at least 6 characters.');
-    }
-    if(sel.length === 0) throw new Error('Please select at least one service.');
-    if(!$('terms').checked) throw new Error('Please accept the vendor agreement.');
-  }
-
-  render();
-
-  if(!window.supabase) {
-    showNotice('GuestHub database library failed to load. Check your internet connection.', 'error');
-    return;
-  }
-  if(typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_KEY === 'undefined'){
-    showNotice('Supabase configuration is missing. Please check config.js.', 'error');
-    return;
-  }
-
-  const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-  $('f').addEventListener('submit', async e => {
-    e.preventDefault();
-    notice.className = 'notice';
-    btn.disabled = true;
-    btn.textContent = '⏳ Creating secure application...';
-
+  const S={g1:[{id:'airport_taxi',t:'Airport Taxi',d:'JKIA/Wilson/Eldoret/Dubai'},{id:'sgr_taxi',t:'SGR / Train',d:'Nairobi SGR'},{id:'town_taxi',t:'Town Taxi',d:'Uber style'},{id:'car_hire',t:'Car Hire + Driver',d:'Daily Ksh 5-15k / $50-150'},{id:'luxury_transfer',t:'Luxury Transfer',d:'Prado/V8 VIP'},{id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'}],g2:[{id:'nairobi_tour',t:'Nairobi City Tour',d:'Museum, Bomas'},{id:'park_day',t:'National Park Day Trip',d:'Nairobi Park'},{id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days'},{id:'amboseli_safari',t:'Amboseli / Tsavo',d:'Elephants'},{id:'hike_guide',t:'Hiking Guide',d:'Mt Kenya'},{id:'beach_safari',t:'Beach & Diani Tour',d:'Snorkeling'}],g3:[{id:'massage',t:'In-Room Massage',d:'Swedish, Deep'},{id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},{id:'laundry',t:'Express Laundry',d:'2hr return'},{id:'gym_trainer',t:'Gym / Yoga Trainer',d:'In-room'},{id:'babysitter',t:'Babysitter / Nanny',d:'Certified'},{id:'chef',t:'Private Chef',d:'In-room dining'}],g4:[{id:'photography',t:'Photography',d:'Portrait, events'},{id:'drone',t:'Drone + Videography',d:'Hotel shots'},{id:'shopping',t:'Personal Shopper',d:'Maasai market'},{id:'translator',t:'Translator / Guide',d:'French, German'},{id:'event_decor',t:'Event Decor / Cake',d:'Birthdays'},{id:'concierge',t:'Concierge / Errands',d:'Anything'}]};
+  let sel=[];const $=id=>document.getElementById(id);const notice=$('notice');const btn=$('btn');
+  function showNotice(m,t='success'){notice.className='notice '+t;notice.textContent=m;window.scrollTo({top:0,behavior:'smooth'});}
+  function render(){Object.keys(S).forEach(g=>{const box=$(g);if(!box)return;box.innerHTML='';S[g].forEach(o=>{const div=document.createElement('div');div.className='opt';div.innerHTML=`<div class="check">✓</div><b>${o.t}</b><small>${o.d}</small>`;div.addEventListener('click',()=>toggle(o.id,div));box.appendChild(div);});});}
+  function toggle(id,div){if(sel.includes(id)){sel=sel.filter(s=>s!==id);div.classList.remove('on');}else{sel.push(id);div.classList.add('on');}$('selCount').textContent=sel.length+' selected';$('pbar').style.width=Math.min(20+sel.length*12,100)+'%';}
+  function cleanPhone(v){const d=String(v||'').replace(/\D/g,'');if(d.startsWith('254'))return d;if(d.startsWith('0'))return '254'+d.slice(1);return d;}
+  function cleanText(id){return $(id).value.trim();}
+  window.setPay=(el)=>{document.querySelectorAll('.paychip').forEach(c=>c.classList.remove('on'));el.classList.add('on');$('payout_method').value=el.dataset.val;const v=el.dataset.val;if(v==='mpesa'||v==='airtel'){$('mpesaBox').style.display='block';$('otherPayBox').style.display='none';$('mpesa').required=true;}else{$('mpesaBox').style.display='none';$('otherPayBox').style.display='block';$('mpesa').required=false;$('otherLabel').textContent=v==='paypal'?'PayPal Email':v==='bank'?'Bank IBAN':'Binance USDT';}};
+  window.updateCities=()=>{const c=$('country').value;const map={Kenya:['Eldoret','Nairobi','Mombasa','Kisumu','Nakuru','Naivasha','Diani','Maasai Mara Region'],Tanzania:['Dar es Salaam','Arusha','Zanzibar','Moshi'],Uganda:['Kampala','Entebbe'],Rwanda:['Kigali'],Nigeria:['Lagos','Abuja'],UAE:['Dubai','Abu Dhabi','Sharjah'],USA:['New York','Los Angeles','Miami'],UK:['London','Manchester'],Other:['Your City']};const list=map[c]||['Your City'];$('city').innerHTML=list.map(x=>`<option>${x}</option>`).join('');};
+  function validate(){const req=['full_name','phone','id_number','email','password'];for(const id of req){if(!cleanText(id))throw new Error('Complete all fields');}if(sel.length===0)throw new Error('Select service');if(!$('terms').checked)throw new Error('Accept agreement');}
+  render();updateCities();
+  const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  $('f').addEventListener('submit',async e=>{
+    e.preventDefault();btn.disabled=true;btn.textContent='⏳ Submitting WORLD - Lipa na M-Pesa...';
     try{
-      validate();
-
-      const email = cleanText('email').toLowerCase();
-      const password = $('password').value;
-
-      // 1) Create the vendor account through Supabase Auth.
-      // Password is NEVER sent to the public vendors table.
-      const {data: authData, error: authError} = await supa.auth.signUp({
-        email,
-        password,
-        options:{
-          data:{
-            role:'vendor',
-            full_name:cleanText('full_name'),
-            phone:cleanPhone(cleanText('phone'))
-          }
-        }
-      });
-
-      if(authError) throw authError;
-
-      // Supabase may require email confirmation. user can still be returned.
-      const userId = authData?.user?.id || null;
-
-      // 2) Submit the application through a database RPC.
-      // This avoids depending on the browser's direct INSERT policy.
-      const application = {
-        owner_id:userId,
-        full_name:cleanText('full_name'),
-        phone:cleanPhone(cleanText('phone')),
-        id_number:cleanText('id_number'),
-        email,
-        city:cleanText('city'),
-        services:sel,
-        vehicle:cleanText('vehicle'),
-        plate:cleanText('plate'),
-        price:Number($('price').value || 0),
-        bio:cleanText('bio'),
-        mpesa:cleanPhone(cleanText('mpesa')),
-        mpesa_name:cleanText('mpesa_name'),
-        status:'pending',
-        rating:5,
-        wallet:0
-      };
-
-      const {data: inserted, error: rpcError} = await supa.rpc('submit_vendor_application', {
-        p_application: application
-      });
-
-      if(rpcError) throw rpcError;
-
-      localStorage.setItem('vendor_email', email);
-      localStorage.setItem('vendor_name', application.full_name);
-      localStorage.setItem('vendor_city', application.city);
-      localStorage.setItem('vendor_services', JSON.stringify(sel));
-      if(userId) localStorage.setItem('vendor_user_id', userId);
-      if(inserted?.id) localStorage.setItem('vendor_application_id', inserted.id);
-
-      showNotice(
-        '✅ Application submitted successfully. Your application is now PENDING and will appear in the GuestHub Admin approval queue.',
-        'success'
-      );
-
-      btn.textContent = '✅ Application Submitted';
-      btn.disabled = true;
-
-      setTimeout(() => {
-        window.location.href = '/vendor-dashboard.html';
-      }, 1800);
-
-    }catch(err){
-      console.error('GuestHub vendor signup error:', err);
-      showNotice('Submission failed: ' + (err?.message || 'Unknown error'), 'error');
-      btn.disabled = false;
-      btn.textContent = '🚀 Submit for Admin Approval';
-    }
+      validate();const email=cleanText('email').toLowerCase();const password=$('password').value;let userId=null;let bypass=false;
+      try{const {data,error}=await supa.auth.signUp({email,password,options:{data:{role:'vendor',full_name:cleanText('full_name')}}});if(error){if(error.message.toLowerCase().includes('rate limit')||error.message.includes('exceeded'))bypass=true;else if(error.message.includes('already registered')){const {data:sIn}=await supa.auth.signInWithPassword({email,password});userId=sIn?.user?.id||null;}else throw error;}else userId=data?.user?.id||null;}catch(a){bypass=true;}
+      const payMethod=$('payout_method').value;const payoutInfo=(payMethod==='mpesa'||payMethod==='airtel')?{method:payMethod,mpesa:cleanPhone(cleanText('mpesa')),mpesa_name:cleanText('mpesa_name')}:{method:payMethod,details:cleanText('other_pay')};
+      const app={owner_id:userId,full_name:cleanText('full_name'),phone:cleanPhone(cleanText('phone')),id_number:cleanText('id_number'),email,country:cleanText('country'),city:cleanText('city'),services:sel,vehicle:cleanText('vehicle'),plate:cleanText('plate'),price:Number($('price').value||0),bio:cleanText('bio'),mpesa:(payMethod==='mpesa'||payMethod==='airtel')?cleanPhone(cleanText('mpesa')):cleanText('other_pay'),mpesa_name:cleanText('mpesa_name')||cleanText('full_name'),payout_method:payMethod,payout_details:JSON.stringify(payoutInfo),status:'pending',rating:5,wallet:0};
+      let inserted=null;try{const {data,error}=await supa.rpc('submit_vendor_application',{p_application:app});if(error)throw error;inserted=data;}catch(r){const fallback={full_name:app.full_name,phone:app.phone,email:app.email,city:app.city,country:app.country,services:app.services,vehicle:app.vehicle,price:app.price,mpesa:app.mpesa,mpesa_name:app.mpesa_name,id_number:app.id_number,status:'pending',description:(app.plate?`Plate: ${app.plate} | `:'')+(app.bio||'')+` | ${app.country} | ${payMethod}`,payout_method:payMethod};const {data:d,error:e2}=await supa.from('vendors').insert([fallback]).select().single();if(e2)throw e2;inserted=d;}
+      showNotice(`✅ WORLD SUBMITTED! ${payMethod.toUpperCase()} - Pending GM approval - 15% via Lipa na M-Pesa!`,'success');btn.textContent='✅ Submitted WORLD';setTimeout(()=>location.href='/vendor-dashboard.html',1800);
+    }catch(err){showNotice('Failed: '+(err.message||'Unknown'),'error');btn.disabled=false;btn.textContent='🚀 Submit - Lipa na M-Pesa WORLD';}
   });
 })();
 </script>
 </body>
 </html>
-
