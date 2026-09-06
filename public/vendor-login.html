@@ -3,469 +3,120 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>GuestHub Vendor Portal</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+<title>Vendor Login - GuestHub WORLD - PERMANENT 15.4</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <style>
-
-:root{
-    --lime:#c6ff00;
-    --bg:#050505;
-    --card:rgba(20,20,20,.75);
-    --border:rgba(255,255,255,.08);
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:20px;
-    background:
-    radial-gradient(circle at top left,#1c1c1c 0%,#050505 50%),
-    radial-gradient(circle at bottom right,#101010 0%,#050505 50%);
-    color:white;
-    font-family:Inter,sans-serif;
-}
-
-.login-card{
-    width:100%;
-    max-width:440px;
-
-    background:var(--card);
-    backdrop-filter:blur(20px);
-
-    border:1px solid var(--border);
-
-    border-radius:28px;
-    padding:34px;
-    box-shadow:
-    0 0 40px rgba(0,0,0,.4),
-    0 0 80px rgba(198,255,0,.05);
-}
-
-.logo{
-    text-align:center;
-    margin-bottom:12px;
-}
-
-.logo h1{
-    font-family:"Space Grotesk";
-    font-size:32px;
-    font-weight:800;
-}
-
-.logo span{
-    color:var(--lime);
-}
-
-.subtitle{
-    text-align:center;
-    color:#8d8d8d;
-    font-size:14px;
-    line-height:1.6;
-    margin-bottom:28px;
-}
-
-.badges{
-    display:flex;
-    justify-content:center;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:28px;
-}
-
-.badge{
-    background:#111;
-    border:1px solid #222;
-    padding:8px 12px;
-    border-radius:999px;
-    font-size:11px;
-    color:#aaa;
-    font-weight:700;
-}
-
-label{
-    display:block;
-    margin-bottom:8px;
-    margin-top:18px;
-
-    font-size:12px;
-    font-weight:800;
-    color:#999;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-}
-
-.input{
-    width:100%;
-    background:#0b0b0b;
-    border:1px solid #262626;
-    color:white;
-    padding:15px;
-    border-radius:14px;
-    font-size:15px;
-    transition:.25s;
-}
-
-.input:focus{
-    outline:none;
-    border-color:var(--lime);
-    box-shadow:0 0 0 4px rgba(198,255,0,.08);
-}
-
-.password-wrap{
-    position:relative;
-}
-
-.eye{
-    position:absolute;
-    right:14px;
-    top:50%;
-    transform:translateY(-50%);
-    cursor:pointer;
-    color:#888;
-    font-size:13px;
-}
-
-.options{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:14px;
-}
-
-.options label{
-    margin:0;
-    text-transform:none;
-    letter-spacing:0;
-    font-size:13px;
-    color:#888;
-    display:flex;
-    gap:8px;
-    align-items:center;
-}
-
-.options a{
-    color:var(--lime);
-    text-decoration:none;
-    font-size:13px;
-    font-weight:700;
-}
-
-.btn{
-    width:100%;
-    margin-top:22px;
-
-    border:none;
-    cursor:pointer;
-
-    background:var(--lime);
-    color:black;
-
-    padding:16px;
-
-    border-radius:14px;
-
-    font-weight:900;
-    font-size:15px;
-
-    transition:.3s;
-}
-
-.btn:hover{
-    transform:translateY(-2px);
-}
-
-.btn-secondary{
-    width:100%;
-    margin-top:12px;
-
-    background:#121212;
-    color:white;
-
-    border:1px solid #2c2c2c;
-
-    padding:15px;
-    border-radius:14px;
-
-    cursor:pointer;
-    font-weight:700;
-}
-
-.alert{
-    display:none;
-    margin-bottom:18px;
-    padding:12px;
-    border-radius:12px;
-    font-size:13px;
-    font-weight:700;
-}
-
-.ok{
-    background:#0d2a15;
-    color:#4ade80;
-    border:1px solid #166534;
-}
-
-.err{
-    background:#2a0d0d;
-    color:#ff7b7b;
-    border:1px solid #7f1d1d;
-}
-
-.footer{
-    text-align:center;
-    margin-top:22px;
-    color:#666;
-    font-size:12px;
-    line-height:1.7;
-}
-
-.footer strong{
-    color:#999;
-}
-
+:root{--lime:#c6ff00;--bg:#080808;--card:#141414;--border:#222}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;min-height:100vh;display:grid;place-items:center;padding:16px}
+.box{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:22px}
+h1{font-family:Space Grotesk;font-size:28px;margin:0 0 6px}
+.sub{color:#888;font-size:13px;margin-bottom:16px;line-height:1.4}
+label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:14px;display:block}
+input{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px}
+input:focus{outline:none;border-color:var(--lime)}
+.btn{width:100%;background:var(--lime);color:#000;padding:16px;border:none;border-radius:14px;font-weight:900;font-size:16px;margin-top:18px;cursor:pointer}
+.btn:disabled{opacity:.6}
+.links{display:flex;justify-content:space-between;margin-top:14px;font-size:12px}
+.links a{color:var(--lime);text-decoration:none;font-weight:800}
+.notice{display:none;margin-bottom:12px;padding:12px;border-radius:12px;font-size:13px}
+.notice.error{display:block;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.3);color:#ffdfe0}
+.notice.success{display:block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#d9ffe5}
 </style>
 </head>
-
 <body>
-
-<div class="login-card">
-
-<div class="logo">
-<h1>GuestHub <span>Vendor</span></h1>
-</div>
-
-<div class="subtitle">
-Access hospitality opportunities from hotels,
-resorts and premium accommodation partners.
-</div>
-
-<div class="badges">
-<div class="badge">Verified Hotels</div>
-<div class="badge">Secure Portal</div>
-<div class="badge">Trusted Vendors</div>
-</div>
-
-<div id="msg" class="alert"></div>
-
-<label>Email Address</label>
-<input
-id="email"
-class="input"
-type="email"
-placeholder="name@example.com">
-
-<label>Password</label>
-
-<div class="password-wrap">
-<input
-id="password"
-class="input"
-type="password"
-placeholder="Enter your password">
-
-<span class="eye" onclick="togglePassword()">Show</span>
-</div>
-
-<div class="options">
-<label>
-<input type="checkbox">
-Remember me
-</label>
-
-<a href="#">Forgot Password?</a>
-</div>
-
-<button
-class="btn"
-id="loginBtn"
-onclick="login()">
-Sign In to Dashboard
-</button>
-
-<button
-class="btn-secondary"
-onclick="location.href='/vendor-signup.html'">
-Create Vendor Account
-</button>
-
-<button
-class="btn-secondary"
-onclick="location.href='/'">
-Back to Home
-</button>
-
-<div class="footer">
-<strong>GuestHub Vendor Network</strong><br>
-Pending Review → Account active but awaiting approval.<br>
-Approved Vendors → Eligible for hotel opportunities.
-</div>
-
+<div class="box">
+  <h1>VENDOR LOGIN</h1>
+  <div class="sub">🌍 WORLD • Use same email & password from signup<br>Till: <b style="color:var(--lime)">123456</b> - 15% commission</div>
+  <div id="notice" class="notice"></div>
+  <form id="loginForm">
+    <label>Email</label>
+    <input id="email" type="email" required placeholder="ronoo3@gmail.com">
+    <label>Password</label>
+    <input id="password" type="password" required placeholder="12345678">
+    <button class="btn" id="btn" type="submit">🔓 Sign In - WORLD</button>
+  </form>
+  <div class="links">
+    <a href="#" id="forgot">Forgot Password?</a>
+    <a href="/vendor-signup.html">Join WORLD →</a>
+  </div>
+  <div style="margin-top:16px;background:#0a0a0a;border:1px dashed #333;border-radius:12px;padding:10px;font-size:11px;color:#777">
+    <b style="color:#fff">Flow:</b> 1. Signup → 2. GM Approves in VENDORS tab → 3. Login with same password → Dashboard
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
-
 <script>
+(() => {
+  const $=id=>document.getElementById(id);
+  const notice=$('notice');
+  function show(m,t='error'){notice.className='notice '+t;notice.textContent=m;notice.style.display='block';}
+  
+  async function handleLogin(e){
+    e.preventDefault();
+    const btn=$('btn');
+    btn.disabled=true; btn.textContent='⏳ Checking...';
+    try{
+      const email=$('email').value.toLowerCase().trim();
+      const password=$('password').value;
+      const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      
+      const {data,error}=await supa.auth.signInWithPassword({email,password});
+      if(error){
+        show('Login failed: '+error.message+'\n\nIf you signed up BEFORE fix (owner_id NULL), click Forgot Password? with '+email+' to set password 12345678');
+        btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
+        return;
+      }
+      
+      // Check vendor status
+      const {data:vendor, error:vErr}=await supa.from('vendors').select('status,full_name,email').eq('owner_id',data.user.id).single();
+      
+      if(vErr){
+        // Try by email fallback (for old vendors without owner_id)
+        const {data:byEmail}=await supa.from('vendors').select('status,full_name').eq('email',email).single();
+        if(byEmail && byEmail.status==='pending'){
+          show('Hi '+byEmail.full_name+' - Your account is PENDING GM approval. Nenda GM Dashboard → VENDORS → Approve '+email,'success');
+          await supa.auth.signOut();
+          btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
+          return;
+        }
+      }
 
-const supa = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+      if(vendor && vendor.status==='pending'){
+        show('Hi '+vendor.full_name+' - Your account is still PENDING GM approval. GM will approve soon in VENDORS tab.','success');
+        await supa.auth.signOut();
+        btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
+        return;
+      }
 
-function show(message,success){
+      if(vendor && vendor.status==='rejected'){
+        show('Sorry '+vendor.full_name+' - Account rejected. Contact GM.');
+        await supa.auth.signOut();
+        btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
+        return;
+      }
 
-const box=document.getElementById("msg");
+      show('✅ Welcome '+ (vendor?.full_name || email) +'! Redirecting to dashboard...','success');
+      setTimeout(()=>location.href='/vendor-dashboard.html',800);
+      
+    }catch(err){
+      show('Error: '+err.message);
+      $('btn').disabled=false; $('btn').textContent='🔓 Sign In - WORLD';
+    }
+  }
 
-box.style.display="block";
-box.innerHTML=message;
+  $('loginForm').addEventListener('submit',handleLogin);
 
-box.className=
-"alert "+(success ? "ok":"err");
-}
-
-function togglePassword(){
-
-const p=document.getElementById("password");
-
-p.type =
-p.type==="password"
-? "text"
-: "password";
-}
-
-async function login(){
-
-const email=
-document.getElementById("email")
-.value.trim();
-
-const pass=
-document.getElementById("password")
-.value.trim();
-
-if(!email || !pass){
-
-show(
-"Please enter your email and password.",
-false
-);
-
-return;
-}
-
-const btn=
-document.getElementById("loginBtn");
-
-btn.disabled=true;
-btn.innerHTML="Signing In...";
-
-try{
-
-const {data,error} =
-await supa
-.from("vendors")
-.select("*")
-.eq("email",email)
-.single();
-
-if(error || !data){
-
-throw new Error(
-"Vendor account not found."
-);
-}
-
-if(data.password !== pass){
-
-throw new Error(
-"Incorrect password."
-);
-}
-
-localStorage.setItem(
-"vendor_email",
-data.email
-);
-
-localStorage.setItem(
-"vendor_name",
-data.full_name
-);
-
-localStorage.setItem(
-"vendor_city",
-data.city
-);
-
-localStorage.setItem(
-"vendor_services",
-JSON.stringify(
-data.services || []
-)
-);
-
-localStorage.setItem(
-"vendor_status",
-data.status
-);
-
-localStorage.setItem(
-"vendor_id",
-data.id
-);
-
-show(
-"Welcome back, "
-+ data.full_name +
-". Redirecting to dashboard...",
-true
-);
-
-setTimeout(()=>{
-location.href=
-"/vendor-dashboard.html";
-},1000);
-
-}
-catch(err){
-
-show(err.message,false);
-
-btn.disabled=false;
-btn.innerHTML=
-"Sign In to Dashboard";
-}
-
-}
-
-window.onload=()=>{
-
-const email=
-localStorage.getItem(
-"vendor_email"
-);
-
-if(email){
-
-document.getElementById(
-"email"
-).value=email;
-}
-
-}
-
+  $('forgot').addEventListener('click',async (e)=>{
+    e.preventDefault();
+    const email=$('email').value.trim();
+    if(!email){ show('Weka email yako kwanza juu!'); return; }
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo: location.origin+'/vendor-login.html'});
+    if(error) show('Reset failed: '+error.message);
+    else show('✅ Reset link sent to '+email+' - Check Gmail & set new password 12345678','success');
+  });
+})();
 </script>
-
 </body>
 </html>
