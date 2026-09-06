@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Join GuestHub WORLD - Lipa na M-Pesa - FIXED 15.0</title>
+<title>Join GuestHub WORLD - Lipa na M-Pesa - PERMANENT 15.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <style>
 :root{--lime:#c6ff00;--gold:#fbbf24;--bg:#080808;--card:#141414;--border:#222;--danger:#ff5a5f}
@@ -39,7 +39,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);bo
 <div class="hero">
   <h1>EARN WITH GUESTHUB WORLD</h1>
   <p style="font-weight:800;margin:8px 0 0;font-size:13px;opacity:.8">🌍 Global vendors • Lipa na M-Pesa + PayPal + Bank • Hotels bring clients to YOU</p>
-  <div style="margin-top:10px;background:#000;color:#fff;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900">✅ 500+ Vendors Worldwide • Lipa na M-Pesa Instant • 15% to You</div>
+  <div style="margin-top:10px;background:#000;color:#fff;display:inline-block;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900">✅ PERMANENT 15.3 • No more Incorrect Password • Signup→Approve→Login</div>
 </div>
 <div class="prog"><i id="pbar"></i></div>
 <div id="notice" class="notice"></div>
@@ -52,8 +52,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);bo
       <div><label>ID / Passport No</label><input id="id_number" required></div>
     </div>
     <label>Email + Password</label>
-    <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:8px"><input id="email" type="email" required><input id="password" type="password" required></div>
-    <div class="helper">Password only for auth. If rate limit hit, we submit without auth - GM will still see you!</div>
+    <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:8px"><input id="email" type="email" required><input id="password" type="password" required placeholder="min 8 chars"></div>
+    <div class="helper">Same password will be used to login after GM approval!</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <div><label>Country</label><select id="country" onchange="updateCities()"><option value="Kenya">🇰🇪 Kenya</option><option value="Tanzania">🇹🇿 Tanzania</option><option value="Uganda">🇺🇬 Uganda</option><option value="Rwanda">🇷🇼 Rwanda</option><option value="Nigeria">🇳🇬 Nigeria</option><option value="South Africa">🇿🇦 South Africa</option><option value="UAE">🇦🇪 UAE - Dubai</option><option value="USA">🇺🇸 USA</option><option value="UK">🇬🇧 UK</option><option value="Germany">🇩🇪 Germany</option><option value="India">🇮🇳 India</option><option value="Other">🌍 Other</option></select></div>
       <div><label>Base City</label><select id="city"><option>Eldoret</option><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Naivasha</option><option>Diani</option><option>Maasai Mara Region</option></select></div>
@@ -82,7 +82,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);bo
     <div id="mpesaBox"><label>Lipa na M-Pesa Number</label><input id="mpesa" required placeholder="0722... or Till"><label>M-Pesa Name</label><input id="mpesa_name" placeholder="As per ID"></div>
     <div id="otherPayBox" style="display:none"><label id="otherLabel">PayPal / Bank</label><input id="other_pay" placeholder="paypal@email.com / IBAN"></div>
     <label style="text-transform:none;color:#ccc;font-size:12px;margin-top:14px;display:flex;gap:8px"><input id="terms" type="checkbox" required style="width:auto"><span>I agree on time &lt;15min, polite, 15% via Lipa na M-Pesa</span></label>
-    <button class="btn" type="submit" id="btn">🚀 Submit - Lipa na M-Pesa WORLD</button>
+    <button class="btn" type="submit" id="btn">🚀 Submit - PERMANENT 15.3</button>
   </div>
 </form>
 </div>
@@ -100,20 +100,83 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);bo
   function cleanText(id){return $(id).value.trim();}
   window.setPay=(el)=>{document.querySelectorAll('.paychip').forEach(c=>c.classList.remove('on'));el.classList.add('on');$('payout_method').value=el.dataset.val;const v=el.dataset.val;if(v==='mpesa'||v==='airtel'){$('mpesaBox').style.display='block';$('otherPayBox').style.display='none';$('mpesa').required=true;}else{$('mpesaBox').style.display='none';$('otherPayBox').style.display='block';$('mpesa').required=false;$('otherLabel').textContent=v==='paypal'?'PayPal Email':v==='bank'?'Bank IBAN':'Binance USDT';}};
   window.updateCities=()=>{const c=$('country').value;const map={Kenya:['Eldoret','Nairobi','Mombasa','Kisumu','Nakuru','Naivasha','Diani','Maasai Mara Region'],Tanzania:['Dar es Salaam','Arusha','Zanzibar','Moshi'],Uganda:['Kampala','Entebbe'],Rwanda:['Kigali'],Nigeria:['Lagos','Abuja'],UAE:['Dubai','Abu Dhabi','Sharjah'],USA:['New York','Los Angeles','Miami'],UK:['London','Manchester'],Other:['Your City']};const list=map[c]||['Your City'];$('city').innerHTML=list.map(x=>`<option>${x}</option>`).join('');};
-  function validate(){const req=['full_name','phone','id_number','email','password'];for(const id of req){if(!cleanText(id))throw new Error('Complete all fields');}if(sel.length===0)throw new Error('Select service');if(!$('terms').checked)throw new Error('Accept agreement');}
+  function validate(){const req=['full_name','phone','id_number','email','password'];for(const id of req){if(!cleanText(id))throw new Error('Complete all fields - '+id); }if(sel.length===0)throw new Error('Select at least 1 service - Bofya Airport Taxi!');if(!$('terms').checked)throw new Error('Bofya checkbox ya Terms!');if($('password').value.length<8)throw new Error('Password min 8 chars - weka 12345678');}
   render();updateCities();
-  const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-  $('f').addEventListener('submit',async e=>{
-    e.preventDefault();btn.disabled=true;btn.textContent='⏳ Submitting WORLD - Lipa na M-Pesa...';
+
+  async function handleSignup(e){
+    e.preventDefault();
+    const btn=document.getElementById('btn');
+    btn.disabled=true; btn.textContent='⏳ Creating account...';
     try{
-      validate();const email=cleanText('email').toLowerCase();const password=$('password').value;let userId=null;let bypass=false;
-      try{const {data,error}=await supa.auth.signUp({email,password,options:{data:{role:'vendor',full_name:cleanText('full_name')}}});if(error){if(error.message.toLowerCase().includes('rate limit')||error.message.includes('exceeded'))bypass=true;else if(error.message.includes('already registered')){const {data:sIn}=await supa.auth.signInWithPassword({email,password});userId=sIn?.user?.id||null;}else throw error;}else userId=data?.user?.id||null;}catch(a){bypass=true;}
-      const payMethod=$('payout_method').value;const payoutInfo=(payMethod==='mpesa'||payMethod==='airtel')?{method:payMethod,mpesa:cleanPhone(cleanText('mpesa')),mpesa_name:cleanText('mpesa_name')}:{method:payMethod,details:cleanText('other_pay')};
-      const app={owner_id:userId,full_name:cleanText('full_name'),phone:cleanPhone(cleanText('phone')),id_number:cleanText('id_number'),email,country:cleanText('country'),city:cleanText('city'),services:sel,vehicle:cleanText('vehicle'),plate:cleanText('plate'),price:Number($('price').value||0),bio:cleanText('bio'),mpesa:(payMethod==='mpesa'||payMethod==='airtel')?cleanPhone(cleanText('mpesa')):cleanText('other_pay'),mpesa_name:cleanText('mpesa_name')||cleanText('full_name'),payout_method:payMethod,payout_details:JSON.stringify(payoutInfo),status:'pending',rating:5,wallet:0};
-      let inserted=null;try{const {data,error}=await supa.rpc('submit_vendor_application',{p_application:app});if(error)throw error;inserted=data;}catch(r){const fallback={full_name:app.full_name,phone:app.phone,email:app.email,city:app.city,country:app.country,services:app.services,vehicle:app.vehicle,price:app.price,mpesa:app.mpesa,mpesa_name:app.mpesa_name,id_number:app.id_number,status:'pending',description:(app.plate?`Plate: ${app.plate} | `:'')+(app.bio||'')+` | ${app.country} | ${payMethod}`,payout_method:payMethod};const {data:d,error:e2}=await supa.from('vendors').insert([fallback]).select().single();if(e2)throw e2;inserted=d;}
-      showNotice(`✅ WORLD SUBMITTED! ${payMethod.toUpperCase()} - Pending GM approval - 15% via Lipa na M-Pesa!`,'success');btn.textContent='✅ Submitted WORLD';setTimeout(()=>location.href='/vendor-dashboard.html',1800);
-    }catch(err){showNotice('Failed: '+(err.message||'Unknown'),'error');btn.disabled=false;btn.textContent='🚀 Submit - Lipa na M-Pesa WORLD';}
-  });
+      validate();
+      const email=document.getElementById('email').value.toLowerCase().trim();
+      const password=document.getElementById('password').value;
+      const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+      
+      let userId=null;
+      let {data:signData, error:signErr}=await supa.auth.signUp({email,password,options:{data:{role:'vendor'}}});
+      if(signErr){
+        if(signErr.message.includes('already registered') || signErr.message.includes('User already')){
+          const {data:loginData, error:loginErr}=await supa.auth.signInWithPassword({email,password});
+          if(loginErr) throw new Error('Email exists but password wrong. Use Forgot Password or use new email like test.world.'+Date.now()+'@gmail.com');
+          userId=loginData.user.id;
+        } else if(signErr.message.toLowerCase().includes('rate limit')){
+          throw new Error('Too many tries. Wait 2 min or use different email like ronoo.world.'+Date.now()+'@gmail.com');
+        } else throw signErr;
+      }else{
+        userId=signData.user?.id || signData.session?.user?.id;
+        if(!userId){
+          const {data:sess}=await supa.auth.getSession();
+          userId=sess?.session?.user?.id || null;
+        }
+      }
+
+      if(!userId) throw new Error('Could not get user ID - but we will still create vendor as pending. Try login later after GM creates Auth.');
+
+      const payMethod=document.getElementById('payout_method').value;
+      const app={
+        owner_id:userId,
+        full_name:cleanText('full_name'),
+        phone:cleanPhone(cleanText('phone')),
+        id_number:cleanText('id_number'),
+        email:email,
+        country:cleanText('country'),
+        city:cleanText('city'),
+        services:sel,
+        vehicle:cleanText('vehicle'),
+        plate:cleanText('plate'),
+        price:Number($('price').value||2500),
+        bio:cleanText('bio'),
+        mpesa:cleanPhone(cleanText('mpesa')||cleanText('other_pay')),
+        mpesa_name:cleanText('mpesa_name')||cleanText('full_name'),
+        payout_method:payMethod,
+        payout_details:JSON.stringify({method:payMethod, mpesa:cleanPhone(cleanText('mpesa'))})
+      };
+
+      let inserted=null;
+      try{
+        const {data,error}=await supa.rpc('submit_vendor_application',{p_application:app});
+        if(error) throw error;
+        inserted=data;
+      }catch(rpcErr){
+        console.warn('RPC failed, fallback insert', rpcErr.message);
+        const fallback={owner_id:userId, full_name:app.full_name, phone:app.phone, email:app.email, city:app.city, country:app.country, services:app.services, vehicle:app.vehicle, price:app.price, mpesa:app.mpesa, mpesa_name:app.mpesa_name, id_number:app.id_number, status:'pending', description:(app.plate?`Plate: ${app.plate} | `:'')+(app.bio||'')+` | ${app.country} | ${payMethod}`, payout_method:payMethod};
+        const {data:d,error:e2}=await supa.from('vendors').insert([fallback]).select().single();
+        if(e2) throw e2;
+        inserted=d;
+      }
+
+      showNotice(`✅ SUCCESS ${app.full_name}! Account ${email} created & linked! GM will approve in VENDORS tab, then login with same password!`,'success');
+      btn.textContent='✅ Submitted - Go to Login';
+      setTimeout(()=>location.href='/vendor-login.html',2000);
+      
+    }catch(err){
+      showNotice('Failed: '+(err.message||'Unknown'),'error');
+      btn.disabled=false; btn.textContent='🚀 Submit - PERMANENT 15.3';
+    }
+  }
+
+  $('f').addEventListener('submit',handleSignup);
 })();
 </script>
 </body>
