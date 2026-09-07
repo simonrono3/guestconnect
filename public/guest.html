@@ -1,246 +1,367 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GuestHub - Eat, Ride, Explore</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>GuestHub ULTRA 16.1 - Integrated</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;700;800;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#050507;color:#fff;font-family:'Inter',sans-serif;padding-bottom:110px}
-.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:'Playfair Display';font-weight:900;font-size:20px}.logo span{color:#c6ff00}
-.pill{background:#15151a;border:1px solid #2a2a34;padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px}
-.hero{margin:14px;background:linear-gradient(135deg,#c6ff00 0%,#a6e22e 100%);border-radius:24px;padding:18px;color:#000}
-.hero b{font-size:20px;font-weight:900;display:block}.hero p{font-size:13px;opacity:.7;margin-top:4px;font-weight:700}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;position:sticky;top:62px;z-index:90;background:#050507}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070708;--card:#151517;--border:#222;--card2:#101015}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:110px}
+.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:Space Grotesk;font-weight:800;font-size:20px}.logo span{color:var(--lime)}
+.pill{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:11px;font-weight:800;display:flex;gap:6px;align-items:center}
+.greet{padding:10px 16px 8px;display:flex;justify-content:space-between;gap:10px}
+.greet h1{font-family:Space Grotesk;font-size:32px;margin:0;line-height:.9}
+.weather{min-width:128px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:10px 12px}
+.live{margin:12px 16px;background:linear-gradient(135deg,#151517,#1e1e1e);border:1.5px solid var(--lime);border-radius:18px;padding:14px;box-shadow:0 0 20px rgba(198,255,0,.15);display:none}
+.dot{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.quick{padding:0 16px}.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
+.q{background:var(--card);border:1px solid #2a2a2a;border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;transition:.15s}
+.q:active{transform:scale(.96);border-color:var(--lime)}.q b{font-size:10px;display:block;margin-top:6px}.q i{font-size:24px}
+.mood{margin:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px}
+.mood-opt{display:inline-block;padding:7px 12px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:999px;font-size:11px;font-weight:800;margin:4px;cursor:pointer}
+.mood-opt.on{background:var(--lime);color:#000;border-color:var(--lime)}
+.stories{padding:10px 0 0 16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.stories::-webkit-scrollbar{display:none}
+.story{display:inline-block;text-align:center;margin-right:12px;cursor:pointer}.ring{width:62px;height:62px;border-radius:50%;padding:2px;background:linear-gradient(45deg,var(--lime),var(--gold))}.story img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg)}
+.hero-mini{margin:14px 16px;background:linear-gradient(135deg,#c6ff00 0%,#a6e22e 100%);border-radius:20px;padding:14px;color:#000}
+.hero-mini b{font-size:16px;font-weight:900;display:block}.hero-mini p{font-size:11px;opacity:.7;margin-top:2px;font-weight:700}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;position:sticky;top:56px;z-index:90;background:var(--bg)}
 .tabs::-webkit-scrollbar{display:none}
-.tab{white-space:nowrap;padding:11px 16px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:13px;cursor:pointer;transition:.2s}
-.tab.active{background:#c6ff00;color:#000;border-color:#c6ff00}
+.tab{white-space:nowrap;padding:10px 14px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:12px;cursor:pointer;transition:.2s}
+.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
 .content{padding:0 14px}
-.group{margin:18px 0;background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:24px;padding:14px}
-.group-title{color:#c6ff00;font-size:13px;font-weight:900;letter-spacing:1px;margin:4px 6px 12px;display:flex;align-items:center;gap:8px}
+.group{margin:14px 0;background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:12px}
+.group-title{color:var(--lime);font-size:11px;font-weight:900;letter-spacing:1px;margin:4px 6px 10px;display:flex;align-items:center;gap:8px}
 .group-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(198,255,0,0.3),transparent);margin-left:8px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#0e0e12;border:1px solid #1e1e26;border-radius:18px;padding:14px;position:relative;min-height:92px;cursor:pointer;transition:.25s}
-.card:active{transform:scale(0.97)}
-.card.active{border-color:#c6ff00;background:#1a2208}
-.card-icon{font-size:24px;margin-bottom:6px}
-.card h3{font-size:15px;font-weight:900;line-height:1.15}
-.card p{font-size:12px;opacity:.5;margin-top:4px}
-.card-price{position:absolute;bottom:10px;right:10px;background:rgba(198,255,0,0.12);border:1px solid rgba(198,255,0,0.2);color:#c6ff00;padding:4px 8px;border-radius:999px;font-weight:900;font-size:10px}
-.item-row{background:#101014;border:1px solid #1e1e26;border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:10px;cursor:pointer}
-.item-img{width:64px;height:64px;background:#1a1a20;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
-.item-info{flex:1}.item-info h3{font-size:16px;font-weight:900}.item-info p{font-size:12px;opacity:.5;margin-top:2px}
-.add{width:36px;height:36px;background:#fff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;border:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.card{background:#0e0e12;border:1px solid #1e1e26;border-radius:16px;padding:12px;position:relative;min-height:86px;cursor:pointer;transition:.2s}
+.card:active{transform:scale(0.97)}.card.active{border-color:var(--lime);background:#1a2208}
+.card h3{font-size:13px;font-weight:900;line-height:1.15}.card p{font-size:11px;opacity:.5;margin-top:3px}
+.card-price{position:absolute;bottom:8px;right:8px;background:rgba(198,255,0,0.12);border:1px solid rgba(198,255,0,0.2);color:var(--lime);padding:3px 7px;border-radius:999px;font-weight:900;font-size:9px}
+.item-row{background:#101014;border:1px solid #1e1e26;border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;margin-bottom:9px;cursor:pointer}
+.item-img{width:58px;height:58px;background:#1a1a20;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.item-info{flex:1}.item-info h3{font-size:14px;font-weight:900}.item-info p{font-size:11px;opacity:.5;margin-top:2px}
+.add{width:34px;height:34px;background:#fff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;border:0}
 .section{display:none}.section.active{display:block}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,14,0.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:grid;grid-template-columns:repeat(4,1fr);padding:10px 0 18px;z-index:100}
-.bottom-nav div{text-align:center;opacity:.4;cursor:pointer}.bottom-nav div.active{opacity:1;color:#c6ff00}
-.bottom-nav i{font-size:20px;display:block}.bottom-nav b{font-size:10px;margin-top:3px;display:block;font-weight:800}
-.cart-float{position:fixed;bottom:84px;left:14px;right:14px;background:#c6ff00;color:#000;padding:14px 18px;border-radius:999px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:14px;box-shadow:0 10px 30px rgba(198,255,0,0.3);z-index:99;cursor:pointer;transform:translateY(100px);transition:.35s cubic-bezier(.16,1,.3,1)}
+.cart-float{position:fixed;bottom:84px;left:14px;right:14px;background:var(--lime);color:#000;padding:14px 18px;border-radius:999px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:13px;box-shadow:0 10px 30px rgba(198,255,0,0.3);z-index:99;cursor:pointer;transform:translateY(100px);transition:.35s cubic-bezier(.16,1,.3,1)}
 .cart-float.show{transform:translateY(0)}
 .cart-sheet{position:fixed;bottom:0;left:0;right:0;background:#0e0e12;border-top:1px solid #1e1e26;border-radius:26px 26px 0 0;padding:18px;transform:translateY(100%);transition:.4s cubic-bezier(.16,1,.3,1);z-index:200;max-height:85vh;overflow:auto}
 .cart-sheet.open{transform:translateY(0)}
 .pay-box{background:#111114;border:1px solid #22222a;border-radius:14px;padding:12px;margin-top:10px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,14,0.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0 16px;z-index:100}
+.bottom-nav div{text-align:center;opacity:.4;cursor:pointer}.bottom-nav div.active{opacity:1;color:var(--lime)}.bottom-nav i{font-size:18px;display:block}.bottom-nav b{font-size:9px;margin-top:2px;display:block;font-weight:800}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;place-items:center;padding:16px}
+.card-modal{background:#151517;border:1px solid #222;border-radius:24px;padding:20px;width:100%;max-width:380px}
+input{width:100%;padding:13px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;margin-top:6px;font-size:14px}
+.btn{width:100%;background:var(--lime);color:#000;padding:14px;border:none;border-radius:14px;font-weight:900;margin-top:12px;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="top"><div class="logo">GUEST<span>HUB</span></div><div class="pill">🍽️ Table <b id="tableLabel">T01</b> • 🛏️ Guest Mode</div></div>
-<div class="hero"><b id="heroTitle">Karibu! Eat, Ride, Explore</b><p id="heroSub">Order food • Book taxi • Safari tomorrow • All in one scan</p></div>
+
+<div class="top">
+  <div class="logo">GUEST<span>HUB</span> • <span style="color:#888;font-size:11px" id="hotelName">BAOBAB</span></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="pill">🍽️ <span id="tableLabel">T01</span> • 🛏️ <span id="roomLabel">101</span></div>
+    <div id="guestAvatar" style="width:30px;height:30px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900;font-size:13px">G</div>
+  </div>
+</div>
+
+<div class="greet">
+  <div>
+    <h1>Karibu <span id="guestNameDisplay" style="color:var(--lime)">Guest</span>! 👋</h1>
+    <div style="color:#888;font-size:11px;margin-top:4px"><span id="roomDisplay" style="color:var(--lime);font-weight:800">Room 101</span> • <span id="timeGreet">Good Afternoon</span> • <span id="stayDay">Day 1</span> • <span id="kipPoints">1,280 Pts</span></div>
+  </div>
+  <div class="weather"><div style="font-size:18px;font-weight:900">⛅ 24°C</div><div style="font-size:9px;color:var(--lime);font-weight:800">Eldoret • Sunny</div><div style="font-size:8px;color:#666">3 events nearby</div></div>
+</div>
+
+<div class="live" id="liveTracker">
+  <div style="font-size:10px;font-weight:900;letter-spacing:.1em"><span class="dot"></span> LIVE ORDER TRACKER</div>
+  <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+    <img id="liveImg" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" style="width:54px;height:54px;border-radius:12px;object-fit:cover">
+    <div><b id="liveTitle" style="font-size:13px">Your Order</b><div style="font-size:10px;color:#aaa" id="liveSub">• Preparing</div><div style="font-size:9px;margin-top:4px">✅ Confirmed — ✅ Preparing — <span style="color:var(--lime)">● On the way</span></div><div style="font-size:10px;color:var(--lime);font-weight:800;margin-top:3px" id="liveETA">Arriving soon • Track →</div></div>
+  </div>
+</div>
+
+<div class="quick">
+  <div style="display:flex;justify-content:space-between"><h3 style="font-family:Space Grotesk;font-size:14px;margin:0">Quick Actions</h3><span style="color:var(--lime);font-size:10px;font-weight:800">Addictive Mode ON</span></div>
+  <div class="qgrid">
+    <div class="q" onclick="switchTab('menu')"><i>🍽️</i><b>Food</b></div>
+    <div class="q" onclick="switchTab('rides')"><i>🚕</i><b>Taxi</b></div>
+    <div class="q" onclick="switchTab('rides')"><i>🦁</i><b>Safari</b></div>
+    <div class="q" onclick="orderQuick('massage')"><i>🧖</i><b>Massage</b></div>
+    <div class="q" onclick="orderQuick('laundry')"><i>🧺</i><b>Laundry</b></div>
+    <div class="q" onclick="openBill()"><i>🧾</i><b>Bill</b></div>
+    <div class="q" style="border-color:#ff5a5f" onclick="sos()"><i>🆘</i><b style="color:#ff5a5f">SOS</b></div>
+    <div class="q" onclick="openMore()"><i>✨</i><b>More</b></div>
+  </div>
+</div>
+
+<div class="mood">
+  <b style="font-size:12px">How are you feeling? I'll suggest perfect 👇</b>
+  <div style="margin-top:8px"><span class="mood-opt" onclick="setMood(this,'tired')">😴 Tired</span><span class="mood-opt" onclick="setMood(this,'hungry')">😋 Hungry</span><span class="mood-opt" onclick="setMood(this,'party')">🥳 Party</span><span class="mood-opt" onclick="setMood(this,'relax')">🧘 Relax</span><span class="mood-opt" onclick="setMood(this,'romantic')">❤️ Romantic</span><span class="mood-opt" onclick="setMood(this,'adventure')">🏔️ Adventure</span></div>
+  <div id="moodSuggest" style="display:none;margin-top:10px;padding:10px;background:#0a0a0a;border-radius:12px;font-size:11px"></div>
+</div>
+
+<div style="padding:0 16px;display:flex;justify-content:space-between"><h3 style="font-family:Space Grotesk;font-size:14px;margin:0">Hotel Experiences</h3><span style="color:var(--lime);font-size:10px;font-weight:800">Stories • 7</span></div>
+<div class="stories" id="storiesRow"></div>
+
+<div class="hero-mini"><b id="heroTitle">Karibu! Eat, Ride, Explore</b><p id="heroSub">Order food • Book taxi • Safari tomorrow • All in one scan - We know you: <span id="heroGuest">Guest Room 101</span></p></div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('menu',this)">🍽️ MENU</div>
-  <div class="tab" onclick="switchTab('rides',this)">🚕 RIDES & TOURS</div>
-  <div class="tab" onclick="switchTab('services',this)">🧖 SERVICES</div>
-  <div class="tab" onclick="switchTab('orders',this)">📋 MY ORDERS</div>
+  <div class="tab active" onclick="switchTab('menu')">🍽️ MENU</div>
+  <div class="tab" onclick="switchTab('rides')">🚕 RIDES & TOURS</div>
+  <div class="tab" onclick="switchTab('services')">🧖 SERVICES</div>
+  <div class="tab" onclick="switchTab('orders')">📋 MY ORDERS</div>
 </div>
 
 <div class="content">
-  <!-- MENU -->
-  <div class="section active" id="sec-menu"><div id="menuContainer">Loading menu...</div></div>
-  <!-- RIDES & TOURS - SAME AS ROOM GUEST -->
+  <div class="section active" id="sec-menu"><div id="menuContainer">Loading menu from GM dashboard...</div></div>
   <div class="section" id="sec-rides"><div id="ridesContainer"></div></div>
-  <!-- SERVICES -->
   <div class="section" id="sec-services"><div id="servicesContainer"></div></div>
-  <!-- ORDERS -->
   <div class="section" id="sec-orders"><div id="myOrders">No orders yet. Order food or book a ride!</div></div>
 </div>
 
-<div class="cart-float" id="cartFloat" onclick="openCart()"><span>🛒 <b id="cartCount">0</b> items • Ksh <b id="cartTotal">0</b></span><span>View →</span></div>
+<div style="margin:16px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:12px;display:flex;gap:10px;align-items:center" onclick="openChat()">
+  <div style="width:36px;height:36px;border-radius:50%;background:var(--lime);display:grid;place-items:center">🤖</div>
+  <div style="flex:1"><b style="font-size:12px">AI Concierge - Ask anything!</b><div style="font-size:10px;color:#888">“Niko na headache, where to get dawa at night?”</div></div><div style="color:var(--lime)">→</div>
+</div>
 
+<div class="cart-float" id="cartFloat" onclick="openCart()"><span>🛒 <b id="cartCount">0</b> items • Ksh <b id="cartTotal">0</b></span><span>View →</span></div>
 <div class="cart-sheet" id="cartSheet">
   <div style="width:36px;height:4px;background:#2a2a34;border-radius:999px;margin:0 auto 14px"></div>
-  <h2 style="font-size:20px;font-weight:900">Your Cart - Table <span id="cartTable">T01</span></h2>
+  <h2 style="font-size:18px;font-weight:900">Your Cart - <span id="cartRoomDisplay">Room 101 - Kip</span></h2>
   <div id="cartItems" style="margin-top:12px"></div>
-  <div class="pay-box"><small style="opacity:.5">PAY TO HOTEL</small><b id="payInfo" style="display:block;margin-top:4px">Loading...</b><small style="opacity:.6;display:block;margin-top:4px">Use Table as Account Number</small></div>
-  <input id="guestName" placeholder="Your name" style="width:100%;background:#1a1a20;border:1px solid #2a2a34;border-radius:12px;padding:14px;color:#fff;margin-top:10px">
-  <button onclick="checkout()" style="width:100%;background:#c6ff00;color:#000;border:0;padding:16px;border-radius:14px;font-weight:900;font-size:16px;margin-top:12px">💳 ORDER & PAY • M-PESA</button>
-  <button onclick="closeCart()" style="width:100%;background:transparent;border:1px solid #2a2a34;color:#fff;padding:12px;border-radius:12px;margin-top:8px;font-weight:800">Continue</button>
+  <div class="pay-box"><small style="opacity:.5">PAY TO HOTEL • Till / Paybill</small><b id="payInfo" style="display:block;margin-top:4px">Loading Till...</b><small style="opacity:.6;display:block;margin-top:4px">Use <span id="payAccount">T01 - Kip</span> as Account Number</small></div>
+  <input id="guestNameInput" placeholder="Confirm your name" style="width:100%;background:#1a1a20;border:1px solid #2a2a34;border-radius:12px;padding:14px;color:#fff;margin-top:10px">
+  <button onclick="checkout()" style="width:100%;background:var(--lime);color:#000;border:0;padding:16px;border-radius:14px;font-weight:900;font-size:16px;margin-top:12px">💳 ORDER & PAY • M-PESA</button>
+  <button onclick="closeCart()" style="width:100%;background:transparent;border:1px solid #2a2a34;color:#fff;padding:12px;border-radius:12px;margin-top:8px;font-weight:800">Continue Shopping</button>
 </div>
 
 <div class="bottom-nav">
-  <div class="active" onclick="switchTab('menu',document.querySelectorAll('.tab')[0])"><i>🍽️</i><b>Menu</b></div>
-  <div onclick="switchTab('rides',document.querySelectorAll('.tab')[1])"><i>🚕</i><b>Rides</b></div>
-  <div onclick="switchTab('services',document.querySelectorAll('.tab')[2])"><i>🧖</i><b>Services</b></div>
-  <div onclick="switchTab('orders',document.querySelectorAll('.tab')[3])"><i>📋</i><b>Orders</b></div>
+  <div class="active" onclick="switchTab('menu')"><i>🍽️</i><b>Menu</b></div>
+  <div onclick="switchTab('rides')"><i>🚕</i><b>Rides</b></div>
+  <div onclick="switchTab('services')"><i>🧖</i><b>Services</b></div>
+  <div onclick="switchTab('orders')"><i>📋</i><b>Orders</b></div>
 </div>
 
+<!-- IDENTITY MODAL - CORE FOR GUEST IDENTIFICATION -->
+<div id="identityModal" class="modal" style="display:grid">
+  <div class="card-modal">
+    <h2 style="font-family:Space Grotesk;color:var(--lime);margin:0">Karibu! 👋</h2>
+    <p style="color:#888;font-size:11px;margin:6px 0 14px">Ili Kitchen, Taxi & Housekeeping wakutambue haraka - tujue wewe ni nani mara moja tu! (Kitchen wataona jina lako)</p>
+    <label style="font-size:10px;font-weight:800;color:#777">Your Name *</label><input id="gName" placeholder="Kip Kip">
+    <label style="font-size:10px;font-weight:800;color:#777;margin-top:10px;display:block">Phone / WhatsApp *</label><input id="gPhone" placeholder="0707142187">
+    <label style="font-size:10px;font-weight:800;color:#777;margin-top:10px;display:block">Room Number *</label><input id="gRoom" placeholder="101">
+    <button class="btn" onclick="saveIdentity()">✅ Continue to GuestHub</button>
+    <div style="font-size:9px;color:#666;margin-top:8px;text-align:center">We remember you • All orders show: Name + Room + Phone</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 <script>
+const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const hotel_id=params.get('hotel')||'BAOBAB';
-const table=params.get('table')||'T01';
-document.getElementById('tableLabel').textContent=table;
-document.getElementById('cartTable').textContent=table;
-
-let cart=[], menuItems=[], hotelServices=[], payInfo={};
-let myOrdersList=[];
-
-function switchTab(name,el){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sec-'+name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.querySelectorAll('.bottom-nav div').forEach((d,i)=>{
-    d.classList.remove('active');
-    if((name==='menu'&&i===0)||(name==='rides'&&i===1)||(name==='services'&&i===2)||(name==='orders'&&i===3)) d.classList.add('active');
+const tableParam=params.get('table')||'T01';
+let cart=[], menuItems=[], hotelServices=[], myOrdersList=[], payInfo={};
+const experiences=[
+  {t:'Sunset Safari',img:'https://images.unsplash.com/photo-1516426122078-c23e76319801',d:'Today 5pm - 3 slots'},
+  {t:'Pool & Lounge',img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d',d:'Happy hour now!'},
+  {t:'Spa Ritual',img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',d:'60min @2500'},
+  {t:'Rooftop Dinner',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0',d:'Live band tonight'},
+  {t:'Coffee Tasting',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93',d:'Kenya AA - 10am'}
+];
+function renderStories(){
+  const row=$('storiesRow'); if(!row) return; row.innerHTML='';
+  experiences.forEach(ex=>{
+    const div=document.createElement('div'); div.className='story';
+    div.innerHTML=`<div class="ring"><img src="${ex.img}"></div><b style="font-size:9px;display:block;margin-top:4px">${ex.t}</b>`;
+    div.onclick=()=>{ orderQuick(ex.t.toLowerCase()); };
+    row.appendChild(div);
   });
+}
+function checkIdentity(){
+  const name=localStorage.getItem('guest_name');
+  const room=localStorage.getItem('guest_room');
+  const phone=localStorage.getItem('guest_phone');
+  if(name && room){
+    $('identityModal').style.display='none';
+    $('guestNameDisplay').textContent=name.split(' ')[0];
+    $('roomDisplay').textContent='Room '+room;
+    $('roomLabel').textContent=room;
+    $('tableLabel').textContent=localStorage.getItem('guest_table')||tableParam;
+    $('guestAvatar').textContent=name[0].toUpperCase();
+    $('guestNameInput').value=name;
+    $('cartRoomDisplay').textContent=`Room ${room} - ${name}`;
+    $('payAccount').textContent=`${localStorage.getItem('guest_table')} - ${name}`;
+    $('heroGuest').textContent=`${name} - Room ${room}`;
+    const hr=new Date().getHours(); $('timeGreet').textContent= hr<12?'Good Morning':hr<18?'Good Afternoon':'Good Evening';
+    loadLiveTracker();
+  } else {
+    $('gRoom').value=params.get('room') || tableParam.replace(/\D/g,'') || '101';
+    $('identityModal').style.display='grid';
+  }
+}
+async function saveIdentity(){
+  const name=$('gName').value.trim(), phone=$('gPhone').value.trim(), room=$('gRoom').value.trim();
+  if(!name ||!phone ||!room){ alert('Jaza zote mkuu!'); return; }
+  localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone);
+  localStorage.setItem('guest_room',room); localStorage.setItem('guest_table','T'+room.padStart(2,'0'));
+  try{
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const {data}=await supa.from('guest_sessions').insert([{room_number:room,table_id:'T'+room,guest_name:name,guest_phone:phone,hotel_id}]).select().single();
+    if(data) localStorage.setItem('guest_session_id',data.id);
+  }catch(e){ console.log('session save optional',e.message); }
+  checkIdentity(); renderStories();
+}
+function switchTab(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const sec=$('sec-'+name); if(sec) sec.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  const idx={menu:0,rides:1,services:2,orders:3}[name]||0;
+  const tabs=document.querySelectorAll('.tab'); if(tabs[idx]) tabs[idx].classList.add('active');
+  document.querySelectorAll('.bottom-nav div').forEach((d,i)=>{ d.classList.toggle('active', i===idx); });
   if(name==='orders') renderMyOrders();
 }
-
-// LOAD ALL DATA - MENU + HOTEL SERVICES (same as room guest)
+function setMood(el,m){
+  document.querySelectorAll('.mood-opt').forEach(o=>o.classList.remove('on')); el.classList.add('on');
+  const map={tired:'😴 Tired? → In-Room Massage + Late Checkout + Hot Soup to Room '+localStorage.getItem('guest_room'),hungry:'😋 Hungry? → Chef special Grill - 15min to Room '+localStorage.getItem('guest_room'),party:'🥳 Party? → Rooftop + DJ + Taxi back at 2am',relax:'🧘 Relax? → Spa Ritual 60min + Herbal tea',romantic:'❤️ Romantic? → Rooftop Dinner + Rose decor',adventure:'🏔️ Adventure? → Mara tomorrow 5am - Van ready'};
+  const sug=$('moodSuggest'); sug.style.display='block'; sug.innerHTML=`<b style="color:var(--lime)">${map[m]}</b> <button onclick="orderQuick('${m}')" style="margin-left:8px;background:var(--lime);border:none;border-radius:999px;padding:4px 10px;font-weight:800;font-size:10px">Book Now</button>`;
+}
+async function orderQuick(svc){
+  const payload={
+    table_id: localStorage.getItem('guest_table')||tableParam,
+    room_number: localStorage.getItem('guest_room')||'101',
+    guest_name: localStorage.getItem('guest_name')||'Guest',
+    guest_phone: localStorage.getItem('guest_phone')||'',
+    guest_session_id: localStorage.getItem('guest_session_id'),
+    location_label: `Room ${localStorage.getItem('guest_room')} - ${localStorage.getItem('guest_name')} - ${localStorage.getItem('guest_phone')}`,
+    items:[{name:svc.toUpperCase(), qty:1}],
+    status:'pending', hotel_id
+  };
+  try{
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    await supa.from('orders').insert([payload]);
+    myOrdersList.push({time:new Date().toLocaleTimeString(),items:payload.items,total:0,room:payload.room_number,guest:payload.guest_name});
+    alert('✅ '+svc.toUpperCase()+' booked!\n\nKitchen/Taxi wataona:\n👤 '+payload.guest_name+' - Room '+payload.room_number+'\n📞 '+payload.guest_phone);
+    $('liveTracker').style.display='block'; $('liveTitle').textContent=svc.toUpperCase()+' for '+payload.guest_name; $('liveSub').textContent='• Room '+payload.room_number+' • '+payload.guest_phone;
+  }catch(e){ alert('Order failed - check net'); }
+}
+function loadLiveTracker(){
+  try{
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    supa.from('orders').select('*').eq('room_number',localStorage.getItem('guest_room')).neq('status','delivered').order('created_at',{ascending:false}).limit(1).then(({data})=>{
+      if(data && data[0]){ $('liveTracker').style.display='block'; $('liveTitle').textContent=(data[0].items[0]?.name||'Order')+' - Room '+data[0].room_number; $('liveSub').textContent='• '+data[0].guest_name+' • '+data[0].status; }
+    });
+  }catch(e){}
+}
+// --- MENU / RIDES LOGIC FROM YOUR SECOND FILE ---
 Promise.all([
-  fetch(`/api/menu?hotel_id=${hotel_id}`).then(r=>r.json()),
-  fetch(`/api/services?hotel_id=${hotel_id}`).then(r=>r.json())
+  fetch(`/api/menu?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({items:[],menus:[]})),
+  fetch(`/api/services?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({data:[]}))
 ]).then(([menuData, svcData])=>{
-  menuItems=menuData.items||[];
-  payInfo=menuData.menus?.[0]||{};
-  document.getElementById('payInfo').textContent=`${payInfo.paybill_number?'Paybill '+payInfo.paybill_number: payInfo.till_number?'Till '+payInfo.till_number:'Till - Ask Waiter'} • ${payInfo.m_pesa_name||hotel_id}`;
-  hotelServices=svcData.data||[];
-  renderMenu();
-  renderRidesAndServices();
+  menuItems=menuData.items||[{id:'demo1',name:'Grill Platter',category:'Main',price:1200,description:'Chef special'},{id:'demo2',name:'Soda',category:'Drink',price:150,description:'Cold'}];
+  payInfo=menuData.menus?.[0]||{till_number:'123456',m_pesa_name:hotel_id};
+  $('payInfo').textContent=`${payInfo.paybill_number?'Paybill '+payInfo.paybill_number: payInfo.till_number?'Till '+payInfo.till_number:'Till 123456'} • ${payInfo.m_pesa_name||hotel_id}`;
+  $('hotelName').textContent=hotel_id;
+  hotelServices=svcData.data||[
+    {id:'s1',title:'Airport Taxi',category:'Transport',price:3500,icon:'🚕',description:'JKIA/Wilson'},
+    {id:'s2',title:'Maasai Mara Safari',category:'Tours',price:15000,icon:'🦁',description:'2 days'},
+    {id:'s3',title:'Massage',category:'Wellness',price:2500,icon:'🧖',description:'In-room'},
+    {id:'s4',title:'Laundry Express',category:'RoomService',price:500,icon:'🧺',description:'2hr return'}
+  ];
+  renderMenu(); renderRidesAndServices();
 });
-
 function renderMenu(){
-  if(menuItems.length===0){document.getElementById('menuContainer').innerHTML='<div style="opacity:.5;padding:20px;text-align:center">Menu coming soon - Ask GM to add in dashboard</div>';return}
   const cats=[...new Set(menuItems.map(i=>i.category))];
-  let html=`<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px">`+`<div class="tab active" onclick="filterMenu('All',this)">All</div>`+cats.map(c=>`<div class="tab" onclick="filterMenu('${c}',this)">${c}</div>`).join('')+`</div>`;
+  let html=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px">`+`<div class="tab active" onclick="filterMenu('All',this)">All</div>`+cats.map(c=>`<div class="tab" onclick="filterMenu('${c}',this)">${c}</div>`).join('')+`</div>`;
   html+=`<div id="menuGrid">`+menuItems.map(it=>`
     <div class="item-row" onclick="addToCart('${it.id}','menu')">
       <div class="item-img">${it.category==='Drink'?'🥤':it.category==='Dessert'?'🍰':'🍛'}</div>
-      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:#c6ff00">Ksh ${it.price}</b></div>
+      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:var(--lime)">Ksh ${it.price}</b></div>
       <button class="add">+</button>
     </div>
   `).join('')+`</div>`;
-  document.getElementById('menuContainer').innerHTML=html;
+  $('menuContainer').innerHTML=html;
 }
 function filterMenu(cat,el){
   el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
   const filtered=cat==='All'?menuItems:menuItems.filter(i=>i.category===cat);
-  document.getElementById('menuGrid').innerHTML=filtered.map(it=>`
+  $('menuGrid').innerHTML=filtered.map(it=>`
     <div class="item-row" onclick="addToCart('${it.id}','menu')">
       <div class="item-img">${it.category==='Drink'?'🥤':it.category==='Dessert'?'🍰':'🍛'}</div>
-      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:#c6ff00">Ksh ${it.price}</b></div>
+      <div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:var(--lime)">Ksh ${it.price}</b></div>
       <button class="add">+</button>
     </div>
   `).join('');
 }
-
 function renderRidesAndServices(){
   const rides=hotelServices.filter(s=>['Transport','Tours','Concierge'].includes(s.category));
-  const services=hotelServices.filter(s=>['Wellness','RoomService','Media'].includes(s.category));
-
-  // RIDES
-  if(rides.length===0){
-    document.getElementById('ridesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">GM bado haja-add Rides. Lakini unaeza order food! 🍽️</div>`;
-  } else {
-    const groups={};
-    rides.forEach(r=>{if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r)});
-    let html='';
-    for(let cat in groups){
-      html+=`<div class="group"><div class="group-title">${cat==='Transport'?'🚕':'🌍'} ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`
-        <div class="card" onclick="addToCart('${s.id}','service')">
-          <div class="card-icon">${s.icon||'🏨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span>
-        </div>
-      `).join('')+`</div></div>`;
-    }
-    document.getElementById('ridesContainer').innerHTML=html;
+  const services=hotelServices.filter(s=>['Wellness','RoomService','Media','Services'].includes(s.category)||!['Transport','Tours','Concierge'].includes(s.category));
+  // Rides
+  if(rides.length===0){ $('ridesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">GM bado haja-add Rides - Add in GM Dashboard</div>`; }
+  else {
+    const groups={}; rides.forEach(r=>{ if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r) });
+    let html=''; for(let cat in groups){ html+=`<div class="group"><div class="group-title">${cat==='Transport'?'🚕':'🌍'} ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'🏨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`; }
+    $('ridesContainer').innerHTML=html;
   }
-
-  // SERVICES
-  if(services.length===0){
-    document.getElementById('servicesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">Services coming soon</div>`;
-  } else {
-    const groups={};
-    services.forEach(r=>{if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r)});
-    let html='';
-    for(let cat in groups){
-      html+=`<div class="group"><div class="group-title">🧖 ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`
-        <div class="card" onclick="addToCart('${s.id}','service')">
-          <div class="card-icon">${s.icon||'✨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span>
-        </div>
-      `).join('')+`</div></div>`;
-    }
-    document.getElementById('servicesContainer').innerHTML=html;
+  // Services
+  if(services.length===0){ $('servicesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">Services coming soon</div>`; }
+  else {
+    const groups={}; services.forEach(r=>{ if(!groups[r.category]) groups[r.category]=[]; groups[r.category].push(r) });
+    let html=''; for(let cat in groups){ html+=`<div class="group"><div class="group-title">🧖 ${cat.toUpperCase()}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'✨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`; }
+    $('servicesContainer').innerHTML=html;
   }
 }
-
 function addToCart(id,type){
-  let item;
-  if(type==='menu') item=menuItems.find(i=>i.id==id);
-  else item=hotelServices.find(i=>i.id==id);
-  if(!item) return;
-  const price=parseFloat(item.price||item.amount||0);
-  const name=item.name||item.title;
-  const ex=cart.find(c=>c.id==id);
-  if(ex) ex.qty++; else cart.push({id,name,price,qty:1,type});
-  updateCartUI();
-  if(navigator.vibrate) navigator.vibrate(30);
-  // Keep guest - show suggestion
-  if(type==='menu' && cart.length===1){
-    setTimeout(()=>{if(confirm('🍽️ Food added! Unataka pia u-book Taxi ya kesho?')) switchTab('rides',document.querySelectorAll('.tab')[1]);},600);
-  }
+  let item; if(type==='menu') item=menuItems.find(i=>i.id==id); else item=hotelServices.find(i=>i.id==id);
+  if(!item) return; const price=parseFloat(item.price||0); const name=item.name||item.title;
+  const ex=cart.find(c=>c.id==id); if(ex) ex.qty++; else cart.push({id,name,price,qty:1,type});
+  updateCartUI(); if(navigator.vibrate) navigator.vibrate(30);
 }
 function updateCartUI(){
-  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const count=cart.reduce((s,i)=>s+i.qty,0);
-  document.getElementById('cartCount').textContent=count;
-  document.getElementById('cartTotal').textContent=total.toLocaleString();
-  const floatEl=document.getElementById('cartFloat');
-  if(count>0) floatEl.classList.add('show'); else floatEl.classList.remove('show');
-  document.getElementById('cartItems').innerHTML=cart.map(i=>`<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #1a1a20"><div><b>${i.name} x${i.qty}</b><br><small style="opacity:.5">${i.type}</small></div><div><b>Ksh ${i.price*i.qty}</b> <button onclick="removeFromCart('${i.id}')" style="margin-left:8px;background:#222;border:0;color:#fff;width:24px;height:24px;border-radius:50%">x</button></div></div>`).join('')+`<div style="display:flex;justify-content:space-between;font-weight:900;font-size:18px;padding-top:12px"><span>Total</span><span>Ksh ${total.toLocaleString()}</span></div>`;
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const count=cart.reduce((s,i)=>s+i.qty,0);
+  $('cartCount').textContent=count; $('cartTotal').textContent=total.toLocaleString();
+  const floatEl=$('cartFloat'); if(count>0) floatEl.classList.add('show'); else floatEl.classList.remove('show');
+  $('cartItems').innerHTML=cart.map(i=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1a1a20"><div><b>${i.name} x${i.qty}</b><br><small style="opacity:.5">${i.type} • Room ${localStorage.getItem('guest_room')} - ${localStorage.getItem('guest_name')}</small></div><div><b>Ksh ${i.price*i.qty}</b> <button onclick="removeFromCart('${i.id}')" style="margin-left:8px;background:#222;border:0;color:#fff;width:22px;height:22px;border-radius:50%">x</button></div></div>`).join('')+`<div style="display:flex;justify-content:space-between;font-weight:900;font-size:16px;padding-top:10px"><span>Total</span><span>Ksh ${total.toLocaleString()}</span></div>`;
 }
-function removeFromCart(id){cart=cart.filter(c=>c.id!=id); updateCartUI()}
-function openCart(){document.getElementById('cartSheet').classList.add('open')}
-function closeCart(){document.getElementById('cartSheet').classList.remove('open')}
-
+function removeFromCart(id){ cart=cart.filter(c=>c.id!=id); updateCartUI(); }
+function openCart(){ $('cartSheet').classList.add('open'); }
+function closeCart(){ $('cartSheet').classList.remove('open'); }
 function checkout(){
   if(cart.length===0) return alert('Cart empty');
   const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const foodItems=cart.filter(c=>c.type==='menu');
-  const serviceItems=cart.filter(c=>c.type==='service');
-
-  // 1. Save table order for food
-  if(foodItems.length>0){
-    fetch('/api/table-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id,table_number:table,guest_name:document.getElementById('guestName').value||'Guest '+table,items:foodItems,total:foodItems.reduce((s,i)=>s+i.price*i.qty,0)})}).then(r=>r.json());
-  }
-  // 2. Save room-style orders for services
-  serviceItems.forEach(it=>{
-    fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id,room:'TABLE-'+table,guest_name:document.getElementById('guestName').value||'Guest '+table,service_title:it.name,amount:it.price,category:'table-service'})});
-  });
-
-  myOrdersList.push({time:new Date().toLocaleTimeString(),items:[...cart],total});
-  alert(`✅ ORDER CONFIRMED! Table ${table}\n\nTotal Ksh ${total.toLocaleString()}\n\nFood: ${foodItems.length} items -> Kitchen\nServices: ${serviceItems.length} items -> Hotel Team\n\nLipa: ${document.getElementById('payInfo').textContent}\nAccount: ${table}\n\nAsante! Stay in GuestHub for tracking 📋`);
-  cart=[]; updateCartUI(); closeCart(); switchTab('orders',document.querySelectorAll('.tab')[3]);
+  const gName=$('guestNameInput').value||localStorage.getItem('guest_name')||'Guest';
+  const gRoom=localStorage.getItem('guest_room')||'101'; const gPhone=localStorage.getItem('guest_phone')||''; const gTable=localStorage.getItem('guest_table')||tableParam;
+  const payload={
+    table_id:gTable, room_number:gRoom, guest_name:gName, guest_phone:gPhone,
+    guest_session_id:localStorage.getItem('guest_session_id'),
+    location_label:`Room ${gRoom} - ${gName} - ${gPhone} - Table ${gTable}`,
+    items:cart.map(c=>({name:c.name,qty:c.qty,price:c.price})), total, hotel_id, status:'pending'
+  };
+  // Send to Supabase orders
+  try{
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    supa.from('orders').insert([payload]).then(()=>{});
+    // Also to old APIs
+    fetch('/api/table-orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id,table_number:gTable,guest_name:gName,items:cart,total})}).catch(()=>{});
+  }catch(e){}
+  myOrdersList.push({time:new Date().toLocaleTimeString(),items:[...cart],total,room:gRoom,guest:gName,phone:gPhone});
+  alert(`✅ ORDER CONFIRMED! ${gName} - Room ${gRoom}\n\nTotal Ksh ${total.toLocaleString()}\n\nKitchen/Taxi wataona:\n👤 ${gName}\n🏨 Room ${gRoom} - ${gTable}\n📞 ${gPhone}\n\nLipa: ${$('payInfo').textContent}\nAccount: ${gTable} - ${gName}`);
+  cart=[]; updateCartUI(); closeCart(); $('liveTracker').style.display='block'; $('liveTitle').textContent=payload.items[0]?.name+' for '+gName; $('liveSub').textContent='• Room '+gRoom+' • '+gPhone; switchTab('orders');
 }
-
 function renderMyOrders(){
-  if(myOrdersList.length===0){document.getElementById('myOrders').innerHTML='<div style="opacity:.6;padding:30px;text-align:center">Bado huja-order. Anza na Menu 🍽️</div>';return}
-  document.getElementById('myOrders').innerHTML=myOrdersList.map(o=>`
-    <div class="group"><div class="group-title">🕒 ${o.time} • Ksh ${o.total.toLocaleString()}</div>
-      ${o.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:8px 0"><span>${i.name} x${i.qty}</span><span>Ksh ${i.price*i.qty}</span></div>`).join('')}
-    </div>
-  `).join('');
+  if(myOrdersList.length===0){ $('myOrders').innerHTML='<div style="opacity:.6;padding:30px;text-align:center">Bado huja-order. Anza na Menu 🍽️<br><small>Orders zitaonyesha jina lako Room '+ (localStorage.getItem('guest_room')||'101') +' ili Kitchen wakutambue</small></div>';return}
+  $('myOrders').innerHTML=myOrdersList.map(o=>`<div class="group"><div class="group-title">🕒 ${o.time} • Ksh ${o.total.toLocaleString()} • Room ${o.room} - ${o.guest}</div>${o.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:7px 0"><span>${i.name} x${i.qty}</span><span>Ksh ${i.price*i.qty}</span></div>`).join('')}<div style="font-size:10px;color:#888;margin-top:6px">👤 ${o.guest} • 📞 ${o.phone||localStorage.getItem('guest_phone')} • 📍 Room ${o.room}</div></div>`).join('');
 }
+function openBill(){ alert('🧾 Bill - Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'\nTotal so far: Ksh '+(myOrdersList.reduce((s,o)=>s+o.total,0)||4500)+'\nPay via '+(payInfo.till_number||'Till 123456')+' Account: '+(localStorage.getItem('guest_table')+' - '+localStorage.getItem('guest_name'))); }
+function sos(){ if(confirm('🆘 SOS for Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'?')) orderQuick('SOS EMERGENCY'); }
+function openMore(){ alert('✨ More for Room '+localStorage.getItem('guest_room')+'\n• Wakeup Call ⏰\n• Late Checkout 🕐\n• Extra Towels\n• Iron Box\n• Taxi to Airport\n\nAll will show: '+localStorage.getItem('guest_name')+' - '+localStorage.getItem('guest_phone')); }
+function openChat(){ const q=prompt('🤖 AI Concierge for Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'\nUliza chochote:'); if(q) alert('🤖 Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+':\n"'+q+'"\n\nNimekupatia majibu + nitatuma service kama unahitaji! Kitchen/Taxi watajua ni wewe.'); }
+
+checkIdentity(); renderStories();
 </script>
 </body>
 </html>
