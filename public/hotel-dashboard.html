@@ -1,475 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GuestHub GM OS 14.1 - Ultimate Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&family=JetBrains+Mono:wght@700&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>GM Dashboard 18.0 — Professional OS + QR Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="config.js"></script>
+<script src="/config.js"></script>
 <style>
-:root{--gold:#FFD700;--lime:#c6ff00;--bg:#050507;--card:#101015;--border:#1e1e26}
-*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden;padding-bottom:90px}
-.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.96);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:'Space Grotesk';font-weight:900;font-size:19px}.logo span{color:var(--lime)}.logo small{font-size:9px;opacity:.5;margin-left:6px}
-.hotel-id{background:var(--lime);color:#000;padding:8px 14px;border-radius:999px;font-weight:900;font-size:12px;font-family:'JetBrains Mono'}
-.iconBtn{width:36px;height:36px;border-radius:10px;border:1px solid #222;background:#111;color:#fff;cursor:pointer}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;background:#0a0a0e;border-bottom:1px solid rgba(255,255,255,0.05);position:sticky;top:62px;z-index:90}
-.tabs::-webkit-scrollbar{display:none}
-.tab{white-space:nowrap;padding:11px 16px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:12px;cursor:pointer;transition:.2s}
-.tab.active{background:var(--lime);color:#000;border-color:var(--lime);box-shadow:0 0 20px rgba(198,255,0,0.3)}
-.tab.gold.active{background:var(--gold);color:#000;border-color:var(--gold)}
-.content{padding:16px;max-width:1000px;margin:auto}
-.card{background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-.card h3{font-family:'Space Grotesk';font-size:14px;font-weight:900;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-@media(max-width:800px){.grid2,.grid3{grid-template-columns:1fr}}
-.stat{background:#0e0e14;border:1px solid #1e1e26;border-radius:18px;padding:16px;text-align:center}
-.stat b{font-size:24px;font-weight:900;display:block;color:var(--lime);font-family:'Space Grotesk'}.stat small{opacity:.5;font-size:10px;font-weight:800;letter-spacing:1px}
-input,select,textarea{width:100%;background:#111114;border:1px solid #22222a;border-radius:12px;padding:13px;color:#fff;font-size:13px;margin:6px 0;outline:none}
-input:focus{border-color:var(--lime)}
-.btn{width:100%;background:var(--lime);color:#000;border:0;padding:13px;border-radius:12px;font-weight:900;font-size:13px;cursor:pointer;margin-top:8px}
-.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#1d1d1d;color:#fff;border:1px solid #333}.btn-outline{background:transparent;border:1px solid #2a2a34;color:#fff}.btn-red{background:#3a1111;color:#ff6666;border:1px solid #552}
-.list-item{background:#0e0e12;border:1px solid #1a1a22;border-radius:14px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:10px}
-.badge{padding:4px 10px;border-radius:999px;font-size:10px;font-weight:900}
-.badge-new{background:var(--lime);color:#000}.badge-paid{background:#00ff88;color:#000}.badge-progress{background:#062d17;color:#35df78}.badge-overdue{background:#351010;color:#ff6666}
-.section{display:none}.section.active{display:block}
-.qr-box{background:#fff;padding:10px;border-radius:14px;display:inline-block;margin:6px}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:900;font-size:11px;z-index:999;transition:.3s}.toast.show{transform:translateX(-50%) translateY(0)}
-.empty{text-align:center;color:#777;padding:26px 15px;font-size:12px;border:2px dashed #222;border-radius:14px}
-.progress{height:7px;background:#222;border-radius:999px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:var(--lime)}
-.wallet{background:linear-gradient(135deg,var(--lime),#fbbf24);color:#000;border-radius:20px;padding:18px;margin-bottom:12px}.walletValue{font-family:'Space Grotesk';font-size:30px;margin:3px 0}
-.ding{animation:shake.4s}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-.qr-card{background:#fff;color:#000;border-radius:16px;padding:12px;text-align:center;margin:8px 0}
+:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--bg:#050505;--card:#101010;--border:#242424;--white:#fff;--shadow:0 12px 35px rgba(0,0,0,.35)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(198,255,0,.07),transparent 25%),var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh;padding-bottom:80px}
+.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(198,255,0,.45);padding:12px}
+.header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--lime);color:#000;font-weight:900}
+.brand-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.brand-title span{color:var(--lime)}.brand-sub{color:#777;font-size:9px}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-sm{padding:7px 10px;font-size:10px}
+.dashboard{padding:14px 12px;max-width:1500px;margin:auto}.hero{border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:20px;margin-bottom:14px}
+.hero h1{margin:0;font-family:Space Grotesk;font-size:clamp(23px,5vw,38px)}.hero h1 span{color:var(--lime)}.hero p{margin:7px 0 0;color:#999;font-size:12px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 10px;border-radius:999px;font-size:9px;font-weight:900}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px}.stat b{display:block;font-family:Space Grotesk;font-size:22px}.stat small{color:#777;font-size:9px;font-weight:900}
+.tabs-wrap{position:sticky;top:66px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto}.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.tab.active{background:var(--lime);color:#000}
+.view{padding:14px 12px;max-width:1500px;margin:auto}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:10px}.card-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.card-sub{color:#777;font-size:10px;margin-top:4px}
+.input,.select,textarea{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px}
+.badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900}.badge-green{background:#0a2914;color:#4ade80}.badge-yellow{background:#352200;color:#fbbf24}.badge-blue{background:#092536;color:#67e8f9}
+.qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;margin:15px auto}.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}.qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
+.hidden{display:none!important}.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.qr-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="logo">GUEST<span>HUB</span> OS <small>ULTIMATE 14.1</small> <span id="demoBadge" style="display:none;background:var(--gold);color:#000;padding:3px 8px;border-radius:999px;font-size:9px;margin-left:6px">DEMO MODE • LIVE</span></div>
-  <div style="display:flex;gap:6px;align-items:center">
-    <div class="hotel-id" id="hotelIdDisplay">LOADING</div>
-    <button class="iconBtn" onclick="generateQRPDFUltimate()" title="Print All">🖨️</button>
-    <button class="iconBtn" onclick="testDing()">🔔</button>
-    <button class="iconBtn" onclick="refreshAll()">↻</button>
-    <button class="iconBtn" onclick="logout()">⎋</button>
-  </div>
-</div>
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('dash',this)">📊 DASH</div>
-  <div class="tab" onclick="switchTab('menu',this)">🍽️ MENU & PAY</div>
-  <div class="tab" onclick="switchTab('services',this)">🏨 SERVICES</div>
-  <div class="tab" onclick="switchTab('vendors',this)">🚕 VENDORS</div>
-  <div class="tab" onclick="switchTab('orders',this)">📋 ROOM ORDERS <span id="orderCount" style="background:#000;color:var(--lime);padding:2px 6px;border-radius:999px;margin-left:4px">0</span></div>
-  <div class="tab" onclick="switchTab('tables',this)">🍽️ TABLE ORDERS</div>
-  <div class="tab gold active" onclick="switchTab('vendorBilling',this)">💰 MY 15%</div>
-  <div class="tab" onclick="switchTab('qr',this)">📱 QR ROOMS/TABLES</div>
-  <div class="tab" onclick="switchTab('whatsapp',this)">💬 WHATSAPP</div>
-  <div class="tab" onclick="switchTab('profile',this)">⚙️ PROFILE</div>
-  <div class="tab" onclick="switchTab('reports',this)">💰 REPORTS</div>
-</div>
-<div class="content">
-  <div id="onboarding" class="card" style="display:none;border-color:var(--gold);background:linear-gradient(145deg,#1a180a,#121214)">
-    <h2 style="font-family:Space Grotesk;font-size:20px">Karibu GM! Onboard in 30sec ⚡</h2>
-    <p style="opacity:.6;margin-top:6px;font-size:12px">Dashboard empty? Anza hapa - hii ndio scale hack!</p>
-    <div class="grid3" style="margin-top:14px">
-      <div class="card"><b>1. Add Menu 30sec</b><p style="font-size:11px;opacity:.5;margin-top:4px">Pilau, Chapati, Soda</p><button class="btn btn-gold" style="margin-top:10px" onclick="switchTab('menu',document.querySelectorAll('.tab')[1])">Add Now →</button></div>
-      <div class="card"><b>2. Print QR PDF</b><p style="font-size:11px;opacity:.5;margin-top:4px">110 Rooms + 20 Tables auto</p><button class="btn" style="margin-top:10px" onclick="generateQRPDFUltimate()">Print PDF →</button></div>
-      <div class="card"><b>3. Test Guest Order</b><p style="font-size:11px;opacity:.5;margin-top:4px">Scan Room 101 ujione LIVE</p><a id="guestTestLink" href="/guest.html?hotel=BAOBAB&room=101" target="_blank" class="btn btn-dark" style="display:block;text-align:center;margin-top:10px">Open Guest App →</a></div>
-    </div>
-  </div>
-  <div class="section active" id="sec-dash">
-    <div class="card" style="background:linear-gradient(135deg,rgba(198,255,0,.11),rgba(251,191,36,.06)),#111"><div style="display:flex;justify-content:space-between"><div><small>WELCOME TO YOUR COMMAND CENTER</small><h1 id="heroHotel" style="font-family:Space Grotesk;font-size:22px;margin:4px 0">Loading...</h1><small id="heroLocation">Hotel operations • Ultimate 14.1 • Rooms + Tables + Services Integrated</small></div><span class="badge badge-new" id="hotelStatus">SECURE</span></div><div style="margin-top:12px"><small>Guest Experience Engine</small><div class="progress"><span id="experienceProgress"></span></div></div></div>
-    <div class="grid3"><div class="stat"><b id="statRevenue">Ksh 0</b><small>TODAY REVENUE</small></div><div class="stat"><b id="statOrders">0</b><small>ROOM ORDERS</small></div><div class="stat"><b id="statTables">0</b><small>TABLE ORDERS</small></div></div>
-    <div class="grid2" style="margin-top:12px"><div class="stat"><b id="vendorEarnDash" style="color:var(--gold)">Ksh 0</b><small>YOUR 15% EARNINGS</small></div><div class="stat"><b id="statGuests">0</b><small>ACTIVE GUESTS</small></div></div>
-    <div class="card"><h3>🔴 LIVE ACTIVITY - All Guest Services <button class="btn btn-dark" style="width:auto;padding:6px 10px;font-size:10px" onclick="refreshAll()">Refresh</button></h3><div id="liveFeed">Loading...</div></div>
-  </div>
-  <div class="section" id="sec-menu">
-    <div class="card"><h3>💳 M-PESA PAYMENT (GM) - Till Direct</h3><input id="paybill" placeholder="Paybill e.g. 522522"><input id="till" placeholder="Till e.g. 123456 (Buy Goods)"><input id="mName" placeholder="M-Pesa Name e.g. BAOBAB HOTEL"><button class="btn btn-gold" onclick="savePay()">💾 SAVE PAYBILL / TILL</button><small style="opacity:.5;display:block;margin-top:8px">Pesa ya Food inaingia DIRECT kwa hotel. Wewe unalipa GuestHub subscription monthly.</small></div>
-    <div class="card" style="border-color:var(--gold)"><h3>⚡ Add Menu Item in 30sec</h3><input id="itemName" placeholder="Name e.g. Pilau Beef"><div class="grid2"><input id="itemPrice" type="number" placeholder="Price Ksh 650"><input id="itemCat" placeholder="Category: Food, Drinks"><input id="itemDesc" placeholder="Description" style="grid-column:span 2"></div><button class="btn btn-gold" onclick="addItem()">+ Add Item Now</button></div>
-    <div id="menuList"></div>
-  </div>
-  <div class="section" id="sec-services">
-    <div class="card"><h3>➕ ADD HOTEL SERVICE (Guest App Integrated - 15% yako)</h3><input id="svcTitle" placeholder="e.g. Taxi / Uber"><input id="svcDesc" placeholder="e.g. Airport Transfer"><div class="grid2"><input id="svcPrice" type="number" placeholder="Price Ksh"><input id="svcIcon" placeholder="Icon e.g. 🚕"></div><select id="svcCat"><option>Transport</option><option>Tours</option><option>Wellness</option><option>Media</option><option>RoomService</option><option>Concierge</option></select><button class="btn" onclick="addService()">Add Service</button></div>
-    <div id="svcList"></div>
-  </div>
-  <div class="section" id="sec-vendors"><div class="card"><h3>👥 VENDORS & DRIVERS <span class="badge badge-progress" id="activeVendors">0</span></h3><div id="vendorList">Loading...</div></div></div>
-  <div class="section" id="sec-orders"><div class="card"><h3>🏨 ROOM ORDERS LIVE</h3><div id="orderList"></div></div></div>
-  <div class="section" id="sec-tables"><div class="card"><h3>🍽️ TABLE ORDERS LIVE</h3><div id="tableOrderList"></div></div></div>
-  <div class="section" id="sec-vendorBilling">
-    <div class="wallet"><div style="font-size:9px;font-weight:900;opacity:.65">💰 VENDOR COMMISSION OWED TO YOU - YOUR 15% ATM</div><div class="walletValue" id="totalOwed">Ksh 0</div><small id="totalVendors">0 Vendors • Till Direct</small></div>
-    <div class="grid3"><div class="card"><small>TAXI COMMISSION</small><h3 style="color:var(--lime)" id="taxiComm">Ksh 0</h3></div><div class="card"><small>SPA COMMISSION</small><h3 style="color:var(--lime)" id="spaComm">Ksh 0</h3></div><div class="card"><small>TOTAL THIS WEEK</small><h3 style="color:var(--gold)" id="weekTotal">Ksh 18,450</h3><button class="btn" style="margin-top:8px" onclick="downloadBilling()">Download Billing PDF</button></div></div>
-    <div class="card"><h3>📅 GENERATE WEEKLY INVOICES</h3><div class="grid2"><input type="date" id="weekStart"><input type="date" id="weekEnd"></div><div class="grid2"><button class="btn btn-gold" onclick="generateInvoices()">🔥 GENERATE INVOICES</button><button class="btn btn-outline" onclick="loadVendorBilling()">Refresh</button></div></div>
-    <div class="card"><h3>🚕 WHO OWES WHAT?</h3><div id="vendorsBillingList">Loading...</div></div>
-    <div class="card"><h3>💳 MARK PAID</h3><input id="vendorPhonePaid" placeholder="Vendor Phone"><input id="mpesaCode" placeholder="M-Pesa Code"><input id="amountPaid" type="number" placeholder="Amount Paid"><button class="btn" onclick="markPaid()">✅ MARK PAID + ACTIVATE</button></div>
-    <div class="card"><h3>📱 SMS - Copy to WhatsApp Group</h3><div id="smsTemplate" style="background:#111114;border:1px dashed #2a2a34;border-radius:10px;padding:12px;font-size:11px;white-space:pre-wrap">Generate invoices kwanza</div><button class="btn btn-outline" onclick="copySMS()">Copy SMS</button></div>
-  </div>
-  <div class="section" id="sec-qr">
-    <div class="card" style="border-color:var(--lime)">
-      <h3>📱 ROOM & TABLE QRs - Ultimate 14.1 Pro Generator</h3>
-      <p style="opacity:.6;font-size:12px">110 Rooms (101-210) + 20 Tables (T01-T20) • Branded cards with Room number BIG • Print & Stick • Best Experience Platform</p>
-      <div class="grid2" style="margin-top:14px">
-        <div class="card" style="background:#111114;border:1px solid #222">
-          <b style="color:var(--lime)">🏨 ROOM QR GENERATOR</b>
-          <p style="font-size:10px;opacity:.5;margin-top:4px">Each QR = guest.html?hotel=BAOBAB&room=101 (auto fills room)</p>
-          <div class="grid2" style="margin-top:8px"><div><label style="font-size:10px">From</label><input id="roomFrom" value="101"></div><div><label style="font-size:10px">To</label><input id="roomTo" value="120"></div></div>
-          <div style="margin-top:6px"><label style="font-size:10px">Hotel ID</label><input id="hotelPrefix" value="BAOBAB"></div>
-          <button class="btn btn-gold" onclick="genRoomQRAdvanced()" style="margin-top:8px">🏨 Generate Room Cards PDF + Preview</button>
-        </div>
-        <div class="card" style="background:#111114;border:1px solid #222">
-          <b style="color:var(--gold)">🍽️ TABLE QR GENERATOR</b>
-          <p style="font-size:10px;opacity:.5;margin-top:4px">Each QR = menu.html?hotel=BAOBAB&table=T05 (auto fills table)</p>
-          <div class="grid2" style="margin-top:8px"><div><label style="font-size:10px">From</label><input id="tableFrom" value="T01"></div><div><label style="font-size:10px">To</label><input id="tableTo" value="T20"></div></div>
-          <div style="margin-top:6px"><label style="font-size:10px">Hotel ID</label><input id="tableHotel" value="BAOBAB"></div>
-          <button class="btn" onclick="genTableQRAdvanced()" style="margin-top:8px">🍽️ Generate Table Cards PDF + Preview</button>
-        </div>
-      </div>
-      <div class="grid2" style="margin-top:12px">
-        <button class="btn btn-gold" onclick="generateQRPDFUltimate()">🖨️ BULK PDF - 110 Rooms + 20 Tables (All 130 QRs)</button>
-        <button class="btn btn-dark" onclick="renderQRPreview()">👁️ Preview 6 Rooms Live</button>
-      </div>
-      <div id="roomQRs" style="margin-top:14px"></div>
-      <div id="qrPreview" class="grid3" style="margin-top:12px"></div>
-      <div id="tableQRs" style="margin-top:14px"></div>
-    </div>
-    <div class="card"><h3>🎨 How QR Works - Best Experience for All 4 Sides</h3><p style="font-size:11px;opacity:.7;line-height:1.6"><b style="color:var(--lime)">Guest:</b> Scans QR on door → Guest App auto fills Room 101 → Chooses Food/Taxi/Spa → Pays M-Pesa Till direct → Order appears LIVE in ROOM ORDERS tab with ding<br><br><b style="color:var(--gold)">GM Role:</b> Print QR PDFs once, stick in rooms. No menu books. All orders tracked. You get 15% from taxi/tours/spa, 100% food to hotel till.<br><br><b>Vendor:</b> Gets order on vendor-dashboard → Accept → Deliver<br><b>Owner (You):</b> See all revenue + 15% ATM in Reports</p></div>
-  </div>
-  <div class="section" id="sec-whatsapp"><div class="card"><h3>💬 WhatsApp Routing</h3><label>🍽 Kitchen</label><input id="wa_k" placeholder="2547XXXXXXXX"><label>🧹 Housekeeping</label><input id="wa_h" placeholder="2547XXXXXXXX"><label>🧺 Laundry</label><input id="wa_l" placeholder="2547XXXXXXXX"><label>🧖 Spa</label><input id="wa_s" placeholder="2547XXXXXXXX"><label>🚕 Taxi</label><input id="wa_t" placeholder="2547XXXXXXXX"><label>🛎 Front Desk</label><input id="wa_f" placeholder="2547XXXXXXXX"><button class="btn" onclick="saveWhatsApp()">💾 Save Routing</button></div></div>
-  <div class="section" id="sec-profile"><div class="card"><h3>⚙️ Hotel Profile</h3><label>Hotel name</label><input id="profileName"><label>Location</label><input id="profileLocation"><label>Phone</label><input id="profilePhone"><label>Email</label><input id="profileEmail" disabled><label>Plan</label><input id="profilePlan" disabled><button class="btn btn-gold" onclick="saveHotelProfile()">💾 Save Profile</button></div><div class="card"><h3>Demo Mode Control</h3><p style="font-size:11px;opacity:.6">Demo uses?demo=1 param. Safe for investors. Real mode needs hotel_token.</p><div class="grid2"><button class="btn btn-outline" onclick="location.href=location.pathname+'?hotel='+hotel_id_param+'&demo=1'">Switch to DEMO</button><button class="btn btn-dark" onclick="location.href=location.pathname+'?hotel='+hotel_id_param">Switch to REAL</button></div></div><div class="card"><button class="btn btn-red" onclick="logout()">Logout</button></div></div>
-  <div class="section" id="sec-reports"><div class="card"><h3>💰 Revenue Intelligence</h3><div class="grid2"><div><small>Commission 15%</small><h2 id="commissionTotal">Ksh 0</h2></div><div><small>Hotel Net</small><h2 id="hotelNet">Ksh 0</h2></div></div><div id="reportData" style="margin-top:12px"></div><button class="btn btn-outline" onclick="refreshAll()">Refresh</button></div></div>
-</div>
+<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 18.0</span></div><div class="brand-sub" id="hotelSub">BAOBAB • QR GENERATOR</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button></div></div></header>
+<main>
+<section class="dashboard"><div class="hero"><h1>Welcome <span id="hotelNameHero">Baobab</span> — Empire Control.</h1><p>Add Food, Services, Setup WhatsApp per Department, Generate Room & Table QRs — Guest scan, jina linaonekana Kitchen + WhatsApp auto!</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">GM OS 18.0 • CONNECTED</span></div></div>
+<div class="stats"><div class="stat"><b id="s_orders">0</b><small>LIVE ORDERS</small></div><div class="stat"><b id="s_menu">0</b><small>MENU ITEMS</small></div><div class="stat"><b id="s_services">0</b><small>SERVICES</small></div><div class="stat"><b id="s_depts">0</b><small>WHATSAPP DEPTS</small></div><div class="stat"><b id="s_rev">Ksh 0</b><small>TODAY REVENUE</small></div></div></section>
+<div class="tabs-wrap"><div class="tabs">
+<button class="tab active" onclick="switchTab('orders',this)">🔔 Orders <span id="c_orders">0</span></button>
+<button class="tab" onclick="switchTab('menu',this)">🍽️ Menu</button>
+<button class="tab" onclick="switchTab('services',this)">🛎️ Services</button>
+<button class="tab" onclick="switchTab('whatsapp',this)">📱 WhatsApp Depts</button>
+<button class="tab" onclick="switchTab('qr',this)">🔳 Room & Table QRs</button>
+<button class="tab" onclick="switchTab('finance',this)">💸 Finance</button>
+</div></div>
+<section id="view-orders" class="view"></section>
+<section id="view-menu" class="view hidden"></section>
+<section id="view-services" class="view hidden"></section>
+<section id="view-whatsapp" class="view hidden"></section>
+<section id="view-qr" class="view hidden"></section>
+<section id="view-finance" class="view hidden"></section>
+</main>
 <div id="toast" class="toast"></div>
-<audio id="dingSound" src="https://assets.mixkit.co/sfx/preview/mixkit-modern-click-box-check-1120.mp3" preload="auto"></audio>
 <script>
-const supa = window.supabase? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-let currentHotel=null, ordersCache=[], servicesCache=[], tableCache=[];
-let isDemo = new URLSearchParams(location.search).get('demo')==='1';
-const hotel_id_param=new URLSearchParams(location.search).get('hotel')||localStorage.getItem('hotel_id')||'BAOBAB';
-function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
+const params=new URLSearchParams(location.search);
+const HOTEL_ID=(params.get('hotel')||'BAOBAB').toUpperCase();
+document.getElementById('hotelSub').innerText=HOTEL_ID+' • PROFESSIONAL OS • QR GENERATOR';
+document.getElementById('hotelNameHero').innerText=HOTEL_ID;
+const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let MENU=[],SERVICES=[],ORDERS=[],DEPTS=[],currentTab='orders';
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function toast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
-function getToken(){return localStorage.getItem('hotel_token')||localStorage.getItem('admin_token')||''}
-async function secureFetch(url,opts={}){
-  if(isDemo){ return {ok:true, json:async()=>({ok:true, mock:true, hotel_id:hotel_id_param, orders:[], services:[], table_orders:[]})}; }
-  const token=getToken(); if(!token){ location.href='/hotel-login.html'; throw new Error('No token'); }
-  opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token;
-  if(opts.body &&!(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json';
-  opts.headers['x-hotel-id']=hotel_id_param;
-  const r=await fetch(url,opts);
-  if(r.status===401||r.status===403){ localStorage.removeItem('hotel_token'); location.href='/hotel-login.html'; throw new Error('Unauthorized'); }
-  return r;
-}
-document.getElementById('hotelIdDisplay').textContent=hotel_id_param;
-document.getElementById('guestTestLink').href='/guest.html?hotel='+hotel_id_param+'&room=101';
-document.getElementById('weekStart').value=new Date(Date.now()-7*24*60*60*1000).toISOString().slice(0,10);
-document.getElementById('weekEnd').value=new Date().toISOString().slice(0,10);
-if(isDemo){ document.getElementById('demoBadge').style.display='inline-block'; }
-function playDing(){const a=document.getElementById('dingSound'); if(a){a.currentTime=0;a.play().catch(()=>{});} document.body.classList.add('ding'); setTimeout(()=>document.body.classList.remove('ding'),400); if("vibrate" in navigator) navigator.vibrate(200);}
-function testDing(){ playDing(); addFakeOrder(); }
-function addFakeOrder(){
-  const id=Math.floor(Math.random()*900)+100;
-  const rooms=['101','102','105','202','303','T05','T12']; const room=rooms[Math.floor(Math.random()*rooms.length)];
-  const services=['Pilau Beef Ksh 650','Taxi Airport Ksh 2500','Spa 60min Ksh 3500','Nyama Choma Ksh 1800','Tour Fort Jesus Ksh 5000'];
-  const svc=services[Math.floor(Math.random()*services.length)];
-  const html=`<div class="list-item" style="border-color:var(--lime);background:#15150a"><div><b>🔔 NEW ORDER #${id}</b> - ${room.startsWith('T')?'Table '+room:'Room '+room}<br><small>${svc} • ${new Date().toLocaleTimeString()}</small></div><div><b>Ksh ${svc.split('Ksh ')[1]||'650'}</b><br><button class="btn btn-dark" style="padding:6px 8px;font-size:10px">Accept →</button></div></div>`;
-  const list=document.getElementById('orderList'); if(list) list.innerHTML=html+list.innerHTML;
-  const feed=document.getElementById('liveFeed'); if(feed) feed.innerHTML=html+feed.innerHTML;
-  const c=document.getElementById('orderCount'); if(c) c.innerText=parseInt(c.innerText||0)+1;
-  playDing();
-}
-function switchTab(name,el){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.getElementById('sec-'+name).classList.add('active');
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(el) el.classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(name==='dash') refreshAll();
-  if(name==='menu') loadMenu();
-  if(name==='services') loadServices();
-  if(name==='vendors') loadVendors();
-  if(name==='orders') loadOrders();
-  if(name==='tables') loadTableOrders();
-  if(name==='vendorBilling') loadVendorBilling();
-  if(name==='qr') renderQRPreview();
-  if(name==='reports') refreshAll();
-}
-async function init(){
- if(isDemo){
-   currentHotel={id:hotel_id_param, hotel_id:hotel_id_param, name:'Baobab Beach Resort (DEMO)', location:'Diani', city:'Diani', status:'DEMO', email:'demo@guesthub.ke', plan:'GROWTH DEMO'};
-   renderHotelProfile(); renderDash(); checkOnboarding();
-   setInterval(()=>{ if(Math.random()>0.7) addFakeOrder(); },15000);
-   toast('DEMO MODE - No login needed ✅ - All guest activities simulated');
-   return;
- }
- const token=getToken(); if(!token){ location.href='/hotel-login.html'; return; }
- try{
-  const meRes=await secureFetch('/api/auth/me'); const meData=await meRes.json();
-  if(!meData.ok) throw new Error('Auth failed');
-  currentHotel=meData.hotel||meData.user;
-  await refreshAll(); renderHotelProfile(); loadWhatsApp(); startRealtime(); checkOnboarding();
- }catch(e){ console.error(e); toast('Session expired'); setTimeout(()=>location.href='/hotel-login.html',1000); }
-}
-async function refreshAll(){
- if(isDemo){ renderDash(); return; }
- try{
-  toast('Refreshing...');
-  const r=await secureFetch('/api/gm/dashboard'); const d=await r.json();
-  if(!d.ok) throw new Error('Dashboard failed');
-  currentHotel=d.hotel||currentHotel;
-  ordersCache=d.orders||[]; servicesCache=d.services||d.items||[]; tableCache=d.table_orders||[];
-  document.getElementById('hotelIdDisplay').innerText=currentHotel.id||currentHotel.hotel_id||hotel_id_param;
-  document.getElementById('heroHotel').innerText=currentHotel.name||currentHotel.hotel_name||'Hotel';
-  document.getElementById('heroLocation').innerText=(currentHotel.location||currentHotel.city||'Kenya')+' • SECURED 14.1 ULTIMATE - Integrated';
-  document.getElementById('hotelStatus').innerText='SECURED • '+(currentHotel.status||'APPROVED');
-  renderDash(); loadVendors(); loadVendorBilling(); checkOnboarding();
-  toast('Updated');
- }catch(e){ console.error(e); toast('Dashboard error - trying legacy'); legacyDash(); }
-}
-function renderDash(){
-  const all=[...ordersCache,...tableCache];
-  const rev=all.reduce((s,o)=>s+(parseFloat(o.total||o.amount||0)),0);
-  const todayRev=all.filter(o=>{ if(!o.created_at) return false; const d=new Date(o.created_at); const n=new Date(); return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth(); }).reduce((s,o)=>s+(parseFloat(o.total||o.amount||0)),0);
-  document.getElementById('statRevenue').textContent=money(todayRev);
-  document.getElementById('statOrders').textContent=ordersCache.length;
-  document.getElementById('statTables').textContent=tableCache.length;
-  document.getElementById('statGuests').textContent=new Set(all.map(o=>o.room||o.table_number)).size;
-  document.getElementById('vendorEarnDash').textContent=money(Math.floor(rev*0.15));
-  document.getElementById('liveFeed').innerHTML=all.slice(0,6).map(o=>`<div class="list-item"><span>${o.room?'🛏️ Room '+esc(o.room):'🍽️ Table '+esc(o.table_number||'')} • ${esc(o.service_title||o.items?.[0]?.name||'Order')}</span><span class="badge badge-new">${money(o.total||o.amount)}</span></div>`).join('')||'<div class="empty">No activity yet - QR orders will appear LIVE 🔔<br><button class="btn btn-dark" style="margin-top:8px;width:auto" onclick="testDing()">Test Ding Sound</button></div>';
-  const total=rev; const comm=Math.floor(total*0.15); const net=total-comm;
-  document.getElementById('commissionTotal').textContent=money(comm);
-  document.getElementById('hotelNet').textContent=money(net);
-  document.getElementById('reportData').innerHTML=`<div class="list-item"><span>Gross GMV (Rooms+Tables+Services)</span><b>${money(total)}</b></div><div class="list-item"><span>GuestHub 15% - Your Earnings</span><b style="color:#fbbf24">${money(comm)}</b></div><div class="list-item"><span>Hotel Net</span><b style="color:var(--lime)">${money(net)}</b></div>`;
-  const completed=ordersCache.filter(o=>['completed','complete','delivered'].includes(String(o.status||'').toLowerCase())).length;
-  document.getElementById('experienceProgress').style.width=(ordersCache.length?Math.round((completed/ordersCache.length)*100):0)+'%';
-}
-async function legacyDash(){
-  try{
-    const hotel_id=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
-    const [o,t]=await Promise.all([fetch(`/api/orders?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({data:[]})), fetch(`/api/table-orders?hotel_id=${hotel_id}`).then(r=>r.json()).catch(()=>({data:[]}))]);
-    ordersCache=o.data||o||[]; tableCache=t.data||t||[]; renderDash();
-  }catch(e){}
-}
-function checkOnboarding(){
-  const hasMenu = document.getElementById('menuList')?.children.length>0;
-  if(ordersCache.length===0 &&!hasMenu || isDemo){
-    document.getElementById('onboarding').style.display='block';
-  } else {
-    document.getElementById('onboarding').style.display='none';
-  }
-}
-async function savePay(){
- const payload={hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param, paybill_number:document.getElementById('paybill').value, till_number:document.getElementById('till').value, m_pesa_name:document.getElementById('mName').value};
- try{ const r=await secureFetch('/api/menu/settings',{method:'POST',body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Paybill Saved! ✅'); }
- catch(e){ fetch('/api/menu/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel_id_param,...payload})}).then(r=>r.json()).then(d=>toast(d.ok?'Saved ✅':'Failed'))}
-}
-async function addItem(){
- const payload={hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param,name:document.getElementById('itemName').value,price:document.getElementById('itemPrice').value,description:document.getElementById('itemDesc').value,category:document.getElementById('itemCat').value||'Food'};
- if(!payload.name||!payload.price) return toast('Weka Name na Price!');
- try{ const r=await secureFetch('/api/menu/items',{method:'POST',body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Added!'); loadMenu(); }
- catch(e){ fetch('/api/menu/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel_id_param,...payload})}).then(()=>{toast('Added!');loadMenu()})}
- document.getElementById('itemName').value='';document.getElementById('itemPrice').value='';document.getElementById('itemDesc').value='';
- playDing(); checkOnboarding();
-}
-async function loadMenu(){
- try{
-  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
-  let d; try{ const r=await secureFetch(`/api/gm/menu?hotel_id=${hotel}`); d=await r.json(); }catch{ d=await fetch(`/api/menu?hotel_id=${hotel}`).then(r=>r.json()); }
-  if(d.menus?.[0]){document.getElementById('paybill').value=d.menus[0].paybill_number||'';document.getElementById('till').value=d.menus[0].till_number||'';document.getElementById('mName').value=d.menus[0].m_pesa_name||''}
-  document.getElementById('menuList').innerHTML=(d.items||[]).map(i=>`<div class="list-item"><span><b>${esc(i.name)}</b> • ${money(i.price)} (${esc(i.category)})</span><button onclick="delItem('${i.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No menu items - Add your first in 30sec ⚡</div>';
-  checkOnboarding();
- }catch(e){ document.getElementById('menuList').innerHTML='<div class="empty">No menu</div>'; }
-}
-async function delItem(id){ try{ await secureFetch(`/api/menu/items/${id}`,{method:'DELETE'}); }catch{ await fetch(`/api/menu/items/${id}`,{method:'DELETE'});} loadMenu(); }
-async function addService(){
- try{
-  const r=await secureFetch('/api/admin/services',{method:'POST',body:JSON.stringify({hotel_id:currentHotel?.id||currentHotel?.hotel_id||hotel_id_param,title:document.getElementById('svcTitle').value,description:document.getElementById('svcDesc').value,price:document.getElementById('svcPrice').value,category:document.getElementById('svcCat').value,icon:document.getElementById('svcIcon').value,active:true})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Service Added! Guest will see it ✅'); loadServices();
- }catch(e){ toast(e.message); }
-}
-async function loadServices(){
- try{
-  const r=await secureFetch('/api/gm/services'); const d=await r.json(); servicesCache=d.services||[]; document.getElementById('svcList').innerHTML=servicesCache.map(s=>`<div class="list-item"><span>${esc(s.icon||'🏨')} <b>${esc(s.title)}</b> - ${money(s.price)} (${esc(s.category)})</span><button onclick="delSvc('${s.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No services - Add Taxi, Tours, Spa - 15% yako</div>';
- }catch(e){ const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param; const d=await fetch(`/api/services?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); document.getElementById('svcList').innerHTML=(d.data||[]).map(s=>`<div class="list-item"><span>${esc(s.icon||'🏨')} <b>${esc(s.title)}</b> - ${money(s.price)}</span><button onclick="delSvc('${s.id}')" class="btn btn-red" style="width:auto;padding:6px 10px">X</button></div>`).join('')||'<div class="empty">No services</div>'; }
-}
-async function delSvc(id){ try{ const r=await secureFetch('/api/admin/services/'+id,{method:'DELETE'}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Removed'); loadServices(); }catch(e){ toast(e.message); }}
-async function loadOrders(){
- if(isDemo){ document.getElementById('orderList').innerHTML='<div class="empty">DEMO MODE - Room orders LIVE hapa. Guest scan Room QR → Order hapa na ding 🔔<br><button class="btn btn-dark" style="margin-top:8px;width:auto" onclick="testDing()">Simulate Guest Order</button></div>'; return; }
- try{ const r=await secureFetch('/api/gm/orders'); const d=await r.json(); ordersCache=d.orders||[]; renderOrders(); }
- catch(e){ const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param; const d=await fetch(`/api/orders?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); ordersCache=d.data||d||[]; renderOrders(); }
-}
-function renderOrders(){
- const list=document.getElementById('orderList');
- if(!ordersCache.length){ list.innerHTML='<div class="empty">No room orders yet - Scan Room QR to test. All guest activities integrated here.</div>'; return; }
- list.innerHTML=ordersCache.slice(0,30).map(o=>{
-  const status=String(o.status||'new').toLowerCase();
-  return `<div class="list-item"><div><b>Room ${esc(o.room||'—')}</b> - ${esc(o.service_title||'Order')} - ${esc(o.guest_name||'Guest')}<br><small>${o.created_at?new Date(o.created_at).toLocaleString():''}</small></div><div style="text-align:right"><b>${money(o.amount||o.total)}</b><br><span class="badge badge-new">${esc(status)}</span><br><div style="margin-top:6px;display:flex;gap:4px"><button class="btn btn-dark" style="padding:6px 8px;font-size:10px" onclick="updateOrder('${o.id}','completed')">✓ Done</button><button class="btn btn-dark" style="padding:6px 8px;font-size:10px" onclick="sendOrderWA('${o.id}')">💬</button></div></div></div>`;
- }).join('');
-}
-async function updateOrder(id,status){
- try{ const r=await secureFetch('/api/orders/'+id+'/status',{method:'PATCH',body:JSON.stringify({status})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Order '+status); loadOrders(); playDing(); }catch(e){ if(supa){const {error}=await supa.from('orders').update({status}).eq('id',id); if(error) toast(error.message); else {toast('Updated'); loadOrders();}} }
-}
-async function loadTableOrders(){
- if(isDemo){ document.getElementById('tableOrderList').innerHTML='<div class="empty">DEMO MODE - Table orders LIVE hapa. Guest scan Table QR → Order hapa</div>'; return; }
- try{ const r=await secureFetch('/api/gm/table-orders'); const d=await r.json(); tableCache=d.table_orders||d.data||[]; renderTableOrders(); }
- catch{ const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param; const d=await fetch(`/api/table-orders?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({data:[]})); tableCache=d.data||d||[]; renderTableOrders(); }
-}
-function renderTableOrders(){
- const list=document.getElementById('tableOrderList');
- if(!tableCache.length){ list.innerHTML='<div class="empty">No table orders - Restaurant QR scan will appear here</div>'; return; }
- list.innerHTML=tableCache.slice(0,30).map(o=>`<div class="list-item"><div><b>Table ${esc(o.table_number||'—')}</b> - ${o.items?.length||1} items<br><small>${esc(o.guest_name||'Guest')} • ${o.created_at?new Date(o.created_at).toLocaleString():''}</small></div><div style="text-align:right"><b>${money(o.total)}</b><br><span class="badge badge-new">${esc(o.status||'new')}</span></div></div>`).join('');
-}
-async function loadVendors(){
- const list=document.getElementById('vendorList');
- try{
-  if(!supa) throw new Error('No supabase');
-  const {data,error}=await supa.from('vendors').select('*').eq('status','approved').limit(50);
-  if(error) throw error;
-  const city=String(currentHotel?.city||currentHotel?.location||'').toLowerCase();
-  const relevant=(data||[]).filter(v=>!city||String(v.city||'').toLowerCase().includes(city));
-  document.getElementById('activeVendors').innerText=relevant.length;
-  if(!relevant.length){ list.innerHTML='<div class="empty">No approved vendors nearby - Vendors wanajisajili via vendor-dashboard</div>'; return; }
-  list.innerHTML=relevant.map(v=>`<div class="list-item"><div><b>${esc(v.full_name)}</b><br><small>${esc(v.city||'')} • ${(v.services||[]).slice(0,3).map(esc).join(', ')}</small></div><button class="btn btn-dark" style="width:auto;padding:8px 10px" onclick="window.open('https://wa.me/'+String(v.phone||'').replace(/\\D/g,''),'_blank')">💬</button></div>`).join('');
- }catch(e){ list.innerHTML=isDemo?'<div class="list-item"><div><b>John Taxi Diani</b><br><small>Diani • Airport Transfer • 15% yako Ksh 375</small></div><span class="badge badge-progress">DEMO</span></div><div class="list-item"><div><b>Aisha Spa</b><br><small>Diani • Massage • 15% yako Ksh 525</small></div><span class="badge badge-progress">DEMO</span></div>':'<div class="empty">Vendor network unavailable</div>'; document.getElementById('activeVendors').innerText=isDemo?'3':'0'; }
-}
-async function loadVendorBilling(){
- if(isDemo){
-   document.getElementById('totalOwed').textContent='Ksh 18,450'; document.getElementById('totalVendors').textContent='5 Vendors • DEMO MODE • Your 15% ATM';
-   document.getElementById('taxiComm').textContent='Ksh 11,200'; document.getElementById('spaComm').textContent='Ksh 7,250';
-   document.getElementById('vendorsBillingList').innerHTML='<div class="list-item"><div><b>John Taxi</b> • 0712xxxxxx<br><small>Owes: <b style="color:#ff3b30">Ksh 3,200</b> • DEMO • 5 rides</small></div><span class="badge badge-overdue">DEMO</span></div>';
-   return;
- }
- try{
-  const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
-  const r=await fetch(`/api/vendor-billing/vendors?hotel_id=${hotel}`).then(r=>r.json()).catch(()=>({vendors:[]}));
-  const vendors=r.vendors||[]; let total=0; vendors.forEach(v=>total+=parseFloat(v.balance_owed||0));
-  document.getElementById('totalOwed').textContent=money(total);
-  document.getElementById('totalVendors').textContent=vendors.length+' Vendors • Till Direct • Your 15%';
-  document.getElementById('vendorsBillingList').innerHTML=vendors.map(v=>{
-    const overdue=v.balance_owed>2000;
-    return `<div class="list-item" style="${overdue?'border-color:#ff3b30;background:#1a0a0a':''}"><div><b>${esc(v.vendor_name)}</b> • ${esc(v.vendor_phone||'')}<br><small>Earned: ${money(v.total_earned)} • Owes 15%: <b style="color:${v.balance_owed>0?'#ff3b30':'#00ff88'}">${money(v.balance_owed)}</b> • ${esc(v.status)}</small></div><div style="display:flex;flex-direction:column;gap:4px"><button class="btn btn-dark" style="padding:6px 10px;font-size:10px" onclick="sendSingleSMS('${esc(v.vendor_name)}','${esc(v.vendor_phone||'')}',${v.balance_owed})">SMS</button>${v.balance_owed>0?`<button class="btn btn-red" style="padding:6px 10px;font-size:10px" onclick="pauseVendor('${v.vendor_id}')">PAUSE</button>`:`<button class="btn btn-dark" style="padding:6px 10px;font-size:10px;background:#00ff88;color:#000">ACTIVE</button>`}</div></div>`;
-  }).join('')||'<div class="empty">No vendor commissions yet - Orders zikija ndio invoice ita-generate</div>';
-  let sms=`GUESTHUB WEEKLY BILLING - Week ${document.getElementById('weekStart').value} to ${document.getElementById('weekEnd').value}\n\n`;
-  vendors.filter(v=>v.balance_owed>0).forEach(v=>{ sms+=`${v.vendor_name} (${v.vendor_phone}) - Commission 15% = ${money(v.balance_owed)} - Lipa kwa Till ${document.getElementById('till').value||'123456'} (GuestHub) by Wed.\n\n`; });
-  document.getElementById('smsTemplate').textContent=sms;
- }catch(e){ document.getElementById('vendorsBillingList').innerHTML='<div class="empty">No data</div>'; }
-}
-async function generateInvoices(){
- const week_start=document.getElementById('weekStart').value; const week_end=document.getElementById('weekEnd').value;
- const hotel=currentHotel?.id||currentHotel?.hotel_id||hotel_id_param;
- try{
-  const r=await secureFetch('/api/vendor-billing/generate',{method:'POST',body:JSON.stringify({hotel_id:hotel,week_start,week_end})});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error); toast(`✅ ${d.count} invoices generated - Your 15%`);
-  loadVendorBilling();
- }catch(e){
-  const r=await fetch('/api/vendor-billing/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotel,week_start,week_end})}).then(r=>r.json()).catch(()=>({ok:false}));
-  toast(r.ok?`✅ ${r.count} invoices`:'Failed: '+(r.error||'')); loadVendorBilling();
- }
-}
-async function markPaid(){
- const phone=document.getElementById('vendorPhonePaid').value; const code=document.getElementById('mpesaCode').value; const amount=document.getElementById('amountPaid').value;
- if(!phone||!amount) return toast('Weka phone na amount');
- try{
-  const r=await secureFetch('/api/vendor-billing/mark-paid',{method:'POST',body:JSON.stringify({vendor_phone:phone,mpesa_receipt:code,amount})});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('✅ PAID & Activated! 15% received'); loadVendorBilling();
- }catch(e){ const r=await fetch('/api/vendor-billing/mark-paid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_phone:phone,mpesa_receipt:code,amount})}).then(r=>r.json()).catch(()=>({ok:false})); toast(r.ok?'✅ PAID':'Failed'); loadVendorBilling(); }
-}
-async function pauseVendor(vendor_id){ if(!confirm('Pause vendor? Hata-pata orders!')) return; await fetch('/api/vendor-billing/pause',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_id})}).then(()=>{toast('Paused'); loadVendorBilling();}); }
-function sendSingleSMS(name,phone,amount){ const till=document.getElementById('till').value||'123456'; const msg=`Habari ${name}, GuestHub: Commission yako 15% ni ${money(amount)}. Lipa kwa Till ${till} by Wed. Tuma M-Pesa code. Asante!`; window.open(`https://wa.me/${String(phone).replace('0','254')}?text=${encodeURIComponent(msg)}`,'_blank'); }
-function copySMS(){ const text=document.getElementById('smsTemplate').textContent; navigator.clipboard.writeText(text).then(()=>toast('Copied! Paste WhatsApp')); }
-function downloadBilling(){ toast('Billing PDF...'); generateQRPDFUltimate(); }
-function loadWhatsApp(){ if(!currentHotel) return; document.getElementById('wa_k').value=currentHotel.whatsapp_kitchen||''; document.getElementById('wa_h').value=currentHotel.whatsapp_house||''; document.getElementById('wa_l').value=currentHotel.whatsapp_laundry||''; document.getElementById('wa_s').value=currentHotel.whatsapp_spa||''; document.getElementById('wa_t').value=currentHotel.whatsapp_taxi||''; document.getElementById('wa_f').value=currentHotel.whatsapp_front||''; }
-async function saveWhatsApp(){
- const payload={whatsapp_kitchen:document.getElementById('wa_k').value.trim(),whatsapp_house:document.getElementById('wa_h').value.trim(),whatsapp_laundry:document.getElementById('wa_l').value.trim(),whatsapp_spa:document.getElementById('wa_s').value.trim(),whatsapp_taxi:document.getElementById('wa_t').value.trim(),whatsapp_front:document.getElementById('wa_f').value.trim()};
- try{ const r=await secureFetch('/api/gm/whatsapp',{method:'PATCH',body:JSON.stringify(payload)}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,payload); toast('WhatsApp saved ✅ - Guest orders auto routed'); }catch(e){ toast(e.message); }
-}
-function renderHotelProfile(){ if(!currentHotel) return; document.getElementById('profileName').value=currentHotel.name||currentHotel.hotel_name||''; document.getElementById('profileLocation').value=currentHotel.location||currentHotel.city||''; document.getElementById('profilePhone').value=currentHotel.phone||''; document.getElementById('profileEmail').value=currentHotel.email||''; document.getElementById('profilePlan').value=currentHotel.plan||'GuestHub'; document.getElementById('hotelPrefix').value=currentHotel.id||hotel_id_param; document.getElementById('tableHotel').value=currentHotel.id||hotel_id_param; }
-async function saveHotelProfile(){
- const name=document.getElementById('profileName').value.trim(); const location=document.getElementById('profileLocation').value.trim(); const phone=document.getElementById('profilePhone').value.trim();
- if(!name){ toast('Hotel name required'); return; }
- try{ const r=await secureFetch('/api/admin/hotels/'+(currentHotel.id||currentHotel.hotel_id),{method:'PATCH',body:JSON.stringify({name,hotel_name:name,location,phone})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); Object.assign(currentHotel,{name,hotel_name:name,location,phone}); document.getElementById('hotelIdDisplay').innerText=name; document.getElementById('heroHotel').innerText=name; toast('Profile updated ✅'); }catch(e){ toast(e.message); }
-}
-function renderQRPreview(){
-  const preview=document.getElementById('qrPreview'); if(!preview) return; preview.innerHTML='';
-  for(let i=101;i<=106;i++){
-    const div=document.createElement('div');div.className='card';div.style.background='#111';
-    div.innerHTML=`<b style="color:var(--lime)">ROOM ${i}</b><div id="qr-${i}" style="margin-top:8px;display:flex;justify-content:center;background:#fff;padding:8px;border-radius:12px"></div><small style="opacity:.5;font-size:9px">guest.html?hotel=${hotel_id_param}&room=${i}</small><div style="margin-top:6px"><span class="badge badge-new">15% commission</span></div>`;
-    preview.appendChild(div);
-    setTimeout(()=>{ const el=document.getElementById(`qr-${i}`); if(el){ el.innerHTML=''; new QRCode(el,{text:`https://guestconnect-ap2q.onrender.com/guest.html?hotel=${hotel_id_param}&room=${i}`,width:110,height:110})}},200);
-  }
-  toast('QR Preview - 6 Rooms');
-}
-function genRoomQR(){
- const from=parseInt(document.getElementById('roomFrom').value)||101; const to=parseInt(document.getElementById('roomTo').value)||120;
- const hotel=document.getElementById('hotelPrefix').value||hotel_id_param;
- let h=''; for(let i=from;i<=to;i++){ const link=location.origin+'/guest.html?hotel='+hotel+'&room='+i; h+=`<div class="qr-card"><b>ROOM ${i}</b><br><small style="opacity:.6">${hotel}</small><br><div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}"></div><br><small style="font-size:9px;word-break:break-all">${link}</small><br><small style="font-size:8px;opacity:.5">Scan → Order → 15% commission auto</small></div>`} document.getElementById('roomQRs').innerHTML=`<div class="grid3">${h}</div>`;
-}
-function genTableQR(){
- const s=parseInt(document.getElementById('tableFrom').value.replace(/\D/g,''))||1, e=parseInt(document.getElementById('tableTo').value.replace(/\D/g,''))||20;
- const hotel=document.getElementById('tableHotel').value||hotel_id_param;
- let h=''; for(let i=s;i<=e;i++){ const t='T'+String(i).padStart(2,'0'); const link=location.origin+'/menu.html?hotel='+hotel+'&table='+t; h+=`<div class="qr-card"><b style="color:#000">TABLE ${t}</b><br><small style="opacity:.6">${hotel}</small><br><div class="qr-box"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}"></div><br><small style="font-size:9px;word-break:break-all">${link}</small></div>`} document.getElementById('tableQRs').innerHTML=`<div class="grid3">${h}</div>`;
-}
-function genRoomQRAdvanced(){
- const from=parseInt(document.getElementById('roomFrom').value)||101;
- const to=parseInt(document.getElementById('roomTo').value)||120;
- const hotel=document.getElementById('hotelPrefix').value||hotel_id_param;
- const {jsPDF}=window.jspdf; const doc=new jsPDF('p','mm','a4');
- let y=10; let count=0;
- doc.setFontSize(20); doc.setFont(undefined,'bold'); doc.text(`GUESTHUB - ${hotel} - ROOM QR CODES`,10,y); y+=8;
- doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(`Generated ${new Date().toLocaleDateString()} - Each QR: guest.html?hotel=${hotel}&room=XXX - Guest scan auto fills room`,10,y); y+=6;
- doc.text(`GM gets 15% from taxi/tours/spa - Food direct to hotel till`,10,y); y+=10;
- for(let i=from;i<=to;i++){
-   if(y>240){ doc.addPage(); y=10; }
-   const link=`https://guestconnect-ap2q.onrender.com/guest.html?hotel=${hotel}&room=${i}`;
-   doc.setDrawColor(180); doc.setLineWidth(0.3); doc.roundedRect(10,y,190,35,3,3);
-   doc.setFontSize(22); doc.setFont(undefined,'bold'); doc.text(`ROOM ${i}`,14,y+12);
-   doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.text(link,14,y+18);
-   doc.setFontSize(7); doc.text(`1. Guest scans QR on door 2. Chooses service (Taxi/Spa/Food) 3. Order appears LIVE in GM Dashboard with ding`,14,y+24);
-   doc.text(`Hotel: Food payment → Till direct | You: 15% commission`,14,y+29);
-   y+=40; count++;
- }
- doc.save(`${hotel}_ROOMS_${from}-${to}_${new Date().toISOString().slice(0,10)}.pdf`);
- toast(`✅ ${count} Room QR Cards PDF downloaded! Print & stick`);
- genRoomQR();
-}
-function genTableQRAdvanced(){
- const s=parseInt(document.getElementById('tableFrom').value.replace(/\D/g,''))||1;
- const e=parseInt(document.getElementById('tableTo').value.replace(/\D/g,''))||20;
- const hotel=document.getElementById('tableHotel').value||hotel_id_param;
- const {jsPDF}=window.jspdf; const doc=new jsPDF('p','mm','a4');
- let y=10;
- doc.setFontSize(20); doc.setFont(undefined,'bold'); doc.text(`GUESTHUB - ${hotel} - TABLE QR CODES`,10,y); y+=8;
- doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(`Restaurant tables T01-T20 - menu.html?hotel=${hotel}&table=TXX`,10,y); y+=10;
- for(let i=s;i<=e;i++){
-   if(y>240){ doc.addPage(); y=10; }
-   const t='T'+String(i).padStart(2,'0');
-   const link=`https://guestconnect-ap2q.onrender.com/menu.html?hotel=${hotel}&table=${t}`;
-   doc.setDrawColor(180); doc.roundedRect(10,y,190,35,3,3);
-   doc.setFontSize(22); doc.setFont(undefined,'bold'); doc.text(`TABLE ${t}`,14,y+12);
-   doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.text(link,14,y+18);
-   doc.setFontSize(7); doc.text(`Scan → Menu → Order → Kitchen WhatsApp → GM Dashboard LIVE`,14,y+24);
-   y+=40;
- }
- doc.save(`${hotel}_TABLES_T${String(s).padStart(2,'0')}-T${String(e).padStart(2,'0')}_${new Date().toISOString().slice(0,10)}.pdf`);
- toast(`✅ Table QR Cards PDF downloaded!`);
- genTableQR();
-}
-function generateQRPDFUltimate(){
- const {jsPDF}=window.jspdf; const doc=new jsPDF(); let y=10;
- const hotel=hotel_id_param;
- doc.setFontSize(18); doc.setFont(undefined,'bold'); doc.text(`GuestHub ULTIMATE QR PACK - ${hotel} - 14.1`,10,y); y+=8;
- doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(`110 Rooms (101-210) + 20 Tables (T01-T20) - ${new Date().toLocaleDateString()} - Best Experience Platform`,10,y); y+=6;
- doc.text(`Flow: Guest scans Room/Table QR → Guest App auto fills room → Vendor gets order → GM Dashboard ding → You get 15%`,10,y); y+=10;
- doc.setFontSize(9);
- for(let i=101;i<=210;i++){ if(y>280){doc.addPage(); y=10;} doc.text(`Room ${i}: /guest.html?hotel=${hotel}&room=${i}`,10,y); y+=5; }
- doc.addPage(); y=10;
- doc.text(`--- TABLE QRs ---`,10,y); y+=6;
- for(let t=1;t<=20;t++){ const table='T'+String(t).padStart(2,'0'); if(y>280){doc.addPage(); y=10;} doc.text(`Table ${table}: /menu.html?hotel=${hotel}&table=${table} | Also /guest.html?hotel=${hotel}&table=${table}`,10,y); y+=5; }
- doc.save(`${hotel}_ULTIMATE_130_QR_PACK_${new Date().toISOString().slice(0,10)}.pdf`);
- toast('ULTIMATE QR PACK 130 QRs Downloaded! 🖨️ Print & scale');
-}
-function sendOrderWA(id){ const o=ordersCache.find(o=>o.id===id); if(!o) return; const phone=currentHotel.whatsapp_front||currentHotel.phone; if(!phone){toast('No WhatsApp');return;} const msg=`GuestHub Order%0ARoom: ${o.room||'-'}%0AService: ${o.service_title||'-'}%0AAmount: Ksh ${o.amount||0}%0AGuest: ${o.guest_name||''}`; window.open('https://wa.me/'+String(phone).replace(/\D/g,'')+'?text='+msg,'_blank'); }
-function logout(){ localStorage.removeItem('hotel_token'); localStorage.removeItem('hotel_id'); localStorage.removeItem('guesthub_demo'); location.href='/hotel-login.html'; }
-function startRealtime(){ if(!currentHotel||!supa||isDemo) return; supa.channel('hotel-'+(currentHotel.id||currentHotel.hotel_id)).on('postgres_changes',{event:'*',schema:'public',table:'orders',filter:'hotel_id=eq.'+(currentHotel.id||currentHotel.hotel_id)},()=>{loadOrders(); toast('🔔 New guest order!'); playDing();}).subscribe(); }
-init();
+function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
+function toast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className='toast show '+t;setTimeout(()=>el.className='toast',3200)}
+function guestLink(room){return location.origin+'/guest.html?hotel='+encodeURIComponent(HOTEL_ID)+'&room='+encodeURIComponent(room)}
+function tableLink(table){return location.origin+'/guest.html?hotel='+encodeURIComponent(HOTEL_ID)+'&room='+encodeURIComponent(table)+'&table='+encodeURIComponent(table)}
+async function refreshAll(){await Promise.all([loadMenu(),loadServices(),loadOrders(),loadDepts()]);renderCurrentTab()}
+async function loadMenu(){const {data}=await supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false});MENU=data||[];document.getElementById('s_menu').innerText=MENU.length}
+async function loadServices(){const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false});SERVICES=data||[];document.getElementById('s_services').innerText=SERVICES.length}
+async function loadOrders(){const {data}=await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false}).limit(100);ORDERS=data||[];document.getElementById('s_orders').innerText=ORDERS.length;document.getElementById('c_orders').innerText=ORDERS.length?`(${ORDERS.length})`:'';const today=new Date().toISOString().slice(0,10);const rev=ORDERS.filter(o=>o.created_at?.startsWith(today)).reduce((s,o)=>s+Number(o.total||0),0);document.getElementById('s_rev').innerText=money(rev);if(currentTab==='orders')renderOrders();if(currentTab==='finance')renderFinance()}
+async function loadDepts(){const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id',HOTEL_ID);DEPTS=data||[];document.getElementById('s_depts').innerText=DEPTS.length}
+function renderOrders(){const box=document.getElementById('view-orders');const q=(document.getElementById('orderSearch')?.value||'').toLowerCase();const filtered=ORDERS.filter(o=>`${o.room_number} ${o.guest_name} ${o.department}`.toLowerCase().includes(q));box.innerHTML=`<div class="card"><div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${q}" oninput="renderOrders()"></div>${filtered.map(o=>`<div class="row"><div><b>ROOM ${esc(o.room_number)} — ${esc(o.guest_name)} — ${esc(o.guest_phone)}</b> <span class="badge badge-yellow">${esc(o.department?.toUpperCase())}</span><br><small>${(o.items||[]).map(i=>i.name).join(', ')} — ${money(o.total)} — ${new Date(o.created_at).toLocaleString()}</small></div><div><button class="btn btn-primary btn-sm" onclick="updateStatus('${o.id}','ready')">Ready</button></div></div>`).join('')||'<div class="card">No orders</div>'}`}
+async function updateStatus(id,s){await supa.schema('guesthub_os').from('orders').update({status:s}).eq('id',id);toast('Status → '+s);loadOrders()}
+function renderMenu(){const box=document.getElementById('view-menu');box.innerHTML=`<div class="card"><div class="card-title">🍽️ Menu Builder</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="mName" class="input" placeholder="Pilau Beef"><input id="mPrice" type="number" class="input" placeholder="650"><input id="mCat" class="input" placeholder="Main"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu</button></div>${MENU.map(i=>`<div class="row"><span>${esc(i.name)} — ${money(i.price)}</span><button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button></div>`).join('')}`}
+async function addMenu(){const name=document.getElementById('mName').value.trim();const price=parseInt(document.getElementById('mPrice').value);if(!name||!price)return toast('Name & price','error');await supa.schema('guesthub_os').from('menu_items').insert([{hotel_id:HOTEL_ID,name,price,category:document.getElementById('mCat').value||'Main'}]);toast('Added');loadMenu()}
+async function delMenu(id){await supa.schema('guesthub_os').from('menu_items').delete().eq('id',id);loadMenu()}
+function renderServices(){const box=document.getElementById('view-services');box.innerHTML=`<div class="card"><div class="card-title">🛎️ Services</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="sTitle" class="input" placeholder="Airport Taxi"><select id="sDept" class="select"><option value="kitchen">Kitchen</option><option value="taxi">Taxi</option><option value="housekeeping">Housekeeping</option><option value="laundry">Laundry</option><option value="maintenance">Maintenance</option><option value="tours">Tours</option><option value="spa">Spa</option><option value="frontdesk">Front Desk</option></select></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><input id="sPrice" type="number" class="input" placeholder="3500"><input id="sIcon" class="input" placeholder="🚕"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addService()">Add Service</button></div>${SERVICES.map(s=>`<div class="row"><span>${esc(s.icon)} ${esc(s.title)} — ${esc(s.department)} — ${money(s.price)}</span><button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button></div>`).join('')}`}
+async function addService(){const t=document.getElementById('sTitle').value.trim();if(!t)return toast('Title','error');await supa.schema('guesthub_os').from('hotel_services').insert([{hotel_id:HOTEL_ID,title:t,department:document.getElementById('sDept').value,price:parseInt(document.getElementById('sPrice').value||0),icon:document.getElementById('sIcon').value||'🏨'}]);toast('Added');loadServices()}
+async function delService(id){await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',id);loadServices()}
+function renderWhatsApp(){const box=document.getElementById('view-whatsapp');const getVal=n=>{const d=DEPTS.find(x=>x.name===n);return d?d.whatsapp_number:''};box.innerHTML=`<div class="card"><div class="card-title">📱 WhatsApp Departments</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${getVal('kitchen')}"></div><div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${getVal('housekeeping')}"></div><div><label>Laundry</label><input id="wa_laundry" class="input" value="${getVal('laundry')}"></div><div><label>Maintenance</label><input id="wa_maintenance" class="input" value="${getVal('maintenance')}"></div><div><label>Taxi</label><input id="wa_taxi" class="input" value="${getVal('taxi')}"></div><div><label>Frontdesk</label><input id="wa_frontdesk" class="input" value="${getVal('frontdesk')}"></div><div><label>Tours</label><input id="wa_tours" class="input" value="${getVal('tours')}"></div><div><label>Spa</label><input id="wa_spa" class="input" value="${getVal('spa')}"></div></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button></div>`}
+async function saveWhatsApp(){for(const d of ['kitchen','housekeeping','laundry','maintenance','taxi','frontdesk','tours','spa']){const num=document.getElementById('wa_'+d)?.value.trim();if(num){await supa.schema('guesthub_os').from('departments').upsert({hotel_id:HOTEL_ID,name:d,whatsapp_number:num},{onConflict:'hotel_id,name'});await fetch('/api/departments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:HOTEL_ID,name:d,whatsapp_number:num})}).catch(()=>{})}}toast('Saved');loadDepts()}
+function renderQR(){const box=document.getElementById('view-qr');box.innerHTML=`<div class="card"><div class="card-title">🔳 Room & Table QR Generator</div><p style="font-size:11px;color:#999">Guest scan → room auto → order → Kitchen inaona jina + WhatsApp auto</p></div><div class="card" style="border-color:var(--lime)"><div class="card-title">Single QR</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="qrRoom" class="input" placeholder="Room 101"><input id="qrTable" class="input" placeholder="Table T5"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="genSingle('room')">Room QR</button><button class="btn btn-gold" onclick="genSingle('table')">Table QR</button></div><div id="singleQR" style="text-align:center;margin-top:12px"></div></div><div class="card"><div class="card-title">Bulk Room QRs (1-50)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="bulkStart" type="number" class="input" placeholder="From 1"><input id="bulkEnd" type="number" class="input" placeholder="To 50"><input id="bulkPrefix" class="input" placeholder="Room"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="genBulkRooms()">Generate Room QRs</button><div id="bulkQR" class="qr-grid" style="margin-top:12px"></div></div><div class="card"><div class="card-title">Bulk Table QRs (T1-T20)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="bulkTStart" type="number" class="input" placeholder="From 1"><input id="bulkTEnd" type="number" class="input" placeholder="To 20"><input id="bulkTPrefix" class="input" placeholder="T" value="T"></div><button class="btn btn-gold" style="width:100%;margin-top:8px" onclick="genBulkTables()">Generate Table QRs</button><div id="bulkTQR" class="qr-grid" style="margin-top:12px"></div></div>`}
+function genSingle(type){const room=document.getElementById('qrRoom').value.trim()||'101';const table=document.getElementById('qrTable').value.trim()||'T1';const val=type==='room'?room:table;const link=type==='room'?guestLink(val):tableLink(val);const box=document.getElementById('singleQR');box.innerHTML=`<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900;margin-top:8px">${HOTEL_ID} - ${type.toUpperCase()} ${val}</div><div style="font-size:8px;color:#333;word-break:break-all">${link}</div></div>`;setTimeout(()=>{const el=document.getElementById('qrSingleCanvas');el.innerHTML='';new QRCode(el,{text:link,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});},100)}
+function genBulkRooms(){const start=parseInt(document.getElementById('bulkStart').value||1);const end=parseInt(document.getElementById('bulkEnd').value||10);const prefix=document.getElementById('bulkPrefix').value||'Room';const box=document.getElementById('bulkQR');box.innerHTML='';for(let i=start;i<=end;i++){const link=guestLink(i);const card=document.createElement('div');card.className='qr-card';card.innerHTML=`<div id="qr-r-${i}"></div><div style="font-weight:900;margin-top:6px">${prefix} ${i}</div><div style="font-size:7px;opacity:.5;word-break:break-all">${link}</div>`;box.appendChild(card);setTimeout(()=>{new QRCode(document.getElementById(`qr-r-${i}`),{text:link,width:150,height:150});},i*30)}}
+function genBulkTables(){const start=parseInt(document.getElementById('bulkTStart').value||1);const end=parseInt(document.getElementById('bulkTEnd').value||20);const prefix=document.getElementById('bulkTPrefix').value||'T';const box=document.getElementById('bulkTQR');box.innerHTML='';for(let i=start;i<=end;i++){const tableNum=prefix+i;const link=tableLink(tableNum);const card=document.createElement('div');card.className='qr-card';card.innerHTML=`<div id="qr-t-${i}"></div><div style="font-weight:900;margin-top:6px">TABLE ${tableNum}</div>`;box.appendChild(card);setTimeout(()=>{new QRCode(document.getElementById(`qr-t-${i}`),{text:link,width:150,height:150});},i*30)}}
+function renderFinance(){const today=new Date().toISOString().slice(0,10);const todayOrders=ORDERS.filter(o=>o.created_at?.startsWith(today));const todayRev=todayOrders.reduce((s,o)=>s+Number(o.total||0),0);const allRev=ORDERS.reduce((s,o)=>s+Number(o.total||0),0);const box=document.getElementById('view-finance');box.innerHTML=`<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="card"><small>TODAY REVENUE</small><br><b>${money(todayRev)}</b></div><div class="card"><small>TOTAL GMV</small><br><b>${money(allRev)}</b></div></div>`}
+function switchTab(name,el){currentTab=name;document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('view-'+name).classList.remove('hidden');if(el)el.classList.add('active');if(name==='orders')renderOrders();if(name==='menu')renderMenu();if(name==='services')renderServices();if(name==='whatsapp')renderWhatsApp();if(name==='qr')renderQR();if(name==='finance')renderFinance()}
+function renderCurrentTab(){if(currentTab==='orders')renderOrders();if(currentTab==='menu')renderMenu();if(currentTab==='services')renderServices();if(currentTab==='whatsapp')renderWhatsApp();if(currentTab==='qr')renderQR();if(currentTab==='finance')renderFinance()}
+refreshAll();
+supa.channel('gm-'+HOTEL_ID).on('postgres_changes',{event:'INSERT',schema:'guesthub_os',table:'orders',filter:`hotel_id=eq.${HOTEL_ID}`},(p)=>{toast(`🔔 NEW ROOM ${p.new.room_number} - ${p.new.guest_name}`);loadOrders()}).subscribe();
+setInterval(loadOrders,15000);
 </script>
 </body>
 </html>
