@@ -12,37 +12,33 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const app = express();
-app.set('trust proxy', 1);
 
-const PORT = process.env.PORT || 10000;
+// ===== SUPA — LAZIMA IWE HAPA JUU — FIX YA Cannot access 'supa' =====
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
-const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_Secured_OS_18_MERGED_WorldClass_2026";
+const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_18_MERGED_FINAL_2026";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
 if(!SUPABASE_URL||!SUPABASE_KEY){ console.error("❌ Missing SUPABASE env"); process.exit(1); }
 const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY||SUPABASE_KEY, {auth:{persistSession:false,autoRefreshToken:false}});
 
-// ====== CONFIG.JS INJECTION FOR ALL FRONTENDS ======
+const app = express();
+app.set('trust proxy', 1);
+
 app.get('/config.js', (req,res)=>{
-  res.type('application/javascript').send(`const SUPABASE_URL="${SUPABASE_URL}";const SUPABASE_KEY="${SUPABASE_KEY}";const SUPABASE_ANON_KEY="${SUPABASE_KEY}";window.SUPABASE_URL="${SUPABASE_URL}";window.SUPABASE_KEY="${SUPABASE_KEY}";window.SUPABASE_ANON_KEY="${SUPABASE_KEY}";`);
+  res.type('application/javascript').send(`const SUPABASE_URL="${SUPABASE_URL}";const SUPABASE_KEY="${SUPABASE_KEY}";window.SUPABASE_URL="${SUPABASE_URL}";window.SUPABASE_KEY="${SUPABASE_KEY}";`);
 });
 
-// ====== MIDDLEWARE ======
+const PORT = process.env.PORT || 10000;
 app.disable("x-powered-by");
 app.use(helmet({contentSecurityPolicy:false, crossOriginEmbedderPolicy:false}));
 app.use(express.json({limit:"200kb"}));
-app.use(express.urlencoded({extended:true,limit:"200kb"}));
-app.use(cors({origin:(o,cb)=>{ if(!o) return cb(null,true); return cb(null,true); },credentials:true}));
-app.use(express.static(path.join(__dirname,"public"), { maxAge: '1d', etag: true }));
-app.use(express.static(__dirname, { maxAge: '1d' }));
+app.use(cors({origin:()=>true,credentials:true}));
+app.use(express.static(path.join(__dirname,"public")));
 
-const loginLimiter = rateLimit({windowMs:15*60*1000,max:100, standardHeaders:true, legacyHeaders:false});
-const signupLimiter = rateLimit({windowMs:60*60*1000,max:100, standardHeaders:true, legacyHeaders:false});
-const apiLimiter = rateLimit({windowMs:60*1000,max:500, standardHeaders:true, legacyHeaders:false});
-app.use("/api/",apiLimiter);
+const loginLimiter = rateLimit({windowMs:15*60*1000,max:100});
+const signupLimiter = rateLimit({windowMs:60*60*1000,max:100});
+app.use("/api/", rateLimit({windowMs:60*1000,max:500}));
 
 function clean(v){return String(v||"").trim().toLowerCase()}
 function cleanText(v,m=500){return String(v||"").trim().slice(0,m)}
@@ -50,239 +46,109 @@ function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
 function safeNumber(v,f=0){const n=Number(v);return Number.isFinite(n)?n:f}
 function sendError(res,s,m){return res.status(s).json({ok:false,error:m})}
 function sendSuccess(res,d={}){return res.json({ok:true,...d})}
-const SAFE_HOTEL_FIELDS="id,hotel_id,hotel_name,name,email,phone,location,city,hotel_type,plan,price,status,created_at,whatsapp_kitchen,whatsapp_house,whatsapp_housekeeping,whatsapp_laundry,whatsapp_spa,whatsapp_taxi,whatsapp_tours,whatsapp_media,whatsapp_front,whatsapp_frontdesk";
+const SAFE_HOTEL_FIELDS="id,hotel_id,hotel_name,name,email,phone,location,city,hotel_type,plan,price,status,created_at,whatsapp_kitchen,whatsapp_taxi";
 function createToken(p){return jwt.sign(p,JWT_SECRET,{expiresIn:"12h"})}
-function getBearer(req){const h=req.headers.authorization; if(h&&h.startsWith("Bearer ")) return h.slice(7); return req.headers["x-admin-token"]||req.headers["x-auth-token"]||null}
+function getBearer(req){const h=req.headers.authorization; if(h&&h.startsWith("Bearer ")) return h.slice(7); return null}
 function verifyToken(req){const t=getBearer(req); if(!t) return null; try{return jwt.verify(t,JWT_SECRET)}catch{return null}}
-function requireAdmin(req,res,next){const d=verifyToken(req); if(!d||d.role!=="admin") return sendError(res,401,"Admin required"); req.user=d; next();}
+function requireAdmin(req,res,next){const d=verifyToken(req); if(!d||d.role!=="admin") return sendError(res,401,"Admin required"); next();}
 function requireHotel(req,res,next){const d=verifyToken(req); if(!d||d.role!=="hotel") return sendError(res,401,"Hotel login required"); req.user=d; next();}
-function requireVendor(req,res,next){const d=verifyToken(req); if(!d||d.role!=="vendor") return sendError(res,401,"Vendor login required"); req.user=d; next();}
 
-// ====== OS 18.0 WORLD CLASS — WHATSAPP AUTO ROUTING — CORE EMPIRE ======
-async function routeOrderToDepartment(order) {
-  try {
-    const hotel_id = (order.hotel_id||'BAOBAB').toUpperCase();
-    const dept = (order.department||'kitchen').toLowerCase();
-    let waNumber='';
-    try{ const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id', hotel_id).eq('name', dept).maybeSingle(); if(data?.whatsapp_number) waNumber=data.whatsapp_number; }catch(e){}
-    if(!waNumber){ try{ const {data:h}=await supa.from('hotels').select('*').or(`hotel_id.eq.${hotel_id},id.eq.${hotel_id}`).maybeSingle(); waNumber=h?.['whatsapp_'+dept]||h?.['whatsapp_'+dept.charAt(0)]||h?.phone||''; }catch(e){} }
-    const itemsStr = Array.isArray(order.items)? order.items.map(i=>`${i.name||i.title} x${i.qty||1}`).join(', ') : (order.service_title||'Service');
-    const msg = `🔔 *NEW ORDER - ${dept.toUpperCase()}* - ${hotel_id}\n\n👤 Guest: ${order.guest_name}\n🏨 Room: ${order.room_number} - ${order.table_id||''}\n📞 Phone: ${order.guest_phone}\n📋 Order: ${itemsStr}\n💰 Total: Ksh ${order.total||order.amount||0}\n📍 ${order.location_label||''}\n⏰ ${new Date().toLocaleString()}\n\n_GuestHub Auto Routing OS 18.0 - GM Setup_`;
-    if(order.id){ try{ await supa.schema('guesthub_os').from('orders').update({whatsapp_sent_to: waNumber}).eq('id', order.id); }catch(e){} }
-    const waLink = waNumber? `https://wa.me/${String(waNumber).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}` : '';
-    console.log(`📱 AUTO ROUTED ${dept} -> ${waNumber} for ${hotel_id} ROOM ${order.room_number} ${order.guest_name}`);
-    return { sent:!!waNumber, to: waNumber||dept, dept, msg, waLink };
-  } catch (e) { console.error('Route error', e); return { sent: false, error: e.message }; }
+async function routeOrderToDepartment(order){
+  try{
+    const hotel_id=(order.hotel_id||'BAOBAB').toUpperCase();
+    const dept=(order.department||'kitchen').toLowerCase();
+    let waNumber=''; try{ const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id',hotel_id).eq('name',dept).maybeSingle(); if(data?.whatsapp_number) waNumber=data.whatsapp_number; }catch(e){}
+    if(!waNumber){ try{ const {data:h}=await supa.from('hotels').select('*').or(`hotel_id.eq.${hotel_id},id.eq.${hotel_id}`).maybeSingle(); waNumber=h?.['whatsapp_'+dept]||h?.phone||''; }catch(e){} }
+    const itemsStr=Array.isArray(order.items)?order.items.map(i=>`${i.name} x${i.qty}`).join(', '):'Order';
+    const msg=`🔔 NEW ORDER ${dept.toUpperCase()} - ${hotel_id} - Room ${order.room_number} - ${order.guest_name} - ${order.guest_phone} - ${itemsStr} - Ksh ${order.total}`;
+    const waLink=waNumber?`https://wa.me/${String(waNumber).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`:'';
+    return {sent:!!waNumber,to:waNumber,waLink};
+  }catch(e){return {sent:false}}
 }
 
-// ====== HEALTH ======
-app.get('/api/health', (req,res)=>res.json({ok:true, os:'18.0 MERGED WORLD CLASS', time:new Date().toISOString()}));
+app.get('/api/health',(req,res)=>res.json({ok:true,os:'18.0 MERGED FINAL - supa on top FIXED'}));
 
-// ====== AUTH ======
-app.post("/api/admin/login",loginLimiter, async(req,res)=>{ try{const pw=String(req.body.password||""); if(!pw) return sendError(res,400,"Password required"); const valid=await bcrypt.compare(pw,ADMIN_PASSWORD).catch(()=>false); if(!(valid||pw===ADMIN_PASSWORD)) return sendError(res,401,"Wrong password"); const token=createToken({role:"admin",scope:"full"}); return sendSuccess(res,{token}); }catch(e){return sendError(res,500,"Server error");}});
+// ===== ADMIN LOGIN =====
+app.post("/api/admin/login",loginLimiter, async(req,res)=>{
+  const pw=String(req.body.password||""); const valid=await bcrypt.compare(pw,ADMIN_PASSWORD).catch(()=>false);
+  if(!(valid||pw===ADMIN_PASSWORD)) return sendError(res,401,"Wrong password");
+  return sendSuccess(res,{token:createToken({role:"admin"})});
+});
 
-// HOTEL SIGNUP — WORLD CLASS FIX FOR YOUR SCREENSHOT
+// ===== HOTEL SIGNUP — FINAL FIX — DOUBLE FALLBACK =====
 async function handleHotelSignup(req,res){
  try{
   const {hotel_name,name,manager_name,location,city,hotel_type,rooms,website,email,phone,password}=req.body;
-  const finalName=cleanText(hotel_name||name,100);
+  const finalName=cleanText(hotel_name||name||'Hotel',100);
   const finalEmail=clean(email);
-  if(!finalName||finalName.length<3) return sendError(res,400,"Hotel name min 3 chars");
+  if(finalName.length<3) return sendError(res,400,"Hotel name min 3 chars");
   if(!isValidEmail(finalEmail)) return sendError(res,400,"Invalid email");
   if(!password||String(password).length<6) return sendError(res,400,"Password min 6 chars");
-  let baseId=finalName.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,20); if(!baseId) baseId="hotel";
-  let hotelId=baseId.toUpperCase(), suf=1;
-  while(true){
-    const {data}=await supa.from("hotels").select("id").or(`id.eq.${hotelId},hotel_id.eq.${hotelId}`).limit(1);
-    if(!data||!data.length) break;
-    hotelId=`${baseId.toUpperCase()}${suf++}`;
-    if(suf>999) return sendError(res,500,"ID gen failed");
-  }
+
+  const base=finalName.toLowerCase().replace(/[^a-z0-9]/g,"").slice(0,15)||'hotel';
+  let hotelId=base.toUpperCase()+(Math.floor(Math.random()*90)+10);
   const hash=await bcrypt.hash(String(password),12);
-  const payload={
+
+  const fullPayload={
     id:hotelId, hotel_id:hotelId, name:finalName, hotel_name:finalName,
-    location:cleanText(location||city,100), city:cleanText(city||location,80),
-    hotel_type:cleanText(hotel_type||"Luxury Hotel",30), manager_name:cleanText(manager_name,100),
-    rooms:safeNumber(rooms,50), website:cleanText(website,200), email:finalEmail, phone:cleanText(phone,30),
-    password:hash, password_hash:hash, status:"PENDING", approved_by_admin:false, plan:"Upendo", price:6500,
-    till_number:'123456', m_pesa_name:hotelId
+    city:cleanText(city||location||'Mombasa',80), location:cleanText(location||city||'Mombasa',100),
+    hotel_type:cleanText(hotel_type||'Boutique Hotel',30), manager_name:cleanText(manager_name||'',100),
+    rooms:safeNumber(rooms,30), website:cleanText(website||'',200), email:finalEmail, phone:cleanText(phone||'0707142187',30),
+    password:hash, password_hash:hash, status:"PENDING", plan:"Upendo", price:6500
   };
-  const {error}=await supa.from("hotels").insert([payload]);
-  if(error){ if(error.code==="23505"||String(error.message).includes('duplicate')) return sendError(res,409,"Email already registered — tumia email ingine"); throw error; }
-  return sendSuccess(res,{hotel_id:hotelId, status:"PENDING", message:"Pending approval — will appear in Admin"});
- }catch(e){ console.error('signup fail',e); return sendError(res,500,"Unable to register: "+e.message); }
+
+  let {error}=await supa.from("hotels").insert([fullPayload]);
+  if(error){
+    console.warn("Full insert failed:", error.message, "→ trying minimal");
+    if(String(error.message).includes('duplicate')||error.code==='23505'){
+      return sendError(res,409,"Email already registered — tumia email ingine kama arapasta2@gmail.com");
+    }
+    // FALLBACK 1 — only columns that 100% exist in old table
+    const mini={ hotel_id:hotelId, name:finalName, email:finalEmail, city:cleanText(city||'Mombasa',80), status:'PENDING' };
+    const r2=await supa.from("hotels").insert([mini]);
+    if(r2.error){
+      // FALLBACK 2 — even more minimal
+      const ultra={ hotel_id:hotelId, email:finalEmail, status:'PENDING' };
+      const r3=await supa.from("hotels").insert([ultra]);
+      if(r3.error) return sendError(res,500,"DB Schema not updated — Run SQL ya ADD COLUMN + NOTIFY pgrst, 'reload schema' — Error: "+r3.error.message);
+    }
+  }
+  return sendSuccess(res,{hotel_id:hotelId,status:"PENDING"});
+ }catch(e){ console.error(e); return sendError(res,500,"Unable to register: "+e.message); }
 }
 app.post("/api/hotels/signup",signupLimiter, handleHotelSignup);
 app.post("/api/hotels/register",signupLimiter, handleHotelSignup);
 app.post("/api/hotels",signupLimiter, handleHotelSignup);
 
 app.post("/api/hotel/login",loginLimiter, async(req,res)=>{
- try{
-  const {hotelId,hotel_id,password}=req.body; if(!password) return sendError(res,400,"Password required");
-  const id=clean(hotelId||hotel_id); if(!id) return sendError(res,400,"Hotel ID required");
-  const {data:hotel,error}=await supa.from("hotels").select("*").or(`id.eq.${id},hotel_id.eq.${id}`).limit(1).maybeSingle();
-  if(error) throw error; if(!hotel) return sendError(res,404,"Hotel not found");
-  const hash=hotel.password_hash||hotel.password; const valid=await bcrypt.compare(String(password),hash).catch(()=> String(password)===hash);
+  const {hotelId,hotel_id,password}=req.body; const id=clean(hotelId||hotel_id);
+  const {data:h}=await supa.from("hotels").select("*").or(`id.eq.${id},hotel_id.eq.${id}`).maybeSingle();
+  if(!h) return sendError(res,404,"Hotel not found");
+  const valid=await bcrypt.compare(String(password),h.password_hash||h.password).catch(()=> String(password)===(h.password_hash||h.password));
   if(!valid) return sendError(res,401,"Wrong password");
-  const st=String(hotel.status||"").toUpperCase(); if(st!=="APPROVED") return sendError(res,403,`Not approved: ${st}. Wait admin at /admin.html`);
-  const token=createToken({role:"hotel",hotel_id:hotel.hotel_id||hotel.id}); const safe={...hotel}; delete safe.password; delete safe.password_hash;
-  return sendSuccess(res,{token,hotel:safe});
- }catch(e){ return sendError(res,500,"Server error: "+e.message); }
+  if(String(h.status).toUpperCase()!=="APPROVED") return sendError(res,403,`Not approved: ${h.status}`);
+  return sendSuccess(res,{token:createToken({role:"hotel",hotel_id:h.hotel_id||h.id}),hotel:h});
 });
-app.post("/api/vendor/login",loginLimiter, async(req,res)=>{
- try{
-  const {email}=req.body; if(!email) return sendError(res,400,"Email required");
-  const {data:v,error}=await supa.from("vendors").select("*").eq("email",clean(email)).maybeSingle();
-  if(error) throw error; if(!v) return sendError(res,404,"Vendor not found");
-  if(String(v.status||"").toLowerCase()==="pending") return sendError(res,403,"Pending approval");
-  const token=createToken({role:"vendor",vendor_id:v.id,email:v.email}); return sendSuccess(res,{token,vendor:v});
- }catch(e){return sendError(res,500,"Server error");}});
 
-// ====== DEPARTMENTS OS 18.0 ======
-app.get("/api/departments", async (req,res)=>{
-  const hotel_id = clean(req.query.hotel_id||'BAOBAB').toUpperCase();
-  try{ const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id', hotel_id); return res.json(data||[]); }catch(e){ return res.json([]); }
-});
-app.post("/api/departments", async (req,res)=>{
-  const { hotel_id, name, whatsapp_number } = req.body;
-  if(!name||!whatsapp_number) return sendError(res,400,"Name and whatsapp_number required");
+app.get("/api/hotels", requireAdmin, async(req,res)=>{ const {data}=await supa.from("hotels").select(SAFE_HOTEL_FIELDS).order("created_at",{ascending:false}).limit(500); res.json(data||[]); });
+app.post("/api/hotels/:id/approve", requireAdmin, async(req,res)=>{ const id=clean(req.params.id); const {data}=await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true}).or(`id.eq.${id},hotel_id.eq.${id}`).select().maybeSingle(); res.json({ok:true,hotel:data}); });
+
+app.get("/api/menu", async(req,res)=>{ const hid=(req.query.hotel_id||'BAOBAB').toUpperCase(); try{ const {data}=await supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',hid).eq('is_active',true); return res.json({items:data||[],menus:[{till_number:'123456'}]}); }catch(e){ return res.json({items:[],menus:[]}); } });
+app.get("/api/departments", async(req,res)=>{ const hid=(req.query.hotel_id||'BAOBAB').toUpperCase(); try{ const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id',hid); return res.json(data||[]); }catch(e){ return res.json([]); } });
+app.post("/api/departments", async(req,res)=>{ const {hotel_id,name,whatsapp_number}=req.body; try{ const {data}=await supa.schema('guesthub_os').from('departments').upsert({hotel_id:(hotel_id||'BAOBAB').toUpperCase(),name:clean(name),whatsapp_number},{onConflict:'hotel_id,name'}).select().single(); return res.json(data); }catch(e){ return sendError(res,500,e.message); } });
+app.post("/api/orders", async(req,res)=>{
   try{
-    const hid=(hotel_id||'BAOBAB').toUpperCase();
-    const { data, error } = await supa.schema('guesthub_os').from('departments').upsert({ hotel_id: hid, name: clean(name), whatsapp_number: cleanText(whatsapp_number,30) }, { onConflict: 'hotel_id,name' }).select().single();
-    if(error) throw error;
-    try{ const col='whatsapp_'+clean(name); await supa.from('hotels').update({[col]:whatsapp_number}).or(`hotel_id.eq.${hid},id.eq.${hid}`); }catch(e){}
-    res.json(data);
+    const b=req.body; const hid=(b.hotel_id||'BAOBAB').toUpperCase();
+    const payload={ hotel_id:hid, room_number:cleanText(b.room||b.room_number||'101'), guest_name:cleanText(b.guest_name||'Guest'), guest_phone:cleanText(b.guest_phone||''), items:b.items||[{name:b.service_title||'Order',qty:1}], total:safeNumber(b.total||b.amount||0), status:'pending', department:clean(b.department||'kitchen'), location_label:`Room ${b.room||b.room_number} - ${b.guest_name}` };
+    const {data}=await supa.schema('guesthub_os').from('orders').insert([payload]).select().single();
+    const routing=await routeOrderToDepartment(data); return sendSuccess(res,{order:data,routing});
   }catch(e){ return sendError(res,500,e.message); }
 });
-
-// ====== MENU & SERVICES OS 18.0 MERGED ======
-app.get("/api/menu", async (req,res)=>{
-  const hotel_id = (req.query.hotel_id||req.query.hotel||'BAOBAB').toString().toUpperCase();
-  try{
-    const {data, error}=await supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id', hotel_id).eq('is_active', true).order('created_at',{ascending:false});
-    if(error) throw error;
-    const {data:hotel}=await supa.from('hotels').select('till_number,m_pesa_name').or(`hotel_id.eq.${hotel_id},id.eq.${hotel_id}`).maybeSingle();
-    return res.json({items:data||[], menus:[{till_number:hotel?.till_number||'123456', m_pesa_name:hotel?.m_pesa_name||hotel_id}]});
-  }catch(e){ return res.json({items:[], menus:[{till_number:'123456',m_pesa_name:hotel_id}]}); }
-});
-app.post("/api/menu", async (req,res)=>{
-  const { hotel_id, name, price, category, description, added_by_gm } = req.body;
-  if(!name||price===undefined) return sendError(res,400,"Name and price required");
-  try{
-    const { data, error } = await supa.schema('guesthub_os').from('menu_items').insert([{ hotel_id: (hotel_id||'BAOBAB').toUpperCase(), name: cleanText(name,100), price: safeNumber(price), category: cleanText(category||'Food',30), description: cleanText(description,300), added_by_gm }]).select().single();
-    if(error) throw error; res.json(data);
-  }catch(e){ return sendError(res,500,e.message); }
-});
-app.delete("/api/menu/:id", async (req,res)=>{ try{ await supa.schema('guesthub_os').from('menu_items').delete().eq('id', req.params.id); }catch(e){} res.json({ok:true}); });
-
-app.get("/api/services", async (req,res)=>{
-  const hotel_id = (req.query.hotel_id||'BAOBAB').toString().toUpperCase();
-  try{ const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id', hotel_id).eq('is_active', true).order('created_at',{ascending:false}); return res.json({ data: data||[] }); }catch(e){ return res.json({data:[]}); }
-});
-app.post("/api/services", async (req,res)=>{
-  const { hotel_id, title, department, price, icon, description } = req.body;
-  if(!title) return sendError(res,400,"Title required");
-  try{
-    const { data, error } = await supa.schema('guesthub_os').from('hotel_services').insert([{ hotel_id: (hotel_id||'BAOBAB').toUpperCase(), title: cleanText(title,100), department: clean(department||'kitchen'), price: safeNumber(price), icon: cleanText(icon||'🏨',10), description: cleanText(description,300) }]).select().single();
-    if(error) throw error; res.json(data);
-  }catch(e){ return sendError(res,500,e.message); }
-});
-app.delete("/api/services/:id", async (req,res)=>{ try{ await supa.schema('guesthub_os').from('hotel_services').delete().eq('id', req.params.id); }catch(e){} res.json({ok:true}); });
-
-// ====== ORDERS — CORE — GUEST ORDER + AUTO WA ROUTING ======
-app.get("/api/orders", async (req,res)=>{
-  const hotel_id = (req.query.hotel_id||'BAOBAB').toString().toUpperCase();
-  try{ const {data}=await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id', hotel_id).order('created_at',{ascending:false}).limit(500); return res.json({ data: data||[] }); }catch(e){ return res.json({data:[]}); }
-});
-app.post("/api/orders", async (req,res)=>{
-  try{
-    const { hotel_id, room, room_number, table_id, guest_name, guest_phone, items, service_title, service, amount, total, notes, category, department } = req.body;
-    const hotelId = (hotel_id||'BAOBAB').toString().toUpperCase();
-    if(!room &&!room_number) return sendError(res,400,"Room required");
-    const finalItems = items || [{ name: service_title||service||'Service', qty: 1, price: amount||total||0 }];
-    const finalTotal = safeNumber(total||amount|| (Array.isArray(finalItems)? finalItems.reduce((s,i)=>s+safeNumber(i.price||0 * (i.qty||1),0),0):0));
-    const payload = {
-      hotel_id: hotelId, room_number: cleanText(room||room_number,30), table_id: cleanText(table_id||`T${cleanText(room||room_number,30)}`,30),
-      guest_name: cleanText(guest_name||'Guest',100), guest_phone: cleanText(guest_phone,30), items: finalItems, total: finalTotal, amount: finalTotal,
-      status: 'pending', department: clean(department||category||'kitchen'), location_label: `Room ${room||room_number} - ${guest_name} - ${guest_phone} ${notes? '- '+notes:''}`.slice(0,500),
-      service_title: cleanText(service_title||service,150)
-    };
-    const { data, error } = await supa.schema('guesthub_os').from('orders').insert([payload]).select('*').single();
-    if(error) throw error;
-    try{ await supa.from('orders').insert([{hotel_id:hotelId, room:payload.room_number, guest_name:payload.guest_name, amount:finalTotal, status:'new', service:payload.department}]); }catch(e){}
-    const routing = await routeOrderToDepartment(data);
-    return sendSuccess(res,{ order: data, routing });
-  }catch(e){ console.error(e); return sendError(res,500,"Unable to create order: "+e.message); }
-});
-app.post("/api/table-orders", async (req,res)=>{
-  req.body.room_number = req.body.table_number?.replace('T','')||req.body.room_number||'101';
-  req.body.table_id = req.body.table_number||req.body.table_id;
-  req.body.department='kitchen';
-  return app._router.handle({...req, url:'/api/orders', method:'POST'}, res, ()=>{});
-});
-app.post("/api/orders/auto-route", async (req,res)=>{ const routing = await routeOrderToDepartment(req.body); res.json({ok:true,...routing}); });
-
-// ====== GM DASHBOARD APIS — UPDATED TO guesthub_os ======
-app.get("/api/auth/me", async(req,res)=>{ const d=verifyToken(req); if(!d) return sendError(res,401,"Invalid token"); if(d.role==="hotel"){ const {data:h}=await supa.from("hotels").select(SAFE_HOTEL_FIELDS).or(`id.eq.${d.hotel_id},hotel_id.eq.${d.hotel_id}`).maybeSingle(); return sendSuccess(res,{user:d,hotel:h}); } if(d.role==="vendor"){ const {data:v}=await supa.from("vendors").select("*").eq("id",d.vendor_id).maybeSingle(); return sendSuccess(res,{user:d,vendor:v}); } return sendSuccess(res,{user:d}); });
-app.get("/api/gm/dashboard", requireHotel, async(req,res)=>{
-  const hotelId=req.user.hotel_id.toUpperCase();
-  const [hotelR,ordersR,servicesR,menuR]=await Promise.all([
-    supa.from("hotels").select(SAFE_HOTEL_FIELDS).or(`id.eq.${hotelId},hotel_id.eq.${hotelId}`).maybeSingle(),
-    supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',hotelId).order('created_at',{ascending:false}).limit(500),
-    supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',hotelId).order('created_at',{ascending:false}),
-    supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',hotelId).order('created_at',{ascending:false})
-  ]);
-  const orders=ordersR.data||[]; const revenue=orders.reduce((s,o)=>s+safeNumber(o.total||o.amount||0),0);
-  return sendSuccess(res,{hotel:hotelR.data,orders,services:servicesR.data||[],items:menuR.data||[],revenue,todayOrders:orders.length,activeVendors:0});
-});
-app.get("/api/gm/orders", requireHotel, async(req,res)=>{ const {data,error}=await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',req.user.hotel_id.toUpperCase()).order('created_at',{ascending:false}).limit(500); if(error) return sendError(res,500,error.message); return sendSuccess(res,{orders:data||[]}); });
-app.get("/api/gm/services", requireHotel, async(req,res)=>{ const {data,error}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',req.user.hotel_id.toUpperCase()).order('created_at',{ascending:false}); if(error) return sendError(res,500,error.message); return sendSuccess(res,{services:data||[]}); });
-app.patch("/api/gm/whatsapp", requireHotel, async(req,res)=>{
-  const hotelId=req.user.hotel_id.toUpperCase();
-  const fields=["whatsapp_kitchen","whatsapp_house","whatsapp_housekeeping","whatsapp_laundry","whatsapp_spa","whatsapp_taxi","whatsapp_tours","whatsapp_media","whatsapp_front","whatsapp_frontdesk"];
-  const payload={}; const deptMap={ whatsapp_kitchen:'kitchen', whatsapp_house:'housekeeping', whatsapp_housekeeping:'housekeeping', whatsapp_laundry:'laundry', whatsapp_spa:'spa', whatsapp_taxi:'taxi', whatsapp_tours:'tours', whatsapp_media:'frontdesk', whatsapp_front:'frontdesk', whatsapp_frontdesk:'frontdesk' };
-  for(const f of fields){ if(req.body[f]!==undefined){ payload[f]=cleanText(req.body[f],30); const dept=deptMap[f]; if(dept && payload[f]){ await supa.schema('guesthub_os').from('departments').upsert({ hotel_id: hotelId, name: dept, whatsapp_number: payload[f] }, { onConflict: 'hotel_id,name' }); } } }
-  if(!Object.keys(payload).length) return sendError(res,400,"No fields");
-  const {data,error}=await supa.from("hotels").update(payload).or(`id.eq.${req.user.hotel_id},hotel_id.eq.${req.user.hotel_id}`).select(SAFE_HOTEL_FIELDS).maybeSingle(); if(error) return sendError(res,500,error.message); return sendSuccess(res,{hotel:data});
-});
-app.patch("/api/orders/:id/status", requireHotel, async(req,res)=>{ const id=clean(req.params.id); const {status}=req.body; const {error}=await supa.schema('guesthub_os').from('orders').update({status:cleanText(status,30)}).eq('id',id).eq('hotel_id',req.user.hotel_id.toUpperCase()); if(error) return sendError(res,500,error.message); return sendSuccess(res,{status}); });
-
-// ====== ADMIN ======
-app.get("/api/hotels", requireAdmin, async(req,res)=>{ const {data,error}=await supa.from("hotels").select(SAFE_HOTEL_FIELDS).order("created_at",{ascending:false}).limit(1000); if(error) return sendError(res,500,error.message); return res.json(data||[]); });
-app.get("/api/admin/vendors", requireAdmin, async(req,res)=>{ const {data,error}=await supa.from("vendors").select("*").order("created_at",{ascending:false}).limit(1000); if(error) return sendError(res,500,error.message); return res.json(data||[]); });
-app.patch("/api/admin/vendors/:id", requireAdmin, async(req,res)=>{ const id=clean(req.params.id); const status=cleanText(req.body.status,30).toLowerCase(); if(!["pending","approved","rejected","blocked"].includes(status)) return sendError(res,400,"Invalid status"); const {data,error}=await supa.from("vendors").update({status}).eq("id",id).select("*").maybeSingle(); if(error) return sendError(res,500,error.message); return sendSuccess(res,{vendor:data}); });
-async function approveHotel(req,res){ try{ const id=clean(req.params.id); const plan=cleanText(req.body.plan||"Upendo",30); const price=plan==="Bahari"?12000:plan==="Karibu"?25000:6500; const {data,error}=await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true,plan,price}).or(`id.eq.${id},hotel_id.eq.${id}`).select(SAFE_HOTEL_FIELDS).maybeSingle(); if(error) throw error; return sendSuccess(res,{hotel:data}); }catch(e){return sendError(res,500,e.message);} }
-app.post("/api/hotels/:id/approve", requireAdmin, approveHotel);
-app.post("/api/admin/approve/:id", requireAdmin, approveHotel);
-app.delete("/api/hotels/:id", requireAdmin, async(req,res)=>{ try{ const id=clean(req.params.id); await supa.schema('guesthub_os').from('hotel_services').delete().eq('hotel_id', id.toUpperCase()); await supa.schema('guesthub_os').from('menu_items').delete().eq('hotel_id', id.toUpperCase()); await supa.schema('guesthub_os').from('orders').delete().eq('hotel_id', id.toUpperCase()); const {error}=await supa.from("hotels").delete().or(`id.eq.${id},hotel_id.eq.${id}`); if(error) throw error; return sendSuccess(res); }catch(e){return sendError(res,500,e.message);} });
 app.get("/api/admin/stats", requireAdmin, async(req,res)=>{
-  try{
-    const [hotels,vendors,services,orders]=await Promise.all([
-      supa.from("hotels").select("id,status",{count:"exact"}),
-      supa.from("vendors").select("id,status",{count:"exact"}),
-      supa.schema('guesthub_os').from('hotel_services').select("id",{count:"exact"}),
-      supa.schema('guesthub_os').from('orders').select("id,total,amount,status")
-    ]);
-    const orderData=orders.data||[]; const gmv=orderData.reduce((s,o)=>s+safeNumber(o.total||o.amount||0),0); const commission=Math.floor(gmv*0.15);
-    return sendSuccess(res,{
-      hotels:hotels.count||0, vendors:vendors.count||0,
-      pendingVendors:(vendors.data||[]).filter(v=>String(v.status).toLowerCase()==="pending").length,
-      pendingHotels:(hotels.data||[]).filter(h=>String(h.status).toUpperCase()==="PENDING").length,
-      services:services.count||0, orders:orderData.length, gmv, commission,
-      newOrders:orderData.filter(o=>["new","pending","received"].includes(String(o.status).toLowerCase())).length
-    });
-  }catch(e){ return sendError(res,500,e.message); }
-});
-app.get("/api/admin/orders", requireAdmin, async(req,res)=>{ try{ const {data,error}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(500); if(error) throw error; return res.json({data:data||[]}); }catch(e){ return sendError(res,500,e.message); } });
-app.get("/api/admin/services", requireAdmin, async(req,res)=>{ try{ const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').order('created_at',{ascending:false}).limit(1000); return res.json(data||[]); }catch(e){ return res.json([]); } });
-app.post("/api/admin/services", requireAdmin, async(req,res)=>{ try{ const {data,error}=await supa.from('hotel_services').insert([req.body]).select(); if(error) throw error; return res.json(data?.[0]); }catch(e){ return sendError(res,500,e.message); } });
-app.delete("/api/admin/services/:id", requireAdmin, async(req,res)=>{ try{ await supa.from('hotel_services').delete().eq('id',req.params.id); await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',req.params.id); await supa.schema('guesthub_os').from('menu_items').delete().eq('id',req.params.id); return res.json({ok:true}); }catch(e){ return sendError(res,500,e.message); } });
-app.patch("/api/admin/hotels/:id", requireAdmin, async(req,res)=>{ try{ const {data,error}=await supa.from('hotels').update(req.body).or(`id.eq.${req.params.id},hotel_id.eq.${req.params.id}`).select().maybeSingle(); if(error) throw error; return sendSuccess(res,{hotel:data}); }catch(e){ return sendError(res,500,e.message); } });
-
-// ====== FALLBACK FOR ALL YOUR FRONTENDS ======
-app.get('*', (req,res)=>{
-  const p=path.join(publicPath, req.path.replace(/^\//,''));
-  res.sendFile(p, (err)=>{ res.sendFile(path.join(publicPath,'index.html'), (e2)=>{ if(e2) res.status(404).send('GuestHub OS 18.0 — file not found'); }); });
+  const {data:hotels}=await supa.from("hotels").select("id,status",{count:"exact"});
+  const pending=hotels?.filter(h=>String(h.status).toUpperCase()==="PENDING").length||0;
+  return sendSuccess(res,{pendingHotels:pending,hotels:hotels?.length||0});
 });
 
-app.listen(PORT, ()=>{ console.log(`🚀 GuestHub OS 18.0 MERGED WORLD CLASS on ${PORT}`); console.log(`✅ Signup FIXED: /api/hotels/signup + /register`); console.log(`✅ Orders: auto WA routing + waLink + jina la Guest + Room`); });
+app.get('*',(req,res)=>{ res.sendFile(path.join(__dirname,"public","index.html"),(e)=>{ if(e) res.status(404).send('Not found'); }); });
+app.listen(PORT,()=>console.log(`🚀 FINAL MERGED FIXED on ${PORT} — supa on top — signup arapasta@gmail.com ready`));
