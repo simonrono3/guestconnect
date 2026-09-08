@@ -155,7 +155,7 @@ let cart=[], menuItems=[], hotelServices=[], myOrdersList=[], payInfo={};
 const experiences=[
   {t:'Sunset Safari',img:'https://images.unsplash.com/photo-1516426122078-c23e76319801',d:'Today 5pm'},
   {t:'Pool & Lounge',img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d',d:'Happy hour'},
-  {t:'Spa Ritual',img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',d:'60min @2500'},
+  {t:'Spa',img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',d:'60min @2500'},
   {t:'Rooftop Dinner',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0',d:'Live band'},
   {t:'Coffee Tasting',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93',d:'Kenya AA'}
 ];
@@ -226,7 +226,6 @@ async function loadLiveTracker(){
     if(data&&data[0]){$('liveTracker').style.display='block';$('liveTitle').textContent=(data[0].items[0]?.name||'Order')+' - Room '+data[0].room_number;$('liveSub').textContent=`${data[0].guest_name} • ${data[0].department} • WA ${data[0].whatsapp_sent_to||''}`;}
   }catch(e){}
 }
-// MERGED OS 18.0 LOAD — guesthub_os
 async function loadOS(){
   try{
     const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -256,10 +255,8 @@ function filterMenu(cat,el){
 function renderRidesAndServices(){
   const rides=hotelServices.filter(s=>['taxi','tours','transport'].includes((s.department||'').toLowerCase()));
   const services=hotelServices.filter(s=>!['taxi','tours','transport'].includes((s.department||'').toLowerCase()));
-  // Rides
   if(rides.length===0) $('ridesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">GM bado haja-add Rides — Add in GM Dashboard → Services (department taxi/tours)</div>`;
   else {let html='';const groups={};rides.forEach(r=>{const k=r.department||'tours';if(!groups[k])groups[k]=[];groups[k].push(r)});for(let cat in groups){html+=`<div class="group"><div class="group-title">${cat==='taxi'?'🚕':'🌍'} ${cat.toUpperCase()} — Auto WA to ${cat}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'🏨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`;}$('ridesContainer').innerHTML=html;}
-  // Services
   if(services.length===0) $('servicesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">Services coming soon — GM add kitchen/housekeeping/spa</div>`;
   else {let html='';const groups={};services.forEach(r=>{const k=r.department||'kitchen';if(!groups[k])groups[k]=[];groups[k].push(r)});for(let cat in groups){html+=`<div class="group"><div class="group-title">🧖 ${cat.toUpperCase()} — Auto WA to ${cat}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'✨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`;}$('servicesContainer').innerHTML=html;}
 }
@@ -285,7 +282,6 @@ async function checkout(){
   const gRoom=localStorage.getItem('guest_room')||ROOM_PARAM;
   const gPhone=localStorage.getItem('guest_phone')||'';
   const gTable=localStorage.getItem('guest_table')||tableParam;
-  // Group by department — kila dept inaenda WA yake!
   const byDept={};cart.forEach(c=>{const d=c.department||'kitchen';if(!byDept[d])byDept[d]=[];byDept[d].push(c);});
   for(const dept in byDept){
     const items=byDept[dept];const deptTotal=items.reduce((s,i)=>s+i.price*i.qty,0);
