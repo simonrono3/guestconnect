@@ -1,7 +1,9 @@
-// GuestHub V30 FULL - YOUR CODE + RENDER PORT FIX 100%
+// GuestHub V31 FULL SECURE - PRODUCTION READY + PORT FIXED
 import express from "express";
 import compression from "compression";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
@@ -16,49 +18,62 @@ const PORT = process.env.PORT || 10000;
 
 const app = express();
 
-// === PORT OPEN INSTANT - MUST BE FIRST FOR RENDER ===
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V30 FULL', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+// ===== PORT OPEN INSTANT FOR RENDER - MUST BE FIRST =====
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
   res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
+  res.setHeader('X-Content-Type-Options','nosniff');
   const u = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
   const k = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'placeholder-key';
   res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
 });
 
-// LISTEN IMMEDIATELY BEFORE HEAVY STUFF
-const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🚀 V30 FULL LIVE on 0.0.0.0:${PORT} - PORT OPEN - READY`));
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 SECURE LIVE on 0.0.0.0:${PORT} - PORT OPEN`));
 server.keepAliveTimeout = 120000;
 server.headersTimeout = 120000;
 
 process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
 process.on('unhandledRejection', e=>console.log('REJECTION:', e?.message));
 
-console.log("🚀 Booting V30 FULL...");
+// ===== SECURITY MIDDLEWARE =====
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false
+}));
+app.use(compression());
+app.use(cors({origin:(origin,cb)=>cb(null,true), credentials:true, methods:['GET','POST','PUT','DELETE','OPTIONS']}));
+app.use(express.json({limit:"2mb"}));
+app.use(express.urlencoded({extended:true, limit:"2mb"}));
 
-// === CONFIG ===
+// Rate Limiters
+const loginLimiter = rateLimit({ windowMs:15*60*1000, max:10, message:{ok:false,error:"Too many login attempts, try after 15 min"} });
+const signupLimiter = rateLimit({ windowMs:60*60*1000, max:20, message:{ok:false,error:"Too many signups, try later"} });
+const orderLimiter = rateLimit({ windowMs:60*1000, max:60, message:{ok:false,error:"Too many orders, slow down"} });
+
+// ===== CONFIG =====
 const REAL_URL = process.env.SUPABASE_URL;
 const REAL_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
 const REAL_SERVICE = process.env.SUPABASE_SERVICE_KEY || REAL_KEY;
 const SUPABASE_URL = REAL_URL || "https://placeholder.supabase.co";
 const SUPABASE_KEY = REAL_KEY || "placeholder-anon-key";
 const SUPABASE_SERVICE_KEY = REAL_SERVICE || SUPABASE_KEY;
-const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY";
+const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY_CHANGE_ME_IN_ENV";
 
 let supa = null;
 try {
   supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}});
-  console.log("✅ Supabase client created");
-} catch(e){ console.log("⚠️ Supabase dummy mode", e.message); }
+  console.log("✅ Supabase client V31");
+} catch(e){ console.log("⚠️ Supabase dummy", e.message); }
 
-app.use(compression());
-app.use(cors({origin:(origin,cb)=>cb(null,true), credentials:true}));
-app.use(express.json({limit:"2mb"}));
-app.use(express.urlencoded({extended:true, limit:"2mb"}));
-
-// === HELPERS ===
+// ===== HELPERS SECURE =====
 function clean(v){return String(v||"").trim().toLowerCase()}
-function cleanText(v,m=500){return String(v||"").trim().slice(0,m)}
+function cleanText(v,m=500){ 
+  let s = String(v||"").trim().slice(0,m);
+  // Strip < > to prevent XSS
+  s = s.replace(/[<>]/g,'');
+  return s;
+}
 function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
 function safeNumber(v,f=0){const n=Number(v);return Number.isFinite(n)?n:f}
 function sendError(res,s,m){return res.status(s).json({ok:false,error:m})}
@@ -86,7 +101,7 @@ async function routeOrderToDepartment(order){
   }catch{return {sent:false}}
 }
 
-// === ROUTES ===
+// ===== ROUTES =====
 app.get('/api/data', async (req,res)=>{
   try{
     if(!supa ||!REAL_URL) return res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani'}]});
@@ -98,6 +113,7 @@ app.get('/api/data', async (req,res)=>{
 async function handleSignup(req,res){
  try{
   const {hotel_name,name,email,phone,password,location,city,hotel_type,manager_name,rooms}=req.body;
+  if(!password || String(password).length < 8) return sendError(res,400,"Password must be 8+ characters");
   const finalName=cleanText(hotel_name||name||'Hotel',100);
   if(finalName.length<3) return sendError(res,400,"Hotel name too short");
   if(!supa ||!REAL_URL){
@@ -107,20 +123,20 @@ async function handleSignup(req,res){
   const finalEmail=clean(email); if(!isValidEmail(finalEmail)) return sendError(res,400,"Invalid email");
   const base=finalName.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12)||'hotel';
   const hotelId=base.toUpperCase()+(Math.floor(Math.random()*900)+100);
-  const hash=await bcrypt.hash(String(password||'12345678'),10);
+  const hash=await bcrypt.hash(String(password),12);
   const row={ id:hotelId, hotel_id:hotelId, name:finalName, hotel_name:finalName, city:cleanText(city||location||'Mombasa',80), location:cleanText(location||city||'Mombasa',100), hotel_type:cleanText(hotel_type||'Boutique',40), manager_name:cleanText(manager_name||'',100), rooms:safeNumber(rooms,30), email:finalEmail, phone:cleanText(phone||'',30), status:"PENDING", approved_by_admin:false, plan:"Upendo", price:6500, password_hash:hash };
   const {error}=await supa.from("hotels").insert([row]); if(error) throw new Error(error.message);
   return sendSuccess(res,{hotel_id:hotelId,status:"PENDING"});
  }catch(e){ return sendError(res,500,e.message); }
 }
-app.post("/api/hotels/signup", handleSignup);
-app.post("/api/hotels/register", handleSignup);
-app.post("/api/hotels", handleSignup);
+app.post("/api/hotels/signup", signupLimiter, handleSignup);
+app.post("/api/hotels/register", signupLimiter, handleSignup);
+app.post("/api/hotels", signupLimiter, handleSignup);
 
-app.post("/api/hotels/login", async(req,res)=>{
+app.post("/api/hotels/login", loginLimiter, async(req,res)=>{
   try{
     const {email,password,hotel_id}=req.body;
-    if(!supa ||!REAL_URL) return sendSuccess(res,{token:jwt.sign({hotel_id:'BAOBAB'},JWT_SECRET), hotel_id:'BAOBAB'});
+    if(!supa ||!REAL_URL) return sendSuccess(res,{token:jwt.sign({hotel_id:'BAOBAB'},JWT_SECRET,{expiresIn:'7d'}), hotel_id:'BAOBAB'});
     const hid = (hotel_id||'').toUpperCase();
     let q = supa.from('hotels').select('*');
     if(hid) q = q.or(`hotel_id.eq.${hid},id.eq.${hid}`);
@@ -131,12 +147,12 @@ app.post("/api/hotels/login", async(req,res)=>{
       const ok = await bcrypt.compare(String(password), data.password_hash);
       if(!ok) return sendError(res,401,"Wrong password");
     }
-    const token = jwt.sign({hotel_id:data.hotel_id||data.id, email:data.email}, JWT_SECRET, {expiresIn:'30d'});
+    const token = jwt.sign({hotel_id:data.hotel_id||data.id, email:data.email}, JWT_SECRET, {expiresIn:'7d'});
     return sendSuccess(res,{token, hotel_id:data.hotel_id||data.id, hotel:data});
   }catch(e){ return sendError(res,500,e.message); }
 });
 
-app.post("/api/orders", async(req,res)=>{
+app.post("/api/orders", orderLimiter, async(req,res)=>{
   try{
     const hid=getHotelIdFromReq(req);
     const payload={ hotel_id:hid, room_number:cleanText(req.body.room||req.body.room_number||'101',30), guest_name:cleanText(req.body.guest_name||'Guest',100), guest_phone:cleanText(req.body.guest_phone||'',30), items:req.body.items||[{name:'Order',qty:1}], total:safeNumber(req.body.total||0), status:'pending', department:clean(req.body.department||'kitchen'), location_label:`Room ${req.body.room||req.body.room_number} - ${req.body.guest_name}` };
@@ -156,5 +172,11 @@ app.get("/api/orders", async(req,res)=>{
   }catch(e){ res.json({orders:[]}); }
 });
 
-app.use(express.static(path.join(__dirname,"public"),{ setHeaders:(res,fp)=>{ if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); } }));
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🚀 V30 FULL LIVE PORT ${PORT}</h1><p>Add public/index.html</p><a href="/api/health">/api/health</a>`); }));
+// STATIC
+app.use(express.static(path.join(__dirname,"public"),{ 
+  setHeaders:(res,fp)=>{ 
+    if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); 
+    res.setHeader('X-Frame-Options','SAMEORIGIN');
+  } 
+}));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 SECURE LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
