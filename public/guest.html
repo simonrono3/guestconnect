@@ -2,426 +2,291 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub — Guest OS ULTRA V4</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+<title>GuestHub — Guest OS V5 POPUP</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/config.js"></script>
-<script>
-tailwind.config={theme:{extend:{colors:{lime:'#C6FF00',gold:'#FFC61A',ink:'#060709'}}}}
-</script>
 <style>
-:root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709;--card:#121318;--border:rgba(255,255,255,0.08)}
-*{box-sizing:border-box}body{font-family:Inter,sans-serif;background:var(--bg);color:#fff;padding-bottom:130px;-webkit-tap-highlight-color:transparent}
-.font-boss{font-family:Anton,sans-serif;letter-spacing:.02em}
-.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{scrollbar-width:none;-ms-overflow-style:none}
-.glass{background:rgba(18,19,24,0.8);backdrop-filter:blur(20px);border:1px solid var(--border)}
-.glow-lime{box-shadow:0 0 30px rgba(198,255,0,.28)}
-.glow-gold{box-shadow:0 8px 30px rgba(255,198,26,.35)}
-.live-dot{animation:pulse 1.5s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+:root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709}
+body{font-family:Inter,sans-serif;background:var(--bg);color:#fff;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
+.font-boss{font-family:Anton,sans-serif}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{scrollbar-width:none}
+.glass{background:rgba(18,19,24,.9);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.08)}
+.popup-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);z-index:300;display:none;place-items:center;padding:16px}
+.popup-bg.show{display:grid}
+.popup-card{width:100%;max-width:420px;max-height:85vh;background:#0F1012;border:1px solid rgba(255,255,255,.12);border-radius:28px;overflow:hidden;animation:pop.35s cubic-bezier(.16,1,.3,1)}
+@keyframes pop{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
 .cart-float{transform:translateY(120px);transition:.45s cubic-bezier(.16,1,.3,1)}
 .cart-float.show{transform:translateY(0)}
-.sheet{transform:translateY(100%);transition:.45s cubic-bezier(.16,1,.3,1)}
-.sheet.open{transform:translateY(0)}
-.mood.on{background:var(--lime)!important;color:#000!important;border-color:var(--lime)!important}
-.tab-active{background:#fff!important;color:#000!important;border-color:#fff!important}
-.card-press:active{transform:scale(.97)}
+.live-dot{animation:pulse 1.5s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
 
-<!-- TOP — HOMEPAGE STYLE -->
-<div class="sticky top-0 z-[100] bg-[#060709]/90 backdrop-blur-2xl border-b border-white/10">
-  <div class="px-5 py-3.5 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <div class="font-boss text-[20px] text-[#FFD400] tracking-wide">GUESTHUB</div>
-      <span class="text-[10px] tracking-[0.18em] text-white/40 font-bold hidden md:block">KENYA'S HOTEL OS</span>
-      <span id="hotelBadge" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold">BAOBAB</span>
-    </div>
-    <div class="flex items-center gap-2.5">
-      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121318] border border-white/10 text-[11px] font-bold">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#C6FF00] live-dot"></span><span id="tableLabel">T01</span> • <span id="roomLabel">101</span>
+<!-- TOP -->
+<div class="sticky top-0 z-50 bg-[#060709]/90 backdrop-blur-2xl border-b border-white/10 px-5 py-3.5 flex justify-between items-center">
+  <div class="flex items-center gap-2"><div class="font-boss text-[20px] text-[#FFD400]">GUESTHUB</div><span id="hotelBadge" class="px-2 py-1 rounded-full bg-white/10 text-[10px] font-bold">BAOBAB</span></div>
+  <div class="flex items-center gap-2">
+    <div class="px-3 py-1.5 rounded-full bg-[#121318] border border-white/10 text-[11px] font-bold"><span class="w-1.5 h-1.5 bg-[#C6FF00] rounded-full inline-block live-dot"></span> <span id="roomLabel">101</span></div>
+    <div id="guestAvatar" class="w-8 h-8 rounded-full bg-[#C6FF00] text-black grid place-items-center font-black text-[12px]">G</div>
+  </div>
+</div>
+
+<!-- GREET -->
+<div class="px-5 pt-6">
+  <h1 class="font-boss text-[32px] leading-[0.9] uppercase">Karibu <span id="guestName" class="text-[#C6FF00]">Guest</span>! 👋</h1>
+  <p class="text-[12px] text-white/50 mt-1">Tap any icon — it pops up in the center. Choose in 2 taps.</p>
+</div>
+
+<!-- ICON GRID — CENTER POPUP -->
+<div class="px-5 mt-6">
+  <h3 class="font-boss text-[13px] tracking-widest">WHAT DO YOU NEED?</h3>
+  <div class="grid grid-cols-4 gap-3 mt-3">
+    <button onclick="openPopup('food')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 hover:bg-[#121318]/80 transition active:scale-[0.96]">
+      <div class="text-[28px] group-hover:scale-110 transition">🍽️</div><div class="text-[11px] font-bold">Food</div><div class="text-[9px] text-white/40">18 min</div>
+    </button>
+    <button onclick="openPopup('drinks')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
+      <div class="text-[28px] group-hover:scale-110 transition">🍹</div><div class="text-[11px] font-bold">Drinks</div><div class="text-[9px] text-white/40">5 min</div>
+    </button>
+    <button onclick="openPopup('taxi')" class="group bg-[#FFC61A] rounded-[20px] py-5 flex flex-col items-center gap-1.5 text-black active:scale-[0.96]">
+      <div class="text-[28px]">🚕</div><div class="text-[11px] font-extrabold">Taxi</div><div class="text-[9px] font-bold opacity-70">2 min</div>
+    </button>
+    <button onclick="openPopup('safari')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
+      <div class="text-[28px] group-hover:scale-110 transition">🦁</div><div class="text-[11px] font-bold">Safari</div><div class="text-[9px] text-white/40">Tours</div>
+    </button>
+    <button onclick="openPopup('spa')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
+      <div class="text-[28px]">💆</div><div class="text-[11px] font-bold">Spa</div><div class="text-[9px] text-white/40">In-room</div>
+    </button>
+    <button onclick="openPopup('laundry')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
+      <div class="text-[28px]">🧺</div><div class="text-[11px] font-bold">Laundry</div><div class="text-[9px] text-white/40">2hr</div>
+    </button>
+    <button onclick="openPopup('housekeeping')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
+      <div class="text-[28px]">🛏️</div><div class="text-[11px] font-bold">Room</div><div class="text-[9px] text-white/40">Clean</div>
+    </button>
+    <button onclick="openPopup('more')" class="group bg-[#C6FF00] rounded-[20px] py-5 flex flex-col items-center gap-1.5 text-black active:scale-[0.96]">
+      <div class="text-[28px]">✨</div><div class="text-[11px] font-extrabold">More</div><div class="text-[9px] font-bold opacity-70">All</div>
+    </button>
+  </div>
+</div>
+
+<!-- LIVE TRACKER -->
+<div id="liveTracker" class="hidden mx-5 mt-6 rounded-2xl bg-[#121318] border border-[#C6FF00]/50 p-4 flex gap-3 items-center">
+  <div class="w-12 h-12 rounded-xl bg-[#C6FF00]/20 grid place-items-center text-[20px]">🔔</div>
+  <div class="flex-1"><div class="text-[10px] font-black tracking-widest"><span class="w-2 h-2 bg-emerald-400 rounded-full inline-block live-dot"></span> LIVE TRACKER</div><div id="liveTitle" class="text-[13px] font-bold">Order on the way</div><div id="liveSub" class="text-[10px] text-white/50">Kitchen • WA sent</div></div>
+  <button onclick="openPopup('orders')" class="px-3 py-1.5 rounded-full bg-white text-black text-[10px] font-bold">Track</button>
+</div>
+
+<!-- CENTER POPUP MODAL -->
+<div id="popupBg" class="popup-bg" onclick="if(event.target===this) closePopup()">
+  <div class="popup-card">
+    <!-- Header -->
+    <div class="px-6 py-5 flex justify-between items-center border-b border-white/10 bg-[#121318]">
+      <div>
+        <h2 id="popupTitle" class="font-boss text-[20px] uppercase">FOOD MENU</h2>
+        <p id="popupSub" class="text-[11px] text-white/50 mt-1">Choose what you love — 1 tap to add</p>
       </div>
-      <div id="guestAvatar" class="w-8 h-8 rounded-full bg-[#C6FF00] text-black grid place-items-center font-black text-[12px]">G</div>
-      <div id="apiDot" class="w-2 h-2 rounded-full bg-white/20 ml-1"></div>
+      <button onclick="closePopup()" class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">✕</button>
+    </div>
+    <!-- Search -->
+    <div class="px-4 py-3 bg-[#0A0A0A]"><input id="popupSearch" oninput="searchPopup()" placeholder="Search..." class="w-full bg-[#121318] border border-white/10 rounded-full px-4 py-2.5 text-[13px] outline-none focus:border-[#C6FF00]"></div>
+    <!-- Content -->
+    <div id="popupContent" class="p-3 space-y-2.5 max-h-[55vh] overflow-auto"></div>
+    <!-- Footer Action -->
+    <div class="p-4 border-t border-white/10 bg-[#121318] flex justify-between items-center">
+      <div class="text-[11px] text-white/50"><span id="popupCount">0</span> items selected</div>
+      <button onclick="closePopup(); openCart()" class="h-10 px-5 rounded-full bg-[#C6FF00] text-black font-black text-[12px]">View Cart →</button>
     </div>
   </div>
-
-  <!-- LIVE TRACKER -->
-  <div id="liveTracker" class="hidden mx-3 mb-3 rounded-2xl bg-gradient-to-r from-[#141508] to-[#1A1A0A] border border-[#C6FF00]/50 p-3.5 flex gap-3 items-center">
-    <img id="liveImg" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" class="w-12 h-12 rounded-xl object-cover">
-    <div class="flex-1">
-      <div class="text-[10px] font-black tracking-[0.12em] flex items-center gap-2"><span class="w-2 h-2 bg-emerald-400 rounded-full live-dot"></span>LIVE ORDER TRACKER</div>
-      <div id="liveTitle" class="text-[13px] font-bold mt-0.5">Grilled Seafood • Room 101</div>
-      <div id="liveSub" class="text-[10px] text-white/50">Kitchen inaona jina lako + WA auto sent</div>
-      <div class="text-[10px] mt-1"><span class="text-white/30">✅ Confirmed — ✅ Preparing —</span> <span class="text-[#C6FF00] font-bold">● On the way</span></div>
-    </div>
-    <button onclick="switchTab('orders')" class="text-[10px] font-bold px-3 py-1.5 rounded-full bg-white text-black">Track →</button>
-  </div>
-
-  <!-- CATS -->
-  <div class="px-3 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
-    <button onclick="setFilter('all')" id="f-all" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white text-black">All</button>
-    <button onclick="setFilter('food')" id="f-food" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🍽️ Food</button>
-    <button onclick="setFilter('drinks')" id="f-drinks" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🍹 Drinks</button>
-    <button onclick="setFilter('taxi')" id="f-taxi" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🚕 Taxi</button>
-    <button onclick="setFilter('safari')" id="f-safari" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🦁 Safari</button>
-    <button onclick="setFilter('spa')" id="f-spa" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">💆 Spa</button>
-  </div>
 </div>
 
-<!-- GREET + WEATHER -->
-<div class="px-5 pt-5 flex justify-between gap-4">
-  <div>
-    <h1 class="font-boss text-[34px] leading-[0.9] uppercase">Karibu <span id="guestNameDisplay" class="text-[#C6FF00]">Guest</span>! 👋</h1>
-    <div class="text-[11px] mt-1.5 text-white/50"><span id="roomDisplay" class="text-[#C6FF00] font-bold">Room 101</span> • <span id="timeGreet">Good Afternoon</span> • <span id="stayDay">Day 1</span> • <span class="px-1.5 py-0.5 rounded bg-[#C6FF00]/10 text-[#C6FF00]">QR Linked</span></div>
-  </div>
-  <div class="min-w-[110px] glass rounded-2xl p-3 text-center">
-    <div class="text-[16px] font-black">⛅ 24°C</div><div class="text-[9px] text-[#C6FF00] font-bold">Diani • Sunny</div><div class="text-[8px] text-white/30 mt-1">OS V4 • WA ON</div>
-  </div>
+<!-- CART -->
+<div id="cartFloat" class="cart-float fixed bottom-5 left-3 right-3 z-40 bg-[#C6FF00] text-black rounded-full px-5 py-3.5 flex justify-between items-center font-black text-[13px]" onclick="openCart()">
+  <span>🛒 <span id="cartCount">0</span> • KSh <span id="cartTotal">0</span></span><span class="bg-black text-[#C6FF00] px-3 py-1 rounded-full text-[11px]">CHECKOUT →</span>
 </div>
 
-<!-- QUICK ACTIONS — YOUR ULTRA + MY WORLD CLASS -->
-<div class="px-5 mt-5">
-  <div class="flex justify-between items-center"><h3 class="font-boss text-[14px] tracking-wide">QUICK ACTIONS — 1 TAP</h3><span class="text-[10px] font-bold text-[#C6FF00]">WHATSAPP ON</span></div>
-  <div class="grid grid-cols-4 gap-2.5 mt-3">
-    <button onclick="quick('food')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center hover:border-[#C6FF00]/50"><div class="text-[22px]">🍽️</div><div class="text-[10px] font-bold mt-1">Food</div></button>
-    <button onclick="quick('taxi')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🚕</div><div class="text-[10px] font-bold mt-1">Taxi</div></button>
-    <button onclick="quick('safari')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🦁</div><div class="text-[10px] font-bold mt-1">Safari</div></button>
-    <button onclick="quick('spa')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🧖</div><div class="text-[10px] font-bold mt-1">Massage</div></button>
-    <button onclick="quick('water')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">💧</div><div class="text-[10px] font-bold mt-1">Water</div></button>
-    <button onclick="quick('laundry')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🧺</div><div class="text-[10px] font-bold mt-1">Laundry</div></button>
-    <button onclick="sos()" class="card-press bg-[#1A0E0E] border border-red-500/30 rounded-2xl py-3 text-center"><div class="text-[22px]">🆘</div><div class="text-[10px] font-bold mt-1 text-red-400">SOS</div></button>
-    <button onclick="quick('taxi-now')" class="card-press bg-[#FFC61A] rounded-2xl py-3 text-center text-black"><div class="text-[22px]">⚡</div><div class="text-[10px] font-extrabold mt-1">Taxi Now</div></button>
-  </div>
-</div>
-
-<!-- MOOD -->
-<div class="mx-5 mt-5 glass rounded-2xl p-4">
-  <div class="text-[12px] font-bold">How are you feeling? I'll suggest perfect 👇</div>
-  <div class="flex flex-wrap gap-2 mt-3">
-    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'tired')">😴 Tired</span>
-    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'hungry')">😋 Hungry</span>
-    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'party')">🥳 Party</span>
-    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'relax')">🧘 Relax</span>
-    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'romantic')">❤️ Romantic</span>
-  </div>
-  <div id="moodSuggest" class="hidden mt-3 p-3 rounded-xl bg-[#0A0A0A] border border-[#C6FF00]/20 text-[11px]"></div>
-</div>
-
-<!-- STORIES -->
-<div class="mt-5 px-5 flex justify-between"><h3 class="font-boss text-[13px]">HOTEL EXPERIENCES</h3><span class="text-[10px] font-bold text-[#C6FF00]">Stories • 5 • OS V4</span></div>
-<div id="storiesRow" class="mt-2 flex gap-3 overflow-x-auto no-scrollbar px-5"></div>
-
-<!-- HERO MINI LIME -->
-<div class="mx-5 mt-5 rounded-[20px] bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] p-4 text-black flex justify-between items-center">
-  <div><div id="heroTitle" class="font-black text-[15px] leading-tight">Karibu! Eat, Ride, Explore — OS V4</div><div id="heroSub" class="text-[11px] opacity-70 font-bold mt-1">Order food • Book taxi • Safari tomorrow • Auto routed to WhatsApp! <span id="heroGuest">Guest Room 101</span></div></div>
-  <div class="text-[20px]">→</div>
-</div>
-
-<!-- TABS -->
-<div class="sticky top-[105px] z-50 bg-[#060709]/95 backdrop-blur-xl px-5 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b border-white/5">
-  <button onclick="switchTab('menu')" id="tab-menu" class="tab-active whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold border">🍽️ MENU</button>
-  <button onclick="switchTab('rides')" id="tab-rides" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">🚕 RIDES & TOURS</button>
-  <button onclick="switchTab('services')" id="tab-services" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">🧖 SERVICES</button>
-  <button onclick="switchTab('orders')" id="tab-orders" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">📋 MY ORDERS</button>
-</div>
-
-<!-- CONTENT -->
-<div class="px-3 pt-3">
-  <div id="sec-menu" class="space-y-3"></div>
-  <div id="sec-rides" class="hidden space-y-3"></div>
-  <div id="sec-services" class="hidden space-y-3"></div>
-  <div id="sec-orders" class="hidden"><div id="myOrders" class="text-center text-white/30 text-[13px] py-16">No orders yet. Order pilau mkuu!</div></div>
-</div>
-
-<!-- AI CONCIERGE -->
-<div class="mx-3 mt-6 glass rounded-2xl p-3 flex gap-3 items-center" onclick="openChat()">
-  <div class="w-9 h-9 rounded-full bg-[#C6FF00] grid place-items-center text-black">🤖</div>
-  <div class="flex-1"><div class="text-[12px] font-bold">AI Concierge — WhatsApp Routing ON</div><div class="text-[10px] text-white/50">Order Pilau → Kitchen WA • Taxi → Taxi WA</div></div><div class="text-[#C6FF00]">→</div>
-</div>
-
-<!-- CART FLOAT -->
-<div id="cartFloat" class="cart-float fixed bottom-[84px] left-3 right-3 z-[60] bg-[#C6FF00] text-black rounded-full px-5 py-3.5 flex justify-between items-center font-black text-[13px] glow-lime" onclick="openCart()">
-  <span>🛒 <span id="cartCount">0</span> items • KSh <span id="cartTotal">0</span></span><span>View →</span>
-</div>
-
-<!-- CART SHEET -->
-<div id="cartSheet" class="sheet fixed bottom-0 left-0 right-0 z-[200] bg-[#0E0E12] border-t border-white/10 rounded-t-[26px] p-5 max-h-[85vh] overflow-auto">
+<div id="cartSheet" class="fixed bottom-0 left-0 right-0 z-[400] bg-[#0E0E12] border-t border-white/10 rounded-t-[28px] p-6 max-h-[85vh] overflow-auto hidden">
   <div class="w-9 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
-  <h2 class="font-boss text-[18px] uppercase">Your Cart — <span id="cartRoomDisplay">Room 101</span></h2>
+  <h2 class="font-boss text-[18px]">YOUR CART — <span id="cartRoom">Room 101</span></h2>
   <div id="cartItems" class="mt-4 space-y-2"></div>
-  <div class="mt-4 bg-[#111114] border border-white/10 rounded-xl p-3">
-    <div class="text-[10px] text-white/40 font-bold tracking-widest">PAY TO HOTEL • Till / Paybill — Auto Routed to Dept WA</div>
-    <div id="payInfo" class="font-bold text-[13px] mt-1">Till Loading...</div>
-    <div class="text-[10px] text-white/40 mt-1">Use <span id="payAccount" class="text-white">T01 — Guest</span> as Account Number</div>
-  </div>
-  <input id="guestNameInput" placeholder="Confirm your name" class="w-full mt-3 bg-[#1A1A20] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
-  <button onclick="checkout()" class="w-full mt-3 h-14 rounded-full bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] text-black font-black text-[15px]">💳 ORDER & PAY — AUTO ROUTE TO WHATSAPP</button>
-  <button onclick="closeCart()" class="w-full mt-2 h-12 rounded-full bg-white/10 border border-white/10 font-bold text-[13px]">Continue Shopping</button>
+  <div class="mt-4 bg-[#111114] border border-white/10 rounded-xl p-3"><div class="text-[10px] text-white/40">PAY TO HOTEL • Auto routed to dept WA</div><div id="payInfo" class="font-bold text-[13px]">Till 123456 • BAOBAB</div></div>
+  <input id="guestInput" placeholder="Your name" class="w-full mt-3 bg-[#1A1A20] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
+  <button onclick="checkout()" class="w-full mt-3 h-14 rounded-full bg-[#C6FF00] text-black font-black">💳 ORDER & PAY — WHATSAPP AUTO</button>
+  <button onclick="closeCart()" class="w-full mt-2 h-12 rounded-full bg-white/10 border border-white/10 font-bold text-[13px]">Continue</button>
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0A0A0E]/95 backdrop-blur-2xl border-t border-white/10 grid grid-cols-4 py-2">
-  <button onclick="switchTab('menu')" id="nav-menu" class="text-center text-[#C6FF00]"><div class="text-[18px]">🍽️</div><div class="text-[9px] font-bold mt-1">Menu</div></button>
-  <button onclick="switchTab('rides')" id="nav-rides" class="text-center opacity-40"><div class="text-[18px]">🚕</div><div class="text-[9px] font-bold mt-1">Rides</div></button>
-  <button onclick="switchTab('services')" id="nav-services" class="text-center opacity-40"><div class="text-[18px]">🧖</div><div class="text-[9px] font-bold mt-1">Services</div></button>
-  <button onclick="switchTab('orders')" id="nav-orders" class="text-center opacity-40"><div class="text-[18px]">📋</div><div class="text-[9px] font-bold mt-1">Orders</div></button>
-</div>
-
-<!-- IDENTITY MODAL — YOUR ULTRA -->
+<!-- IDENTITY -->
 <div id="identityModal" class="fixed inset-0 z-[999] bg-black/90 backdrop-blur-md grid place-items-center p-5">
-  <div class="w-full max-w-[380px] bg-[#151517] border border-white/10 rounded-[24px] p-6">
-    <h2 class="font-boss text-[22px] text-[#C6FF00]">Karibu! OS V4 👋</h2>
-    <p class="text-[11px] text-white/50 mt-2 leading-5">Ili Kitchen, Taxi & Housekeeping wakutambue + WhatsApp auto-routing — tujue wewe ni nani! GM ame-setup departments.</p>
-    <div class="mt-4 space-y-3">
-      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">YOUR NAME *</label><input id="gName" placeholder="James" class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
-      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">PHONE / WHATSAPP *</label><input id="gPhone" placeholder="0707..." class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
-      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">ROOM NUMBER *</label><input id="gRoom" placeholder="101" class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
-    </div>
-    <button onclick="saveIdentity()" class="w-full mt-5 h-12 rounded-full bg-[#C6FF00] text-black font-black text-[14px]">✅ Continue — QR Linked</button>
-    <div class="text-[9px] text-white/30 text-center mt-3">We remember you • Orders show: Name + Room + Phone + WA auto to Dept</div>
+  <div class="w-full max-w-[360px] bg-[#151517] border border-white/10 rounded-[24px] p-6">
+    <h2 class="font-boss text-[22px] text-[#C6FF00]">Karibu! OS V5 👋</h2>
+    <p class="text-[11px] text-white/50 mt-2">Jina lako ili Kitchen & Taxi wakujue — QR linked to room.</p>
+    <input id="gName" placeholder="Your name" class="w-full mt-4 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
+    <input id="gPhone" placeholder="WhatsApp 0707..." class="w-full mt-3 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
+    <input id="gRoom" placeholder="Room 101" class="w-full mt-3 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
+    <button onclick="saveIdentity()" class="w-full mt-5 h-12 rounded-full bg-[#C6FF00] text-black font-black">✅ Continue — QR Linked</button>
   </div>
 </div>
 
 <script>
-const API='/api';
-const $=id=>document.getElementById(id);
+const API='/api'; const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const HOTEL_ID=(params.get('hotel')||'BAOBAB').toUpperCase();
 const ROOM_PARAM=params.get('room')||'101';
-const TABLE_PARAM='T'+ROOM_PARAM.padStart(2,'0');
-let cart=[], menuItems=[], hotelServices=[], myOrdersList=[], payInfo={}, currentFilter='all';
+let cart=[], myOrders=[], currentPopup='', allData=[];
 
-const FALLBACK_MENU=[
-  {id:'f1',name:'Grilled Seafood Platter',category:'Food',price:2450,desc:'Catch of the day, fries, kachumbari',icon:'🦞',time:'18 min',badge:'BESTSELLER',department:'kitchen'},
-  {id:'f2',name:'Swahili Pilau + Kachumbari',category:'Food',price:950,desc:'Coastal pilau, beef, raita',icon:'🍛',time:'14 min',badge:'',department:'kitchen'},
-  {id:'f3',name:'Chicken Shawarma Box',category:'Food',price:850,desc:'Double chicken, garlic',icon:'🌯',time:'12 min',badge:'FAST',department:'kitchen'},
-  {id:'d1',name:'Dawa Cocktail',category:'Drinks',price:650,desc:'Vodka, honey, lime',icon:'🍹',time:'5 min',badge:'',department:'bar'},
-  {id:'d2',name:'Fresh Mango Juice',category:'Drinks',price:350,desc:'Cold pressed',icon:'🥭',time:'3 min',badge:'',department:'bar'},
-  {id:'t1',name:'Taxi to Diani Beach',category:'Taxi',price:800,desc:'Driver 2 min, Prado',icon:'🚕',time:'2 min',badge:'24H',department:'taxi'},
-  {id:'s1',name:'Wasini Dolphin Tour',category:'Safari',price:6500,desc:'Full day, lunch, snorkeling',icon:'🐬',time:'Tomorrow 7am',badge:'15% HOTEL',department:'tours'},
-  {id:'sp1',name:'Swedish Massage 60min',category:'Spa',price:3500,desc:'In-room, female therapist',icon:'💆',time:'30 min',badge:'',department:'spa'},
-];
+const DATA={
+  food:[
+    {id:'f1',name:'Grilled Seafood Platter',price:2450,desc:'Catch of day, fries, kachumbari',icon:'🦞',time:'18 min',badge:'BESTSELLER',dept:'kitchen'},
+    {id:'f2',name:'Swahili Pilau + Kachumbari',price:950,desc:'Coastal pilau, beef, raita',icon:'🍛',time:'14 min',dept:'kitchen'},
+    {id:'f3',name:'Chicken Shawarma Box',price:850,desc:'Double chicken, garlic sauce',icon:'🌯',time:'12 min',badge:'FAST',dept:'kitchen'},
+    {id:'f4',name:'Margherita Pizza 12"',price:1200,desc:'Wood fired, mozzarella',icon:'🍕',time:'20 min',dept:'kitchen'},
+  ],
+  drinks:[
+    {id:'d1',name:'Dawa Cocktail',price:650,desc:'Vodka, honey, lime — Diani classic',icon:'🍹',time:'5 min',dept:'bar'},
+    {id:'d2',name:'Fresh Mango Juice',price:350,desc:'Cold pressed',icon:'🥭',time:'3 min',dept:'bar'},
+    {id:'d3',name:'Tusker Lager 500ml',price:400,desc:'Cold',icon:'🍺',time:'2 min',dept:'bar'},
+  ],
+  taxi:[
+    {id:'tx1',name:'Taxi to Diani Beach',price:800,desc:'Driver 2 min, Prado',icon:'🚕',time:'2 min',badge:'24H',dept:'taxi'},
+    {id:'tx2',name:'Taxi to Ukunda Airport',price:1500,desc:'15 min ride',icon:'✈️',time:'Now',dept:'taxi'},
+    {id:'tx3',name:'Full Day Taxi — South Coast',price:6500,desc:'8 hours, driver waiting',icon:'🚙',time:'Today',dept:'taxi'},
+  ],
+  safari:[
+    {id:'sf1',name:'Wasini Dolphin Tour',price:6500,desc:'Full day, lunch, snorkeling, dolphins',icon:'🐬',time:'Tomorrow 7am',badge:'15% HOTEL',dept:'tours'},
+    {id:'sf2',name:'Shimba Hills Safari',price:4500,desc:'Half day, elephants, waterfall',icon:'🐘',time:'Tomorrow',dept:'tours'},
+    {id:'sf3',name:'Maasai Mara 2 Days',price:28000,desc:'Flight + lodge + game drive',icon:'🦁',time:'Weekend',dept:'tours'},
+  ],
+  spa:[
+    {id:'sp1',name:'Swedish Massage 60min',price:3500,desc:'In-room, female therapist, oils',icon:'💆',time:'30 min',dept:'spa'},
+    {id:'sp2',name:'Manicure + Pedicure',price:2500,desc:'Gel polish, 45 min',icon:'💅',time:'1 hour',dept:'spa'},
+  ],
+  laundry:[
+    {id:'ld1',name:'Express Laundry — 2hr',price:500,desc:'Wash + iron, per kg',icon:'🧺',time:'2 hr',dept:'laundry'},
+    {id:'ld2',name:'Shoe Cleaning',price:300,desc:'Sneakers polished',icon:'👟',time:'1 hr',dept:'laundry'},
+  ],
+  housekeeping:[
+    {id:'hk1',name:'Room Cleaning Now',price:0,desc:'Clean my room in 10 min',icon:'🛏️',time:'10 min',dept:'housekeeping'},
+    {id:'hk2',name:'Extra Towels + Water',price:0,desc:'2 towels + 2 waters',icon:'💧',time:'5 min',dept:'housekeeping'},
+    {id:'hk3',name:'Fix AC / TV / WiFi',price:0,desc:'Technician comes',icon:'🔧',time:'15 min',dept:'maintenance'},
+  ]
+};
 
-const EXPERIENCES=[
-  {t:'Sunset Safari',img:'https://images.unsplash.com/photo-1516426122078-c23e76319801',d:'Today 5pm'},
-  {t:'Pool & Lounge',img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d',d:'Happy hour'},
-  {t:'Spa',img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',d:'60min @2500'},
-  {t:'Rooftop Dinner',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0',d:'Live band'},
-  {t:'Coffee Tasting',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93',d:'Kenya AA'}
-];
+function openPopup(type){
+  currentPopup=type;
+  const bg=$('popupBg'), title=$('popupTitle'), sub=$('popupSub'), content=$('popupContent');
+  const map={food:['🍽️ FOOD MENU','Choose your meal — chef sees your name'],drinks:['🍹 DRINKS','Cold drinks to your room'],taxi:['🚕 TAXI & RIDES','Driver in 2 min — WA auto'],safari:['🦁 SAFARI & TOURS','Book tomorrow — 15% hotel cut'],spa:['💆 SPA & MASSAGE','In-room therapist'],laundry:['🧺 LAUNDRY','2hr express'],housekeeping:['🛏️ ROOM SERVICE','Free — housekeeping WA'],more:['✨ ALL SERVICES','Everything in one place'],orders:['📋 MY ORDERS','Track your orders live']};
+  const [t,s]=map[type]||['SERVICES','Choose'];
+  title.textContent=t; sub.textContent=s;
+  $('popupSearch').value='';
 
-function renderStories(){
-  $('storiesRow').innerHTML=EXPERIENCES.map(ex=>`
-    <div onclick="quick('${ex.t.toLowerCase()}')" class="shrink-0 text-center cursor-pointer">
-      <div class="w-[62px] h-[62px] rounded-full p-[2px] bg-gradient-to-tr from-[#C6FF00] to-[#FFC61A]"><img src="${ex.img}" class="w-full h-full rounded-full object-cover border-[3px] border-[#060709]"></div>
-      <div class="text-[9px] font-bold mt-1">${ex.t}</div>
+  let items=[];
+  if(type==='more') items=Object.values(DATA).flat();
+  else if(type==='orders') { renderOrdersInPopup(); bg.classList.add('show'); return; }
+  else items=DATA[type]||[];
+
+  allData=items;
+  renderPopupItems(items);
+  bg.classList.add('show');
+  if(navigator.vibrate) navigator.vibrate(20);
+}
+
+function renderPopupItems(items){
+  $('popupContent').innerHTML=items.map(it=>`
+    <div class="group flex gap-3 p-3.5 rounded-2xl bg-[#121318] border border-white/10 hover:border-[#C6FF00]/40 transition active:scale-[0.98] cursor-pointer" onclick="addToCart('${it.id}')">
+      <div class="w-12 h-12 rounded-xl bg-[#1A1C1F] grid place-items-center text-[22px] shrink-0">${it.icon}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex justify-between gap-2"><span class="font-bold text-[13px] truncate">${it.name}</span>${it.badge?`<span class="text-[8px] font-bold px-2 py-0.5 rounded-full bg-[#C6FF00] text-black h-fit">${it.badge}</span>`:''}</div>
+        <div class="text-[11px] text-white/50 truncate">${it.desc} • ⏱️ ${it.time}</div>
+        <div class="flex justify-between items-center mt-2"><span class="font-black text-[#C6FF00] text-[13px]">${it.price===0?'FREE':'KSh '+it.price.toLocaleString()}</span><span class="h-7 px-3 rounded-full bg-white text-black text-[11px] font-bold grid place-items-center">+ Add</span></div>
+      </div>
+    </div>
+  `).join('') || `<div class="text-center py-10 opacity-30 text-[13px]">No items found</div>`;
+  $('popupCount').textContent=cart.length;
+}
+
+function searchPopup(){
+  const q=$('popupSearch').value.toLowerCase();
+  const filtered=allData.filter(i=>i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q));
+  renderPopupItems(filtered);
+}
+
+function closePopup(){ $('popupBg').classList.remove('show'); }
+
+function renderOrdersInPopup(){
+  const content=$('popupContent');
+  if(myOrders.length===0) content.innerHTML=`<div class="text-center py-12 opacity-40 text-[13px]">No orders yet.<br>Tap Food to order pilau mkuu!</div>`;
+  else content.innerHTML=myOrders.map(o=>`
+    <div class="bg-[#121318] border border-white/10 rounded-2xl p-4">
+      <div class="flex justify-between text-[10px]"><span class="text-white/40">🕒 ${o.time} • Room ${o.room}</span><span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">${o.dept.toUpperCase()}</span></div>
+      <div class="font-bold text-[13px] mt-2">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+      <div class="text-[11px] text-white/50 mt-1">KSh ${o.total.toLocaleString()} ${o.wa?`• WA ${o.wa}`:''}</div>
     </div>
   `).join('');
 }
 
-function checkIdentity(){
-  const name=localStorage.getItem('guest_name'), room=localStorage.getItem('guest_room'), phone=localStorage.getItem('guest_phone');
-  if(name&&room){
-    $('identityModal').style.display='none';
-    $('guestNameDisplay').textContent=name.split(' ')[0];
-    $('roomDisplay').textContent='Room '+room;
-    $('roomLabel').textContent=room; $('tableLabel').textContent='T'+room.padStart(2,'0');
-    $('guestAvatar').textContent=name[0].toUpperCase();
-    $('guestNameInput').value=name;
-    $('cartRoomDisplay').textContent=`Room ${room} — ${name}`;
-    $('payAccount').textContent=`T${room} — ${name}`;
-    $('heroGuest').textContent=`${name} — Room ${room} — QR Linked`;
-    const hr=new Date().getHours(); $('timeGreet').textContent=hr<12?'Good Morning':hr<18?'Good Afternoon':'Good Evening';
-    $('hotelBadge').textContent=HOTEL_ID; $('gRoom').value=room;
-    loadLive();
-  } else {
-    $('gRoom').value=ROOM_PARAM; $('identityModal').style.display='grid';
-  }
-}
-
-async function saveIdentity(){
-  const name=$('gName').value.trim(), phone=$('gPhone').value.trim(), room=$('gRoom').value.trim();
-  if(!name||!phone||!room) return alert('Jaza zote mkuu!');
-  localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone); localStorage.setItem('guest_room',room);
-  try{ const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); await supa.schema('guesthub_os').from('guest_sessions').insert([{room_number:room,table_id:'T'+room,guest_name:name,guest_phone:phone,hotel_id:HOTEL_ID}]); }catch{}
-  checkIdentity(); renderStories();
-}
-
-function setFilter(f){
-  currentFilter=f;
-  document.querySelectorAll('[id^="f-"]').forEach(b=>b.className='whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10');
-  const a=$('f-'+f); if(a) a.className='whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white text-black';
-  renderAll();
-}
-
-function setMood(el,m){
-  document.querySelectorAll('.mood').forEach(o=>o.classList.remove('on')); el.classList.add('on');
-  const map={tired:`😴 Tired? → Massage + Soup to Room ${localStorage.getItem('guest_room')||'101'}`,hungry:`😋 Hungry? → Grill 15min to Room ${localStorage.getItem('guest_room')||'101'}`,party:'🥳 Party? → Rooftop + DJ Tonight',relax:'🧘 Relax? → Spa 60min in-room',romantic:'❤️ Romantic? → Rooftop Dinner for 2'};
-  const sug=$('moodSuggest'); sug.classList.remove('hidden'); sug.innerHTML=`<b class="text-[#C6FF00]">${map[m]}</b> <button onclick="quick('${m}')" class="ml-2 px-3 py-1 rounded-full bg-[#C6FF00] text-black font-bold text-[10px]">Book Now</button>`;
-}
-
-function switchTab(name){
-  ['menu','rides','services','orders'].forEach(n=>{
-    $('sec-'+n).classList.toggle('hidden', n!==name);
-    const tb=$('tab-'+n); if(tb) tb.className=n===name?'tab-active whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold border':'whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10';
-    const nb=$('nav-'+n); if(nb) nb.className=n===name?'text-center text-[#C6FF00]':'text-center opacity-40';
-  });
-  if(name==='orders') renderMyOrders();
-}
-
-async function loadOS(){
-  try{
-    if(typeof SUPABASE_URL==='undefined'){ menuItems=FALLBACK_MENU; hotelServices=FALLBACK_MENU.filter(i=>['taxi','tours','spa'].includes(i.department)); renderAll(); return; }
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const [menuRes, svcRes, hotelRes]=await Promise.all([
-      supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true).limit(50),
-      supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true).limit(50),
-      supa.from('hotels').select('till_number,m_pesa_name,hotel_name').eq('hotel_id',HOTEL_ID).maybeSingle()
-    ]);
-    menuItems=(menuRes.data&&menuRes.data.length?menuRes.data:[]).map(m=>({id:m.id,name:m.name,category:m.category||'Food',price:Number(m.price),desc:m.description,icon:'🍛',time:'15 min',badge:'',department:m.department||'kitchen'}));
-    if(menuItems.length===0) menuItems=FALLBACK_MENU.filter(i=>['food','drinks'].includes(i.category.toLowerCase()));
-    hotelServices=(svcRes.data&&svcRes.data.length?svcRes.data:[]).map(s=>({id:s.id,name:s.title,category:s.department==='taxi'?'Taxi':s.department==='tours'?'Safari':'Spa',price:Number(s.price),desc:s.description,icon:s.icon||'🚕',time:'Now',badge:'',department:s.department}));
-    if(hotelServices.length===0) hotelServices=FALLBACK_MENU.filter(i=>['taxi','safari','spa'].includes(i.category.toLowerCase()));
-    if(hotelRes.data){ $('payInfo').textContent=`Till ${hotelRes.data.till_number||'123456'} • ${hotelRes.data.m_pesa_name||HOTEL_ID}`; $('hotelBadge').textContent=HOTEL_ID; }
-    else $('payInfo').textContent=`Till 123456 • ${HOTEL_ID}`;
-  }catch(e){ menuItems=FALLBACK_MENU; hotelServices=FALLBACK_MENU.filter(i=>['Taxi','Safari','Spa'].includes(i.category)); $('payInfo').textContent=`Till 123456 • ${HOTEL_ID}`; }
-  renderAll();
-}
-
-function renderAll(){
-  const all=[...menuItems,...hotelServices];
-  const filtered=currentFilter==='all'?all:all.filter(i=>i.category.toLowerCase()===currentFilter || i.department===currentFilter);
-
-  const menuFiltered = currentFilter==='all'||['food','drinks','all'].includes(currentFilter)? (currentFilter==='all'?menuItems:filtered.filter(i=>['Food','Drinks'].includes(i.category))) : [];
-  const ridesFiltered = currentFilter==='all'||['taxi','safari'].includes(currentFilter)? (currentFilter==='all'?hotelServices.filter(s=>['taxi','tours'].includes(s.department)):filtered) : [];
-
-  // MENU SEC
-  if(menuFiltered.length===0 && currentFilter==='all') {
-    $('sec-menu').innerHTML=`
-      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">${[...new Set(all.map(i=>i.category))].map(c=>`<button onclick="setFilter('${c.toLowerCase()}')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-[11px] font-bold">${c}</button>`).join('')}</div>
-      <div class="space-y-2">${all.map(renderCard).join('')}</div>`;
-  } else if(currentFilter==='all'){
-    $('sec-menu').innerHTML=`<div class="space-y-2">${menuItems.map(renderCard).join('')}</div>`;
-  } else {
-    $('sec-menu').innerHTML=`<div class="space-y-2">${filtered.map(renderCard).join('') || '<div class="text-center py-10 opacity-30">No items in '+currentFilter+'</div>'}</div>`;
-  }
-
-  // RIDES
-  $('sec-rides').innerHTML = ridesFiltered.length? `<div class="space-y-2">${ridesFiltered.map(renderCard).join('')}</div>` : `<div class="text-center py-16 opacity-30 text-[13px]">GM bado haja-add Rides — Add in GM Dashboard → Services</div>`;
-
-  // SERVICES
-  const servicesOnly = hotelServices.filter(s=>!['taxi','tours'].includes(s.department));
-  $('sec-services').innerHTML = servicesOnly.length? `<div class="grid grid-cols-2 gap-2.5">${servicesOnly.map(s=>`
-    <div onclick="addToCart('${s.id}')" class="card-press bg-[#121318] border border-white/10 rounded-2xl p-4">
-      <div class="text-[28px]">${s.icon}</div><div class="font-bold text-[13px] mt-2">${s.name}</div><div class="text-[11px] text-white/50 mt-1">${s.desc}</div><div class="mt-3 inline-flex px-2.5 py-1 rounded-full bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[#C6FF00] text-[11px] font-bold">KSh ${s.price}</div>
-    </div>
-  `).join('')}</div>` : `<div class="text-center py-16 opacity-30 text-[13px]">Spa & Services coming soon</div>`;
-}
-
-function renderCard(item){
-  return `
-  <div onclick="addToCart('${item.id}')" class="card-press bg-[#121318] border border-white/10 rounded-[18px] p-3.5 flex gap-3.5">
-    <div class="w-[56px] h-[56px] rounded-xl bg-[#1A1C1F] grid place-items-center text-[26px] shrink-0">${item.icon||'🍛'}</div>
-    <div class="flex-1 min-w-0">
-      <div class="flex justify-between gap-2"><div class="font-bold text-[13px] truncate">${item.name}</div>${item.badge?`<span class="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#C6FF00] text-black h-fit">${item.badge}</span>`:''}</div>
-      <div class="text-[11px] text-white/50 truncate">${item.desc||''} • ⏱️ ${item.time||'15 min'}</div>
-      <div class="flex justify-between items-center mt-2.5"><span class="font-black text-[13px] text-[#C6FF00]">KSh ${Number(item.price).toLocaleString()}</span><button class="h-7 px-3.5 rounded-full bg-white text-black text-[11px] font-bold">+ Add</button></div>
-    </div>
-  </div>`;
-}
-
 function addToCart(id){
-  const all=[...menuItems,...hotelServices,...FALLBACK_MENU];
-  const item=all.find(i=>String(i.id)===String(id)); if(!item) return;
-  const ex=cart.find(c=>String(c.id)===String(id)); if(ex) ex.qty++; else cart.push({...item,qty:1});
-  updateCart(); if(navigator.vibrate) navigator.vibrate(25);
+  let item=Object.values(DATA).flat().find(i=>i.id===id);
+  if(!item) return;
+  let ex=cart.find(c=>c.id===id); if(ex) ex.qty++; else cart.push({...item,qty:1});
+  updateCart(); if(navigator.vibrate) navigator.vibrate(30);
+  // show added feedback
+  const btn=event?.currentTarget?.querySelector('span:last-child');
+  if(btn){ const old=btn.textContent; btn.textContent='✓ Added'; btn.className='h-7 px-3 rounded-full bg-[#C6FF00] text-black text-[11px] font-bold grid place-items-center'; setTimeout(()=>{btn.textContent=old; btn.className='h-7 px-3 rounded-full bg-white text-black text-[11px] font-bold grid place-items-center';},800); }
 }
 
 function updateCart(){
   const count=cart.reduce((s,i)=>s+i.qty,0), total=cart.reduce((s,i)=>s+i.price*i.qty,0);
   $('cartCount').textContent=count; $('cartTotal').textContent=total.toLocaleString();
+  $('popupCount').textContent=count;
   $('cartFloat').classList.toggle('show',count>0);
   $('cartItems').innerHTML=cart.map(i=>`
     <div class="flex justify-between py-2.5 border-b border-white/10">
-      <div><b class="text-[13px]">${i.name} x${i.qty}</b><br><span class="text-[10px] text-white/40">${i.department||'kitchen'} • Room ${localStorage.getItem('guest_room')||ROOM_PARAM} — ${localStorage.getItem('guest_name')||'Guest'}</span></div>
+      <div><b class="text-[13px]">${i.name} x${i.qty}</b><br><span class="text-[10px] text-white/40">${i.dept} • ${i.time}</span></div>
       <div class="text-right"><b class="text-[13px]">KSh ${(i.price*i.qty).toLocaleString()}</b><br><button onclick="removeCart('${i.id}')" class="text-[10px] text-red-400">Remove</button></div>
     </div>
   `).join('')+`<div class="flex justify-between font-black text-[15px] pt-3"><span>Total</span><span>KSh ${total.toLocaleString()}</span></div>`;
 }
-function removeCart(id){ cart=cart.filter(c=>String(c.id)!==String(id)); updateCart(); }
-function openCart(){ $('cartSheet').classList.add('open'); }
-function closeCart(){ $('cartSheet').classList.remove('open'); }
-
-async function quick(type){
-  if(['water','food'].includes(type)){ const item=menuItems.find(m=>m.name.toLowerCase().includes(type))||FALLBACK_MENU[0]; addToCart(item.id); return; }
-  if(type==='taxi-now'){ const item=hotelServices.find(s=>s.department==='taxi')||FALLBACK_MENU.find(f=>f.department==='taxi'); addToCart(item.id); openCart(); return; }
-  if(['taxi','safari','spa','laundry'].includes(type)){ orderQuick(type); }
-}
-async function orderQuick(svc){
-  const room=localStorage.getItem('guest_room')||ROOM_PARAM, name=localStorage.getItem('guest_name')||'Guest', phone=localStorage.getItem('guest_phone')||'', table='T'+room.padStart(2,'0');
-  const dept=svc.includes('taxi')?'taxi':svc.includes('safari')?'tours':svc.includes('massage')||svc.includes('spa')?'spa':svc.includes('laundry')?'laundry':'kitchen';
-  const payload={hotel_id:HOTEL_ID,room_number:room,table_id:table,guest_name:name,guest_phone:phone,items:[{name:svc.toUpperCase(),qty:1,price:0}],total:0,department:dept,location_label:`Room ${room} - ${name} - ${phone}`};
-  try{
-    const res=await fetch(API+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const j=await res.json();
-    myOrdersList.unshift({time:new Date().toLocaleTimeString(),items:payload.items,total:0,room,name,phone,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
-    alert(`✅ ${svc.toUpperCase()} booked!\n👤 ${name} - Room ${room}\n📱 Routed to ${dept.toUpperCase()} → WA ${j.routing?.to||''}`);
-    $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=svc.toUpperCase()+' for '+name; $('liveSub').textContent=`Room ${room} • ${dept} • WA ${j.routing?.to||''}`;
-    if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
-  }catch(e){ alert('Order sent locally — WA routing when online'); }
-}
+function removeCart(id){ cart=cart.filter(c=>c.id!==id); updateCart(); }
+function openCart(){ $('cartSheet').classList.remove('hidden'); }
+function closeCart(){ $('cartSheet').classList.add('hidden'); }
 
 async function checkout(){
   if(cart.length===0) return alert('Cart empty');
   const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gName=$('guestNameInput').value||localStorage.getItem('guest_name')||'Guest';
+  const gName=$('guestInput').value||localStorage.getItem('guest_name')||'Guest';
   const gRoom=localStorage.getItem('guest_room')||ROOM_PARAM, gPhone=localStorage.getItem('guest_phone')||'', gTable='T'+gRoom.padStart(2,'0');
-  const byDept={}; cart.forEach(c=>{const d=c.department||'kitchen'; if(!byDept[d])byDept[d]=[]; byDept[d].push(c)});
-  const btn=document.querySelector('#cartSheet button'); btn.textContent='SENDING...';
+  const byDept={}; cart.forEach(c=>{const d=c.dept||'kitchen'; if(!byDept[d])byDept[d]=[]; byDept[d].push(c);});
   for(const dept in byDept){
     const items=byDept[dept], deptTotal=items.reduce((s,i)=>s+i.price*i.qty,0);
     const payload={hotel_id:HOTEL_ID,room_number:gRoom,table_id:gTable,guest_name:gName,guest_phone:gPhone,items,total:deptTotal,department:dept,location_label:`Room ${gRoom} - ${gName} - ${gPhone}`};
     try{
       const res=await fetch(API+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
       const j=await res.json();
-      myOrdersList.unshift({time:new Date().toLocaleTimeString(),items,total:deptTotal,room:gRoom,guest:gName,phone:gPhone,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
+      myOrders.unshift({time:new Date().toLocaleTimeString(),items,total:deptTotal,room:gRoom,guest:gName,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
       if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
     }catch{}
   }
-  alert(`✅ ORDER CONFIRMED! ${gName} - Room ${gRoom}\nTotal KSh ${total.toLocaleString()}\n\nGM WhatsApp Routing ON`);
-  cart=[]; updateCart(); closeCart(); $('liveTracker').classList.remove('hidden'); switchTab('orders');
-  btn.textContent='💳 ORDER & PAY — AUTO ROUTE TO WHATSAPP';
+  alert(`✅ ORDER CONFIRMED! ${gName} - Room ${gRoom}\nKSh ${total.toLocaleString()}\n\nKitchen/Taxi WA got it!`);
+  cart=[]; updateCart(); closeCart(); closePopup(); $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=myOrders[0]?.items[0]?.name+' — Room '+gRoom;
 }
 
-function renderMyOrders(){
-  if(myOrdersList.length===0){$('myOrders').innerHTML='<div class="py-16 opacity-40">Bado huja-order. Anza na Menu 🍽️<br><span class="text-[11px]">Orders zitaonyesha jina lako Room '+(localStorage.getItem('guest_room')||'101')+' na WhatsApp auto to dept</span></div>';return}
-  $('myOrders').innerHTML=myOrdersList.map(o=>`
-    <div class="bg-[#121318] border border-white/10 rounded-2xl p-4 text-left">
-      <div class="flex justify-between text-[11px]"><span class="text-white/40">🕒 ${o.time} • Room ${o.room} — ${o.guest}</span><span class="px-2 py-0.5 rounded-full ${o.dept==='kitchen'?'bg-amber-500/20 text-amber-300':'bg-emerald-500/20 text-emerald-300'} text-[9px] font-bold">${o.dept.toUpperCase()} → WA ${o.wa||''}</span></div>
-      <div class="mt-2 font-bold text-[13px]">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-      <div class="text-[11px] text-white/40 mt-1">KSh ${o.total.toLocaleString()} ${o.waLink?`• <a href="${o.waLink}" target="_blank" class="text-[#C6FF00]">Open WA ${o.dept}</a>`:''}</div>
-    </div>
-  `).join('');
+function checkIdentity(){
+  const name=localStorage.getItem('guest_name'), room=localStorage.getItem('guest_room');
+  if(name&&room){
+    $('identityModal').style.display='none';
+    $('guestName').textContent=name.split(' ')[0];
+    $('roomLabel').textContent=room; $('guestAvatar').textContent=name[0].toUpperCase();
+    $('cartRoom').textContent='Room '+room; $('gRoom').value=room; $('guestInput').value=name;
+    $('hotelBadge').textContent=HOTEL_ID;
+  } else { $('gRoom').value=ROOM_PARAM; $('identityModal').style.display='grid'; }
 }
-function sos(){ if(confirm('🆘 SOS for Room '+localStorage.getItem('guest_room')+'?')) orderQuick('SOS EMERGENCY'); }
-function openChat(){ const q=prompt('🤖 AI Concierge for Room '+localStorage.getItem('guest_room')+'\nUliza chochote:'); if(q) alert('🤖 Room '+localStorage.getItem('guest_room')+': "'+q+'"\n\nNimekupatia majibu + nitatuma service — auto route to WA dept!'); }
-
-function loadLive(){
-  try{
-    if(typeof SUPABASE_URL==='undefined') return;
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',HOTEL_ID).eq('room_number',localStorage.getItem('guest_room')).order('created_at',{ascending:false}).limit(1).then(({data})=>{
-      if(data&&data[0]){ $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=(data[0].items?.[0]?.name||'Order')+' - Room '+data[0].room_number; $('liveSub').textContent=`${data[0].guest_name} • ${data[0].department} • WA ${data[0].whatsapp_sent_to||''}`; }
-    });
-  }catch{}
+function saveIdentity(){
+  const name=$('gName').value.trim(), phone=$('gPhone').value.trim(), room=$('gRoom').value.trim();
+  if(!name||!phone||!room) return alert('Jaza zote mkuu!');
+  localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone); localStorage.setItem('guest_room',room);
+  checkIdentity();
 }
-
-// INIT
-checkIdentity(); renderStories(); loadOS();
-fetch(API+'/health').then(r=>r.json()).then(()=>{$('apiDot').className='w-2 h-2 rounded-full bg-[#C6FF00] glow-lime'}).catch(()=>{$('apiDot').className='w-2 h-2 rounded-full bg-red-500'});
-setInterval(()=>{ const el=$('liveTime'); if(el) el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); },1000);
+checkIdentity();
 </script>
 </body>
 </html>
