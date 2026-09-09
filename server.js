@@ -1,72 +1,58 @@
-// GuestHub V26 FULL + PORT FIXED + NO 502 - FULL FEATURES
+// GuestHub V28 FULL ULTIMATE - RENDER PORT FIXED + FULL FEATURES
 import express from "express";
 import compression from "compression";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import path from "path";
 import { fileURLToPath } from "url";
-import helmet from "helmet";
-import rateLimit from "express-rate-limit";
-import jwt from "jsonwebtoken";
 
 dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const PORT = Number(process.env.PORT || 10000);
+const PORT = process.env.PORT || 10000;
 
-// Prevent crash from killing port
+console.log("🚀 Booting V28 FULL on", PORT);
+
+const app = express();
+
+// ===== 1. OPEN PORT INSTANTLY FOR RENDER =====
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V28 FULL', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+app.get('/config.js',(req,res)=>{
+  res.type('application/javascript');
+  res.setHeader('Cache-Control','no-cache');
+  const u = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+  const k = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'placeholder-key';
+  res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
+});
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🚀 V28 FULL LIVE on 0.0.0.0:${PORT} - PORT OPEN`));
+
 process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
 process.on('unhandledRejection', e=>console.log('REJECTION:', e?.message));
 
-console.log("🚀 Starting V26 FULL on", PORT);
-
+// ===== 2. CONFIG =====
 const REAL_URL = process.env.SUPABASE_URL;
 const REAL_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
 const REAL_SERVICE = process.env.SUPABASE_SERVICE_KEY || REAL_KEY;
-
 const SUPABASE_URL = REAL_URL || "https://placeholder.supabase.co";
 const SUPABASE_KEY = REAL_KEY || "placeholder-anon-key";
 const SUPABASE_SERVICE_KEY = REAL_SERVICE || SUPABASE_KEY;
-const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE";
+const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY";
 
 let supa = null;
 try {
   supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}});
-  console.log("✅ Supabase client OK");
-} catch(e){ console.log("⚠️ Supabase dummy mode", e.message); }
+  console.log("✅ Supabase client created");
+} catch(e){ console.log("⚠️ Supabase dummy", e.message); }
 
-const app = express();
-app.set('trust proxy', 1);
-app.disable("x-powered-by");
-app.use(helmet({contentSecurityPolicy:false, crossOriginEmbedderPolicy:false}));
 app.use(compression());
 app.use(cors({origin:()=>true, credentials:true}));
 app.use(express.json({limit:"2mb"}));
-app.use(express.urlencoded({extended:true, limit:"2mb"}));
-app.use("/api/", rateLimit({windowMs:60*1000, max:600}));
+app.use(express.urlencoded({extended:true}));
 
-// CONFIG.JS
-app.get('/config.js',(req,res)=>{
-  res.type('application/javascript');
-  res.setHeader('Cache-Control','no-cache');
-  const url = process.env.SUPABASE_URL || SUPABASE_URL;
-  const key = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || SUPABASE_KEY;
-  res.send(`const SUPABASE_URL="${url}";const SUPABASE_KEY="${key}";window.SUPABASE_URL="${url}";window.SUPABASE_KEY="${key}";window.SUPABASE_ANON_KEY="${key}";`);
-});
-
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V26 FULL FIXED', port:PORT, hasRealUrl:!!REAL_URL, hasRealKey:!!REAL_KEY, time:new Date().toISOString()}));
-
-app.get('/api/data', async (req,res)=>{
-  try{
-    if(!supa ||!REAL_URL) return res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',city:'Diani',hotel_type:'Beach'}]});
-    const {data} = await supa.from('hotels').select("id,hotel_id,hotel_name,name,location,city,hotel_type").limit(50);
-    res.json({hotels:data||[]});
-  }catch(e){ res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort'}]}); }
-});
-
-// HELPERS
+// ===== 3. HELPERS =====
 function clean(v){return String(v||"").trim().toLowerCase()}
 function cleanText(v,m=500){return String(v||"").trim().slice(0,m)}
 function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
@@ -96,18 +82,25 @@ async function routeOrderToDepartment(order){
   }catch{return {sent:false}}
 }
 
-// SIGNUP FULL
+// ===== 4. ROUTES FULL =====
+app.get('/api/data', async (req,res)=>{
+  try{
+    if(!supa ||!REAL_URL) return res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani'}]});
+    const {data} = await supa.from('hotels').select("id,hotel_id,hotel_name,name,location,city,hotel_type,status").limit(100);
+    res.json({hotels:data||[]});
+  }catch(e){ res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort'}]}); }
+});
+
 async function handleSignup(req,res){
  try{
   const {hotel_name,name,email,phone,password,location,city,hotel_type,manager_name,rooms}=req.body;
   const finalName=cleanText(hotel_name||name||'Hotel',100);
-  if(finalName.length<3) return sendError(res,400,"Hotel name short");
+  if(finalName.length<3) return sendError(res,400,"Hotel name too short");
   if(!supa ||!REAL_URL){
     const hotelId=finalName.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)+Math.floor(Math.random()*99);
-    return sendSuccess(res,{hotel_id:hotelId,status:"PENDING",msg:"Dummy - add ENV"});
+    return sendSuccess(res,{hotel_id:hotelId,status:"PENDING",msg:"Add ENV on Render"});
   }
-  const finalEmail=clean(email);
-  if(!isValidEmail(finalEmail)) return sendError(res,400,"Bad email");
+  const finalEmail=clean(email); if(!isValidEmail(finalEmail)) return sendError(res,400,"Invalid email");
   const base=finalName.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12)||'hotel';
   const hotelId=base.toUpperCase()+(Math.floor(Math.random()*900)+100);
   const hash=await bcrypt.hash(String(password||'12345678'),10);
@@ -120,28 +113,45 @@ app.post("/api/hotels/signup", handleSignup);
 app.post("/api/hotels/register", handleSignup);
 app.post("/api/hotels", handleSignup);
 
-// ORDERS FULL
+app.post("/api/hotels/login", async(req,res)=>{
+  try{
+    const {email,password,hotel_id}=req.body;
+    if(!supa ||!REAL_URL) return sendSuccess(res,{token:jwt.sign({hotel_id:'BAOBAB'},JWT_SECRET), hotel_id:'BAOBAB'});
+    const hid = (hotel_id||'').toUpperCase();
+    let q = supa.from('hotels').select('*');
+    if(hid) q = q.or(`hotel_id.eq.${hid},id.eq.${hid}`);
+    else if(email) q = q.eq('email', clean(email));
+    const {data} = await q.maybeSingle();
+    if(!data) return sendError(res,404,"Hotel not found");
+    if(password && data.password_hash){
+      const ok = await bcrypt.compare(String(password), data.password_hash);
+      if(!ok) return sendError(res,401,"Wrong password");
+    }
+    const token = jwt.sign({hotel_id:data.hotel_id||data.id, email:data.email}, JWT_SECRET, {expiresIn:'30d'});
+    return sendSuccess(res,{token, hotel_id:data.hotel_id||data.id, hotel:data});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
 app.post("/api/orders", async(req,res)=>{
   try{
     const hid=getHotelIdFromReq(req);
     const payload={ hotel_id:hid, room_number:cleanText(req.body.room||req.body.room_number||'101',30), guest_name:cleanText(req.body.guest_name||'Guest',100), guest_phone:cleanText(req.body.guest_phone||'',30), items:req.body.items||[{name:'Order',qty:1}], total:safeNumber(req.body.total||0), status:'pending', department:clean(req.body.department||'kitchen'), location_label:`Room ${req.body.room||req.body.room_number} - ${req.body.guest_name}` };
     let data=payload;
-    if(supa && REAL_URL){
-      try{ const {data:real,error}=await supa.schema('guesthub_os').from('orders').insert([payload]).select().single(); if(error) throw error; data=real; }catch(err){ console.log("order insert skip", err.message); }
-    }
+    if(supa && REAL_URL){ try{ const {data:real,error}=await supa.schema('guesthub_os').from('orders').insert([payload]).select().single(); if(!error) data=real; }catch(err){ console.log("order skip", err.message); } }
     const routing=await routeOrderToDepartment(data);
     return sendSuccess(res,{order:data,routing});
   }catch(e){ return sendError(res,500,e.message); }
 });
 
-// STATIC
-app.use(express.static(path.join(__dirname,"public"),{
-  setHeaders:(res, fp)=>{ if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); }
-}));
-app.get('*',(req,res)=>{
-  res.sendFile(path.join(__dirname,"public","index.html"), err=>{
-    if(err) res.status(200).send(`<h1>GuestHub V26 FULL LIVE</h1><p>Port ${PORT} open. Add public/index.html</p><a href="/api/health">/api/health</a>`);
-  });
+app.get("/api/orders", async(req,res)=>{
+  try{
+    const hid=getHotelIdFromReq(req);
+    if(!supa ||!REAL_URL) return res.json({orders:[]});
+    const {data} = await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',hid).order('created_at',{ascending:false}).limit(100);
+    res.json({orders:data||[]});
+  }catch(e){ res.json({orders:[]}); }
 });
 
-app.listen(PORT, '0.0.0.0', ()=>{ console.log(`🚀 V26 FULL LIVE on 0.0.0.0:${PORT} — PORT OPEN — FULL CODE`); });
+// STATIC
+app.use(express.static(path.join(__dirname,"public"),{ setHeaders:(res,fp)=>{ if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); } }));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🚀 V28 FULL LIVE PORT ${PORT}</h1><p>Add public/index.html</p><a href="/api/health">/api/health</a> - <a href="/api/data">/api/data</a>`); }));
