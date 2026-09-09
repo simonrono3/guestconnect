@@ -1,4 +1,4 @@
-// GuestHub V28 FULL ULTIMATE - RENDER PORT FIXED + FULL FEATURES
+// GuestHub V30 FULL - YOUR CODE + RENDER PORT FIX 100%
 import express from "express";
 import compression from "compression";
 import cors from "cors";
@@ -14,25 +14,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 10000;
 
-console.log("🚀 Booting V28 FULL on", PORT);
-
 const app = express();
 
-// ===== 1. OPEN PORT INSTANTLY FOR RENDER =====
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V28 FULL', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+// === PORT OPEN INSTANT - MUST BE FIRST FOR RENDER ===
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V30 FULL', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
-  res.setHeader('Cache-Control','no-cache');
+  res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
   const u = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
   const k = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || 'placeholder-key';
   res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
 });
-const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🚀 V28 FULL LIVE on 0.0.0.0:${PORT} - PORT OPEN`));
+
+// LISTEN IMMEDIATELY BEFORE HEAVY STUFF
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🚀 V30 FULL LIVE on 0.0.0.0:${PORT} - PORT OPEN - READY`));
+server.keepAliveTimeout = 120000;
+server.headersTimeout = 120000;
 
 process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
 process.on('unhandledRejection', e=>console.log('REJECTION:', e?.message));
 
-// ===== 2. CONFIG =====
+console.log("🚀 Booting V30 FULL...");
+
+// === CONFIG ===
 const REAL_URL = process.env.SUPABASE_URL;
 const REAL_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
 const REAL_SERVICE = process.env.SUPABASE_SERVICE_KEY || REAL_KEY;
@@ -45,14 +49,14 @@ let supa = null;
 try {
   supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}});
   console.log("✅ Supabase client created");
-} catch(e){ console.log("⚠️ Supabase dummy", e.message); }
+} catch(e){ console.log("⚠️ Supabase dummy mode", e.message); }
 
 app.use(compression());
-app.use(cors({origin:()=>true, credentials:true}));
+app.use(cors({origin:(origin,cb)=>cb(null,true), credentials:true}));
 app.use(express.json({limit:"2mb"}));
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({extended:true, limit:"2mb"}));
 
-// ===== 3. HELPERS =====
+// === HELPERS ===
 function clean(v){return String(v||"").trim().toLowerCase()}
 function cleanText(v,m=500){return String(v||"").trim().slice(0,m)}
 function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
@@ -82,7 +86,7 @@ async function routeOrderToDepartment(order){
   }catch{return {sent:false}}
 }
 
-// ===== 4. ROUTES FULL =====
+// === ROUTES ===
 app.get('/api/data', async (req,res)=>{
   try{
     if(!supa ||!REAL_URL) return res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani'}]});
@@ -152,6 +156,5 @@ app.get("/api/orders", async(req,res)=>{
   }catch(e){ res.json({orders:[]}); }
 });
 
-// STATIC
 app.use(express.static(path.join(__dirname,"public"),{ setHeaders:(res,fp)=>{ if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); } }));
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🚀 V28 FULL LIVE PORT ${PORT}</h1><p>Add public/index.html</p><a href="/api/health">/api/health</a> - <a href="/api/data">/api/data</a>`); }));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🚀 V30 FULL LIVE PORT ${PORT}</h1><p>Add public/index.html</p><a href="/api/health">/api/health</a>`); }));
