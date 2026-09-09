@@ -52,14 +52,14 @@ code{color:var(--lime);word-break:break-all;background:#0a0a0a;padding:2px 6px;b
 
 <form id="form" onsubmit="signup(event)">
 <div class="form-grid">
-<div class="full"><input id="hotel_name" placeholder="Hotel / Property Name * — e.g. Arap Diani Resort" required></div>
+<div class="full"><input id="hotel_name" placeholder="Hotel / Property Name * — e.g. Baobab Beach Resort" required></div>
 <div><input id="manager_name" placeholder="Manager Full Name" required></div>
 <div><select id="location" required><option value="">Select Location</option><option>Mombasa</option><option>Nairobi</option><option>Kisumu</option><option>Eldoret</option><option>Nakuru</option><option selected>Diani</option><option>Watamu</option><option>Naivasha</option><option>Maasai Mara</option><option>Zanzibar</option></select></div>
 <div><select id="hotel_type" required><option value="">Property Type</option><option selected>Luxury Hotel</option><option>Resort</option><option>Beach Resort</option><option>Safari Lodge</option><option>Serviced Apartment</option><option>Boutique Hotel</option></select></div>
 <div><input type="number" id="rooms" placeholder="Rooms — e.g. 100" required value="100"></div>
 <div class="full"><input type="url" id="website" placeholder="Website (Optional) — https://"></div>
-<div><input type="email" id="email" placeholder="arap@gmail.com *" required></div>
-<div><input type="tel" id="phone" placeholder="0707142187 *" required></div>
+<div><input type="email" id="email" placeholder="Email *" required></div>
+<div><input type="tel" id="phone" placeholder="Phone *" required></div>
 <div class="full"><input type="password" id="password" placeholder="Create Password (min 8 chars) *" required minlength="8"></div>
 </div>
 <button type="submit" id="btn">🚀 Submit Partnership Application — OS 18.0</button>
@@ -74,14 +74,13 @@ code{color:var(--lime);word-break:break-all;background:#0a0a0a;padding:2px 6px;b
 <div class="feature"><div class="icon">📱</div><b>WhatsApp Auto Routing</b><small>Pilau → Kitchen WA with guest name</small></div>
 <div class="feature"><div class="icon">🔔</div><b>Live DING!</b><small>GM dashboard real-time orders</small></div>
 </div>
-<div class="footer"><a href="/">Home</a> | <a href="/admin.html">Admin Login</a> | <a href="/gm-dashboard.html?hotel=BAOBAB">GM Demo</a><p style="margin-top:10px;color:#556080;font-size:11px">© 2026 GuestHub • OS 18.0 MERGED SCALED SECURED</p></div>
+<div class="footer"><a href="/">Home</a> | <a href="/admin.html">Admin Login</a> | <a href="/gm-dashboard.html?hotel=BAOBAB">GM Demo</a><p style="margin-top:10px;color:#556080;font-size:11px">© 2026 GuestHub • OS 18.0 V20 FULL FIXED</p></div>
 </div></div>
 
 <script>
 const API = '/api';
 const $ = id => document.getElementById(id);
 
-// Health check — fixes Render sleep stuck
 async function checkHealth(){
   try{
     const r = await fetch(API+'/health',{cache:'no-store'});
@@ -121,26 +120,39 @@ async function signup(e){
    return;
  }
 
- btn.disabled=true; btn.textContent='⏳ Submitting to GuestHub OS 18.0...';
+ btn.disabled=true; btn.textContent='⏳ Submitting...';
 
  const payload = { hotel_name, name: hotel_name, manager_name, location, city: location, hotel_type, rooms: parseInt(rooms||30), website, email, phone, password };
 
  try{
   const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), 25000);
+  const to = setTimeout(()=>ctrl.abort(), 15000);
   const res = await fetch(API+'/hotels/signup', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal: ctrl.signal});
   clearTimeout(to);
   const data = await res.json();
-  console.log('Signup response', data);
   if(!res.ok) throw new Error(data.error || 'Failed');
 
-  const finalId = data.hotel_id || data.hotel?.hotel_id;
-  msg.innerHTML='<div class="success">✅ Application Submitted — OS 18.0 MERGED!</div>';
+  const finalId = data.hotel_id || data.hotel?.hotel_id || 'NEW';
+  msg.innerHTML='<div class="success">✅ Application Submitted!</div>';
   next.style.display='block';
   next.innerHTML=`<h3 style="color:#c6ff00">🎉 Welcome ${hotel_name}!</h3>
   <p><strong>Hotel ID:</strong> <code>${finalId}</code> — copy this!</p>
   <p>Status: <b style="color:#fbbf24">PENDING APPROVAL</b> — Admin will approve at <code>/admin.html</code></p>
   <p style="margin-top:8px"><strong>After approval:</strong><br>
-  GM Login: <code>/gm-dashboard.html?hotel=${finalId}</code> → Add Menu, Setup WhatsApp, Generate QR 1-50<br>
+  GM Login: <code>/gm-dashboard.html?hotel=${finalId}</code><br>
   Guest: <code>/guest.html?hotel=${finalId}&room=101</code></p>
-  <p style="margin-top:8
+  <p style="margin-top:12px"><a href="/hotel-login.html?hotel=${finalId}" style="color:#c6ff00;font-weight:800">→ Go to GM Login</a></p>`;
+
+  $('form').reset();
+  btn.textContent='✅ Submitted!';
+  setTimeout(()=>{ window.location.href = `/hotel-login.html?hotel=${finalId}`; }, 2500);
+
+ }catch(err){
+  console.error(err);
+  $('err').innerHTML = `<div class="error">❌ ${err.message || 'Network error'}</div>`;
+  btn.disabled=false; btn.textContent='🚀 Submit Partnership Application — OS 18.0';
+ }
+}
+</script>
+</body>
+</html>
