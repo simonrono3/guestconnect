@@ -1,157 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub Partner Network — World Class OS 18.0</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestHub — Partner Application</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Inter'],display:['Fraunces']},colors:{gold:'#C6A46A',ink:'#0A0E14',muted:'#8B95A5'}}}}
+</script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-:root{--gold:#fbbf24;--green:#22c55e;--lime:#c6ff00;--dark:#020617}
-body{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px 12px;background:radial-gradient(circle at top left,rgba(198,255,0,.15),transparent 30%),radial-gradient(circle at bottom right,rgba(34,197,94,.18),transparent 30%),linear-gradient(135deg,#01040b,#071426,#020617);color:white}
-.container{width:100%;max-width:920px}
-.card{background:rgba(8,15,35,.92);backdrop-filter:blur(18px);border:1px solid rgba(251,191,36,.25);border-radius:28px;padding:48px 42px;box-shadow:0 20px 80px rgba(0,0,0,.7),0 0 40px rgba(198,255,0,.08)}
-.logo{text-align:center;font-size:58px}
-.hero{text-align:center;margin-bottom:22px}
-.hero h1{font-size:52px;font-weight:800;line-height:1.05;font-family:Space Grotesk}
-.hero h1 span{color:var(--lime)}
-.hero h2{font-size:24px;color:var(--gold);margin-top:8px;font-weight:700}
-.hero p{max-width:680px;margin:18px auto;color:#cbd5e1;line-height:1.7;font-size:14px}
-.divider{width:240px;height:2px;background:linear-gradient(to right,transparent,var(--lime),transparent);margin:22px auto}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.full{grid-column:1/-1}
-input,select{width:100%;padding:16px 14px;background:#081224;border:1px solid rgba(255,255,255,.09);border-radius:14px;color:white;font-size:14px;outline:none;transition:.2s}
-input:focus,select:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,255,0,.15)}
-input::placeholder{color:#5b647a}
-button{width:100%;padding:18px;background:linear-gradient(135deg,#c6ff00,#22c55e);border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;color:#000;margin-top:10px;transition:.2s;box-shadow:0 8px 24px rgba(198,255,0,.25)}
-button:active{transform:scale(.98)}button:disabled{opacity:.6;cursor:not-allowed}
-.success{margin-top:14px;color:#22c55e;text-align:center;font-weight:700;background:#052e16;border:1px solid #22c55e;border-radius:12px;padding:12px;font-size:13px}
-.error{margin-top:14px;color:#ff6b6b;text-align:center;font-weight:700;background:#2a1010;border:1px solid #672020;border-radius:12px;padding:12px;font-size:13px}
-.nextSteps{display:none;margin-top:18px;padding:18px;background:linear-gradient(135deg,#0a1a0f,#052e16);border:1px solid var(--lime);border-radius:16px;line-height:1.7;font-size:13px}
-.section-title{text-align:center;font-size:28px;font-weight:800;margin-top:36px;margin-bottom:16px;color:var(--gold);font-family:Space Grotesk}
-.features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.feature{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:18px;border-radius:16px;text-align:center}
-.feature .icon{font-size:30px;margin-bottom:8px}.feature b{font-size:12px;display:block}.feature small{color:#8891a8;font-size:11px;display:block;margin-top:4px}
-.footer{margin-top:32px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);text-align:center}
-.footer a{color:var(--lime);text-decoration:none;margin:0 10px;font-weight:700;font-size:13px}
-code{color:var(--lime);word-break:break-all;background:#0a0a0a;padding:2px 6px;border-radius:6px;font-size:12px}
-.badge{display:inline-flex;background:#1a1a00;border:1px solid var(--lime);color:var(--lime);padding:4px 10px;border-radius:999px;font-size:9px;font-weight:900;margin-bottom:8px}
-@media(max-width:768px){.card{padding:24px 18px}.hero h1{font-size:32px}.form-grid{grid-template-columns:1fr}.features{grid-template-columns:1fr}}
+body{font-family:Inter,sans-serif;background:#070A10;color:#E8ECF2}
+.glass{background:rgba(255,255,255,0.04);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.08)}
+.input{width:100%;background:#0F141F;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:14px 16px;color:white;font-size:14px;outline:none;transition:.2s}
+.input:focus{border-color:#C6A46A;box-shadow:0 0 0 4px rgba(198,164,106,0.12)}
+.input::placeholder{color:#4A5464}
+.label{font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#8B95A5;font-weight:600;margin-bottom:8px;display:block}
 </style>
 </head>
 <body>
-<div class="container"><div class="card">
-<div class="logo">🏨</div>
-<div class="hero">
-<div class="badge" id="apiBadge">OS 18.0 MERGED • CHECKING API...</div>
-<h1>GuestHub <span>Partner Network</span></h1>
-<h2>Africa's Smart Hospitality OS — 18.0</h2>
-<p>Join 500+ hotels. Guest scans Room 101 QR → Order Pilau → Kitchen WhatsApp na jina la guest — fully automated.</p>
-<div class="divider"></div>
+<div class="min-h-screen grid lg:grid-cols-[1.1fr_0.9fr]">
+
+<!-- LEFT — FORM -->
+<div class="px-6 md:px-12 lg:px-20 py-10 lg:py-14 flex flex-col">
+  <div class="flex items-center justify-between mb-10">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-white text-black grid place-items-center font-bold text-[13px]">G</div>
+      <span class="font-semibold tracking-[0.12em] text-[11px]">GUESTHUB OS</span>
+      <span id="apiBadge" class="ml-3 text-[10px] tracking-wide px-2.5 py-1 rounded-full border border-white/10 text-white/50">CONNECTING...</span>
+    </div>
+    <a href="/" class="text-[12px] text-muted hover:text-white">← Back to Home</a>
+  </div>
+
+  <div class="max-w-[560px]">
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-2 text-[11px] tracking-[0.12em] text-gold mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></span> PARTNER NETWORK • 12 HOTELS LIVE IN DIANI
+      </div>
+      <h1 class="font-display text-[42px] leading-[0.95] tracking-[-0.02em]">List your hotel on<br><span class="text-gold">Kenya's Hotel OS.</span></h1>
+      <p class="text-[14px] leading-6 text-muted mt-4 max-w-[480px]">One QR per room. Guests scan, order food, taxi, safari. Orders route to WhatsApp automatically. You earn 15% from every vendor. No app download.</p>
+    </div>
+
+    <form id="form" onsubmit="signup(event)" class="space-y-5">
+      <div>
+        <label class="label">Property Name *</label>
+        <input id="hotel_name" class="input" placeholder="Baobab Beach Resort" required>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="label">General Manager</label><input id="manager_name" class="input" placeholder="Full name" required></div>
+        <div><label class="label">Location</label>
+          <select id="location" class="input" required>
+            <option value="">Select</option><option selected>Diani</option><option>Mombasa</option><option>Nairobi</option><option>Watamu</option><option>Maasai Mara</option><option>Zanzibar</option><option>Kisumu</option><option>Naivasha</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="label">Property Type</label>
+          <select id="hotel_type" class="input" required>
+            <option>Beach Resort</option><option selected>Luxury Hotel</option><option>Resort</option><option>Safari Lodge</option><option>Boutique Hotel</option><option>Serviced Apartment</option>
+          </select>
+        </div>
+        <div><label class="label">Number of Rooms</label><input id="rooms" type="number" class="input" value="80" required></div>
+      </div>
+
+      <div><label class="label">Website (Optional)</label><input id="website" type="url" class="input" placeholder="https://"></div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="label">Work Email *</label><input id="email" type="email" class="input" placeholder="gm@hotel.com" required></div>
+        <div><label class="label">Phone / WhatsApp *</label><input id="phone" type="tel" class="input" placeholder="+254..." required></div>
+      </div>
+
+      <div><label class="label">Create Password (min 8)</label><input id="password" type="password" class="input" placeholder="••••••••" minlength="8" required></div>
+
+      <div class="pt-2">
+        <button id="btn" class="w-full h-[52px] rounded-xl bg-white text-black font-semibold text-[14px] hover:bg-[#E8E8E8] transition flex items-center justify-center gap-2">
+          <span id="btnText">Submit Application</span>
+          <span class="text-[16px]">→</span>
+        </button>
+        <p class="text-[11px] text-center text-muted mt-3">14 days free. No credit card. Approval in under 2 hours.</p>
+      </div>
+    </form>
+
+    <div id="msg" class="mt-4"></div>
+    <div id="err" class="mt-4"></div>
+
+    <div id="nextSteps" class="hidden mt-6 glass rounded-2xl p-5">
+      <div class="text-gold text-[11px] tracking-widest font-semibold">APPLICATION RECEIVED</div>
+      <h3 id="welcomeTitle" class="font-display text-[22px] mt-2">Welcome</h3>
+      <div id="nextContent" class="text-[13px] leading-6 text-white/70 mt-3"></div>
+    </div>
+
+    <div class="mt-12 flex items-center gap-6 opacity-60">
+      <span class="text-[10px] tracking-widest text-muted">TRUSTED BY</span>
+      <div class="flex gap-4 text-[11px] font-semibold"><span>BAOBAB BEACH</span><span>•</span><span>SWAHILI BEACH</span><span>•</span><span>DIANI SEA</span></div>
+    </div>
+  </div>
 </div>
 
-<form id="form" onsubmit="signup(event)">
-<div class="form-grid">
-<div class="full"><input id="hotel_name" placeholder="Hotel / Property Name * — e.g. Baobab Beach Resort" required></div>
-<div><input id="manager_name" placeholder="Manager Full Name" required></div>
-<div><select id="location" required><option value="">Select Location</option><option>Mombasa</option><option>Nairobi</option><option>Kisumu</option><option>Eldoret</option><option>Nakuru</option><option selected>Diani</option><option>Watamu</option><option>Naivasha</option><option>Maasai Mara</option><option>Zanzibar</option></select></div>
-<div><select id="hotel_type" required><option value="">Property Type</option><option selected>Luxury Hotel</option><option>Resort</option><option>Beach Resort</option><option>Safari Lodge</option><option>Serviced Apartment</option><option>Boutique Hotel</option></select></div>
-<div><input type="number" id="rooms" placeholder="Rooms — e.g. 100" required value="100"></div>
-<div class="full"><input type="url" id="website" placeholder="Website (Optional) — https://"></div>
-<div><input type="email" id="email" placeholder="Email *" required></div>
-<div><input type="tel" id="phone" placeholder="Phone *" required></div>
-<div class="full"><input type="password" id="password" placeholder="Create Password (min 8 chars) *" required minlength="8"></div>
-</div>
-<button type="submit" id="btn">🚀 Submit Partnership Application — OS 18.0</button>
-</form>
+<!-- RIGHT — PREVIEW -->
+<div class="hidden lg:block relative bg-[#0B101B] border-l border-white/[0.06] p-10">
+  <div class="sticky top-10">
+    <div class="glass rounded-[20px] p-6">
+      <div class="flex justify-between items-center mb-6">
+        <span class="text-[11px] tracking-widest text-muted">LIVE ORDER PREVIEW</span>
+        <span class="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">● LIVE</span>
+      </div>
+      <div class="space-y-3 font-mono text-[12px]">
+        <div class="flex justify-between"><span class="text-muted">Room</span><span>101 • Baobab</span></div>
+        <div class="flex justify-between"><span class="text-muted">Guest</span><span>James • +2547...</span></div>
+        <div class="h-px bg-white/10 my-3"></div>
+        <div class="text-white">2x Grilled Seafood Platter</div>
+        <div class="text-white">1x Dawa Cocktail</div>
+        <div class="flex justify-between pt-2 font-semibold"><span>Total</span><span>KSh 4,850</span></div>
+      </div>
+      <div class="mt-5 rounded-xl bg-[#C6A46A] text-black text-center py-3 text-[12px] font-semibold">→ Routed to Kitchen WhatsApp</div>
+    </div>
 
-<div id="msg"></div><div id="err"></div>
-<div class="nextSteps" id="nextSteps"></div>
+    <div class="mt-6 grid grid-cols-3 gap-3">
+      <div class="glass rounded-xl p-4 text-center"><div class="text-[20px] font-display">500+</div><div class="text-[10px] text-muted mt-1">HOTELS</div></div>
+      <div class="glass rounded-xl p-4 text-center"><div class="text-[20px] font-display">2.3k</div><div class="text-[10px] text-muted mt-1">ORDERS/DAY</div></div>
+      <div class="glass rounded-xl p-4 text-center"><div class="text-[20px] font-display">15%</div><div class="text-[10px] text-muted mt-1">VENDOR FEE</div></div>
+    </div>
 
-<div class="section-title">Why 500+ Hotels Choose GuestHub?</div>
-<div class="features">
-<div class="feature"><div class="icon">🔳</div><b>Bulk QR 1-50</b><small>GM generates Room QRs in 1 click</small></div>
-<div class="feature"><div class="icon">📱</div><b>WhatsApp Auto Routing</b><small>Pilau → Kitchen WA with guest name</small></div>
-<div class="feature"><div class="icon">🔔</div><b>Live DING!</b><small>GM dashboard real-time orders</small></div>
+    <p class="text-[11px] text-muted mt-8 leading-5">“GuestHub cut our room service calls by 70%. Guests love QR ordering.”<br><span class="text-white/60">— GM, Baobab Beach Resort</span></p>
+  </div>
 </div>
-<div class="footer"><a href="/">Home</a> | <a href="/admin.html">Admin Login</a> | <a href="/gm-dashboard.html?hotel=BAOBAB">GM Demo</a><p style="margin-top:10px;color:#556080;font-size:11px">© 2026 GuestHub • OS 18.0 V20 FULL FIXED</p></div>
-</div></div>
+
+</div>
 
 <script>
-const API = '/api';
-const $ = id => document.getElementById(id);
-
+const API='/api';
+const $=id=>document.getElementById(id);
 async function checkHealth(){
-  try{
-    const r = await fetch(API+'/health',{cache:'no-store'});
-    const j = await r.json();
-    $('apiBadge').textContent = `✅ ${j.os} • ${new Date().toLocaleTimeString()}`;
-    $('apiBadge').style.borderColor = '#22c55e'; $('apiBadge').style.color='#22c55e';
-    return true;
-  }catch(e){
-    $('apiBadge').textContent = '⏳ Render waking up — wait 30s';
-    $('apiBadge').style.borderColor = '#fbbf24'; $('apiBadge').style.color='#fbbf24';
-    return false;
-  }
-}
-checkHealth();
-setInterval(checkHealth, 15000);
-
+ try{const r=await fetch(API+'/health',{cache:'no-store'});const j=await r.json();$('apiBadge').textContent=`${j.os} • LIVE`;$('apiBadge').className='ml-3 text-[10px] tracking-wide px-2.5 py-1 rounded-full border border-emerald-500/20 text-emerald-400 bg-emerald-500/10';return true}catch{ $('apiBadge').textContent='WAKING UP...'; return false;}
+checkHealth(); setInterval(checkHealth,15000);
 async function signup(e){
  e.preventDefault();
- const btn=$('btn'), msg=$('msg'), err=$('err'), next=$('nextSteps');
- msg.innerHTML=''; err.innerHTML=''; next.style.display='none';
-
- const hotel_name=$('hotel_name').value.trim();
- const manager_name=$('manager_name').value.trim();
- const location=$('location').value;
- const hotel_type=$('hotel_type').value;
- const rooms=$('rooms').value;
- const website=$('website').value.trim();
- const email=$('email').value.trim().toLowerCase();
- const phone=$('phone').value.trim();
- const password=$('password').value;
-
- if(!hotel_name||hotel_name.length<3){ err.innerHTML='<div class="error">❌ Hotel Name min 3 chars</div>'; return; }
- if(!email||!phone||password.length<8){ err.innerHTML='<div class="error">❌ Jaza Email, Phone, Password min 8 chars</div>'; return; }
-
- if(!await checkHealth()){
-   err.innerHTML='<div class="error">⏳ Server bado inaamka — ngoja 30s kisha jaribu tena</div>';
-   return;
- }
-
- btn.disabled=true; btn.textContent='⏳ Submitting...';
-
- const payload = { hotel_name, name: hotel_name, manager_name, location, city: location, hotel_type, rooms: parseInt(rooms||30), website, email, phone, password };
-
+ const btn=$('btn'), btnText=$('btnText'), err=$('err'), msg=$('msg'), next=$('nextSteps');
+ err.innerHTML=''; msg.innerHTML=''; next.classList.add('hidden');
+ const payload={hotel_name:$('hotel_name').value.trim(),name:$('hotel_name').value.trim(),manager_name:$('manager_name').value.trim(),location:$('location').value,city:$('location').value,hotel_type:$('hotel_type').value,rooms:parseInt($('rooms').value||30),website:$('website').value.trim(),email:$('email').value.trim().toLowerCase(),phone:$('phone').value.trim(),password:$('password').value};
+ if(payload.hotel_name.length<3){err.innerHTML='<div class="glass rounded-xl p-3 text-[13px] text-red-300 border-red-500/20">Hotel name min 3 chars</div>';return}
+ if(!await checkHealth()){err.innerHTML='<div class="glass rounded-xl p-3 text-[13px] text-amber-300">Server waking — wait 20s</div>';return}
+ btn.disabled=true; btnText.textContent='Submitting...';
  try{
-  const ctrl = new AbortController();
-  const to = setTimeout(()=>ctrl.abort(), 15000);
-  const res = await fetch(API+'/hotels/signup', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload), signal: ctrl.signal});
-  clearTimeout(to);
-  const data = await res.json();
-  if(!res.ok) throw new Error(data.error || 'Failed');
-
-  const finalId = data.hotel_id || data.hotel?.hotel_id || 'NEW';
-  msg.innerHTML='<div class="success">✅ Application Submitted!</div>';
-  next.style.display='block';
-  next.innerHTML=`<h3 style="color:#c6ff00">🎉 Welcome ${hotel_name}!</h3>
-  <p><strong>Hotel ID:</strong> <code>${finalId}</code> — copy this!</p>
-  <p>Status: <b style="color:#fbbf24">PENDING APPROVAL</b> — Admin will approve at <code>/admin.html</code></p>
-  <p style="margin-top:8px"><strong>After approval:</strong><br>
-  GM Login: <code>/gm-dashboard.html?hotel=${finalId}</code><br>
-  Guest: <code>/guest.html?hotel=${finalId}&room=101</code></p>
-  <p style="margin-top:12px"><a href="/hotel-login.html?hotel=${finalId}" style="color:#c6ff00;font-weight:800">→ Go to GM Login</a></p>`;
-
-  $('form').reset();
-  btn.textContent='✅ Submitted!';
-  setTimeout(()=>{ window.location.href = `/hotel-login.html?hotel=${finalId}`; }, 2500);
-
- }catch(err){
-  console.error(err);
-  $('err').innerHTML = `<div class="error">❌ ${err.message || 'Network error'}</div>`;
-  btn.disabled=false; btn.textContent='🚀 Submit Partnership Application — OS 18.0';
- }
+  const ctrl=new AbortController(); setTimeout(()=>ctrl.abort(),15000);
+  const res=await fetch(API+'/hotels/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:ctrl.signal});
+  const data=await res.json(); if(!res.ok) throw new Error(data.error||'Failed');
+  const finalId=data.hotel_id||'NEW';
+  msg.innerHTML='<div class="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 text-[13px] text-emerald-300">✓ Application submitted</div>';
+  $('welcomeTitle').textContent=`Welcome, ${payload.hotel_name}`;
+  $('nextContent').innerHTML=`Hotel ID: <span class="text-white font-mono bg-white/10 px-2 py-1 rounded">${finalId}</span><br><br>Status: <span class="text-amber-300">PENDING APPROVAL</span> — we review in 2 hours.<br><br>Next:<br>• GM Dashboard: <span class="text-white">/gm-dashboard.html?hotel=${finalId}</span><br>• Guest QR: <span class="text-white">/guest.html?hotel=${finalId}&room=101</span><br><br><a href="/hotel-login.html?hotel=${finalId}" class="inline-flex mt-3 h-9 px-4 rounded-lg bg-white text-black items-center text-[12px] font-semibold">Go to GM Login →</a>`;
+  next.classList.remove('hidden'); $('form').reset(); btnText.textContent='Submitted ✓';
+  setTimeout(()=>window.location.href=`/hotel-login.html?hotel=${finalId}`,2500);
+ }catch(ex){err.innerHTML=`<div class="glass rounded-xl p-3 text-[13px] text-red-300 border-red-500/20">${ex.message}</div>`; btn.disabled=false; btnText.textContent='Submit Application';}
 }
 </script>
 </body>
