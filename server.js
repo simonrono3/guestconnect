@@ -1,4 +1,4 @@
-// GuestHub OS 18.0 — V20 FULL FINAL — COMPLETE + FIXED + NO CRASH
+// GuestHub OS 20.0 — V20 FINAL MERGED + CONFIG.JS FIX + NO CRASH
 import express from "express";
 import compression from "compression";
 import cors from "cors";
@@ -16,8 +16,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || SUPABASE_KEY;
 const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_18_1000_SCALED_SECURED_2026";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
@@ -34,22 +34,33 @@ app.disable("x-powered-by");
 app.use(helmet({contentSecurityPolicy:false, crossOriginEmbedderPolicy:false}));
 app.use(compression());
 app.use(cors({origin:()=>true,credentials:true}));
-app.use(express.json({limit:"200kb"}));
-app.use(express.urlencoded({extended:true,limit:"200kb"}));
+app.use(express.json({limit:"2mb"}));
+app.use(express.urlencoded({extended:true,limit:"2mb"}));
 
-app.use(express.static(path.join(__dirname,"public"),{
-  maxAge:'7d',
-  etag:true,
-  lastModified:true,
-  setHeaders:(res, fp)=>{
-    if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
-  }
-}));
-
+// ===== 1. CONFIG.JS DYNAMIC — LAZIMA IWE KABLA YA STATIC =====
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
   res.setHeader('Cache-Control','public, max-age=3600');
-  res.send(`const SUPABASE_URL="${SUPABASE_URL}";const SUPABASE_KEY="${SUPABASE_KEY}";window.SUPABASE_URL="${SUPABASE_URL}";window.SUPABASE_KEY="${SUPABASE_KEY}";`);
+  // GOLD: both window + const for your dashboards
+  res.send(`
+    const SUPABASE_URL="${SUPABASE_URL}";
+    const SUPABASE_KEY="${SUPABASE_KEY}";
+    window.SUPABASE_URL="${SUPABASE_URL}";
+    window.SUPABASE_KEY="${SUPABASE_KEY}";
+    window.SUPABASE_ANON_KEY="${SUPABASE_KEY}";
+    console.log("✅ GuestHub Config OS 20.0 MERGED", SUPABASE_URL);
+  `);
+});
+
+app.get('/api/health',(req,res)=>res.json({ok:true,os:'V20 MERGED FINAL + CONFIG.JS',time:new Date().toISOString(),uptime:process.uptime(),supabase:!!SUPABASE_URL}));
+app.get('/api/data', async (req,res)=>{
+  try{
+    const {data,error} = await supa.from('hotels').select("id,hotel_id,hotel_name,name,email,phone,location,city,hotel_type,plan,status").limit(50);
+    if(error) throw error;
+    res.json({hotels: data || []});
+  }catch(e){
+    res.json({hotels: [{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach',city:'Diani'}]});
+  }
 });
 
 const loginLimiter = rateLimit({windowMs:15*60*1000,max:100});
@@ -88,18 +99,7 @@ async function routeOrderToDepartment(order){
   }catch{return {sent:false}}
 }
 
-app.get('/api/health',(req,res)=>res.json({ok:true,os:'V20 FULL FINAL',time:new Date().toISOString(),uptime:process.uptime()}));
-app.get('/api/data', async (req,res)=>{
-  try{
-    const {data,error} = await supa.from('hotels').select(SAFE_HOTEL_FIELDS).limit(50);
-    if(error) throw error;
-    res.json({hotels: data || []});
-  }catch(e){
-    console.error("api/data error",e.message);
-    res.json({hotels: [{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach',city:'Diani'}]});
-  }
-});
-
+// AUTH ROUTES
 app.post("/api/admin/login",loginLimiter, async(req,res)=>{
   const pw=String(req.body.password||""); if(!pw) return sendError(res,400,"Password required");
   const valid=await bcrypt.compare(pw,ADMIN_PASSWORD).catch(()=>false);
@@ -186,5 +186,15 @@ app.post("/api/orders", async(req,res)=>{
     const routing=await routeOrderToDepartment(data); return sendSuccess(res,{order:data,routing});
   }catch(e){ return sendError(res,500,e.message); }
 });
+
+// ===== 2. STATIC AFTER CONFIG.JS =====
+app.use(express.static(path.join(__dirname,"public"),{
+  maxAge:'7d',
+  etag:true,
+  setHeaders:(res, fp)=>{
+    if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
+  }
+}));
+
 app.get('*',(req,res)=>{ res.sendFile(path.join(__dirname,"public","index.html")); });
-app.listen(PORT, '0.0.0.0', ()=>{ console.log(`🚀 V20 FULL LIVE on 0.0.0.0:${PORT} — READY`); });
+app.listen(PORT, '0.0.0.0', ()=>{ console.log(`🚀 V20 MERGED + CONFIG.JS LIVE on 0.0.0.0:${PORT}`); });
