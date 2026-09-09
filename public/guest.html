@@ -2,307 +2,426 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub ULTRA 18.0 - Merged OS + QR</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;700;800;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<title>GuestHub — Guest OS ULTRA V4</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/config.js"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{lime:'#C6FF00',gold:'#FFC61A',ink:'#060709'}}}}
+</script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070708;--card:#151517;--border:#222;--card2:#101015}
-*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:110px}
-.top{position:sticky;top:0;z-index:100;background:rgba(8,8,10,0.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{font-family:Space Grotesk;font-weight:800;font-size:20px}.logo span{color:var(--lime)}
-.pill{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:11px;font-weight:800;display:flex;gap:6px;align-items:center}
-.greet{padding:10px 16px 8px;display:flex;justify-content:space-between;gap:10px}
-.greet h1{font-family:Space Grotesk;font-size:32px;margin:0;line-height:.9}
-.weather{min-width:128px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:10px 12px}
-.live{margin:12px 16px;background:linear-gradient(135deg,#151517,#1e1e1e);border:1.5px solid var(--lime);border-radius:18px;padding:14px;box-shadow:0 0 20px rgba(198,255,0,.15);display:none}
-.dot{width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.quick{padding:0 16px}.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:10px}
-.q{background:var(--card);border:1px solid #2a2a2a;border-radius:18px;padding:12px 6px;text-align:center;cursor:pointer;transition:.15s}
-.q:active{transform:scale(.96);border-color:var(--lime)}.q b{font-size:10px;display:block;margin-top:6px}.q i{font-size:24px}
-.mood{margin:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:14px}
-.mood-opt{display:inline-block;padding:7px 12px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:999px;font-size:11px;font-weight:800;margin:4px;cursor:pointer}
-.mood-opt.on{background:var(--lime);color:#000;border-color:var(--lime)}
-.stories{padding:10px 0 0 16px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.stories::-webkit-scrollbar{display:none}
-.story{display:inline-block;text-align:center;margin-right:12px;cursor:pointer}.ring{width:62px;height:62px;border-radius:50%;padding:2px;background:linear-gradient(45deg,var(--lime),var(--gold))}.story img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg)}
-.hero-mini{margin:14px 16px;background:linear-gradient(135deg,#c6ff00 0%,#a6e22e 100%);border-radius:20px;padding:14px;color:#000}
-.hero-mini b{font-size:16px;font-weight:900;display:block}.hero-mini p{font-size:11px;opacity:.7;margin-top:2px;font-weight:700}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;position:sticky;top:56px;z-index:90;background:var(--bg)}
-.tabs::-webkit-scrollbar{display:none}
-.tab{white-space:nowrap;padding:10px 14px;border-radius:999px;background:#15151a;border:1px solid #22222a;font-weight:800;font-size:12px;cursor:pointer;transition:.2s}
-.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
-.content{padding:0 14px}
-.group{margin:14px 0;background:linear-gradient(180deg,#101015,#0a0a0f);border:1px solid rgba(255,255,255,0.07);border-radius:22px;padding:12px}
-.group-title{color:var(--lime);font-size:11px;font-weight:900;letter-spacing:1px;margin:4px 6px 10px;display:flex;align-items:center;gap:8px}
-.group-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(198,255,0,0.3),transparent);margin-left:8px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.card{background:#0e0e12;border:1px solid #1e1e26;border-radius:16px;padding:12px;position:relative;min-height:86px;cursor:pointer;transition:.2s}
-.card:active{transform:scale(0.97)}.card.active{border-color:var(--lime);background:#1a2208}
-.card h3{font-size:13px;font-weight:900;line-height:1.15}.card p{font-size:11px;opacity:.5;margin-top:3px}
-.card-price{position:absolute;bottom:8px;right:8px;background:rgba(198,255,0,0.12);border:1px solid rgba(198,255,0,0.2);color:var(--lime);padding:3px 7px;border-radius:999px;font-weight:900;font-size:9px}
-.item-row{background:#101014;border:1px solid #1e1e26;border-radius:16px;padding:12px;display:flex;gap:10px;align-items:center;margin-bottom:9px;cursor:pointer}
-.item-img{width:58px;height:58px;background:#1a1a20;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
-.item-info{flex:1}.item-info h3{font-size:14px;font-weight:900}.item-info p{font-size:11px;opacity:.5;margin-top:2px}
-.add{width:34px;height:34px;background:#fff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;border:0}
-.section{display:none}.section.active{display:block}
-.cart-float{position:fixed;bottom:84px;left:14px;right:14px;background:var(--lime);color:#000;padding:14px 18px;border-radius:999px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:13px;box-shadow:0 10px 30px rgba(198,255,0,0.3);z-index:99;cursor:pointer;transform:translateY(100px);transition:.35s cubic-bezier(.16,1,.3,1)}
+:root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709;--card:#121318;--border:rgba(255,255,255,0.08)}
+*{box-sizing:border-box}body{font-family:Inter,sans-serif;background:var(--bg);color:#fff;padding-bottom:130px;-webkit-tap-highlight-color:transparent}
+.font-boss{font-family:Anton,sans-serif;letter-spacing:.02em}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{scrollbar-width:none;-ms-overflow-style:none}
+.glass{background:rgba(18,19,24,0.8);backdrop-filter:blur(20px);border:1px solid var(--border)}
+.glow-lime{box-shadow:0 0 30px rgba(198,255,0,.28)}
+.glow-gold{box-shadow:0 8px 30px rgba(255,198,26,.35)}
+.live-dot{animation:pulse 1.5s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.cart-float{transform:translateY(120px);transition:.45s cubic-bezier(.16,1,.3,1)}
 .cart-float.show{transform:translateY(0)}
-.cart-sheet{position:fixed;bottom:0;left:0;right:0;background:#0e0e12;border-top:1px solid #1e1e26;border-radius:26px 26px 0 0;padding:18px;transform:translateY(100%);transition:.4s cubic-bezier(.16,1,.3,1);z-index:200;max-height:85vh;overflow:auto}
-.cart-sheet.open{transform:translateY(0)}
-.pay-box{background:#111114;border:1px solid #22222a;border-radius:14px;padding:12px;margin-top:10px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,14,0.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0 16px;z-index:100}
-.bottom-nav div{text-align:center;opacity:.4;cursor:pointer}.bottom-nav div.active{opacity:1;color:var(--lime)}.bottom-nav i{font-size:18px;display:block}.bottom-nav b{font-size:9px;margin-top:2px;display:block;font-weight:800}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:none;place-items:center;padding:16px}
-.card-modal{background:#151517;border:1px solid #222;border-radius:24px;padding:20px;width:100%;max-width:380px}
-input{width:100%;padding:13px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;margin-top:6px;font-size:14px}
-.btn{width:100%;background:var(--lime);color:#000;padding:14px;border:none;border-radius:14px;font-weight:900;margin-top:12px;cursor:pointer}
+.sheet{transform:translateY(100%);transition:.45s cubic-bezier(.16,1,.3,1)}
+.sheet.open{transform:translateY(0)}
+.mood.on{background:var(--lime)!important;color:#000!important;border-color:var(--lime)!important}
+.tab-active{background:#fff!important;color:#000!important;border-color:#fff!important}
+.card-press:active{transform:scale(.97)}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="logo">GUEST<span>HUB</span> • <span style="color:#888;font-size:11px" id="hotelName">BAOBAB</span></div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <div class="pill">🍽️ <span id="tableLabel">T01</span> • 🛏️ <span id="roomLabel">101</span></div>
-    <div id="guestAvatar" style="width:30px;height:30px;border-radius:50%;background:var(--lime);color:#000;display:grid;place-items:center;font-weight:900;font-size:13px">G</div>
+
+<!-- TOP — HOMEPAGE STYLE -->
+<div class="sticky top-0 z-[100] bg-[#060709]/90 backdrop-blur-2xl border-b border-white/10">
+  <div class="px-5 py-3.5 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="font-boss text-[20px] text-[#FFD400] tracking-wide">GUESTHUB</div>
+      <span class="text-[10px] tracking-[0.18em] text-white/40 font-bold hidden md:block">KENYA'S HOTEL OS</span>
+      <span id="hotelBadge" class="ml-1 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-bold">BAOBAB</span>
+    </div>
+    <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#121318] border border-white/10 text-[11px] font-bold">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#C6FF00] live-dot"></span><span id="tableLabel">T01</span> • <span id="roomLabel">101</span>
+      </div>
+      <div id="guestAvatar" class="w-8 h-8 rounded-full bg-[#C6FF00] text-black grid place-items-center font-black text-[12px]">G</div>
+      <div id="apiDot" class="w-2 h-2 rounded-full bg-white/20 ml-1"></div>
+    </div>
+  </div>
+
+  <!-- LIVE TRACKER -->
+  <div id="liveTracker" class="hidden mx-3 mb-3 rounded-2xl bg-gradient-to-r from-[#141508] to-[#1A1A0A] border border-[#C6FF00]/50 p-3.5 flex gap-3 items-center">
+    <img id="liveImg" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" class="w-12 h-12 rounded-xl object-cover">
+    <div class="flex-1">
+      <div class="text-[10px] font-black tracking-[0.12em] flex items-center gap-2"><span class="w-2 h-2 bg-emerald-400 rounded-full live-dot"></span>LIVE ORDER TRACKER</div>
+      <div id="liveTitle" class="text-[13px] font-bold mt-0.5">Grilled Seafood • Room 101</div>
+      <div id="liveSub" class="text-[10px] text-white/50">Kitchen inaona jina lako + WA auto sent</div>
+      <div class="text-[10px] mt-1"><span class="text-white/30">✅ Confirmed — ✅ Preparing —</span> <span class="text-[#C6FF00] font-bold">● On the way</span></div>
+    </div>
+    <button onclick="switchTab('orders')" class="text-[10px] font-bold px-3 py-1.5 rounded-full bg-white text-black">Track →</button>
+  </div>
+
+  <!-- CATS -->
+  <div class="px-3 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+    <button onclick="setFilter('all')" id="f-all" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white text-black">All</button>
+    <button onclick="setFilter('food')" id="f-food" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🍽️ Food</button>
+    <button onclick="setFilter('drinks')" id="f-drinks" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🍹 Drinks</button>
+    <button onclick="setFilter('taxi')" id="f-taxi" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🚕 Taxi</button>
+    <button onclick="setFilter('safari')" id="f-safari" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">🦁 Safari</button>
+    <button onclick="setFilter('spa')" id="f-spa" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10">💆 Spa</button>
   </div>
 </div>
-<div class="greet">
+
+<!-- GREET + WEATHER -->
+<div class="px-5 pt-5 flex justify-between gap-4">
   <div>
-    <h1>Karibu <span id="guestNameDisplay" style="color:var(--lime)">Guest</span>! 👋</h1>
-    <div style="color:#888;font-size:11px;margin-top:4px"><span id="roomDisplay" style="color:var(--lime);font-weight:800">Room 101</span> • <span id="timeGreet">Good Afternoon</span> • <span id="stayDay">Day 1</span> • <span id="kipPoints">QR Linked</span></div>
+    <h1 class="font-boss text-[34px] leading-[0.9] uppercase">Karibu <span id="guestNameDisplay" class="text-[#C6FF00]">Guest</span>! 👋</h1>
+    <div class="text-[11px] mt-1.5 text-white/50"><span id="roomDisplay" class="text-[#C6FF00] font-bold">Room 101</span> • <span id="timeGreet">Good Afternoon</span> • <span id="stayDay">Day 1</span> • <span class="px-1.5 py-0.5 rounded bg-[#C6FF00]/10 text-[#C6FF00]">QR Linked</span></div>
   </div>
-  <div class="weather"><div style="font-size:18px;font-weight:900">⛅ 24°C</div><div style="font-size:9px;color:var(--lime);font-weight:800">Diani • Sunny</div><div style="font-size:8px;color:#666">OS 18.0 • Auto Routing ON</div></div>
-</div>
-<div class="live" id="liveTracker">
-  <div style="font-size:10px;font-weight:900;letter-spacing:.1em"><span class="dot"></span> LIVE ORDER TRACKER — GM WHATSAPP AUTO ROUTED</div>
-  <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
-    <img id="liveImg" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c" style="width:54px;height:54px;border-radius:12px;object-fit:cover">
-    <div><b id="liveTitle" style="font-size:13px">Your Order</b><div style="font-size:10px;color:#aaa" id="liveSub">• Preparing — Kitchen inaona jina lako + WA auto</div><div style="font-size:9px;margin-top:4px">✅ Confirmed — ✅ Preparing — <span style="color:var(--lime)">● On the way — WA sent</span></div><div style="font-size:10px;color:var(--lime);font-weight:800;margin-top:3px" id="liveETA">Arriving soon • Track →</div></div>
+  <div class="min-w-[110px] glass rounded-2xl p-3 text-center">
+    <div class="text-[16px] font-black">⛅ 24°C</div><div class="text-[9px] text-[#C6FF00] font-bold">Diani • Sunny</div><div class="text-[8px] text-white/30 mt-1">OS V4 • WA ON</div>
   </div>
 </div>
-<div class="quick">
-  <div style="display:flex;justify-content:space-between"><h3 style="font-family:Space Grotesk;font-size:14px;margin:0">Quick Actions — OS 18.0 Auto Route</h3><span style="color:var(--lime);font-size:10px;font-weight:800">WhatsApp Routing ON</span></div>
-  <div class="qgrid">
-    <div class="q" onclick="switchTab('menu')"><i>🍽️</i><b>Food</b></div>
-    <div class="q" onclick="switchTab('rides')"><i>🚕</i><b>Taxi</b></div>
-    <div class="q" onclick="switchTab('rides')"><i>🦁</i><b>Safari</b></div>
-    <div class="q" onclick="orderQuick('spa')"><i>🧖</i><b>Massage</b></div>
-    <div class="q" onclick="orderQuick('laundry')"><i>🧺</i><b>Laundry</b></div>
-    <div class="q" onclick="openBill()"><i>🧾</i><b>Bill</b></div>
-    <div class="q" style="border-color:#ff5a5f" onclick="sos()"><i>🆘</i><b style="color:#ff5a5f">SOS</b></div>
-    <div class="q" onclick="openMore()"><i>✨</i><b>More</b></div>
+
+<!-- QUICK ACTIONS — YOUR ULTRA + MY WORLD CLASS -->
+<div class="px-5 mt-5">
+  <div class="flex justify-between items-center"><h3 class="font-boss text-[14px] tracking-wide">QUICK ACTIONS — 1 TAP</h3><span class="text-[10px] font-bold text-[#C6FF00]">WHATSAPP ON</span></div>
+  <div class="grid grid-cols-4 gap-2.5 mt-3">
+    <button onclick="quick('food')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center hover:border-[#C6FF00]/50"><div class="text-[22px]">🍽️</div><div class="text-[10px] font-bold mt-1">Food</div></button>
+    <button onclick="quick('taxi')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🚕</div><div class="text-[10px] font-bold mt-1">Taxi</div></button>
+    <button onclick="quick('safari')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🦁</div><div class="text-[10px] font-bold mt-1">Safari</div></button>
+    <button onclick="quick('spa')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🧖</div><div class="text-[10px] font-bold mt-1">Massage</div></button>
+    <button onclick="quick('water')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">💧</div><div class="text-[10px] font-bold mt-1">Water</div></button>
+    <button onclick="quick('laundry')" class="card-press bg-[#121318] border border-white/10 rounded-2xl py-3 text-center"><div class="text-[22px]">🧺</div><div class="text-[10px] font-bold mt-1">Laundry</div></button>
+    <button onclick="sos()" class="card-press bg-[#1A0E0E] border border-red-500/30 rounded-2xl py-3 text-center"><div class="text-[22px]">🆘</div><div class="text-[10px] font-bold mt-1 text-red-400">SOS</div></button>
+    <button onclick="quick('taxi-now')" class="card-press bg-[#FFC61A] rounded-2xl py-3 text-center text-black"><div class="text-[22px]">⚡</div><div class="text-[10px] font-extrabold mt-1">Taxi Now</div></button>
   </div>
 </div>
-<div class="mood">
-  <b style="font-size:12px">How are you feeling? I'll suggest perfect 👇</b>
-  <div style="margin-top:8px"><span class="mood-opt" onclick="setMood(this,'tired')">😴 Tired</span><span class="mood-opt" onclick="setMood(this,'hungry')">😋 Hungry</span><span class="mood-opt" onclick="setMood(this,'party')">🥳 Party</span><span class="mood-opt" onclick="setMood(this,'relax')">🧘 Relax</span><span class="mood-opt" onclick="setMood(this,'romantic')">❤️ Romantic</span><span class="mood-opt" onclick="setMood(this,'adventure')">🏔️ Adventure</span></div>
-  <div id="moodSuggest" style="display:none;margin-top:10px;padding:10px;background:#0a0a0a;border-radius:12px;font-size:11px"></div>
+
+<!-- MOOD -->
+<div class="mx-5 mt-5 glass rounded-2xl p-4">
+  <div class="text-[12px] font-bold">How are you feeling? I'll suggest perfect 👇</div>
+  <div class="flex flex-wrap gap-2 mt-3">
+    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'tired')">😴 Tired</span>
+    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'hungry')">😋 Hungry</span>
+    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'party')">🥳 Party</span>
+    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'relax')">🧘 Relax</span>
+    <span class="mood px-3 py-1.5 rounded-full bg-[#0A0A0A] border border-white/10 text-[11px] font-bold cursor-pointer" onclick="setMood(this,'romantic')">❤️ Romantic</span>
+  </div>
+  <div id="moodSuggest" class="hidden mt-3 p-3 rounded-xl bg-[#0A0A0A] border border-[#C6FF00]/20 text-[11px]"></div>
 </div>
-<div style="padding:0 16px;display:flex;justify-content:space-between"><h3 style="font-family:Space Grotesk;font-size:14px;margin:0">Hotel Experiences</h3><span style="color:var(--lime);font-size:10px;font-weight:800">Stories • 5 • OS 18.0</span></div>
-<div class="stories" id="storiesRow"></div>
-<div class="hero-mini"><b id="heroTitle">Karibu! Eat, Ride, Explore — OS 18.0</b><p id="heroSub">Order food • Book taxi • Safari tomorrow • All auto routed to WhatsApp! We know you: <span id="heroGuest">Guest Room 101</span></p></div>
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('menu')">🍽️ MENU</div>
-  <div class="tab" onclick="switchTab('rides')">🚕 RIDES & TOURS</div>
-  <div class="tab" onclick="switchTab('services')">🧖 SERVICES</div>
-  <div class="tab" onclick="switchTab('orders')">📋 MY ORDERS</div>
+
+<!-- STORIES -->
+<div class="mt-5 px-5 flex justify-between"><h3 class="font-boss text-[13px]">HOTEL EXPERIENCES</h3><span class="text-[10px] font-bold text-[#C6FF00]">Stories • 5 • OS V4</span></div>
+<div id="storiesRow" class="mt-2 flex gap-3 overflow-x-auto no-scrollbar px-5"></div>
+
+<!-- HERO MINI LIME -->
+<div class="mx-5 mt-5 rounded-[20px] bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] p-4 text-black flex justify-between items-center">
+  <div><div id="heroTitle" class="font-black text-[15px] leading-tight">Karibu! Eat, Ride, Explore — OS V4</div><div id="heroSub" class="text-[11px] opacity-70 font-bold mt-1">Order food • Book taxi • Safari tomorrow • Auto routed to WhatsApp! <span id="heroGuest">Guest Room 101</span></div></div>
+  <div class="text-[20px]">→</div>
 </div>
-<div class="content">
-  <div class="section active" id="sec-menu"><div id="menuContainer">Loading menu from GM dashboard OS 18.0...</div></div>
-  <div class="section" id="sec-rides"><div id="ridesContainer"></div></div>
-  <div class="section" id="sec-services"><div id="servicesContainer"></div></div>
-  <div class="section" id="sec-orders"><div id="myOrders">No orders yet. Order food or book a ride!</div></div>
+
+<!-- TABS -->
+<div class="sticky top-[105px] z-50 bg-[#060709]/95 backdrop-blur-xl px-5 py-3 flex gap-2 overflow-x-auto no-scrollbar border-b border-white/5">
+  <button onclick="switchTab('menu')" id="tab-menu" class="tab-active whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold border">🍽️ MENU</button>
+  <button onclick="switchTab('rides')" id="tab-rides" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">🚕 RIDES & TOURS</button>
+  <button onclick="switchTab('services')" id="tab-services" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">🧖 SERVICES</button>
+  <button onclick="switchTab('orders')" id="tab-orders" class="whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10">📋 MY ORDERS</button>
 </div>
-<div style="margin:16px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:12px;display:flex;gap:10px;align-items:center" onclick="openChat()">
-  <div style="width:36px;height:36px;border-radius:50%;background:var(--lime);display:grid;place-items:center">🤖</div>
-  <div style="flex:1"><b style="font-size:12px">AI Concierge — WhatsApp Auto Routing ON</b><div style="font-size:10px;color:#888">Order Pilau → Kitchen WA • Taxi → Taxi WA</div></div><div style="color:var(--lime)">→</div>
+
+<!-- CONTENT -->
+<div class="px-3 pt-3">
+  <div id="sec-menu" class="space-y-3"></div>
+  <div id="sec-rides" class="hidden space-y-3"></div>
+  <div id="sec-services" class="hidden space-y-3"></div>
+  <div id="sec-orders" class="hidden"><div id="myOrders" class="text-center text-white/30 text-[13px] py-16">No orders yet. Order pilau mkuu!</div></div>
 </div>
-<div class="cart-float" id="cartFloat" onclick="openCart()"><span>🛒 <b id="cartCount">0</b> items • Ksh <b id="cartTotal">0</b></span><span>View →</span></div>
-<div class="cart-sheet" id="cartSheet">
-  <div style="width:36px;height:4px;background:#2a2a34;border-radius:999px;margin:0 auto 14px"></div>
-  <h2 style="font-size:18px;font-weight:900">Your Cart — <span id="cartRoomDisplay">Room 101 — Guest</span></h2>
-  <div id="cartItems" style="margin-top:12px"></div>
-  <div class="pay-box"><small style="opacity:.5">PAY TO HOTEL • Till / Paybill — Auto Routed to Department WA</small><b id="payInfo" style="display:block;margin-top:4px">Till Loading...</b><small style="opacity:.6;display:block;margin-top:4px">Use <span id="payAccount">T01 — Guest</span> as Account Number</small></div>
-  <input id="guestNameInput" placeholder="Confirm your name" style="background:#1a1a20;border:1px solid #2a2a34;border-radius:12px;padding:14px;color:#fff;margin-top:10px;width:100%">
-  <button onclick="checkout()" style="width:100%;background:var(--lime);color:#000;border:0;padding:16px;border-radius:14px;font-weight:900;font-size:16px;margin-top:12px">💳 ORDER & PAY — AUTO ROUTE TO WHATSAPP</button>
-  <button onclick="closeCart()" style="width:100%;background:transparent;border:1px solid #2a2a34;color:#fff;padding:12px;border-radius:12px;margin-top:8px;font-weight:800">Continue Shopping</button>
+
+<!-- AI CONCIERGE -->
+<div class="mx-3 mt-6 glass rounded-2xl p-3 flex gap-3 items-center" onclick="openChat()">
+  <div class="w-9 h-9 rounded-full bg-[#C6FF00] grid place-items-center text-black">🤖</div>
+  <div class="flex-1"><div class="text-[12px] font-bold">AI Concierge — WhatsApp Routing ON</div><div class="text-[10px] text-white/50">Order Pilau → Kitchen WA • Taxi → Taxi WA</div></div><div class="text-[#C6FF00]">→</div>
 </div>
-<div class="bottom-nav">
-  <div class="active" onclick="switchTab('menu')"><i>🍽️</i><b>Menu</b></div>
-  <div onclick="switchTab('rides')"><i>🚕</i><b>Rides</b></div>
-  <div onclick="switchTab('services')"><i>🧖</i><b>Services</b></div>
-  <div onclick="switchTab('orders')"><i>📋</i><b>Orders</b></div>
+
+<!-- CART FLOAT -->
+<div id="cartFloat" class="cart-float fixed bottom-[84px] left-3 right-3 z-[60] bg-[#C6FF00] text-black rounded-full px-5 py-3.5 flex justify-between items-center font-black text-[13px] glow-lime" onclick="openCart()">
+  <span>🛒 <span id="cartCount">0</span> items • KSh <span id="cartTotal">0</span></span><span>View →</span>
 </div>
-<div id="identityModal" class="modal" style="display:grid">
-  <div class="card-modal">
-    <h2 style="font-family:Space Grotesk;color:var(--lime);margin:0">Karibu! OS 18.0 👋</h2>
-    <p style="color:#888;font-size:11px;margin:6px 0 14px">Ili Kitchen, Taxi & Housekeeping wakutambue + WhatsApp auto-routing — tujue wewe ni nani! GM ame-setup departments.</p>
-    <label style="font-size:10px;font-weight:800;color:#777">Your Name *</label><input id="gName" placeholder="Kip">
-    <label style="font-size:10px;font-weight:800;color:#777;margin-top:10px;display:block">Phone / WhatsApp *</label><input id="gPhone" placeholder="0707...">
-    <label style="font-size:10px;font-weight:800;color:#777;margin-top:10px;display:block">Room Number * (from QR)</label><input id="gRoom" placeholder="101">
-    <button class="btn" onclick="saveIdentity()">✅ Continue — Auto Linked to Room QR</button>
-    <div style="font-size:9px;color:#666;margin-top:8px;text-align:center">We remember you • All orders show: Name + Room + Phone + WA auto to Dept</div>
+
+<!-- CART SHEET -->
+<div id="cartSheet" class="sheet fixed bottom-0 left-0 right-0 z-[200] bg-[#0E0E12] border-t border-white/10 rounded-t-[26px] p-5 max-h-[85vh] overflow-auto">
+  <div class="w-9 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
+  <h2 class="font-boss text-[18px] uppercase">Your Cart — <span id="cartRoomDisplay">Room 101</span></h2>
+  <div id="cartItems" class="mt-4 space-y-2"></div>
+  <div class="mt-4 bg-[#111114] border border-white/10 rounded-xl p-3">
+    <div class="text-[10px] text-white/40 font-bold tracking-widest">PAY TO HOTEL • Till / Paybill — Auto Routed to Dept WA</div>
+    <div id="payInfo" class="font-bold text-[13px] mt-1">Till Loading...</div>
+    <div class="text-[10px] text-white/40 mt-1">Use <span id="payAccount" class="text-white">T01 — Guest</span> as Account Number</div>
+  </div>
+  <input id="guestNameInput" placeholder="Confirm your name" class="w-full mt-3 bg-[#1A1A20] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]">
+  <button onclick="checkout()" class="w-full mt-3 h-14 rounded-full bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] text-black font-black text-[15px]">💳 ORDER & PAY — AUTO ROUTE TO WHATSAPP</button>
+  <button onclick="closeCart()" class="w-full mt-2 h-12 rounded-full bg-white/10 border border-white/10 font-bold text-[13px]">Continue Shopping</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0A0A0E]/95 backdrop-blur-2xl border-t border-white/10 grid grid-cols-4 py-2">
+  <button onclick="switchTab('menu')" id="nav-menu" class="text-center text-[#C6FF00]"><div class="text-[18px]">🍽️</div><div class="text-[9px] font-bold mt-1">Menu</div></button>
+  <button onclick="switchTab('rides')" id="nav-rides" class="text-center opacity-40"><div class="text-[18px]">🚕</div><div class="text-[9px] font-bold mt-1">Rides</div></button>
+  <button onclick="switchTab('services')" id="nav-services" class="text-center opacity-40"><div class="text-[18px]">🧖</div><div class="text-[9px] font-bold mt-1">Services</div></button>
+  <button onclick="switchTab('orders')" id="nav-orders" class="text-center opacity-40"><div class="text-[18px]">📋</div><div class="text-[9px] font-bold mt-1">Orders</div></button>
+</div>
+
+<!-- IDENTITY MODAL — YOUR ULTRA -->
+<div id="identityModal" class="fixed inset-0 z-[999] bg-black/90 backdrop-blur-md grid place-items-center p-5">
+  <div class="w-full max-w-[380px] bg-[#151517] border border-white/10 rounded-[24px] p-6">
+    <h2 class="font-boss text-[22px] text-[#C6FF00]">Karibu! OS V4 👋</h2>
+    <p class="text-[11px] text-white/50 mt-2 leading-5">Ili Kitchen, Taxi & Housekeeping wakutambue + WhatsApp auto-routing — tujue wewe ni nani! GM ame-setup departments.</p>
+    <div class="mt-4 space-y-3">
+      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">YOUR NAME *</label><input id="gName" placeholder="James" class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
+      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">PHONE / WHATSAPP *</label><input id="gPhone" placeholder="0707..." class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
+      <div><label class="text-[10px] font-bold text-white/40 tracking-widest">ROOM NUMBER *</label><input id="gRoom" placeholder="101" class="w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none focus:border-[#C6FF00]"></div>
+    </div>
+    <button onclick="saveIdentity()" class="w-full mt-5 h-12 rounded-full bg-[#C6FF00] text-black font-black text-[14px]">✅ Continue — QR Linked</button>
+    <div class="text-[9px] text-white/30 text-center mt-3">We remember you • Orders show: Name + Room + Phone + WA auto to Dept</div>
   </div>
 </div>
+
 <script>
+const API='/api';
 const $=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const HOTEL_ID=(params.get('hotel')||'BAOBAB').toUpperCase();
-const tableParam=params.get('table')||'T'+(params.get('room')||'01');
 const ROOM_PARAM=params.get('room')||'101';
-let cart=[], menuItems=[], hotelServices=[], myOrdersList=[], payInfo={};
-const experiences=[
+const TABLE_PARAM='T'+ROOM_PARAM.padStart(2,'0');
+let cart=[], menuItems=[], hotelServices=[], myOrdersList=[], payInfo={}, currentFilter='all';
+
+const FALLBACK_MENU=[
+  {id:'f1',name:'Grilled Seafood Platter',category:'Food',price:2450,desc:'Catch of the day, fries, kachumbari',icon:'🦞',time:'18 min',badge:'BESTSELLER',department:'kitchen'},
+  {id:'f2',name:'Swahili Pilau + Kachumbari',category:'Food',price:950,desc:'Coastal pilau, beef, raita',icon:'🍛',time:'14 min',badge:'',department:'kitchen'},
+  {id:'f3',name:'Chicken Shawarma Box',category:'Food',price:850,desc:'Double chicken, garlic',icon:'🌯',time:'12 min',badge:'FAST',department:'kitchen'},
+  {id:'d1',name:'Dawa Cocktail',category:'Drinks',price:650,desc:'Vodka, honey, lime',icon:'🍹',time:'5 min',badge:'',department:'bar'},
+  {id:'d2',name:'Fresh Mango Juice',category:'Drinks',price:350,desc:'Cold pressed',icon:'🥭',time:'3 min',badge:'',department:'bar'},
+  {id:'t1',name:'Taxi to Diani Beach',category:'Taxi',price:800,desc:'Driver 2 min, Prado',icon:'🚕',time:'2 min',badge:'24H',department:'taxi'},
+  {id:'s1',name:'Wasini Dolphin Tour',category:'Safari',price:6500,desc:'Full day, lunch, snorkeling',icon:'🐬',time:'Tomorrow 7am',badge:'15% HOTEL',department:'tours'},
+  {id:'sp1',name:'Swedish Massage 60min',category:'Spa',price:3500,desc:'In-room, female therapist',icon:'💆',time:'30 min',badge:'',department:'spa'},
+];
+
+const EXPERIENCES=[
   {t:'Sunset Safari',img:'https://images.unsplash.com/photo-1516426122078-c23e76319801',d:'Today 5pm'},
   {t:'Pool & Lounge',img:'https://images.unsplash.com/photo-1571896349842-33c89424de2d',d:'Happy hour'},
   {t:'Spa',img:'https://images.unsplash.com/photo-1544161515-4ab6ce6db874',d:'60min @2500'},
   {t:'Rooftop Dinner',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0',d:'Live band'},
   {t:'Coffee Tasting',img:'https://images.unsplash.com/photo-1509042239860-f550ce710b93',d:'Kenya AA'}
 ];
-function renderStories(){const row=$('storiesRow');row.innerHTML='';experiences.forEach(ex=>{const div=document.createElement('div');div.className='story';div.innerHTML=`<div class="ring"><img src="${ex.img}"></div><b style="font-size:9px;display:block;margin-top:4px">${ex.t}</b>`;div.onclick=()=>orderQuick(ex.t.toLowerCase());row.appendChild(div);});}
+
+function renderStories(){
+  $('storiesRow').innerHTML=EXPERIENCES.map(ex=>`
+    <div onclick="quick('${ex.t.toLowerCase()}')" class="shrink-0 text-center cursor-pointer">
+      <div class="w-[62px] h-[62px] rounded-full p-[2px] bg-gradient-to-tr from-[#C6FF00] to-[#FFC61A]"><img src="${ex.img}" class="w-full h-full rounded-full object-cover border-[3px] border-[#060709]"></div>
+      <div class="text-[9px] font-bold mt-1">${ex.t}</div>
+    </div>
+  `).join('');
+}
+
 function checkIdentity(){
-  const name=localStorage.getItem('guest_name');const room=localStorage.getItem('guest_room');const phone=localStorage.getItem('guest_phone');
+  const name=localStorage.getItem('guest_name'), room=localStorage.getItem('guest_room'), phone=localStorage.getItem('guest_phone');
   if(name&&room){
     $('identityModal').style.display='none';
     $('guestNameDisplay').textContent=name.split(' ')[0];
     $('roomDisplay').textContent='Room '+room;
-    $('roomLabel').textContent=room;
-    $('tableLabel').textContent=localStorage.getItem('guest_table')||tableParam;
+    $('roomLabel').textContent=room; $('tableLabel').textContent='T'+room.padStart(2,'0');
     $('guestAvatar').textContent=name[0].toUpperCase();
     $('guestNameInput').value=name;
-    $('cartRoomDisplay').textContent=`Room ${room} - ${name}`;
-    $('payAccount').textContent=`${localStorage.getItem('guest_table')} - ${name}`;
-    $('heroGuest').textContent=`${name} - Room ${room} - QR Linked`;
-    const hr=new Date().getHours();$('timeGreet').textContent= hr<12?'Good Morning':hr<18?'Good Afternoon':'Good Evening';
-    loadLiveTracker();
+    $('cartRoomDisplay').textContent=`Room ${room} — ${name}`;
+    $('payAccount').textContent=`T${room} — ${name}`;
+    $('heroGuest').textContent=`${name} — Room ${room} — QR Linked`;
+    const hr=new Date().getHours(); $('timeGreet').textContent=hr<12?'Good Morning':hr<18?'Good Afternoon':'Good Evening';
+    $('hotelBadge').textContent=HOTEL_ID; $('gRoom').value=room;
+    loadLive();
   } else {
-    $('gRoom').value=ROOM_PARAM;
-    $('identityModal').style.display='grid';
+    $('gRoom').value=ROOM_PARAM; $('identityModal').style.display='grid';
   }
 }
+
 async function saveIdentity(){
   const name=$('gName').value.trim(), phone=$('gPhone').value.trim(), room=$('gRoom').value.trim();
-  if(!name||!phone||!room){ alert('Jaza zote!'); return; }
-  localStorage.setItem('guest_name',name);localStorage.setItem('guest_phone',phone);
-  localStorage.setItem('guest_room',room);localStorage.setItem('guest_table','T'+room.padStart(2,'0'));
-  try{
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    await supa.schema('guesthub_os').from('guest_sessions').insert([{room_number:room,table_id:'T'+room,guest_name:name,guest_phone:phone,hotel_id:HOTEL_ID}]);
-  }catch(e){}
-  checkIdentity();renderStories();
+  if(!name||!phone||!room) return alert('Jaza zote mkuu!');
+  localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone); localStorage.setItem('guest_room',room);
+  try{ const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); await supa.schema('guesthub_os').from('guest_sessions').insert([{room_number:room,table_id:'T'+room,guest_name:name,guest_phone:phone,hotel_id:HOTEL_ID}]); }catch{}
+  checkIdentity(); renderStories();
 }
-function switchTab(name){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  const sec=$('sec-'+name);if(sec)sec.classList.add('active');
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  const idx={menu:0,rides:1,services:2,orders:3}[name]||0;
-  document.querySelectorAll('.tab')[idx]?.classList.add('active');
-  document.querySelectorAll('.bottom-nav div').forEach((d,i)=>{d.classList.toggle('active',i===idx);});
-  if(name==='orders')renderMyOrders();
+
+function setFilter(f){
+  currentFilter=f;
+  document.querySelectorAll('[id^="f-"]').forEach(b=>b.className='whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white/10 border border-white/10');
+  const a=$('f-'+f); if(a) a.className='whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-white text-black';
+  renderAll();
 }
+
 function setMood(el,m){
-  document.querySelectorAll('.mood-opt').forEach(o=>o.classList.remove('on'));el.classList.add('on');
-  const map={tired:'😴 Tired? → Massage + Soup to Room '+localStorage.getItem('guest_room'),hungry:'😋 Hungry? → Grill 15min to Room '+localStorage.getItem('guest_room'),party:'🥳 Party? → Rooftop + DJ',relax:'🧘 Relax? → Spa 60min',romantic:'❤️ Romantic? → Rooftop Dinner',adventure:'🏔️ Adventure? → Mara 5am'};
-  const sug=$('moodSuggest');sug.style.display='block';sug.innerHTML=`<b style="color:var(--lime)">${map[m]}</b> <button onclick="orderQuick('${m}')" style="margin-left:8px;background:var(--lime);border:none;border-radius:999px;padding:4px 10px;font-weight:800;font-size:10px">Book Now</button>`;
+  document.querySelectorAll('.mood').forEach(o=>o.classList.remove('on')); el.classList.add('on');
+  const map={tired:`😴 Tired? → Massage + Soup to Room ${localStorage.getItem('guest_room')||'101'}`,hungry:`😋 Hungry? → Grill 15min to Room ${localStorage.getItem('guest_room')||'101'}`,party:'🥳 Party? → Rooftop + DJ Tonight',relax:'🧘 Relax? → Spa 60min in-room',romantic:'❤️ Romantic? → Rooftop Dinner for 2'};
+  const sug=$('moodSuggest'); sug.classList.remove('hidden'); sug.innerHTML=`<b class="text-[#C6FF00]">${map[m]}</b> <button onclick="quick('${m}')" class="ml-2 px-3 py-1 rounded-full bg-[#C6FF00] text-black font-bold text-[10px]">Book Now</button>`;
 }
-async function orderQuick(svc){
-  const room=localStorage.getItem('guest_room')||ROOM_PARAM;
-  const name=localStorage.getItem('guest_name')||'Guest';
-  const phone=localStorage.getItem('guest_phone')||'';
-  const table=localStorage.getItem('guest_table')||tableParam;
-  const dept= svc.includes('taxi')||svc.includes('ride')?'taxi': svc.includes('safari')||svc.includes('tour')?'tours': svc.includes('massage')||svc.includes('spa')?'spa': svc.includes('laundry')?'laundry': svc.includes('clean')?'housekeeping':'kitchen';
-  const payload={hotel_id:HOTEL_ID,room_number:room,table_id:table,guest_name:name,guest_phone:phone,items:[{name:svc.toUpperCase(),qty:1,price:0}],total:0,department:dept,location_label:`Room ${room} - ${name} - ${phone}`};
-  const res=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const j=await res.json();
-  myOrdersList.push({time:new Date().toLocaleTimeString(),items:payload.items,total:0,room,name,phone,dept,wa:j.routing?.to||''});
-  alert(`✅ ${svc.toUpperCase()} booked!\n👤 ${name} - Room ${room}\n📞 ${phone}\n📱 Routed to ${dept.toUpperCase()} → WA ${j.routing?.to||''}\n\nLink: ${j.routing?.waLink||''}`);
-  $('liveTracker').style.display='block';$('liveTitle').textContent=svc.toUpperCase()+' for '+name;$('liveSub').textContent=`Room ${room} • ${dept} • WA ${j.routing?.to||''}`;
-  if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
+
+function switchTab(name){
+  ['menu','rides','services','orders'].forEach(n=>{
+    $('sec-'+n).classList.toggle('hidden', n!==name);
+    const tb=$('tab-'+n); if(tb) tb.className=n===name?'tab-active whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold border':'whitespace-nowrap px-4 py-2 rounded-full text-[12px] font-bold bg-[#15151A] border border-white/10';
+    const nb=$('nav-'+n); if(nb) nb.className=n===name?'text-center text-[#C6FF00]':'text-center opacity-40';
+  });
+  if(name==='orders') renderMyOrders();
 }
-async function loadLiveTracker(){
-  try{
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const {data}=await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',HOTEL_ID).eq('room_number',localStorage.getItem('guest_room')).order('created_at',{ascending:false}).limit(1);
-    if(data&&data[0]){$('liveTracker').style.display='block';$('liveTitle').textContent=(data[0].items[0]?.name||'Order')+' - Room '+data[0].room_number;$('liveSub').textContent=`${data[0].guest_name} • ${data[0].department} • WA ${data[0].whatsapp_sent_to||''}`;}
-  }catch(e){}
-}
+
 async function loadOS(){
   try{
+    if(typeof SUPABASE_URL==='undefined'){ menuItems=FALLBACK_MENU; hotelServices=FALLBACK_MENU.filter(i=>['taxi','tours','spa'].includes(i.department)); renderAll(); return; }
     const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const [menuRes, svcRes, hotelRes] = await Promise.all([
-      supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true),
-      supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true),
-      supa.from('hotels').select('*').eq('hotel_id',HOTEL_ID).maybeSingle()
+    const [menuRes, svcRes, hotelRes]=await Promise.all([
+      supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true).limit(50),
+      supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',HOTEL_ID).eq('is_active',true).limit(50),
+      supa.from('hotels').select('till_number,m_pesa_name,hotel_name').eq('hotel_id',HOTEL_ID).maybeSingle()
     ]);
-    menuItems=menuRes.data||[];
-    hotelServices=svcRes.data||[];
-    if(hotelRes.data){payInfo={till_number:hotelRes.data.till_number||'123456',m_pesa_name:hotelRes.data.m_pesa_name||HOTEL_ID};$('payInfo').textContent=`Till ${payInfo.till_number} • ${payInfo.m_pesa_name}`;$('hotelName').textContent=HOTEL_ID;}
-    if(menuItems.length===0) menuItems=[{id:'demo1',name:'Pilau Beef',category:'Main',price:650,description:'Swahili pilau — GM add via dashboard'},{id:'demo2',name:'Grill Platter',category:'Main',price:1800,description:'Chef special'}];
-    if(hotelServices.length===0) hotelServices=[{id:'s1',title:'Airport Taxi',department:'taxi',price:3500,icon:'🚕',description:'JKIA/Wilson'},{id:'s2',title:'Maasai Mara Safari',department:'tours',price:15000,icon:'🦁',description:'2 days'},{id:'s3',title:'Massage',department:'spa',price:2500,icon:'🧖',description:'In-room'},{id:'s4',title:'Laundry Express',department:'laundry',price:500,icon:'🧺',description:'2hr'}];
-    renderMenu();renderRidesAndServices();
-  }catch(e){console.log(e);renderMenu();renderRidesAndServices();}
+    menuItems=(menuRes.data&&menuRes.data.length?menuRes.data:[]).map(m=>({id:m.id,name:m.name,category:m.category||'Food',price:Number(m.price),desc:m.description,icon:'🍛',time:'15 min',badge:'',department:m.department||'kitchen'}));
+    if(menuItems.length===0) menuItems=FALLBACK_MENU.filter(i=>['food','drinks'].includes(i.category.toLowerCase()));
+    hotelServices=(svcRes.data&&svcRes.data.length?svcRes.data:[]).map(s=>({id:s.id,name:s.title,category:s.department==='taxi'?'Taxi':s.department==='tours'?'Safari':'Spa',price:Number(s.price),desc:s.description,icon:s.icon||'🚕',time:'Now',badge:'',department:s.department}));
+    if(hotelServices.length===0) hotelServices=FALLBACK_MENU.filter(i=>['taxi','safari','spa'].includes(i.category.toLowerCase()));
+    if(hotelRes.data){ $('payInfo').textContent=`Till ${hotelRes.data.till_number||'123456'} • ${hotelRes.data.m_pesa_name||HOTEL_ID}`; $('hotelBadge').textContent=HOTEL_ID; }
+    else $('payInfo').textContent=`Till 123456 • ${HOTEL_ID}`;
+  }catch(e){ menuItems=FALLBACK_MENU; hotelServices=FALLBACK_MENU.filter(i=>['Taxi','Safari','Spa'].includes(i.category)); $('payInfo').textContent=`Till 123456 • ${HOTEL_ID}`; }
+  renderAll();
 }
-function renderMenu(){
-  const cats=[...new Set(menuItems.map(i=>i.category||'Food'))];
-  let html=`<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px"><div class="tab active" onclick="filterMenu('All',this)">All</div>`+cats.map(c=>`<div class="tab" onclick="filterMenu('${c}',this)">${c}</div>`).join('')+`</div><div id="menuGrid">`+menuItems.map(it=>`<div class="item-row" onclick="addToCart('${it.id}','menu')"><div class="item-img">${(it.category||'Food').includes('Drink')?'🥤':'🍛'}</div><div class="item-info"><h3>${it.name}</h3><p>${it.description||it.category||''}</p><b style="color:var(--lime)">Ksh ${it.price}</b></div><button class="add">+</button></div>`).join('')+`</div>`;
-  $('menuContainer').innerHTML=html;
+
+function renderAll(){
+  const all=[...menuItems,...hotelServices];
+  const filtered=currentFilter==='all'?all:all.filter(i=>i.category.toLowerCase()===currentFilter || i.department===currentFilter);
+
+  const menuFiltered = currentFilter==='all'||['food','drinks','all'].includes(currentFilter)? (currentFilter==='all'?menuItems:filtered.filter(i=>['Food','Drinks'].includes(i.category))) : [];
+  const ridesFiltered = currentFilter==='all'||['taxi','safari'].includes(currentFilter)? (currentFilter==='all'?hotelServices.filter(s=>['taxi','tours'].includes(s.department)):filtered) : [];
+
+  // MENU SEC
+  if(menuFiltered.length===0 && currentFilter==='all') {
+    $('sec-menu').innerHTML=`
+      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">${[...new Set(all.map(i=>i.category))].map(c=>`<button onclick="setFilter('${c.toLowerCase()}')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-[11px] font-bold">${c}</button>`).join('')}</div>
+      <div class="space-y-2">${all.map(renderCard).join('')}</div>`;
+  } else if(currentFilter==='all'){
+    $('sec-menu').innerHTML=`<div class="space-y-2">${menuItems.map(renderCard).join('')}</div>`;
+  } else {
+    $('sec-menu').innerHTML=`<div class="space-y-2">${filtered.map(renderCard).join('') || '<div class="text-center py-10 opacity-30">No items in '+currentFilter+'</div>'}</div>`;
+  }
+
+  // RIDES
+  $('sec-rides').innerHTML = ridesFiltered.length? `<div class="space-y-2">${ridesFiltered.map(renderCard).join('')}</div>` : `<div class="text-center py-16 opacity-30 text-[13px]">GM bado haja-add Rides — Add in GM Dashboard → Services</div>`;
+
+  // SERVICES
+  const servicesOnly = hotelServices.filter(s=>!['taxi','tours'].includes(s.department));
+  $('sec-services').innerHTML = servicesOnly.length? `<div class="grid grid-cols-2 gap-2.5">${servicesOnly.map(s=>`
+    <div onclick="addToCart('${s.id}')" class="card-press bg-[#121318] border border-white/10 rounded-2xl p-4">
+      <div class="text-[28px]">${s.icon}</div><div class="font-bold text-[13px] mt-2">${s.name}</div><div class="text-[11px] text-white/50 mt-1">${s.desc}</div><div class="mt-3 inline-flex px-2.5 py-1 rounded-full bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[#C6FF00] text-[11px] font-bold">KSh ${s.price}</div>
+    </div>
+  `).join('')}</div>` : `<div class="text-center py-16 opacity-30 text-[13px]">Spa & Services coming soon</div>`;
 }
-function filterMenu(cat,el){
-  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');
-  const filtered=cat==='All'?menuItems:menuItems.filter(i=>(i.category||'Food')===cat);
-  $('menuGrid').innerHTML=filtered.map(it=>`<div class="item-row" onclick="addToCart('${it.id}','menu')"><div class="item-img">🍛</div><div class="item-info"><h3>${it.name}</h3><p>${it.description||''}</p><b style="color:var(--lime)">Ksh ${it.price}</b></div><button class="add">+</button></div>`).join('');
+
+function renderCard(item){
+  return `
+  <div onclick="addToCart('${item.id}')" class="card-press bg-[#121318] border border-white/10 rounded-[18px] p-3.5 flex gap-3.5">
+    <div class="w-[56px] h-[56px] rounded-xl bg-[#1A1C1F] grid place-items-center text-[26px] shrink-0">${item.icon||'🍛'}</div>
+    <div class="flex-1 min-w-0">
+      <div class="flex justify-between gap-2"><div class="font-bold text-[13px] truncate">${item.name}</div>${item.badge?`<span class="shrink-0 text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#C6FF00] text-black h-fit">${item.badge}</span>`:''}</div>
+      <div class="text-[11px] text-white/50 truncate">${item.desc||''} • ⏱️ ${item.time||'15 min'}</div>
+      <div class="flex justify-between items-center mt-2.5"><span class="font-black text-[13px] text-[#C6FF00]">KSh ${Number(item.price).toLocaleString()}</span><button class="h-7 px-3.5 rounded-full bg-white text-black text-[11px] font-bold">+ Add</button></div>
+    </div>
+  </div>`;
 }
-function renderRidesAndServices(){
-  const rides=hotelServices.filter(s=>['taxi','tours','transport'].includes((s.department||'').toLowerCase()));
-  const services=hotelServices.filter(s=>!['taxi','tours','transport'].includes((s.department||'').toLowerCase()));
-  if(rides.length===0) $('ridesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">GM bado haja-add Rides — Add in GM Dashboard → Services (department taxi/tours)</div>`;
-  else {let html='';const groups={};rides.forEach(r=>{const k=r.department||'tours';if(!groups[k])groups[k]=[];groups[k].push(r)});for(let cat in groups){html+=`<div class="group"><div class="group-title">${cat==='taxi'?'🚕':'🌍'} ${cat.toUpperCase()} — Auto WA to ${cat}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'🏨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`;}$('ridesContainer').innerHTML=html;}
-  if(services.length===0) $('servicesContainer').innerHTML=`<div style="opacity:.5;padding:20px;text-align:center">Services coming soon — GM add kitchen/housekeeping/spa</div>`;
-  else {let html='';const groups={};services.forEach(r=>{const k=r.department||'kitchen';if(!groups[k])groups[k]=[];groups[k].push(r)});for(let cat in groups){html+=`<div class="group"><div class="group-title">🧖 ${cat.toUpperCase()} — Auto WA to ${cat}</div><div class="grid">`+groups[cat].map(s=>`<div class="card" onclick="addToCart('${s.id}','service')"><div style="font-size:22px">${s.icon||'✨'}</div><h3>${s.title}</h3><p>${s.description||''}</p><span class="card-price">Ksh ${s.price}</span></div>`).join('')+`</div></div>`;}$('servicesContainer').innerHTML=html;}
+
+function addToCart(id){
+  const all=[...menuItems,...hotelServices,...FALLBACK_MENU];
+  const item=all.find(i=>String(i.id)===String(id)); if(!item) return;
+  const ex=cart.find(c=>String(c.id)===String(id)); if(ex) ex.qty++; else cart.push({...item,qty:1});
+  updateCart(); if(navigator.vibrate) navigator.vibrate(25);
 }
-function addToCart(id,type){
-  let item;if(type==='menu')item=menuItems.find(i=>i.id==id);else item=hotelServices.find(i=>i.id==id);
-  if(!item)return;const price=parseFloat(item.price||0);const name=item.name||item.title;const dept=item.department||(type==='menu'?'kitchen':'frontdesk');
-  const ex=cart.find(c=>c.id==id);if(ex)ex.qty++;else cart.push({id,name,price,qty:1,type,department:dept});
-  updateCartUI();if(navigator.vibrate)navigator.vibrate(30);
+
+function updateCart(){
+  const count=cart.reduce((s,i)=>s+i.qty,0), total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  $('cartCount').textContent=count; $('cartTotal').textContent=total.toLocaleString();
+  $('cartFloat').classList.toggle('show',count>0);
+  $('cartItems').innerHTML=cart.map(i=>`
+    <div class="flex justify-between py-2.5 border-b border-white/10">
+      <div><b class="text-[13px]">${i.name} x${i.qty}</b><br><span class="text-[10px] text-white/40">${i.department||'kitchen'} • Room ${localStorage.getItem('guest_room')||ROOM_PARAM} — ${localStorage.getItem('guest_name')||'Guest'}</span></div>
+      <div class="text-right"><b class="text-[13px]">KSh ${(i.price*i.qty).toLocaleString()}</b><br><button onclick="removeCart('${i.id}')" class="text-[10px] text-red-400">Remove</button></div>
+    </div>
+  `).join('')+`<div class="flex justify-between font-black text-[15px] pt-3"><span>Total</span><span>KSh ${total.toLocaleString()}</span></div>`;
 }
-function updateCartUI(){
-  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);const count=cart.reduce((s,i)=>s+i.qty,0);
-  $('cartCount').textContent=count;$('cartTotal').textContent=total.toLocaleString();
-  const floatEl=$('cartFloat');if(count>0)floatEl.classList.add('show');else floatEl.classList.remove('show');
-  $('cartItems').innerHTML=cart.map(i=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #1a1a20"><div><b>${i.name} x${i.qty}</b><br><small style="opacity:.5">${i.department} • Room ${localStorage.getItem('guest_room')} - ${localStorage.getItem('guest_name')}</small></div><div><b>Ksh ${i.price*i.qty}</b> <button onclick="removeFromCart('${i.id}')" style="margin-left:8px;background:#222;border:0;color:#fff;width:22px;height:22px;border-radius:50%">x</button></div></div>`).join('')+`<div style="display:flex;justify-content:space-between;font-weight:900;font-size:16px;padding-top:10px"><span>Total</span><span>Ksh ${total.toLocaleString()}</span></div>`;
+function removeCart(id){ cart=cart.filter(c=>String(c.id)!==String(id)); updateCart(); }
+function openCart(){ $('cartSheet').classList.add('open'); }
+function closeCart(){ $('cartSheet').classList.remove('open'); }
+
+async function quick(type){
+  if(['water','food'].includes(type)){ const item=menuItems.find(m=>m.name.toLowerCase().includes(type))||FALLBACK_MENU[0]; addToCart(item.id); return; }
+  if(type==='taxi-now'){ const item=hotelServices.find(s=>s.department==='taxi')||FALLBACK_MENU.find(f=>f.department==='taxi'); addToCart(item.id); openCart(); return; }
+  if(['taxi','safari','spa','laundry'].includes(type)){ orderQuick(type); }
 }
-function removeFromCart(id){cart=cart.filter(c=>c.id!=id);updateCartUI();}
-function openCart(){$('cartSheet').classList.add('open');}
-function closeCart(){$('cartSheet').classList.remove('open');}
+async function orderQuick(svc){
+  const room=localStorage.getItem('guest_room')||ROOM_PARAM, name=localStorage.getItem('guest_name')||'Guest', phone=localStorage.getItem('guest_phone')||'', table='T'+room.padStart(2,'0');
+  const dept=svc.includes('taxi')?'taxi':svc.includes('safari')?'tours':svc.includes('massage')||svc.includes('spa')?'spa':svc.includes('laundry')?'laundry':'kitchen';
+  const payload={hotel_id:HOTEL_ID,room_number:room,table_id:table,guest_name:name,guest_phone:phone,items:[{name:svc.toUpperCase(),qty:1,price:0}],total:0,department:dept,location_label:`Room ${room} - ${name} - ${phone}`};
+  try{
+    const res=await fetch(API+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await res.json();
+    myOrdersList.unshift({time:new Date().toLocaleTimeString(),items:payload.items,total:0,room,name,phone,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
+    alert(`✅ ${svc.toUpperCase()} booked!\n👤 ${name} - Room ${room}\n📱 Routed to ${dept.toUpperCase()} → WA ${j.routing?.to||''}`);
+    $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=svc.toUpperCase()+' for '+name; $('liveSub').textContent=`Room ${room} • ${dept} • WA ${j.routing?.to||''}`;
+    if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
+  }catch(e){ alert('Order sent locally — WA routing when online'); }
+}
+
 async function checkout(){
-  if(cart.length===0)return alert('Cart empty');
+  if(cart.length===0) return alert('Cart empty');
   const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
   const gName=$('guestNameInput').value||localStorage.getItem('guest_name')||'Guest';
-  const gRoom=localStorage.getItem('guest_room')||ROOM_PARAM;
-  const gPhone=localStorage.getItem('guest_phone')||'';
-  const gTable=localStorage.getItem('guest_table')||tableParam;
-  const byDept={};cart.forEach(c=>{const d=c.department||'kitchen';if(!byDept[d])byDept[d]=[];byDept[d].push(c);});
+  const gRoom=localStorage.getItem('guest_room')||ROOM_PARAM, gPhone=localStorage.getItem('guest_phone')||'', gTable='T'+gRoom.padStart(2,'0');
+  const byDept={}; cart.forEach(c=>{const d=c.department||'kitchen'; if(!byDept[d])byDept[d]=[]; byDept[d].push(c)});
+  const btn=document.querySelector('#cartSheet button'); btn.textContent='SENDING...';
   for(const dept in byDept){
-    const items=byDept[dept];const deptTotal=items.reduce((s,i)=>s+i.price*i.qty,0);
+    const items=byDept[dept], deptTotal=items.reduce((s,i)=>s+i.price*i.qty,0);
     const payload={hotel_id:HOTEL_ID,room_number:gRoom,table_id:gTable,guest_name:gName,guest_phone:gPhone,items,total:deptTotal,department:dept,location_label:`Room ${gRoom} - ${gName} - ${gPhone}`};
-    const res=await fetch('/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const j=await res.json();
-    myOrdersList.push({time:new Date().toLocaleTimeString(),items,total:deptTotal,room:gRoom,guest:gName,phone:gPhone,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
-    if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
+    try{
+      const res=await fetch(API+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      const j=await res.json();
+      myOrdersList.unshift({time:new Date().toLocaleTimeString(),items,total:deptTotal,room:gRoom,guest:gName,phone:gPhone,dept,wa:j.routing?.to||'',waLink:j.routing?.waLink||''});
+      if(j.routing?.waLink) window.open(j.routing.waLink,'_blank');
+    }catch{}
   }
-  alert(`✅ ORDER CONFIRMED! ${gName} - Room ${gRoom}\nTotal Ksh ${total.toLocaleString()}\n\nGM WhatsApp Routing ON — Kitchen/Taxi wataona jina lako!`);
-  cart=[];updateCartUI();closeCart();$('liveTracker').style.display='block';$('liveTitle').textContent=cart.length?cart[0].name+' for '+gName:myOrdersList[myOrdersList.length-1]?.items[0]?.name+' for '+gName;switchTab('orders');
+  alert(`✅ ORDER CONFIRMED! ${gName} - Room ${gRoom}\nTotal KSh ${total.toLocaleString()}\n\nGM WhatsApp Routing ON`);
+  cart=[]; updateCart(); closeCart(); $('liveTracker').classList.remove('hidden'); switchTab('orders');
+  btn.textContent='💳 ORDER & PAY — AUTO ROUTE TO WHATSAPP';
 }
+
 function renderMyOrders(){
-  if(myOrdersList.length===0){$('myOrders').innerHTML='<div style="opacity:.6;padding:30px;text-align:center">Bado huja-order. Anza na Menu 🍽️<br><small>Orders zitaonyesha jina lako Room '+(localStorage.getItem('guest_room')||'101')+' na WhatsApp auto to dept</small></div>';return}
-  $('myOrders').innerHTML=myOrdersList.map(o=>`<div class="group"><div class="group-title">🕒 ${o.time} • Ksh ${o.total.toLocaleString()} • Room ${o.room} - ${o.guest} • ${o.dept.toUpperCase()} → WA ${o.wa}</div>${o.items.map(i=>`<div style="display:flex;justify-content:space-between;padding:7px 0"><span>${i.name} x${i.qty}</span><span>Ksh ${i.price*i.qty}</span></div>`).join('')}<div style="font-size:10px;color:#888;margin-top:6px">👤 ${o.guest} • 📞 ${o.phone} • ${o.waLink?`<a href="${o.waLink}" target="_blank" style="color:var(--lime)">Open WA ${o.dept}</a>`:''}</div></div>`).join('');
+  if(myOrdersList.length===0){$('myOrders').innerHTML='<div class="py-16 opacity-40">Bado huja-order. Anza na Menu 🍽️<br><span class="text-[11px]">Orders zitaonyesha jina lako Room '+(localStorage.getItem('guest_room')||'101')+' na WhatsApp auto to dept</span></div>';return}
+  $('myOrders').innerHTML=myOrdersList.map(o=>`
+    <div class="bg-[#121318] border border-white/10 rounded-2xl p-4 text-left">
+      <div class="flex justify-between text-[11px]"><span class="text-white/40">🕒 ${o.time} • Room ${o.room} — ${o.guest}</span><span class="px-2 py-0.5 rounded-full ${o.dept==='kitchen'?'bg-amber-500/20 text-amber-300':'bg-emerald-500/20 text-emerald-300'} text-[9px] font-bold">${o.dept.toUpperCase()} → WA ${o.wa||''}</span></div>
+      <div class="mt-2 font-bold text-[13px]">${o.items.map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+      <div class="text-[11px] text-white/40 mt-1">KSh ${o.total.toLocaleString()} ${o.waLink?`• <a href="${o.waLink}" target="_blank" class="text-[#C6FF00]">Open WA ${o.dept}</a>`:''}</div>
+    </div>
+  `).join('');
 }
-function openBill(){alert('🧾 Bill - Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'\nTotal: Ksh '+(myOrdersList.reduce((s,o)=>s+o.total,0)||0)+'\nPay via '+($('payInfo').textContent)+' Account: '+(localStorage.getItem('guest_table')+' - '+localStorage.getItem('guest_name')));}
-function sos(){if(confirm('🆘 SOS for Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'?'))orderQuick('SOS EMERGENCY');}
-function openMore(){alert('✨ More for Room '+localStorage.getItem('guest_room')+'\n• Wakeup Call ⏰\n• Late Checkout 🕐\n• Extra Towels\n• Taxi to Airport\n\nAll will auto route to WA!');}
-function openChat(){const q=prompt('🤖 AI Concierge for Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+'\nUliza chochote:');if(q)alert('🤖 Room '+localStorage.getItem('guest_room')+' - '+localStorage.getItem('guest_name')+':\n"'+q+'"\n\nNimekupatia majibu + nitatuma service — auto route to WA dept!');}
-checkIdentity();renderStories();loadOS();
+function sos(){ if(confirm('🆘 SOS for Room '+localStorage.getItem('guest_room')+'?')) orderQuick('SOS EMERGENCY'); }
+function openChat(){ const q=prompt('🤖 AI Concierge for Room '+localStorage.getItem('guest_room')+'\nUliza chochote:'); if(q) alert('🤖 Room '+localStorage.getItem('guest_room')+': "'+q+'"\n\nNimekupatia majibu + nitatuma service — auto route to WA dept!'); }
+
+function loadLive(){
+  try{
+    if(typeof SUPABASE_URL==='undefined') return;
+    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',HOTEL_ID).eq('room_number',localStorage.getItem('guest_room')).order('created_at',{ascending:false}).limit(1).then(({data})=>{
+      if(data&&data[0]){ $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=(data[0].items?.[0]?.name||'Order')+' - Room '+data[0].room_number; $('liveSub').textContent=`${data[0].guest_name} • ${data[0].department} • WA ${data[0].whatsapp_sent_to||''}`; }
+    });
+  }catch{}
+}
+
+// INIT
+checkIdentity(); renderStories(); loadOS();
+fetch(API+'/health').then(r=>r.json()).then(()=>{$('apiDot').className='w-2 h-2 rounded-full bg-[#C6FF00] glow-lime'}).catch(()=>{$('apiDot').className='w-2 h-2 rounded-full bg-red-500'});
+setInterval(()=>{ const el=$('liveTime'); if(el) el.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); },1000);
 </script>
 </body>
 </html>
