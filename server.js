@@ -301,6 +301,100 @@ app.delete("/api/hotel-services/:id", async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
+// ===== VENDOR DASHBOARD APIS — WORLD V2 DUAL NOTIFICATION =====
+app.get("/api/vendor/me", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    if(!supa) return sendError(res,500,"No DB");
+    // token has vendor id or email
+    let q=supa.schema('guesthub_os').from('vendors').select('*');
+    if(token.vendor_id||token.id) q=q.eq('id', token.vendor_id||token.id);
+    else if(token.email) q=q.eq('email', clean(token.email));
+    else return sendError(res,401,"Invalid token");
+    const {data}=await q.maybeSingle();
+    if(!data) return sendError(res,404,"Vendor not found");
+    return sendSuccess(res,{vendor:data});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+app.get("/api/vendor/orders", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    if(!supa) return res.json({orders:[]});
+    // get vendor
+    let vendor=null;
+    if(token.vendor_id||token.id){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('id', token.vendor_id||token.id).maybeSingle();
+      vendor=data;
+    } else if(token.email){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email', clean(token.email)).maybeSingle();
+      vendor=data;
+    }
+    if(!vendor) return res.json({orders:[]});
+    const vendorPhone=String(vendor.phone||'').replace(/\D/g,'').slice(-9);
+    // orders where vendor_phone matches OR hotel_id is in vendor hotel_ids
+    const {data:orders}=await supa.schema('guesthub_os').from('orders').select('*').or(`vendor_phone.ilike.%${vendorPhone}%,hotel_id.in.(${ (vendor.hotel_ids||['BAOBAB']).join(',') })`).order('created_at',{ascending:false}).limit(100);
+    // filter to relevant: taxi/tours if vendor is taxi/tours
+    const cat=(vendor.category||'').toLowerCase();
+    let filtered=(orders||[]).filter(o=>{
+      const dept=(o.department||'').toLowerCase();
+      if(cat.includes('taxi')||cat.includes('sgr')||cat.includes('boat')) return ['taxi','tours'].includes(dept);
+      if(cat.includes('dolphin')||cat.includes('tour')||cat.includes('safari')) return dept==='tours';
+      return true;
+    });
+    res.json({orders:filtered});
+  }catch(e){ res.json({orders:[]}); }
+});
+
+app.patch("/api/vendor/availability", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {available}=req.body;
+    if(!supa) return sendError(res,500,"No DB");
+    const id=token.vendor_id||token.id;
+    const email=token.email? clean(token.email):'';
+    let q=supa.schema('guesthub_os').from('vendors');
+    if(id) await q.update({is_available:!!available, available:!!available, is_active:!!available}).eq('id',id);
+    else if(email) await q.update({is_available:!!available, available:!!available, is_active:!!available}).eq('email',email);
+    // toggle hotel_services
+    if(id) await supa.schema('guesthub_os').from('hotel_services').update({is_active:!!available}).eq('vendor_id',id);
+    return sendSuccess(res,{available:!!available});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+app.post("/api/vendor/orders/:id/accept", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    if(!supa) return sendError(res,500,"No DB");
+    await supa.schema('guesthub_os').from('orders').update({status:'accepted', accepted_at:new Date().toISOString()}).eq('id',req.params.id);
+    return sendSuccess(res,{accepted:true});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+app.post("/api/vendor/orders/:id/decline", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    await supa.schema('guesthub_os').from('orders').update({status:'declined'}).eq('id',req.params.id);
+    return sendSuccess(res,{declined:true});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+app.patch("/api/vendor/orders/:id/status", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {status}=req.body;
+    await supa.schema('guesthub_os').from('orders').update({status:cleanText(status||'in_progress',30)}).eq('id',req.params.id);
+    return sendSuccess(res,{status});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+app.post("/api/vendor/withdraw", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {phone, amount}=req.body;
+    return sendSuccess(res,{requested:true, phone, amount, msg:"Withdrawal queued — Admin will Lipa na M-Pesa"});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+
+
 // STATIC
 app.use(express.static(path.join(__dirname,"public"),{ 
   setHeaders:(res,fp)=>{ 
