@@ -1,4 +1,4 @@
-// GuestHub V31 FULL SECURE - PRODUCTION READY + PORT FIXED + VENDOR DIANI SCALABLE
+// GuestHub V31 FULL SECURE - PRODUCTION READY + VENDOR WORLD V2 DIANI SCALABLE
 import express from "express";
 import compression from "compression";
 import cors from "cors";
@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 10000;
 const app = express();
 
 // ===== PORT OPEN INSTANT FOR RENDER - MUST BE FIRST =====
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE + VENDOR DIANI', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE + VENDOR WORLD V2', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
   res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
@@ -29,24 +29,22 @@ app.get('/config.js',(req,res)=>{
   res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
 });
 
-const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 SECURE + VENDOR LIVE on 0.0.0.0:${PORT}`));
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 + VENDOR WORLD V2 LIVE on 0.0.0.0:${PORT}`));
 server.keepAliveTimeout = 120000;
 server.headersTimeout = 120000;
-
 process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
 process.on('unhandledRejection', e=>console.log('REJECTION:', e?.message));
 
-// ===== SECURITY MIDDLEWARE =====
+// ===== SECURITY =====
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
 app.use(cors({origin:(origin,cb)=>cb(null,true), credentials:true, methods:['GET','POST','PUT','DELETE','OPTIONS']}));
 app.use(express.json({limit:"2mb"}));
 app.use(express.urlencoded({extended:true, limit:"2mb"}));
 
-// Rate Limiters
-const loginLimiter = rateLimit({ windowMs:15*60*1000, max:10, message:{ok:false,error:"Too many login attempts, try after 15 min"} });
-const signupLimiter = rateLimit({ windowMs:60*60*1000, max:20, message:{ok:false,error:"Too many signups, try later"} });
-const orderLimiter = rateLimit({ windowMs:60*1000, max:60, message:{ok:false,error:"Too many orders, slow down"} });
+const loginLimiter = rateLimit({ windowMs:15*60*1000, max:10, message:{ok:false,error:"Too many login attempts"} });
+const signupLimiter = rateLimit({ windowMs:60*60*1000, max:20, message:{ok:false,error:"Too many signups"} });
+const orderLimiter = rateLimit({ windowMs:60*1000, max:60, message:{ok:false,error:"Too many orders"} });
 
 // ===== CONFIG =====
 const REAL_URL = process.env.SUPABASE_URL;
@@ -55,21 +53,14 @@ const REAL_SERVICE = process.env.SUPABASE_SERVICE_KEY || REAL_KEY;
 const SUPABASE_URL = REAL_URL || "https://placeholder.supabase.co";
 const SUPABASE_KEY = REAL_KEY || "placeholder-anon-key";
 const SUPABASE_SERVICE_KEY = REAL_SERVICE || SUPABASE_KEY;
-const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY_CHANGE_ME_IN_ENV";
+const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY";
 
 let supa = null;
-try {
-  supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}});
-  console.log("✅ Supabase client V31");
-} catch(e){ console.log("⚠️ Supabase dummy", e.message); }
+try { supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}}); console.log("✅ Supabase V31"); } catch(e){ console.log("⚠️ Supabase dummy"); }
 
-// ===== HELPERS SECURE =====
+// ===== HELPERS =====
 function clean(v){return String(v||"").trim().toLowerCase()}
-function cleanText(v,m=500){ 
-  let s = String(v||"").trim().slice(0,m);
-  s = s.replace(/[<>]/g,'');
-  return s;
-}
+function cleanText(v,m=500){ let s = String(v||"").trim().slice(0,m); s = s.replace(/[<>]/g,''); return s; }
 function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
 function safeNumber(v,f=0){const n=Number(v);return Number.isFinite(n)?n:f}
 function sendError(res,s,m){return res.status(s).json({ok:false,error:m})}
@@ -97,7 +88,7 @@ async function routeOrderToDepartment(order){
   }catch{return {sent:false}}
 }
 
-// ===== ROUTES =====
+// ===== HOTELS & ORDERS =====
 app.get('/api/data', async (req,res)=>{
   try{
     if(!supa ||!REAL_URL) return res.json({hotels:[{id:'BAOBAB',hotel_id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani'}]});
@@ -109,13 +100,10 @@ app.get('/api/data', async (req,res)=>{
 async function handleSignup(req,res){
  try{
   const {hotel_name,name,email,phone,password,location,city,hotel_type,manager_name,rooms}=req.body;
-  if(!password || String(password).length < 8) return sendError(res,400,"Password must be 8+ characters");
+  if(!password || String(password).length < 8) return sendError(res,400,"Password must be 8+");
   const finalName=cleanText(hotel_name||name||'Hotel',100);
   if(finalName.length<3) return sendError(res,400,"Hotel name too short");
-  if(!supa ||!REAL_URL){
-    const hotelId=finalName.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)+Math.floor(Math.random()*99);
-    return sendSuccess(res,{hotel_id:hotelId,status:"PENDING",msg:"Add ENV on Render"});
-  }
+  if(!supa ||!REAL_URL){ const hotelId=finalName.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)+Math.floor(Math.random()*99); return sendSuccess(res,{hotel_id:hotelId,status:"PENDING"}); }
   const finalEmail=clean(email); if(!isValidEmail(finalEmail)) return sendError(res,400,"Invalid email");
   const base=finalName.toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,12)||'hotel';
   const hotelId=base.toUpperCase()+(Math.floor(Math.random()*900)+100);
@@ -135,14 +123,10 @@ app.post("/api/hotels/login", loginLimiter, async(req,res)=>{
     if(!supa ||!REAL_URL) return sendSuccess(res,{token:jwt.sign({hotel_id:'BAOBAB'},JWT_SECRET,{expiresIn:'7d'}), hotel_id:'BAOBAB'});
     const hid = (hotel_id||'').toUpperCase();
     let q = supa.from('hotels').select('*');
-    if(hid) q = q.or(`hotel_id.eq.${hid},id.eq.${hid}`);
-    else if(email) q = q.eq('email', clean(email));
+    if(hid) q = q.or(`hotel_id.eq.${hid},id.eq.${hid}`); else if(email) q = q.eq('email', clean(email));
     const {data} = await q.maybeSingle();
     if(!data) return sendError(res,404,"Hotel not found");
-    if(password && data.password_hash){
-      const ok = await bcrypt.compare(String(password), data.password_hash);
-      if(!ok) return sendError(res,401,"Wrong password");
-    }
+    if(password && data.password_hash){ const ok = await bcrypt.compare(String(password), data.password_hash); if(!ok) return sendError(res,401,"Wrong password"); }
     const token = jwt.sign({hotel_id:data.hotel_id||data.id, email:data.email}, JWT_SECRET, {expiresIn:'7d'});
     return sendSuccess(res,{token, hotel_id:data.hotel_id||data.id, hotel:data});
   }catch(e){ return sendError(res,500,e.message); }
@@ -169,74 +153,152 @@ app.get("/api/orders", async(req,res)=>{
 });
 
 // ===================================================================
-// VENDOR SIGNUP — DIANI SCALABLE TO WASINI + SGR + ALL
+// VENDOR OS V2 — DIANI SCALABLE TO WASINI + SGR + ALL HOTELS
+// THIS IS YOUR NEW CODE YOU SENT MKUU — WORLD V2
 // ===================================================================
-app.post("/api/vendors/signup", async (req,res)=>{
-  try{
-    const {vendor_name,category,location,phone,email,hotels,services}=req.body;
-    if(!vendor_name||!category||!phone) return sendError(res,400,"Missing fields: vendor_name, category, phone");
-    const vendorId=(vendor_name.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)+(Math.floor(Math.random()*900)+100));
+app.post("/api/vendors/signup", async (req, res) => {
+  try {
+    const {
+      vendor_name, name,
+      category,
+      location, location_hub, service_area,
+      radius,
+      phone,
+      email,
+      hotels, hotel_ids,
+      services,
+      price,
+      full_name
+    } = req.body;
 
-    if(supa && REAL_URL){
-      try{
+    const finalName = (vendor_name || name || full_name || "").trim();
+    if (!finalName || !phone) return sendError(res, 400, "Vendor name & phone required");
+
+    const finalCategory = category || (Array.isArray(services) && services[0]?.name) || "taxi";
+    const finalLocation = location || location_hub || service_area || "Diani Beach";
+    const finalRadius = radius || "15km — Diani + Wasini + Ukunda";
+    const finalHotels = hotels || hotel_ids || ["BAOBAB"];
+    const finalPrice = Number(price || 2500);
+
+    let normalizedServices = [];
+    if (Array.isArray(services)) {
+      normalizedServices = services.map(s => {
+        if (typeof s === "string") {
+          const labelMap = {
+            airport_taxi: "Airport Taxi", sgr_taxi: "SGR Transfer Miritini → Diani",
+            town_taxi: "Town Taxi Diani", car_hire: "Car Hire + Driver",
+            wasini_boat: "Wasini Boat Taxi Shimoni→Wasini", boda_tuktuk: "Boda / TukTuk",
+            wasini_dolphin: "Wasini Dolphin Tour", shimba_hills: "Shimba Hills Safari",
+            mara_safari: "Maasai Mara Safari", beach_safari: "Beach & Snorkeling Diani",
+            massage: "In-Room Massage", spa_nails: "Spa / Nails", laundry: "Express Laundry",
+            photography: "Photography Diani", drone: "Drone + Videography"
+          };
+          return { name: labelMap[s] || s, price: finalPrice, time: finalLocation };
+        } else {
+          return { name: s.name || s.title || "Service", price: Number(s.price || finalPrice), time: s.time || finalLocation };
+        }
+      });
+    }
+    if (normalizedServices.length === 0) normalizedServices = [{ name: finalCategory, price: finalPrice, time: finalLocation }];
+
+    const vendorId = (finalName.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10) + (Math.floor(Math.random() * 900) + 100));
+
+    if (supa && REAL_URL) {
+      try {
         await supa.schema('guesthub_os').from('vendors').insert([{
-          id:vendorId, vendor_name, category, location:location||'Diani Beach', phone: String(phone).replace(/\D/g,''), email: email||'', hotel_ids:hotels||['BAOBAB'], is_active:true, status:'pending'
+          id: vendorId,
+          vendor_name: finalName,
+          full_name: finalName,
+          category: finalCategory,
+          location: finalLocation,
+          location_hub: finalLocation,
+          phone: String(phone).replace(/\D/g, ""),
+          email: email || "",
+          hotel_ids: finalHotels,
+          radius: finalRadius,
+          is_active: true,
+          status: 'pending'
         }]);
 
-        let targetHotels = hotels||['BAOBAB'];
-        if(targetHotels.includes('ALL')){
-          const {data:allH}=await supa.from('hotels').select('hotel_id').limit(100);
-          if(allH && allH.length>0) targetHotels = allH.map(h=>h.hotel_id);
-          else targetHotels = ['BAOBAB','SWAHILI','DIANI_SEA','LEOPARD','WASINI','SGR_HUB'];
+        let targetHotels = finalHotels;
+        if (finalHotels.includes("ALL")) {
+          const { data: allH } = await supa.from('hotels').select('hotel_id').limit(100);
+          if (allH && allH.length > 0) targetHotels = allH.map(h => h.hotel_id);
+          else targetHotels = ["BAOBAB", "SWAHILI", "DIANI_SEA", "LEOPARD", "WASINI", "SGR_HUB"];
         }
 
-        for(const hidRaw of targetHotels){
-          const hid=String(hidRaw).toUpperCase();
-          for(const svc of (services||[])){
-            const svcName = typeof svc==='string'? svc : (svc.name||svc.title||'Service');
-            const svcPrice = typeof svc==='string'? 2500 : Number(svc.price||2500);
-            const svcTime = typeof svc==='string'? location : (svc.time||location||'Now');
-
-            const dept = ['taxi','sgr'].includes(category.toLowerCase())? 'taxi' : ['boat','tours','wasini','safari'].some(k=>category.toLowerCase().includes(k)||svcName.toLowerCase().includes(k))? 'tours' : category.toLowerCase();
-            const icon = category==='taxi'?'🚕':category==='boat'?'🐬':category==='sgr'?'🚆':category==='tours'?'🦁':dept==='tours'?'🦁':'✨';
+        for (const hidRaw of targetHotels) {
+          const hid = String(hidRaw).toUpperCase();
+          for (const svc of normalizedServices) {
+            const dept = (() => {
+              const cat = (finalCategory + " " + svc.name).toLowerCase();
+              if (cat.includes("sgr") || cat.includes("taxi") || cat.includes("boat taxi")) return "taxi";
+              if (cat.includes("wasini") || cat.includes("dolphin") || cat.includes("safari") || cat.includes("tour") || cat.includes("shimba") || cat.includes("mara")) return "tours";
+              if (cat.includes("massage") || cat.includes("spa") || cat.includes("nail")) return "spa";
+              if (cat.includes("laundry")) return "laundry";
+              return "services";
+            })();
+            const icon = dept === "taxi"? (svc.name.toLowerCase().includes("sgr")? "🚆" : svc.name.toLowerCase().includes("wasini")? "🐬" : "🚕")
+                       : dept === "tours"? (svc.name.toLowerCase().includes("dolphin")? "🐬" : "🦁")
+                       : dept === "spa"? "💆" : "✨";
 
             await supa.schema('guesthub_os').from('hotel_services').insert([{
-              hotel_id:hid,
-              title: `${svcName} — ${vendor_name}`,
-              price: svcPrice,
-              description: `${svcTime} • ${location} • by ${vendor_name} • ${phone}`,
-              department: dept==='sgr'?'taxi':dept,
+              hotel_id: hid,
+              title: `${svc.name} — ${finalName}`,
+              price: Number(svc.price || finalPrice),
+              description: `${svc.time || finalLocation} • ${finalLocation} • ${finalRadius} • by ${finalName} • ${phone}`,
+              department: dept,
               icon: icon,
-              vendor_name, vendor_phone: String(phone).replace(/\D/g,''), vendor_id: vendorId,
-              is_active:true
+              vendor_name: finalName,
+              vendor_phone: String(phone).replace(/\D/g, ""),
+              vendor_id: vendorId,
+              is_active: true
             }]);
           }
         }
-        console.log(`✅ Vendor ${vendor_name} listed for ${targetHotels.length} hotels`);
-      }catch(e){ console.log('vendor supa err',e.message); }
+        console.log(`✅ Vendor ${finalName} listed for hotels: ${targetHotels.join(", ")} with ${normalizedServices.length} services`);
+      } catch (e) { console.log("vendor supa error:", e.message); }
     }
 
-    return sendSuccess(res,{vendor_id:vendorId, message:"Vendor live in guest dashboards", hotels:hotels||['BAOBAB']});
-  }catch(e){ return sendError(res,500,e.message); }
+    return sendSuccess(res, {
+      vendor_id: vendorId,
+      message: `Vendor ${finalName} live in Guest Dashboard`,
+      hotels: finalHotels,
+      services: normalizedServices,
+      location: finalLocation
+    });
+  } catch (e) {
+    console.error("vendor signup error", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
-app.get("/api/vendors", async (req,res)=>{
-  try{
-    const hotel_id=getHotelIdFromReq(req);
-    if(!supa ||!REAL_URL) return res.json({vendors:[], services:[]});
-    const {data:vendors}=await supa.schema('guesthub_os').from('vendors').select('*').or(`hotel_ids.cs.{${hotel_id}},hotel_ids.cs.{ALL}`).limit(50);
-    const {data:services}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',hotel_id).eq('is_active',true).order('created_at',{ascending:false}).limit(100);
-    res.json({vendors:vendors||[], services:services||[]});
-  }catch(e){ res.json({vendors:[], services:[]}); }
+app.get("/api/vendors", async (req, res) => {
+  try {
+    const hotel_id = getHotelIdFromReq(req);
+    if (!supa ||!REAL_URL) return res.json({ vendors: [], services:[] });
+    const { data: vendors } = await supa.schema('guesthub_os').from('vendors').select('*').or(`hotel_ids.cs.{${hotel_id}},hotel_ids.cs.{ALL}`).limit(50);
+    const { data: services } = await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id', hotel_id).eq('is_active', true).order('created_at',{ascending:false}).limit(100);
+    res.json({ vendors: vendors || [], services: services || [] });
+  } catch (e) { res.json({ vendors: [], services:[] }); }
 });
 
-app.get("/api/hotel-services", async (req,res)=>{
-  try{
-    const hotel_id=(req.query.hotel_id||req.query.hotel||getHotelIdFromReq(req)||'BAOBAB').toUpperCase();
-    if(!supa ||!REAL_URL) return res.json({services:[]});
-    const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',hotel_id).eq('is_active',true).order('created_at',{ascending:false}).limit(100);
-    res.json({hotel_id, services:data||[]});
-  }catch(e){ res.json({services:[]}); }
+app.get("/api/hotel-services", async (req, res) => {
+  try {
+    const hotel_id = (req.query.hotel_id || req.query.hotel || getHotelIdFromReq(req) || "BAOBAB").toUpperCase();
+    if (!supa ||!REAL_URL) return res.json({ services: [] });
+    const { data } = await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id', hotel_id).eq('is_active', true).order('created_at',{ascending:false}).limit(100);
+    res.json({ hotel_id, services: data || [] });
+  } catch (e) { res.json({ services: [] }); }
+});
+
+app.delete("/api/hotel-services/:id", async (req, res) => {
+  try {
+    const hotel_id = getHotelIdFromReq(req);
+    if (!supa) return sendError(res, 500, "No DB");
+    await supa.schema('guesthub_os').from('hotel_services').delete().eq('id', req.params.id).eq('hotel_id', hotel_id);
+    return sendSuccess(res, { deleted: true });
+  } catch (e) { return sendError(res, 500, e.message); }
 });
 
 // STATIC
@@ -246,4 +308,4 @@ app.use(express.static(path.join(__dirname,"public"),{
     res.setHeader('X-Frame-Options','SAMEORIGIN');
   } 
 }));
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 SECURE + VENDOR LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 + VENDOR WORLD V2 LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
