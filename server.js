@@ -1,4 +1,4 @@
-// GuestHub V31 FULL SECURE - PRODUCTION READY + PORT FIXED
+// GuestHub V31 FULL SECURE - PRODUCTION READY + PORT FIXED + VENDOR DIANI SCALABLE
 import express from "express";
 import compression from "compression";
 import cors from "cors";
@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 10000;
 const app = express();
 
 // ===== PORT OPEN INSTANT FOR RENDER - MUST BE FIRST =====
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE + VENDOR DIANI', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
   res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
@@ -29,7 +29,7 @@ app.get('/config.js',(req,res)=>{
   res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
 });
 
-const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 SECURE LIVE on 0.0.0.0:${PORT} - PORT OPEN`));
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 SECURE + VENDOR LIVE on 0.0.0.0:${PORT}`));
 server.keepAliveTimeout = 120000;
 server.headersTimeout = 120000;
 
@@ -37,10 +37,7 @@ process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
 process.on('unhandledRejection', e=>console.log('REJECTION:', e?.message));
 
 // ===== SECURITY MIDDLEWARE =====
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
-}));
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
 app.use(cors({origin:(origin,cb)=>cb(null,true), credentials:true, methods:['GET','POST','PUT','DELETE','OPTIONS']}));
 app.use(express.json({limit:"2mb"}));
@@ -70,7 +67,6 @@ try {
 function clean(v){return String(v||"").trim().toLowerCase()}
 function cleanText(v,m=500){ 
   let s = String(v||"").trim().slice(0,m);
-  // Strip < > to prevent XSS
   s = s.replace(/[<>]/g,'');
   return s;
 }
@@ -172,6 +168,77 @@ app.get("/api/orders", async(req,res)=>{
   }catch(e){ res.json({orders:[]}); }
 });
 
+// ===================================================================
+// VENDOR SIGNUP — DIANI SCALABLE TO WASINI + SGR + ALL
+// ===================================================================
+app.post("/api/vendors/signup", async (req,res)=>{
+  try{
+    const {vendor_name,category,location,phone,email,hotels,services}=req.body;
+    if(!vendor_name||!category||!phone) return sendError(res,400,"Missing fields: vendor_name, category, phone");
+    const vendorId=(vendor_name.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,10)+(Math.floor(Math.random()*900)+100));
+
+    if(supa && REAL_URL){
+      try{
+        await supa.schema('guesthub_os').from('vendors').insert([{
+          id:vendorId, vendor_name, category, location:location||'Diani Beach', phone: String(phone).replace(/\D/g,''), email: email||'', hotel_ids:hotels||['BAOBAB'], is_active:true, status:'pending'
+        }]);
+
+        let targetHotels = hotels||['BAOBAB'];
+        if(targetHotels.includes('ALL')){
+          const {data:allH}=await supa.from('hotels').select('hotel_id').limit(100);
+          if(allH && allH.length>0) targetHotels = allH.map(h=>h.hotel_id);
+          else targetHotels = ['BAOBAB','SWAHILI','DIANI_SEA','LEOPARD','WASINI','SGR_HUB'];
+        }
+
+        for(const hidRaw of targetHotels){
+          const hid=String(hidRaw).toUpperCase();
+          for(const svc of (services||[])){
+            const svcName = typeof svc==='string'? svc : (svc.name||svc.title||'Service');
+            const svcPrice = typeof svc==='string'? 2500 : Number(svc.price||2500);
+            const svcTime = typeof svc==='string'? location : (svc.time||location||'Now');
+
+            const dept = ['taxi','sgr'].includes(category.toLowerCase())? 'taxi' : ['boat','tours','wasini','safari'].some(k=>category.toLowerCase().includes(k)||svcName.toLowerCase().includes(k))? 'tours' : category.toLowerCase();
+            const icon = category==='taxi'?'🚕':category==='boat'?'🐬':category==='sgr'?'🚆':category==='tours'?'🦁':dept==='tours'?'🦁':'✨';
+
+            await supa.schema('guesthub_os').from('hotel_services').insert([{
+              hotel_id:hid,
+              title: `${svcName} — ${vendor_name}`,
+              price: svcPrice,
+              description: `${svcTime} • ${location} • by ${vendor_name} • ${phone}`,
+              department: dept==='sgr'?'taxi':dept,
+              icon: icon,
+              vendor_name, vendor_phone: String(phone).replace(/\D/g,''), vendor_id: vendorId,
+              is_active:true
+            }]);
+          }
+        }
+        console.log(`✅ Vendor ${vendor_name} listed for ${targetHotels.length} hotels`);
+      }catch(e){ console.log('vendor supa err',e.message); }
+    }
+
+    return sendSuccess(res,{vendor_id:vendorId, message:"Vendor live in guest dashboards", hotels:hotels||['BAOBAB']});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+app.get("/api/vendors", async (req,res)=>{
+  try{
+    const hotel_id=getHotelIdFromReq(req);
+    if(!supa ||!REAL_URL) return res.json({vendors:[], services:[]});
+    const {data:vendors}=await supa.schema('guesthub_os').from('vendors').select('*').or(`hotel_ids.cs.{${hotel_id}},hotel_ids.cs.{ALL}`).limit(50);
+    const {data:services}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',hotel_id).eq('is_active',true).order('created_at',{ascending:false}).limit(100);
+    res.json({vendors:vendors||[], services:services||[]});
+  }catch(e){ res.json({vendors:[], services:[]}); }
+});
+
+app.get("/api/hotel-services", async (req,res)=>{
+  try{
+    const hotel_id=(req.query.hotel_id||req.query.hotel||getHotelIdFromReq(req)||'BAOBAB').toUpperCase();
+    if(!supa ||!REAL_URL) return res.json({services:[]});
+    const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',hotel_id).eq('is_active',true).order('created_at',{ascending:false}).limit(100);
+    res.json({hotel_id, services:data||[]});
+  }catch(e){ res.json({services:[]}); }
+});
+
 // STATIC
 app.use(express.static(path.join(__dirname,"public"),{ 
   setHeaders:(res,fp)=>{ 
@@ -179,4 +246,4 @@ app.use(express.static(path.join(__dirname,"public"),{
     res.setHeader('X-Frame-Options','SAMEORIGIN');
   } 
 }));
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 SECURE LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 SECURE + VENDOR LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
