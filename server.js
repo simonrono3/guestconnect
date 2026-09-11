@@ -1,4 +1,5 @@
-// GuestHub V31 FULL SECURE - PRODUCTION READY + VENDOR WORLD V2 DIANI SCALABLE
+// GuestHub V32 FINAL — V31 SECURE + VENDOR WORLD V2 + COMMISSION 13.1 TILL + ADMIN CONFIRM
+// Diani → Wasini → SGR → ALL Hotels — WhatsApp + Dashboard + Auto Lock
 import express from "express";
 import compression from "compression";
 import cors from "cors";
@@ -19,7 +20,7 @@ const PORT = process.env.PORT || 10000;
 const app = express();
 
 // ===== PORT OPEN INSTANT FOR RENDER - MUST BE FIRST =====
-app.get('/api/health',(req,res)=>res.json({ok:true, os:'V31 SECURE + VENDOR WORLD V2', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
+app.get('/api/health',(req,res)=>res.json({ok:true, os:'V32 FINAL + COMMISSION TILL', port:PORT, hasUrl:!!process.env.SUPABASE_URL, time:new Date().toISOString()}));
 app.get('/config.js',(req,res)=>{
   res.type('application/javascript');
   res.setHeader('Cache-Control','no-cache, no-store, must-revalidate');
@@ -29,7 +30,7 @@ app.get('/config.js',(req,res)=>{
   res.send(`const SUPABASE_URL="${u}";const SUPABASE_KEY="${k}";window.SUPABASE_URL="${u}";window.SUPABASE_KEY="${k}";window.SUPABASE_ANON_KEY="${k}";`);
 });
 
-const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V31 + VENDOR WORLD V2 LIVE on 0.0.0.0:${PORT}`));
+const server = app.listen(PORT, '0.0.0.0', ()=>console.log(`🔒 V32 FINAL LIVE on 0.0.0.0:${PORT}`));
 server.keepAliveTimeout = 120000;
 server.headersTimeout = 120000;
 process.on('uncaughtException', e=>console.log('UNCAUGHT:', e.message));
@@ -55,8 +56,17 @@ const SUPABASE_KEY = REAL_KEY || "placeholder-anon-key";
 const SUPABASE_SERVICE_KEY = REAL_SERVICE || SUPABASE_KEY;
 const JWT_SECRET = process.env.JWT_SECRET || "GuestHub_OS_2026_SECURE_KEY";
 
+// ===== TILL CONFIG — BADILISHA HAPA MKUU =====
+const GUESTHUB_TILL = {
+  till_number: "123456", // Buy Goods Till yako
+  paybill: "522522",
+  account_number: "1234567",
+  business_name: "GuestHub Ltd",
+  lipa_na_mpesa_name: "GuestHub"
+};
+
 let supa = null;
-try { supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}}); console.log("✅ Supabase V31"); } catch(e){ console.log("⚠️ Supabase dummy"); }
+try { supa = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {auth:{persistSession:false, autoRefreshToken:false}}); console.log("✅ Supabase V32"); } catch(e){ console.log("⚠️ Supabase dummy"); }
 
 // ===== HELPERS =====
 function clean(v){return String(v||"").trim().toLowerCase()}
@@ -153,33 +163,18 @@ app.get("/api/orders", async(req,res)=>{
 });
 
 // ===================================================================
-// VENDOR OS V2 — DIANI SCALABLE TO WASINI + SGR + ALL HOTELS
-// THIS IS YOUR NEW CODE YOU SENT MKUU — WORLD V2
+// VENDOR OS V2 — WORLD
 // ===================================================================
 app.post("/api/vendors/signup", async (req, res) => {
   try {
-    const {
-      vendor_name, name,
-      category,
-      location, location_hub, service_area,
-      radius,
-      phone,
-      email,
-      hotels, hotel_ids,
-      services,
-      price,
-      full_name
-    } = req.body;
-
+    const { vendor_name, name, category, location, location_hub, service_area, radius, phone, email, hotels, hotel_ids, services, price, full_name } = req.body;
     const finalName = (vendor_name || name || full_name || "").trim();
-    if (!finalName || !phone) return sendError(res, 400, "Vendor name & phone required");
-
+    if (!finalName ||!phone) return sendError(res, 400, "Vendor name & phone required");
     const finalCategory = category || (Array.isArray(services) && services[0]?.name) || "taxi";
     const finalLocation = location || location_hub || service_area || "Diani Beach";
     const finalRadius = radius || "15km — Diani + Wasini + Ukunda";
     const finalHotels = hotels || hotel_ids || ["BAOBAB"];
     const finalPrice = Number(price || 2500);
-
     let normalizedServices = [];
     if (Array.isArray(services)) {
       normalizedServices = services.map(s => {
@@ -200,77 +195,38 @@ app.post("/api/vendors/signup", async (req, res) => {
       });
     }
     if (normalizedServices.length === 0) normalizedServices = [{ name: finalCategory, price: finalPrice, time: finalLocation }];
-
     const vendorId = (finalName.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10) + (Math.floor(Math.random() * 900) + 100));
-
     if (supa && REAL_URL) {
       try {
         await supa.schema('guesthub_os').from('vendors').insert([{
-          id: vendorId,
-          vendor_name: finalName,
-          full_name: finalName,
-          category: finalCategory,
-          location: finalLocation,
-          location_hub: finalLocation,
-          phone: String(phone).replace(/\D/g, ""),
-          email: email || "",
-          hotel_ids: finalHotels,
-          radius: finalRadius,
-          is_active: true,
-          status: 'pending'
+          id: vendorId, vendor_name: finalName, full_name: finalName, category: finalCategory,
+          location: finalLocation, location_hub: finalLocation, phone: String(phone).replace(/\D/g, ""),
+          email: email || "", hotel_ids: finalHotels, radius: finalRadius, is_active: true, status: 'pending', is_available: true
         }]);
-
         let targetHotels = finalHotels;
         if (finalHotels.includes("ALL")) {
           const { data: allH } = await supa.from('hotels').select('hotel_id').limit(100);
           if (allH && allH.length > 0) targetHotels = allH.map(h => h.hotel_id);
           else targetHotels = ["BAOBAB", "SWAHILI", "DIANI_SEA", "LEOPARD", "WASINI", "SGR_HUB"];
         }
-
         for (const hidRaw of targetHotels) {
           const hid = String(hidRaw).toUpperCase();
           for (const svc of normalizedServices) {
-            const dept = (() => {
-              const cat = (finalCategory + " " + svc.name).toLowerCase();
-              if (cat.includes("sgr") || cat.includes("taxi") || cat.includes("boat taxi")) return "taxi";
-              if (cat.includes("wasini") || cat.includes("dolphin") || cat.includes("safari") || cat.includes("tour") || cat.includes("shimba") || cat.includes("mara")) return "tours";
-              if (cat.includes("massage") || cat.includes("spa") || cat.includes("nail")) return "spa";
-              if (cat.includes("laundry")) return "laundry";
-              return "services";
-            })();
-            const icon = dept === "taxi"? (svc.name.toLowerCase().includes("sgr")? "🚆" : svc.name.toLowerCase().includes("wasini")? "🐬" : "🚕")
-                       : dept === "tours"? (svc.name.toLowerCase().includes("dolphin")? "🐬" : "🦁")
-                       : dept === "spa"? "💆" : "✨";
-
+            const cat = (finalCategory + " " + svc.name).toLowerCase();
+            let dept='services'; if(cat.includes("sgr")||cat.includes("taxi")||cat.includes("boat taxi")) dept='taxi'; else if(cat.includes("wasini")||cat.includes("dolphin")||cat.includes("safari")||cat.includes("tour")||cat.includes("shimba")||cat.includes("mara")) dept='tours'; else if(cat.includes("massage")||cat.includes("spa")||cat.includes("nail")) dept='spa'; else if(cat.includes("laundry")) dept='laundry';
+            const icon = dept === "taxi"? (svc.name.toLowerCase().includes("sgr")? "🚆" : svc.name.toLowerCase().includes("wasini")? "🐬" : "🚕") : dept === "tours"? (svc.name.toLowerCase().includes("dolphin")? "🐬" : "🦁") : dept === "spa"? "💆" : "✨";
             await supa.schema('guesthub_os').from('hotel_services').insert([{
-              hotel_id: hid,
-              title: `${svc.name} — ${finalName}`,
-              price: Number(svc.price || finalPrice),
+              hotel_id: hid, title: `${svc.name} — ${finalName}`, price: Number(svc.price || finalPrice),
               description: `${svc.time || finalLocation} • ${finalLocation} • ${finalRadius} • by ${finalName} • ${phone}`,
-              department: dept,
-              icon: icon,
-              vendor_name: finalName,
-              vendor_phone: String(phone).replace(/\D/g, ""),
-              vendor_id: vendorId,
-              is_active: true
+              department: dept, icon, vendor_name: finalName, vendor_phone: String(phone).replace(/\D/g, ""), vendor_id: vendorId, is_active: true
             }]);
           }
         }
-        console.log(`✅ Vendor ${finalName} listed for hotels: ${targetHotels.join(", ")} with ${normalizedServices.length} services`);
+        console.log(`✅ Vendor ${finalName} listed for hotels: ${targetHotels.join(", ")}`);
       } catch (e) { console.log("vendor supa error:", e.message); }
     }
-
-    return sendSuccess(res, {
-      vendor_id: vendorId,
-      message: `Vendor ${finalName} live in Guest Dashboard`,
-      hotels: finalHotels,
-      services: normalizedServices,
-      location: finalLocation
-    });
-  } catch (e) {
-    console.error("vendor signup error", e);
-    return sendError(res, 500, e.message);
-  }
+    return sendSuccess(res, { vendor_id: vendorId, message: `Vendor ${finalName} live`, hotels: finalHotels, services: normalizedServices, location: finalLocation });
+  } catch (e) { return sendError(res, 500, e.message); }
 });
 
 app.get("/api/vendors", async (req, res) => {
@@ -301,12 +257,11 @@ app.delete("/api/hotel-services/:id", async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// ===== VENDOR DASHBOARD APIS — WORLD V2 DUAL NOTIFICATION =====
+// ===== VENDOR DASHBOARD APIS — DUAL =====
 app.get("/api/vendor/me", async (req,res)=>{
   try{
     const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
     if(!supa) return sendError(res,500,"No DB");
-    // token has vendor id or email
     let q=supa.schema('guesthub_os').from('vendors').select('*');
     if(token.vendor_id||token.id) q=q.eq('id', token.vendor_id||token.id);
     else if(token.email) q=q.eq('email', clean(token.email));
@@ -321,20 +276,15 @@ app.get("/api/vendor/orders", async (req,res)=>{
   try{
     const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
     if(!supa) return res.json({orders:[]});
-    // get vendor
     let vendor=null;
     if(token.vendor_id||token.id){
-      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('id', token.vendor_id||token.id).maybeSingle();
-      vendor=data;
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('id', token.vendor_id||token.id).maybeSingle(); vendor=data;
     } else if(token.email){
-      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email', clean(token.email)).maybeSingle();
-      vendor=data;
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email', clean(token.email)).maybeSingle(); vendor=data;
     }
     if(!vendor) return res.json({orders:[]});
     const vendorPhone=String(vendor.phone||'').replace(/\D/g,'').slice(-9);
-    // orders where vendor_phone matches OR hotel_id is in vendor hotel_ids
     const {data:orders}=await supa.schema('guesthub_os').from('orders').select('*').or(`vendor_phone.ilike.%${vendorPhone}%,hotel_id.in.(${ (vendor.hotel_ids||['BAOBAB']).join(',') })`).order('created_at',{ascending:false}).limit(100);
-    // filter to relevant: taxi/tours if vendor is taxi/tours
     const cat=(vendor.category||'').toLowerCase();
     let filtered=(orders||[]).filter(o=>{
       const dept=(o.department||'').toLowerCase();
@@ -356,50 +306,113 @@ app.patch("/api/vendor/availability", async (req,res)=>{
     let q=supa.schema('guesthub_os').from('vendors');
     if(id) await q.update({is_available:!!available, available:!!available, is_active:!!available}).eq('id',id);
     else if(email) await q.update({is_available:!!available, available:!!available, is_active:!!available}).eq('email',email);
-    // toggle hotel_services
     if(id) await supa.schema('guesthub_os').from('hotel_services').update({is_active:!!available}).eq('vendor_id',id);
     return sendSuccess(res,{available:!!available});
   }catch(e){ return sendError(res,500,e.message); }
 });
 
 app.post("/api/vendor/orders/:id/accept", async (req,res)=>{
-  try{
-    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
-    if(!supa) return sendError(res,500,"No DB");
-    await supa.schema('guesthub_os').from('orders').update({status:'accepted', accepted_at:new Date().toISOString()}).eq('id',req.params.id);
-    return sendSuccess(res,{accepted:true});
-  }catch(e){ return sendError(res,500,e.message); }
+  try{ const token=verifyToken(req); if(!token) return sendError(res,401,"No token"); await supa.schema('guesthub_os').from('orders').update({status:'accepted', accepted_at:new Date().toISOString()}).eq('id',req.params.id); return sendSuccess(res,{accepted:true}); }catch(e){ return sendError(res,500,e.message); }
 });
 app.post("/api/vendor/orders/:id/decline", async (req,res)=>{
-  try{
-    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
-    await supa.schema('guesthub_os').from('orders').update({status:'declined'}).eq('id',req.params.id);
-    return sendSuccess(res,{declined:true});
-  }catch(e){ return sendError(res,500,e.message); }
+  try{ const token=verifyToken(req); if(!token) return sendError(res,401,"No token"); await supa.schema('guesthub_os').from('orders').update({status:'declined'}).eq('id',req.params.id); return sendSuccess(res,{declined:true}); }catch(e){ return sendError(res,500,e.message); }
 });
 app.patch("/api/vendor/orders/:id/status", async (req,res)=>{
-  try{
-    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
-    const {status}=req.body;
-    await supa.schema('guesthub_os').from('orders').update({status:cleanText(status||'in_progress',30)}).eq('id',req.params.id);
-    return sendSuccess(res,{status});
-  }catch(e){ return sendError(res,500,e.message); }
+  try{ const token=verifyToken(req); if(!token) return sendError(res,401,"No token"); const {status}=req.body; await supa.schema('guesthub_os').from('orders').update({status:cleanText(status||'in_progress',30)}).eq('id',req.params.id); return sendSuccess(res,{status}); }catch(e){ return sendError(res,500,e.message); }
 });
 app.post("/api/vendor/withdraw", async (req,res)=>{
+  try{ const token=verifyToken(req); if(!token) return sendError(res,401,"No token"); const {phone, amount}=req.body; return sendSuccess(res,{requested:true, phone, amount}); }catch(e){ return sendError(res,500,e.message); }
+});
+
+// ===== COMMISSION 13.1 — TILL + ADMIN CONFIRM =====
+app.get("/api/vendor/commission", async (req,res)=>{
   try{
     const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
-    const {phone, amount}=req.body;
-    return sendSuccess(res,{requested:true, phone, amount, msg:"Withdrawal queued — Admin will Lipa na M-Pesa"});
+    if(!supa) return res.json({commission:0, till: GUESTHUB_TILL});
+    let vendor=null;
+    if(token.vendor_id||token.id){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('id', token.vendor_id||token.id).maybeSingle(); vendor=data;
+    } else if(token.email){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email', clean(token.email)).maybeSingle(); vendor=data;
+    }
+    if(!vendor) return res.json({commission:0, till: GUESTHUB_TILL});
+    const now=new Date();
+    const twoWeeksAgo=new Date(now.getTime()-14*24*60*60*1000);
+    const {data:orders}=await supa.schema('guesthub_os').from('orders').select('total').gte('created_at', twoWeeksAgo.toISOString()).eq('hotel_id', (vendor.hotel_ids?.[0]||'BAOBAB')).in('status',['completed','delivered','done']).limit(200);
+    const totalSales=(orders||[]).reduce((a,b)=>a+Number(b.total||0),0);
+    const commission=Math.round(totalSales*0.15);
+    const {data:lastPay}=await supa.schema('guesthub_os').from('vendor_payments').select('*').eq('vendor_id', vendor.id).order('created_at',{ascending:false}).limit(1).maybeSingle();
+    let dueDate=new Date(new Date(vendor.created_at||now).getTime()+14*24*60*60*1000);
+    if(lastPay && lastPay.status==='confirmed') dueDate=new Date(new Date(lastPay.created_at).getTime()+14*24*60*60*1000);
+    const daysLeft=Math.ceil((dueDate - now)/(24*60*60*1000));
+    const graceOver = daysLeft < -2;
+    const shouldLock = commission>0 && graceOver && (!lastPay || lastPay.status!=='pending');
+    if(shouldLock){
+      await supa.schema('guesthub_os').from('vendors').update({is_active:false, commission_locked:true, commission_due:commission}).eq('id', vendor.id);
+      await supa.schema('guesthub_os').from('hotel_services').update({is_active:false}).eq('vendor_id', vendor.id);
+    }
+    const {data:pendingPay}=await supa.schema('guesthub_os').from('vendor_payments').select('*').eq('vendor_id', vendor.id).eq('status','pending').order('created_at',{ascending:false}).limit(1).maybeSingle();
+    res.json({ totalSales, commission, dueDate: dueDate.toISOString(), daysLeft, graceOver, locked: shouldLock || vendor.commission_locked, lastPayment: lastPay||null, pendingPayment: pendingPay||null, ordersCount: (orders||[]).length, till: GUESTHUB_TILL });
+  }catch(e){ res.json({commission:0, till: GUESTHUB_TILL, locked:false}); }
+});
+
+app.post("/api/vendor/pay-commission", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {amount, mpesa_code, phone}=req.body;
+    if(!mpesa_code) return sendError(res,400,"M-Pesa code required");
+    let vendorId=token.vendor_id||token.id; let vendorName='';
+    if(!vendorId && token.email){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('id,vendor_name').eq('email', clean(token.email)).maybeSingle(); vendorId=data?.id; vendorName=data?.vendor_name||'';
+    } else if(vendorId){
+      const {data}=await supa.schema('guesthub_os').from('vendors').select('vendor_name').eq('id', vendorId).maybeSingle(); vendorName=data?.vendor_name||'';
+    }
+    if(!vendorId) return sendError(res,404,"Vendor not found");
+    const {data, error}=await supa.schema('guesthub_os').from('vendor_payments').insert([{
+      vendor_id: vendorId, vendor_name: vendorName, amount: Number(amount||0),
+      mpesa_code: cleanText(mpesa_code,20).toUpperCase(), phone: phone||'',
+      method: 'mpesa_till', status: 'pending', till_number: GUESTHUB_TILL.till_number
+    }]).select().single();
+    if(error) throw error;
+    return sendSuccess(res,{pending:true, payment:data, msg:"Payment submitted — Waiting for Admin confirmation"});
   }catch(e){ return sendError(res,500,e.message); }
 });
 
+app.get("/api/admin/commission-payments", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {data}=await supa.schema('guesthub_os').from('vendor_payments').select('*').order('created_at',{ascending:false}).limit(100);
+    res.json({payments:data||[], till: GUESTHUB_TILL});
+  }catch(e){ res.json({payments:[]}); }
+});
 
+app.post("/api/admin/commission-payments/:id/confirm", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {id}=req.params;
+    const {data:pay}=await supa.schema('guesthub_os').from('vendor_payments').select('*').eq('id', id).maybeSingle();
+    if(!pay) return sendError(res,404,"Payment not found");
+    await supa.schema('guesthub_os').from('vendor_payments').update({status:'confirmed', confirmed_at:new Date().toISOString(), confirmed_by: token.hotel_id||token.email||'admin'}).eq('id', id);
+    await supa.schema('guesthub_os').from('vendors').update({is_active:true, commission_locked:false, commission_due:0, is_available:true}).eq('id', pay.vendor_id);
+    await supa.schema('guesthub_os').from('hotel_services').update({is_active:true}).eq('vendor_id', pay.vendor_id);
+    return sendSuccess(res,{confirmed:true, vendor_id: pay.vendor_id});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+app.post("/api/admin/commission-payments/:id/reject", async (req,res)=>{
+  try{
+    const token=verifyToken(req); if(!token) return sendError(res,401,"No token");
+    const {reason}=req.body;
+    await supa.schema('guesthub_os').from('vendor_payments').update({status:'rejected', reject_reason: reason||'Invalid code'}).eq('id', req.params.id);
+    return sendSuccess(res,{rejected:true});
+  }catch(e){ return sendError(res,500,e.message); }
+});
 
 // STATIC
-app.use(express.static(path.join(__dirname,"public"),{ 
-  setHeaders:(res,fp)=>{ 
-    if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); 
+app.use(express.static(path.join(__dirname,"public"),{
+  setHeaders:(res,fp)=>{
+    if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache');
     res.setHeader('X-Frame-Options','SAMEORIGIN');
-  } 
+  }
 }));
-app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V31 + VENDOR WORLD V2 LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>🔒 V32 FINAL + COMMISSION TILL LIVE PORT ${PORT}</h1><a href="/api/health">health</a>`); }));
