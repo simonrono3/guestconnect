@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub Admin 19.0 — COMMISSION + TILL</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&family=Anton&display=swap" rel="stylesheet">
+<title>GuestHub Admin 33 SCALE — COMMISSION + TILL 1000 Hotels</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="/config.js"></script>
@@ -27,16 +27,16 @@
 .modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:15px}.modal.open{display:flex}.modal-box{width:min(650px,100%);max-height:90vh;overflow:auto;background:#101010;border:1px solid #303030;border-radius:20px;padding:18px}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.modal-title{font-family:Space Grotesk;font-size:18px;font-weight:900}
 .toast{position:fixed;right:14px;bottom:20px;z-index:500;max-width:calc(100% - 28px);background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;box-shadow:var(--shadow);transform:translateY(120px);opacity:0;transition:.25s}.toast.show{transform:translateY(0);opacity:1}.toast.success{border-color:#245c32}.toast.error{border-color:#6c2727;color:#ff8a8a}
-.qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;max-width:100%;margin:15px auto}.divider{height:1px;background:#222;margin:15px 0}.hidden{display:none!important}
+.qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;max-width:100%;margin:15px auto}.hidden{display:none!important}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column;align-items:flex-start}.row-actions{width:100%}}
 .commission{border-radius:18px;padding:14px;border:1px solid var(--border);background:var(--card)}.commission.pending{border-left:4px solid var(--gold)}.commission.confirmed{border-left:4px solid var(--green)}.commission.rejected{border-left:4px solid var(--red)}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="brand"><div class="logo">👑</div><div><div class="brand-title">GUESTHUB <span>ADMIN 19.0 COMMISSION</span></div><div class="brand-sub">SECURED • JWT • V32 + VENDOR WORLD + TILL + ADMIN CONFIRM + QR EMPIRE</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
+<header class="header"><div class="header-inner"><div class="brand"><div class="logo">👑</div><div><div class="brand-title">GUESTHUB <span>ADMIN 33 SCALE</span></div><div class="brand-sub">SECURED • V33 SCALE 1000 HOTELS • TILL + COMMISSION • QR EMPIRE</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
 <main class="container">
 <section class="dashboard">
-<div class="hero"><h1>Welcome to <span>GuestHub Empire 19.0 — Commission OS.</span></h1><p>Control Hotels, Vendors, Services OS, Orders na jina la Guest + Room + WhatsApp routing, plus <b>Vendor Commission — 2 weeks, 2 days grace, Till + Admin Confirm</b>. Vendor analipa kwa Till yako, wewe una-confirm, system inafungua auto.</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">SECURED • CONNECTING 19.0 COMMISSION</span></div></div>
+<div class="hero"><h1>Welcome to <span>GuestHub Empire 33 — 1000 Hotels Scale OS.</span></h1><p>Control Hotels, Vendors, Services OS, Orders na jina la Guest + Room + WhatsApp routing, plus <b>Vendor Commission — 2 weeks, 2 days grace, Till + Admin Confirm</b>. V33 cache + batch scale.</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">SECURED • CONNECTING V33 SCALE...</span></div></div>
 <div class="stats">
 <div class="stat money"><div class="stat-icon">💰</div><b id="s_comm">Ksh 0</b><small>15% COMMISSION</small></div>
 <div class="stat warn"><div class="stat-icon">💳</div><b id="s_comm_pending">0</b><small>PENDING PAYMENTS</small></div>
@@ -53,14 +53,12 @@
 <button class="tab" data-tab="commission" onclick="switchTab('commission',this)">💳 Commission <span id="c_comm" style="color:#000;background:#fbbf24;border-radius:999px;padding:2px 6px;font-size:9px;margin-left:4px;display:none">0</span></button>
 <button class="tab" data-tab="menu" onclick="switchTab('menu',this)">🍽️ Services</button>
 <button class="tab" data-tab="orders" onclick="switchTab('orders',this)">🔔 Orders</button>
-<button class="tab" data-tab="dept" onclick="switchTab('dept',this)">🛎️ WhatsApp Routing</button>
 <button class="tab" data-tab="cash" onclick="switchTab('cash',this)">💸 Finance</button>
 </div></div>
 <section id="view-hotels" class="view"></section>
 <section id="view-vendors" class="view hidden"></section>
 <section id="view-commission" class="view hidden"></section>
 <section id="view-menu" class="view hidden"></section>
-<section id="view-dept" class="view hidden"></section>
 <section id="view-orders" class="view hidden"></section>
 <section id="view-cash" class="view hidden"></section>
 </main>
@@ -68,38 +66,36 @@
 <div id="toast" class="toast"></div>
 <script>
 "use strict";
-const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let supa=null; try{ supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){}
 let HOTELS=[],VENDORS=[],ITEMS=[],ORDERS=[],COMM_PAYMENTS=[],currentTab="hotels",CURRENT_TILL={};
 function getToken(){return localStorage.getItem('admin_token')||localStorage.getItem('adminToken')||localStorage.getItem('hotel_token')||''}
-async function secureFetch(url,opts={}){const token=getToken(); if(!token) return fetch(url,opts); opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body&&!(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; return fetch(url,opts);}
-function esc(v){if(v==null) return ""; return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+async function secureFetch(url,opts={}){const t=getToken(); opts.headers=opts.headers||{}; if(t) opts.headers['Authorization']='Bearer '+t; if(opts.body&&!(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; return fetch(url,opts);}
+function esc(v){if(v==null)return"";return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function money(v){return "Ksh "+Number(v||0).toLocaleString("en-KE",{maximumFractionDigits:0});}
 function shortId(id){return String(id||"-").slice(0,8);}
-function safeDate(v){if(!v) return "-"; const d=new Date(v); if(isNaN(d.getTime())) return "-"; return d.toLocaleString("en-KE",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});}
-function toast(m,t="success"){const el=document.getElementById("toast");el.textContent=m;el.className="toast show "+t; clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>el.className="toast",3200);}
-function loading(target){target.innerHTML=`<div class="loader"><div class="spinner"></div>Loading...</div>`;}
-function empty(msg){return `<div class="empty">${esc(msg)}</div>`;}
-function errorBox(msg){return `<div class="card" style="border-color:#662626"><b style="color:#f87171">⚠️ ${esc(msg)}</b></div>`;}
-function openModal(title,body){document.getElementById("modalTitle").innerText=title; document.getElementById("modalBody").innerHTML=body; document.getElementById("modal").classList.add("open");}
+function safeDate(v){if(!v)return"-";const d=new Date(v);if(isNaN(d.getTime()))return"-";return d.toLocaleString("en-KE",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});}
+function toast(m,t="success"){const el=document.getElementById("toast");el.textContent=m;el.className="toast show "+t;clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>el.className="toast",3200);}
+function loading(t){t.innerHTML=`<div class="loader"><div class="spinner"></div>Loading V33...</div>`;}
+function empty(m){return `<div class="empty">${esc(m)}</div>`;}
+function errorBox(m){return `<div class="card" style="border-color:#662626"><b style="color:#f87171">⚠️ ${esc(m)}</b></div>`;}
+function openModal(title,body){document.getElementById("modalTitle").innerText=title;document.getElementById("modalBody").innerHTML=body;document.getElementById("modal").classList.add("open");}
 function closeModal(){document.getElementById("modal").classList.remove("open");}
-document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget) closeModal();});
-async function logout(){try{await supa.auth.signOut();}catch(e){} localStorage.clear(); location.href='/admin-login.html';}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget)closeModal();});
+async function logout(){localStorage.clear();location.href='/admin-login.html';}
 
 async function init(){
-  const token=getToken();
-  if(token){ try{ const me=await secureFetch('/api/auth/me'); const j=await me.json(); if(j.ok) document.getElementById("systemStatus").innerText="SECURED • ADMIN JWT VERIFIED • 19.0 COMMISSION"; }catch(e){ document.getElementById("systemStatus").innerText="SUPABASE CONNECTED • 19.0 COMMISSION"; } }
-  await refreshAll(); setupRealtime(); setInterval(refreshAll,30000);
+  try{ const h=await fetch('/api/health').then(r=>r.json()); document.getElementById("systemStatus").innerText=`SECURED • ${h.os} • hasUrl:${h.hasUrl} • cache:${h.cache} • V33 SCALE`; }catch(e){ document.getElementById("systemStatus").innerText="CONNECTING..."; }
+  await refreshAll(); setInterval(refreshAll,20000);
 }
 async function refreshAll(){ await Promise.all([loadHotels(),loadVendors(),loadItems(),loadOrders(),loadCommissionPayments()]); renderCurrentTab(); }
-function setupRealtime(){ try{ supa.channel("admin-19").on("postgres_changes",{event:"*",schema:"guesthub_os",table:"orders"},()=>loadOrders()).on("postgres_changes",{event:"*",schema:"guesthub_os",table:"vendor_payments"},()=>loadCommissionPayments()).subscribe(); }catch(e){} }
 
-// ===== HOTELS =====
-async function loadHotels(silent=false){
- if(!silent&&currentTab==="hotels") loading(document.getElementById("view-hotels"));
+// V33 SCALE FIX — Use backend first, not Supabase direct (bypasses RLS)
+async function loadHotels(){
  try{
-  let data; const token=getToken(); if(token){ const r=await secureFetch('/api/hotels'); if(r.ok) data=await r.json(); }
-  if(!data){ const {data:d}=await supa.from("hotels").select("*").order("created_at",{ascending:false}).limit(500); data=d; }
-  HOTELS=data||[]; const pending=HOTELS.filter(h=>String(h.status||"").toUpperCase()==="PENDING");
+  const r=await fetch('/api/data'); const j=await r.json(); HOTELS=j.hotels||[];
+  // Also get pending from admin endpoint if exists
+  try{ const r2=await secureFetch('/api/admin/hotels-pending'); if(r2.ok){ const j2=await r2.json(); if(j2.hotels?.length) HOTELS=j2.hotels; } }catch(e){}
+  const pending=HOTELS.filter(h=>String(h.status||"").toUpperCase()==="PENDING");
   document.getElementById("s_hotels").innerText=HOTELS.length; document.getElementById("s_pending_hotels").innerText=pending.length; document.getElementById("c_h").innerText=pending.length?`(${pending.length} PENDING)`:"";
   if(currentTab==="hotels") renderHotels();
  }catch(e){ if(currentTab==="hotels") document.getElementById("view-hotels").innerHTML=errorBox(e.message); }
@@ -108,107 +104,52 @@ function renderHotels(){
  const box=document.getElementById("view-hotels"); const q=(document.getElementById("hotelSearch")?.value||"").toLowerCase().trim();
  const filtered=HOTELS.filter(h=>`${h.name||""} ${h.hotel_name||""} ${h.city||""} ${h.email||""} ${h.hotel_id||""}`.toLowerCase().includes(q));
  const pending=filtered.filter(h=>String(h.status||"").toUpperCase()==="PENDING"); const approved=filtered.filter(h=>String(h.status||"").toUpperCase()!=="PENDING");
- box.innerHTML=`<div class="card"><div class="card-title">🏨 Hotel Network — ${HOTELS.length} Hotels • ${pending.length} Pending — 19.0 COMMISSION</div><div class="toolbar"><input id="hotelSearch" class="input" placeholder="🔎 Search hotel..." value="${esc(q)}" oninput="renderHotels()"></div></div>${pending.length?`<div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Hotel Approvals (${pending.length})</div></div>${pending.map(h=>hotelCard(h,true)).join("")}`:""}<div class="card"><div class="card-title">✅ Approved Hotels (${approved.length})</div></div>${approved.map(h=>hotelCard(h,false)).join("")||empty("No hotels")}`;
+ box.innerHTML=`<div class="card"><div class="card-title">🏨 Hotel Network — ${HOTELS.length} Hotels • ${pending.length} Pending — V33 SCALE</div><div class="toolbar"><input id="hotelSearch" class="input" placeholder="🔎 Search hotel..." value="${esc(q)}" oninput="renderHotels()"></div></div>${pending.length?`<div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Hotel Approvals (${pending.length})</div></div>${pending.map(h=>hotelCard(h,true)).join("")}`:""}<div class="card"><div class="card-title">✅ Approved Hotels (${approved.length})</div></div>${approved.map(h=>hotelCard(h,false)).join("")||empty("No hotels - check /api/data")}`;
 }
 function hotelCard(h,isPending){
  const name=h.name||h.hotel_name||"Unnamed"; const hid=h.hotel_id||h.id; const status=String(h.status||"active").toLowerCase();
- return `<div class="row" style="${isPending?'border-left:4px solid #fbbf24':''}"><div class="row-main"><div class="row-title">🏨 ${esc(name)} <span class="badge ${status==="pending"?'badge-yellow':'badge-green'}">${esc(status.toUpperCase())}</span> <span class="badge badge-blue">${esc(hid)}</span></div><div class="row-sub">📍 ${esc(h.city||"-")} • ✉️ ${esc(h.email||"-")} • 📱 ${esc(h.phone||"-")}<br>🆔 ${esc(shortId(h.id))} • Plan ${esc(h.plan||"Upendo")}<br>🕐 ${safeDate(h.created_at)}</div></div><div class="row-actions">${isPending?`<button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.id)}')">✅ Approve</button>`:`<button class="btn btn-blue btn-sm" onclick="showHotelQR('${esc(hid)}')">🔳 QR</button><button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(hid)}','_blank')">GM Dash</button>`}<button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.id)}')">🗑️</button></div></div>`;
+ return `<div class="row" style="${isPending?'border-left:4px solid #fbbf24':''}"><div class="row-main"><div class="row-title">🏨 ${esc(name)} <span class="badge ${status==="pending"?'badge-yellow':'badge-green'}">${esc(status.toUpperCase())}</span> <span class="badge badge-blue">${esc(hid)}</span></div><div class="row-sub">📍 ${esc(h.city||"-")} • ✉️ ${esc(h.email||"-")} • 📱 ${esc(h.phone||"-")}<br>🆔 ${esc(shortId(h.id))} • Plan ${esc(h.plan||"Upendo")} • 🕐 ${safeDate(h.created_at)}</div></div><div class="row-actions">${isPending?`<button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.id||hid)}')">✅ Approve</button>`:`<button class="btn btn-blue btn-sm" onclick="showHotelQR('${esc(hid)}')">🔳 QR</button><button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(hid)}','_blank')">GM Dash</button>`}<button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.id||hid)}')">🗑️</button></div></div>`;
 }
-async function approveHotel(id){ if(!confirm("Approve hotel?")) return; try{ const r=await secureFetch(`/api/hotels/${id}/approve`,{method:'POST',body:JSON.stringify({plan:"Upendo"})}); toast("✅ Approved"); }catch(e){ await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true}).or(`id.eq.${id},hotel_id.eq.${id}`); toast("✅ Approved via Supabase"); } loadHotels(); }
-async function deleteHotel(id){ if(!confirm("Delete hotel?")) return; await supa.from("hotels").delete().or(`id.eq.${id},hotel_id.eq.${id}`); toast("Deleted"); loadHotels(); }
+async function approveHotel(id){ if(!confirm("Approve hotel?")) return; try{ const r=await secureFetch('/api/admin/hotels/'+id+'/approve',{method:'POST'}); if(!r.ok) throw new Error(); toast("✅ Approved"); }catch(e){ if(supa) await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true}).or(`id.eq.${id},hotel_id.eq.${id}`); toast("✅ Approved via Supabase"); } loadHotels(); }
+async function deleteHotel(id){ if(!confirm("Delete hotel?")) return; await secureFetch('/api/admin/hotels/'+id,{method:'DELETE'}).catch(async()=>{ if(supa) await supa.from("hotels").delete().or(`id.eq.${id},hotel_id.eq.${id}`); }); toast("Deleted"); loadHotels(); }
 function hotelGuestLink(id){return location.origin+"/guest.html?hotel="+encodeURIComponent(id)+"&room=101";}
-function showHotelQR(id){
- const h=HOTELS.find(x=>String(x.hotel_id)===String(id)||String(x.id)===String(id)); const link=hotelGuestLink(id);
- openModal("Hotel QR — "+id,`<div style="text-align:center"><b>${esc(h?.name||id)}</b><div class="qr-box"><div id="qrCanvas"></div></div><input class="input" value="${esc(link)}" readonly><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" style="flex:1" onclick="navigator.clipboard.writeText('${esc(link)}');toast('Copied')">Copy</button><button class="btn btn-gold" style="flex:1" onclick="window.open('${esc(link)}','_blank')">Guest View</button></div></div>`);
- setTimeout(()=>{ const el=document.getElementById("qrCanvas"); if(el&&window.QRCode) new QRCode(el,{text:link,width:220,height:220}); },100);
-}
+function showHotelQR(id){ const h=HOTELS.find(x=>String(x.hotel_id)===String(id)||String(x.id)===String(id)); const link=hotelGuestLink(id); openModal("Hotel QR — "+id,`<div style="text-align:center"><b>${esc(h?.name||id)}</b><div class="qr-box"><div id="qrCanvas"></div></div><input class="input" value="${esc(link)}" readonly><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" style="flex:1" onclick="navigator.clipboard.writeText('${esc(link)}');toast('Copied')">Copy</button><button class="btn btn-gold" style="flex:1" onclick="window.open('${esc(link)}','_blank')">Guest View</button></div></div>`); setTimeout(()=>{ const el=document.getElementById("qrCanvas"); if(el&&window.QRCode) new QRCode(el,{text:link,width:220,height:220}); },100); }
 
-// ===== VENDORS =====
+// V33 SCALE VENDORS — backend first
 async function loadVendors(){
- try{ let data; const token=getToken(); if(token){ const r=await secureFetch('/api/vendors'); if(r.ok){ const j=await r.json(); data=j.vendors||j; } } if(!data){ const {data:d}=await supa.from("vendors").select("*").order("created_at",{ascending:false}).limit(500); data=d; } VENDORS=data||[]; const pending=VENDORS.filter(v=>String(v.status||"").toLowerCase()==="pending"); document.getElementById("s_pending").innerText=pending.length; document.getElementById("c_v").innerText=pending.length?`(${pending.length})`:""; if(currentTab==="vendors") renderVendors(); }catch(e){ if(currentTab==="vendors") document.getElementById("view-vendors").innerHTML=errorBox(e.message); }
+ try{
+  let data=[]; try{ const r=await secureFetch('/api/admin/vendors'); if(r.ok){ const j=await r.json(); data=j.vendors||[]; } }catch(e){}
+  if(!data.length){ try{ const r=await fetch('/api/vendors?hotel_id=BAOBAB'); const j=await r.json(); data=j.vendors||[]; }catch(e){} }
+  if(!data.length && supa){ try{ const {data:d}=await supa.schema('guesthub_os').from('vendors').select('*').order('created_at',{ascending:false}).limit(500); data=d||[]; }catch(e){} }
+  VENDORS=data; const pending=VENDORS.filter(v=>String(v.status||"").toLowerCase()==="pending");
+  document.getElementById("s_pending").innerText=pending.length; document.getElementById("c_v").innerText=pending.length?`(${pending.length})`:"";
+  if(currentTab==="vendors") renderVendors();
+ }catch(e){ if(currentTab==="vendors") document.getElementById("view-vendors").innerHTML=errorBox(e.message); }
 }
 function renderVendors(){
- if(currentTab!=="vendors") return; const box=document.getElementById("view-vendors"); const filtered=VENDORS;
- box.innerHTML=`<div class="card"><div class="card-title">🚚 Vendor Marketplace — ${VENDORS.length} • ${VENDORS.filter(v=>String(v.status).toLowerCase()==="pending").length} pending • COMMISSION: 2 weeks, 15%, auto-lock</div></div>${filtered.map(v=>`<div class="row" style="${v.commission_locked?'border-left:4px solid #ef4444':''}"><div class="row-main"><div class="row-title">${esc(v.vendor_name||v.full_name||"Vendor")} ${v.commission_locked?'<span class="badge badge-red">LOCKED — COMMISSION DUE</span>':''} <span class="badge badge-yellow">${esc(v.status||"pending")}</span></div><div class="row-sub">📱 ${esc(v.phone||"-")} • 📍 ${esc(v.location||v.city||"-")} • 🏨 ${(v.hotel_ids||[]).join(', ')}<br>💰 Due: ${money(v.commission_due||0)} • Active: ${v.is_active?'YES':'NO'} • Available: ${v.is_available?'YES':'NO'}</div></div><div class="row-actions"><button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>${v.commission_locked?`<button class="btn btn-gold btn-sm" onclick="forceUnlock('${esc(v.id)}')">🔓 Force Unlock</button>`:''}</div></div>`).join('')||empty("No vendors")}`;
+ if(currentTab!=="vendors") return; const box=document.getElementById("view-vendors");
+ box.innerHTML=`<div class="card"><div class="card-title">🚚 Vendor Marketplace — ${VENDORS.length} • ${VENDORS.filter(v=>String(v.status).toLowerCase()==="pending").length} pending • V33 batch scale + cache</div></div>${VENDORS.map(v=>`<div class="row" style="${v.commission_locked?'border-left:4px solid #ef4444':''}"><div class="row-main"><div class="row-title">${esc(v.vendor_name||v.full_name||"Vendor")} ${v.commission_locked?'<span class="badge badge-red">LOCKED — COMMISSION DUE</span>':''} <span class="badge badge-yellow">${esc(v.status||"pending")}</span></div><div class="row-sub">📱 ${esc(v.phone||"-")} • 📍 ${esc(v.location||v.city||"-")} • 🏨 ${(v.hotel_ids||[]).join(', ')}<br>💰 Due: ${money(v.commission_due||0)} • Active: ${v.is_active?'YES':'NO'} • ID:${esc(v.id)}</div></div><div class="row-actions"><button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>${v.commission_locked?`<button class="btn btn-gold btn-sm" onclick="forceUnlock('${esc(v.id)}')">🔓 Unlock</button>`:''}</div></div>`).join('')||empty("No vendors — check /api/admin/vendors")}`;
 }
-async function updateVendor(id,status){ await supa.schema('guesthub_os').from('vendors').update({status}).eq("id",id); await supa.from("vendors").update({status}).eq("id",id).catch(()=>{}); toast("Vendor "+status); loadVendors(); }
-async function forceUnlock(id){ if(!confirm("Force unlock vendor? This sets commission_due=0 and is_active=true")) return; await supa.schema('guesthub_os').from('vendors').update({is_active:true,commission_locked:false,commission_due:0,is_available:true}).eq('id',id); await supa.schema('guesthub_os').from('hotel_services').update({is_active:true}).eq('vendor_id',id); toast("Unlocked"); loadVendors(); }
+async function updateVendor(id,status){ try{ await secureFetch('/api/admin/vendors/'+id+'/approve',{method:'POST',body:JSON.stringify({status})}); if(status==='approved'){ await secureFetch('/api/admin/vendors/'+id+'/approve',{method:'POST'}); } else { if(supa) await supa.schema('guesthub_os').from('vendors').update({status}).eq('id',id); } toast("Vendor "+status); }catch(e){ if(supa) await supa.schema('guesthub_os').from('vendors').update({status}).eq('id',id); toast("Vendor "+status); } loadVendors(); }
+async function forceUnlock(id){ if(!confirm("Force unlock?")) return; await secureFetch('/api/admin/vendors/'+id+'/approve',{method:'POST'}); toast("Unlocked"); loadVendors(); }
 
-// ===== COMMISSION 19.0 — NEW =====
 async function loadCommissionPayments(){
- try{
-  const r=await secureFetch('/api/admin/commission-payments');
-  if(!r.ok) throw new Error("No admin token");
-  const d=await r.json(); COMM_PAYMENTS=d.payments||[]; CURRENT_TILL=d.till||{};
-  const pending=COMM_PAYMENTS.filter(p=>p.status==='pending');
-  document.getElementById("s_comm_pending").innerText=pending.length;
-  const badge=document.getElementById("c_comm"); if(pending.length){ badge.style.display='inline-flex'; badge.innerText=pending.length; } else { badge.style.display='none'; }
-  if(currentTab==="commission") renderCommission();
- }catch(e){ COMM_PAYMENTS=[]; }
+ try{ const r=await secureFetch('/api/admin/commission-payments'); const d=await r.json(); COMM_PAYMENTS=d.payments||[]; CURRENT_TILL=d.till||{}; const pending=COMM_PAYMENTS.filter(p=>p.status==='pending'); document.getElementById("s_comm_pending").innerText=pending.length; const badge=document.getElementById("c_comm"); if(pending.length){ badge.style.display='inline-flex'; badge.innerText=pending.length; } else { badge.style.display='none'; } if(currentTab==="commission") renderCommission(); }catch(e){ COMM_PAYMENTS=[]; }
 }
 function renderCommission(){
- if(currentTab!=="commission") return; const box=document.getElementById("view-commission");
- const pending=COMM_PAYMENTS.filter(p=>p.status==='pending'); const confirmed=COMM_PAYMENTS.filter(p=>p.status==='confirmed'); const rejected=COMM_PAYMENTS.filter(p=>p.status==='rejected');
- const till=CURRENT_TILL||{};
- box.innerHTML=`
-  <div class="card" style="border-color:rgba(198,255,0,.4);background:linear-gradient(135deg,rgba(198,255,0,.08),#101010)">
-    <div class="card-title">💳 Vendor Commission — 2 Weeks • 15% • 2 Days Grace • Till + Admin Confirm</div>
-    <div class="card-sub">Vendor analipa kwa Till yako, anaweka M-Pesa Code, wewe una-confirm hapa — system inafungua auto. RLS ON — secure.</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px">
-      <div class="kpi"><small>BUY GOODS TILL</small><b style="color:#c6ff00">${esc(till.till_number||'123456')}</b><small>${esc(till.business_name||'GuestHub Ltd')}</small></div>
-      <div class="kpi"><small>PAYBILL</small><b>${esc(till.paybill||'522522')}</b><small>Acc ${esc(till.account_number||'1234567')}</small></div>
-      <div class="kpi"><small>PENDING TO CONFIRM</small><b style="color:#fbbf24">${pending.length}</b><small>Need verification</small></div>
-    </div>
-    <div style="margin-top:10px;padding:10px;background:#000;border-radius:10px;border:1px solid #222;font-size:10px;line-height:1.6">
-      <b>How it works mkuu:</b><br>
-      1. System inacalculate 15% ya completed orders za wiki 2 za kila vendor<br>
-      2. Vendor dashboard inaonyesha: <i>Lipa kwa Till ${esc(till.till_number||'123456')} — Ksh 4500</i><br>
-      3. Vendor akilipa, anaweka M-Pesa Code hapa → status <b>PENDING</b><br>
-      4. Wewe una-check M-Pesa app yako, ukiona pesa, unabonyeza <b>✅ Confirm & Unlock</b><br>
-      5. Vendor anafunguliwa auto — services zake zinarudi LIVE kwa Guest App ya Baobab/Wasini/SGR + WhatsApp<br>
-      6. Asipolipa ndani ya Due + 2 days grace → system inajifunga auto (is_active=false)
-    </div>
-  </div>
+ if(currentTab!=="commission") return; const box=document.getElementById("view-commission"); const pending=COMM_PAYMENTS.filter(p=>p.status==='pending'); const confirmed=COMM_PAYMENTS.filter(p=>p.status==='confirmed'); const rejected=COMM_PAYMENTS.filter(p=>p.status==='rejected'); const till=CURRENT_TILL||{};
+ box.innerHTML=`<div class="card" style="border-color:rgba(198,255,0,.4)"><div class="card-title">💳 Commission — 2 Weeks • 15% • Till ${esc(till.till_number||'')} • V33 SCALE</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px"><div class="kpi"><small>TILL</small><b style="color:#c6ff00">${esc(till.till_number||'')}</b></div><div class="kpi"><small>PAYBILL</small><b>${esc(till.paybill||'')}</b></div><div class="kpi"><small>PENDING</small><b style="color:#fbbf24">${pending.length}</b></div></div></div><div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending (${pending.length})</div></div>${pending.map(p=>commissionCard(p,true)).join('')||empty("No pending")}<div class="card"><div class="card-title">✅ Confirmed (${confirmed.length})</div></div>${confirmed.slice(0,30).map(p=>commissionCard(p,false)).join('')||empty("No confirmed")}`;
+}
+function commissionCard(p,isPending){ const st=String(p.status||"pending").toLowerCase(); let cls='pending'; if(st==='confirmed')cls='confirmed'; if(st==='rejected')cls='rejected'; return `<div class="commission ${cls}"><div style="display:flex;justify-content:space-between"><div class="row-main"><div class="row-title">💳 ${esc(p.vendor_name||p.vendor_id)} <span class="badge ${st==='pending'?'badge-yellow':'badge-green'}">${esc(st.toUpperCase())}</span> <span class="badge badge-blue">${esc(p.mpesa_code||"")}</span></div><div class="row-sub">💰 ${money(p.amount)} • 📱 ${esc(p.phone||"")} • 🕐 ${safeDate(p.created_at)}</div></div></div>${isPending?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="confirmPayment('${esc(p.id)}')">✅ Confirm & Unlock</button><button class="btn btn-red" onclick="rejectPayment('${esc(p.id)}')">✕ Reject</button></div>`:''}</div>`; }
+async function confirmPayment(id){ if(!confirm("Confirm payment?"))return; await secureFetch('/api/admin/commission-payments/'+id+'/confirm',{method:'POST'}); toast("Confirmed"); loadCommissionPayments(); loadVendors(); }
+async function rejectPayment(id){ const reason=prompt("Reason:"); if(reason===null)return; await secureFetch('/api/admin/commission-payments/'+id+'/reject',{method:'POST',body:JSON.stringify({reason})}); toast("Rejected"); loadCommissionPayments(); }
 
-  <div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Confirmation (${pending.length}) — Verify M-Pesa then Confirm</div><div class="card-sub">Hizi ndio vendor wameshalipa — check M-Pesa statement yako kwa Till ${esc(till.till_number||'123456')} uone kama pesa imeingia, kisha Confirm</div></div>
-  ${pending.map(p=>commissionCard(p,true)).join('')||empty("No pending payments — vendors wote wako clear")}
-
-  <div class="card"><div class="card-title">✅ Confirmed Payments (${confirmed.length})</div></div>
-  ${confirmed.slice(0,30).map(p=>commissionCard(p,false)).join('')||empty("No confirmed yet")}
-
-  <div class="card"><div class="card-title">❌ Rejected (${rejected.length})</div></div>
-  ${rejected.slice(0,20).map(p=>commissionCard(p,false)).join('')||empty("No rejected")}
- `;
-}
-function commissionCard(p,isPending){
-  const st=String(p.status||"pending").toLowerCase();
-  let cls='pending'; if(st==='confirmed') cls='confirmed'; if(st==='rejected') cls='rejected';
-  return `<div class="commission ${cls}"><div style="display:flex;justify-content:space-between;gap:10px"><div class="row-main"><div class="row-title">💳 ${esc(p.vendor_name||p.vendor_id)} <span class="badge ${st==='pending'?'badge-yellow':st==='confirmed'?'badge-green':'badge-red'}">${esc(st.toUpperCase())}</span> <span class="badge badge-blue">${esc(p.mpesa_code||"")}</span></div><div class="row-sub">💰 ${money(p.amount)} • 📱 ${esc(p.phone||"")} • 🏦 Till ${esc(p.till_number||"")} • 🕐 ${safeDate(p.created_at)}<br>🆔 Vendor ID: ${esc(p.vendor_id)} • ${p.confirmed_by?`Confirmed by ${esc(p.confirmed_by)} at ${safeDate(p.confirmed_at)}`:''} ${p.reject_reason?`• Reason: ${esc(p.reject_reason)}`:''}</div></div><div style="text-align:right"><div style="font-size:10px;color:#777">Code</div><b style="font-family:Space Grotesk;font-size:14px">${esc(p.mpesa_code)}</b></div></div>${isPending?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="confirmPayment('${esc(p.id)}')">✅ Confirm — I saw ${money(p.amount)} on M-Pesa Till — Unlock Vendor</button><button class="btn btn-red" onclick="rejectPayment('${esc(p.id)}')">✕ Reject — Invalid Code</button></div><div style="margin-top:8px;font-size:9px;color:#777">⚠️ Before confirming, open your M-Pesa app → Till ${esc(CURRENT_TILL.till_number||'123456')} → Check kama ${money(p.amount)} na code ${esc(p.mpesa_code)} imeingia. Kama haijaingia, Reject.</div>`:''}</div>`;
-}
-async function confirmPayment(id){ if(!confirm("Umeona pesa kwa M-Pesa Till? Confirm na u-unlock vendor?")) return; try{ const r=await secureFetch(`/api/admin/commission-payments/${id}/confirm`,{method:'POST'}); const d=await r.json(); if(!d.ok) throw new Error(d.error||"Failed"); toast("✅ Confirmed — Vendor unlocked LIVE tena"); loadCommissionPayments(); loadVendors(); }catch(e){ toast("Failed: "+e.message,"error"); } }
-async function rejectPayment(id){ const reason=prompt("Reason for reject (e.g. Code not found, amount mismatch):"); if(reason===null) return; try{ const r=await secureFetch(`/api/admin/commission-payments/${id}/reject`,{method:'POST',body:JSON.stringify({reason})}); toast("Rejected"); loadCommissionPayments(); }catch(e){ toast(e.message,"error"); } }
-
-// ===== MENU, ORDERS, DEPT, CASH (same as 18.0) =====
-async function loadItems(){
- try{ const {data:d1}=await supa.schema('guesthub_os').from('hotel_services').select('*').order('created_at',{ascending:false}).limit(1000); ITEMS=d1||[]; if(currentTab==="menu") renderMenu(); }catch(e){}
-}
-function renderMenu(){ if(currentTab!=="menu") return; const box=document.getElementById("view-menu"); box.innerHTML=`<div class="card"><div class="card-title">🍽️ Services — ${ITEMS.length}</div></div>${ITEMS.slice(0,150).map(i=>`<div class="row"><div class="row-main"><div class="row-title">${esc(i.title||i.name||"Untitled")} <span class="badge badge-green">${money(i.price)}</span> <span class="badge badge-blue">${esc((i.department||"").toUpperCase())}</span></div><div class="row-sub">🏨 ${esc(i.hotel_id||"-")} • ${esc(i.description||"")}</div></div><div class="row-actions"><button class="btn btn-red btn-sm" onclick="deleteService('${esc(i.id)}')">🗑️</button></div></div>`).join('')||empty("No services")}`; }
-async function deleteService(id){ if(!confirm("Delete?")) return; await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',id); toast("Deleted"); loadItems(); }
-
-async function loadOrders(){
- try{ const {data:d}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(500); ORDERS=d||[]; let gmv=0; ORDERS.forEach(o=>{ gmv+=Number(o.total||0); }); document.getElementById("s_gmv").innerText=money(gmv); document.getElementById("s_comm").innerText=money(Math.floor(gmv*.15)); document.getElementById("s_orders").innerText=ORDERS.filter(o=>["new","pending"].includes(String(o.status||"").toLowerCase())).length; if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); }catch(e){}
-}
-function renderOrders(){
- if(currentTab!=="orders") return; const box=document.getElementById("view-orders"); const q=(document.getElementById("orderSearch")?.value||"").toLowerCase().trim(); const filtered=ORDERS.filter(o=>`${o.hotel_id} ${o.room_number} ${o.guest_name}`.toLowerCase().includes(q));
- box.innerHTML=`<div class="card"><div class="card-title">🔔 Live Orders — ${ORDERS.length}</div><div class="toolbar"><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${esc(q)}" oninput="renderOrders()"></div></div>${filtered.map(o=>`<div class="row"><div class="row-main"><div class="row-title">🏨 ${esc(o.hotel_id||"-")} — ROOM ${esc(o.room_number||"-")} — ${esc(o.guest_name||"Guest")} <span class="badge badge-yellow">${esc((o.status||"").toUpperCase())}</span></div><div class="row-sub">💰 ${money(o.total||0)} • ${esc(o.department||"")} • 🕐 ${safeDate(o.created_at)}</div></div></div>`).join('')||empty("No orders")}`;
-}
-function renderDept(){ const box=document.getElementById("view-dept"); box.innerHTML=`<div class="card"><div class="card-title">🛎️ WhatsApp Routing</div><div class="card-sub">GM ana-setup kwenye GM Dashboard → WhatsApp Depts</div></div>`; }
-function renderCash(){
- const box=document.getElementById("view-cash"); const completed=ORDERS.filter(o=>["completed","delivered"].includes(String(o.status||"").toLowerCase())); const gmv=ORDERS.reduce((s,o)=>s+Number(o.total||0),0);
- box.innerHTML=`<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="kpi"><small>TOTAL GMV</small><b>${money(gmv)}</b></div><div class="kpi"><small>COMMISSION 15%</small><b style="color:#c6ff00">${money(Math.floor(gmv*.15))}</b></div><div class="kpi"><small>COMPLETED</small><b>${money(completed.reduce((s,o)=>s+Number(o.total||0),0))}</b></div><div class="kpi"><small>PENDING COMMISSION PAYMENTS</small><b style="color:#fbbf24">${COMM_PAYMENTS.filter(p=>p.status==='pending').length}</b></div></div>`;
-}
-function switchTab(name,el){ currentTab=name; document.querySelectorAll(".view").forEach(v=>v.classList.add("hidden")); document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); const view=document.getElementById("view-"+name); if(view) view.classList.remove("hidden"); if(el) el.classList.add("active"); renderCurrentTab(); }
-function renderCurrentTab(){ if(currentTab==="hotels") renderHotels(); if(currentTab==="vendors") renderVendors(); if(currentTab==="commission") renderCommission(); if(currentTab==="menu") renderMenu(); if(currentTab==="dept") renderDept(); if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); }
+async function loadItems(){ try{ if(supa){ const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').order('created_at',{ascending:false}).limit(500); ITEMS=data||[]; } if(currentTab==="menu") renderMenu(); }catch(e){} }
+function renderMenu(){ if(currentTab!=="menu")return; const box=document.getElementById("view-menu"); box.innerHTML=`<div class="card"><div class="card-title">🍽️ Services — ${ITEMS.length}</div></div>${ITEMS.slice(0,150).map(i=>`<div class="row"><div class="row-main"><div class="row-title">${esc(i.title||i.name)} <span class="badge badge-green">${money(i.price)}</span></div><div class="row-sub">🏨 ${esc(i.hotel_id)} • ${esc(i.description||"")}</div></div></div>`).join('')||empty("No services")}`; }
+async function loadOrders(){ try{ if(supa){ const {data}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(300); ORDERS=data||[]; let gmv=0; ORDERS.forEach(o=>gmv+=Number(o.total||0)); document.getElementById("s_gmv").innerText=money(gmv); document.getElementById("s_comm").innerText=money(Math.floor(gmv*.15)); document.getElementById("s_orders").innerText=ORDERS.filter(o=>["new","pending"].includes(String(o.status||"").toLowerCase())).length; if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); } }catch(e){} }
+function renderOrders(){ if(currentTab!=="orders")return; const box=document.getElementById("view-orders"); box.innerHTML=`<div class="card"><div class="card-title">🔔 Orders — ${ORDERS.length}</div></div>${ORDERS.map(o=>`<div class="row"><div class="row-main"><div class="row-title">🏨 ${esc(o.hotel_id)} — ROOM ${esc(o.room_number)} — ${esc(o.guest_name)}</div><div class="row-sub">💰 ${money(o.total)} • ${safeDate(o.created_at)}</div></div></div>`).join('')||empty("No orders")}`; }
+function renderCash(){ const box=document.getElementById("view-cash"); const gmv=ORDERS.reduce((s,o)=>s+Number(o.total||0),0); box.innerHTML=`<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="kpi"><small>GMV</small><b>${money(gmv)}</b></div><div class="kpi"><small>COMM 15%</small><b style="color:#c6ff00">${money(Math.floor(gmv*.15))}</b></div></div>`; }
+function switchTab(name,el){ currentTab=name; document.querySelectorAll(".view").forEach(v=>v.classList.add("hidden")); document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); document.getElementById("view-"+name).classList.remove("hidden"); if(el) el.classList.add("active"); if(name==="hotels")renderHotels(); if(name==="vendors")renderVendors(); if(name==="commission")renderCommission(); if(name==="menu")renderMenu(); if(name==="orders")renderOrders(); if(name==="cash")renderCash(); }
 init();
 </script>
 </body>
