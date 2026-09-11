@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub Admin 18.0 — Merged 11.0 PRO + OS 18.0</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<title>GuestHub Admin 19.0 — COMMISSION + TILL</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&family=Anton&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="/config.js"></script>
@@ -16,7 +16,7 @@
 .btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;transition:.18s;cursor:pointer}.btn:active{transform:scale(.97)}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-sm{padding:7px 10px;font-size:10px}
 .container{width:min(1500px,100%);margin:auto}.dashboard{padding:14px 12px}.hero{border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}.hero h1{margin:0;font-family:Space Grotesk;font-size:clamp(23px,5vw,38px)}.hero h1 span{color:var(--lime)}.hero p{margin:7px 0 0;color:#999;font-size:12px;line-height:1.5}
 .status-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 10px;border-radius:999px;font-size:9px;font-weight:900}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px;min-height:94px}.stat.money{border-color:rgba(198,255,0,.45);background:linear-gradient(135deg,#101400,#101010)}.stat b{display:block;font-family:Space Grotesk;font-size:22px;margin-bottom:7px}.stat small{color:#777;font-size:9px;font-weight:900}.stat-icon{font-size:17px;margin-bottom:7px}
+.stats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px;min-height:94px}.stat.money{border-color:rgba(198,255,0,.45);background:linear-gradient(135deg,#101400,#101010)}.stat.warn{border-color:rgba(251,191,36,.5);background:linear-gradient(135deg,#1a1600,#101010)}.stat b{display:block;font-family:Space Grotesk;font-size:22px;margin-bottom:7px}.stat small{color:#777;font-size:9px;font-weight:900}.stat-icon{font-size:17px;margin-bottom:7px}
 .tabs-wrap{position:sticky;top:66px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
 .view{padding:14px 12px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:10px}.card-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.card-sub{color:#777;font-size:10px;line-height:1.5;margin-top:4px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.input,.select,textarea{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.input:focus{border-color:var(--lime)}
@@ -29,32 +29,36 @@
 .toast{position:fixed;right:14px;bottom:20px;z-index:500;max-width:calc(100% - 28px);background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;box-shadow:var(--shadow);transform:translateY(120px);opacity:0;transition:.25s}.toast.show{transform:translateY(0);opacity:1}.toast.success{border-color:#245c32}.toast.error{border-color:#6c2727;color:#ff8a8a}
 .qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;max-width:100%;margin:15px auto}.divider{height:1px;background:#222;margin:15px 0}.hidden{display:none!important}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column;align-items:flex-start}.row-actions{width:100%}}
+.commission{border-radius:18px;padding:14px;border:1px solid var(--border);background:var(--card)}.commission.pending{border-left:4px solid var(--gold)}.commission.confirmed{border-left:4px solid var(--green)}.commission.rejected{border-left:4px solid var(--red)}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="brand"><div class="logo">👑</div><div><div class="brand-title">GUESTHUB <span>ADMIN 18.0 MERGED</span></div><div class="brand-sub">SECURED COMMAND CENTRE • JWT • OS 18.0 • QR EMPIRE • WA AUTO ROUTING • JINA LA GUEST</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
+<header class="header"><div class="header-inner"><div class="brand"><div class="logo">👑</div><div><div class="brand-title">GUESTHUB <span>ADMIN 19.0 COMMISSION</span></div><div class="brand-sub">SECURED • JWT • V32 + VENDOR WORLD + TILL + ADMIN CONFIRM + QR EMPIRE</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
 <main class="container">
 <section class="dashboard">
-<div class="hero"><h1>Welcome to the <span>GuestHub Empire 18.0 — Merged.</span></h1><p>Control PENDING hotels & vendors, GM Menu & Services OS 18.0, Orders na <b>jina la Guest + Room + WhatsApp auto-routing</b>, QR empire, WhatsApp departments from one secured centre. GM ana-add Pilau → Guest scan Room 101 QR → Order → Kitchen WA na jina!</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">SECURED • CONNECTING OS 18.0 MERGED</span></div></div>
+<div class="hero"><h1>Welcome to <span>GuestHub Empire 19.0 — Commission OS.</span></h1><p>Control Hotels, Vendors, Services OS, Orders na jina la Guest + Room + WhatsApp routing, plus <b>Vendor Commission — 2 weeks, 2 days grace, Till + Admin Confirm</b>. Vendor analipa kwa Till yako, wewe una-confirm, system inafungua auto.</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">SECURED • CONNECTING 19.0 COMMISSION</span></div></div>
 <div class="stats">
 <div class="stat money"><div class="stat-icon">💰</div><b id="s_comm">Ksh 0</b><small>15% COMMISSION</small></div>
+<div class="stat warn"><div class="stat-icon">💳</div><b id="s_comm_pending">0</b><small>PENDING PAYMENTS</small></div>
 <div class="stat" style="border-color:rgba(251,191,36,.5)"><div class="stat-icon">⏳</div><b id="s_pending_hotels">0</b><small>PENDING HOTELS</small></div>
 <div class="stat"><div class="stat-icon">🏨</div><b id="s_hotels">0</b><small>TOTAL HOTELS</small></div>
 <div class="stat"><div class="stat-icon">🚚</div><b id="s_pending">0</b><small>PENDING VENDORS</small></div>
-<div class="stat"><div class="stat-icon">🔔</div><b id="s_orders">0</b><small>NEW ORDERS OS 18.0</small></div>
-<div class="stat"><div class="stat-icon">💵</div><b id="s_gmv">Ksh 0</b><small>TOTAL GMV OS 18.0</small></div>
+<div class="stat"><div class="stat-icon">🔔</div><b id="s_orders">0</b><small>NEW ORDERS</small></div>
+<div class="stat"><div class="stat-icon">💵</div><b id="s_gmv">Ksh 0</b><small>TOTAL GMV</small></div>
 </div>
 </section>
 <div class="tabs-wrap"><div class="tabs">
 <button class="tab active" data-tab="hotels" onclick="switchTab('hotels',this)">🏨 Hotels <span id="c_h">0</span></button>
 <button class="tab" data-tab="vendors" onclick="switchTab('vendors',this)">🚚 Vendors <span id="c_v">0</span></button>
-<button class="tab" data-tab="menu" onclick="switchTab('menu',this)">🍽️ Services OS 18.0</button>
-<button class="tab" data-tab="orders" onclick="switchTab('orders',this)">🔔 Orders OS 18.0 — Jina + Room + WA</button>
-<button class="tab" data-tab="dept" onclick="switchTab('dept',this)">🛎️ WhatsApp Routing OS 18.0</button>
+<button class="tab" data-tab="commission" onclick="switchTab('commission',this)">💳 Commission <span id="c_comm" style="color:#000;background:#fbbf24;border-radius:999px;padding:2px 6px;font-size:9px;margin-left:4px;display:none">0</span></button>
+<button class="tab" data-tab="menu" onclick="switchTab('menu',this)">🍽️ Services</button>
+<button class="tab" data-tab="orders" onclick="switchTab('orders',this)">🔔 Orders</button>
+<button class="tab" data-tab="dept" onclick="switchTab('dept',this)">🛎️ WhatsApp Routing</button>
 <button class="tab" data-tab="cash" onclick="switchTab('cash',this)">💸 Finance</button>
 </div></div>
 <section id="view-hotels" class="view"></section>
 <section id="view-vendors" class="view hidden"></section>
+<section id="view-commission" class="view hidden"></section>
 <section id="view-menu" class="view hidden"></section>
 <section id="view-dept" class="view hidden"></section>
 <section id="view-orders" class="view hidden"></section>
@@ -65,8 +69,8 @@
 <script>
 "use strict";
 const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let HOTELS=[],VENDORS=[],ITEMS=[],ORDERS=[],currentTab="hotels";
-function getToken(){return localStorage.getItem('admin_token')||localStorage.getItem('adminToken')||''}
+let HOTELS=[],VENDORS=[],ITEMS=[],ORDERS=[],COMM_PAYMENTS=[],currentTab="hotels",CURRENT_TILL={};
+function getToken(){return localStorage.getItem('admin_token')||localStorage.getItem('adminToken')||localStorage.getItem('hotel_token')||''}
 async function secureFetch(url,opts={}){const token=getToken(); if(!token) return fetch(url,opts); opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body&&!(opts.body instanceof FormData)) opts.headers['Content-Type']='application/json'; return fetch(url,opts);}
 function esc(v){if(v==null) return ""; return String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function money(v){return "Ksh "+Number(v||0).toLocaleString("en-KE",{maximumFractionDigits:0});}
@@ -79,21 +83,22 @@ function errorBox(msg){return `<div class="card" style="border-color:#662626"><b
 function openModal(title,body){document.getElementById("modalTitle").innerText=title; document.getElementById("modalBody").innerHTML=body; document.getElementById("modal").classList.add("open");}
 function closeModal(){document.getElementById("modal").classList.remove("open");}
 document.getElementById("modal").addEventListener("click",e=>{if(e.target===e.currentTarget) closeModal();});
-async function logout(){try{await supa.auth.signOut();}catch(e){} localStorage.removeItem('admin_token'); location.href='/admin-login.html';}
+async function logout(){try{await supa.auth.signOut();}catch(e){} localStorage.clear(); location.href='/admin-login.html';}
 
 async function init(){
   const token=getToken();
-  if(token){ try{ const me=await secureFetch('/api/auth/me'); const j=await me.json(); if(j.ok&&j.user?.role==="admin") document.getElementById("systemStatus").innerText="SECURED • ADMIN JWT VERIFIED • OS 18.0 MERGED"; }catch(e){ document.getElementById("systemStatus").innerText="SUPABASE CONNECTED • OS 18.0 MERGED"; } }
+  if(token){ try{ const me=await secureFetch('/api/auth/me'); const j=await me.json(); if(j.ok) document.getElementById("systemStatus").innerText="SECURED • ADMIN JWT VERIFIED • 19.0 COMMISSION"; }catch(e){ document.getElementById("systemStatus").innerText="SUPABASE CONNECTED • 19.0 COMMISSION"; } }
   await refreshAll(); setupRealtime(); setInterval(refreshAll,30000);
 }
-async function refreshAll(){ await Promise.all([loadHotels(),loadVendors(),loadItems(),loadOrders()]); renderCurrentTab(); }
-function setupRealtime(){ try{ supa.channel("admin-merged-18").on("postgres_changes",{event:"*",schema:"guesthub_os",table:"orders"},()=>loadOrders()).on("postgres_changes",{event:"*",schema:"public",table:"hotels"},()=>loadHotels()).on("postgres_changes",{event:"*",schema:"public",table:"vendors"},()=>loadVendors()).subscribe(); }catch(e){} }
+async function refreshAll(){ await Promise.all([loadHotels(),loadVendors(),loadItems(),loadOrders(),loadCommissionPayments()]); renderCurrentTab(); }
+function setupRealtime(){ try{ supa.channel("admin-19").on("postgres_changes",{event:"*",schema:"guesthub_os",table:"orders"},()=>loadOrders()).on("postgres_changes",{event:"*",schema:"guesthub_os",table:"vendor_payments"},()=>loadCommissionPayments()).subscribe(); }catch(e){} }
 
+// ===== HOTELS =====
 async function loadHotels(silent=false){
  if(!silent&&currentTab==="hotels") loading(document.getElementById("view-hotels"));
  try{
   let data; const token=getToken(); if(token){ const r=await secureFetch('/api/hotels'); if(r.ok) data=await r.json(); }
-  if(!data){ const {data:d,error}=await supa.from("hotels").select("*").order("created_at",{ascending:false}).limit(500); if(error) throw error; data=d; }
+  if(!data){ const {data:d}=await supa.from("hotels").select("*").order("created_at",{ascending:false}).limit(500); data=d; }
   HOTELS=data||[]; const pending=HOTELS.filter(h=>String(h.status||"").toUpperCase()==="PENDING");
   document.getElementById("s_hotels").innerText=HOTELS.length; document.getElementById("s_pending_hotels").innerText=pending.length; document.getElementById("c_h").innerText=pending.length?`(${pending.length} PENDING)`:"";
   if(currentTab==="hotels") renderHotels();
@@ -103,104 +108,107 @@ function renderHotels(){
  const box=document.getElementById("view-hotels"); const q=(document.getElementById("hotelSearch")?.value||"").toLowerCase().trim();
  const filtered=HOTELS.filter(h=>`${h.name||""} ${h.hotel_name||""} ${h.city||""} ${h.email||""} ${h.hotel_id||""}`.toLowerCase().includes(q));
  const pending=filtered.filter(h=>String(h.status||"").toUpperCase()==="PENDING"); const approved=filtered.filter(h=>String(h.status||"").toUpperCase()!=="PENDING");
- box.innerHTML=`
-  <div class="card"><div class="card-title">🏨 Hotel Network — ${HOTELS.length} Hotels • ${pending.length} Pending — OS 18.0 MERGED + QR Empire</div><div class="card-sub">Hotels from signup → PENDING → Approve → GM login → Add Menu (guesthub_os) → Setup WhatsApp Depts → Bulk Room QR 1-50 → Guest scan ROOM 101 → Order → Kitchen WA na jina!</div><div class="toolbar"><input id="hotelSearch" class="input" placeholder="🔎 Search hotel, city, email, hotel_id..." value="${esc(q)}" oninput="renderHotels()"></div></div>
-  ${pending.length?`<div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Hotel Approvals (${pending.length})</div></div>${pending.map(h=>hotelCard(h,true)).join("")}`:""}
-  <div class="card"><div class="card-title">✅ Approved Hotels (${approved.length}) — GM Dashboards + QR Generator</div></div>
-  ${approved.map(h=>hotelCard(h,false)).join("")||empty("No hotels")}
- `;
+ box.innerHTML=`<div class="card"><div class="card-title">🏨 Hotel Network — ${HOTELS.length} Hotels • ${pending.length} Pending — 19.0 COMMISSION</div><div class="toolbar"><input id="hotelSearch" class="input" placeholder="🔎 Search hotel..." value="${esc(q)}" oninput="renderHotels()"></div></div>${pending.length?`<div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Hotel Approvals (${pending.length})</div></div>${pending.map(h=>hotelCard(h,true)).join("")}`:""}<div class="card"><div class="card-title">✅ Approved Hotels (${approved.length})</div></div>${approved.map(h=>hotelCard(h,false)).join("")||empty("No hotels")}`;
 }
 function hotelCard(h,isPending){
- const name=h.name||h.hotel_name||"Unnamed"; const city=h.city||"Location"; const status=String(h.status||"active").toLowerCase(); const hid=h.hotel_id||h.id;
- return `<div class="row" style="${isPending?'border-left:4px solid #fbbf24':''}"><div class="row-main"><div class="row-title">🏨 ${esc(name)} <span class="badge ${status==="pending"?'badge-yellow':status==="blocked"?'badge-red':'badge-green'}">${esc(status.toUpperCase())}</span> <span class="badge badge-blue">${esc(hid)}</span></div><div class="row-sub">📍 ${esc(city)} • ✉️ ${esc(h.email||"-")} • 📱 ${esc(h.phone||"-")}<br>🆔 ${esc(shortId(h.id))} • Till ${esc(h.till_number||"123456")} • M-Pesa ${esc(h.m_pesa_name||"HOTEL")} • Plan ${esc(h.plan||"Upendo")}<br>🕐 ${safeDate(h.created_at)}<br>📱 WA Kitchen ${esc(h.whatsapp_kitchen||h.whatsapp_kitchen_os||"-")} • Taxi ${esc(h.whatsapp_taxi||"-")}</div></div><div class="row-actions">${isPending?`<button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.id)}')">✅ Approve</button><button class="btn btn-red btn-sm" onclick="blockHotel('${esc(h.id)}')">Block</button>`:`<button class="btn btn-blue btn-sm" onclick="showHotelQR('${esc(hid)}')">🔳 QR</button><button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(hid)}','_blank')">GM Dashboard</button><button class="btn btn-dark btn-sm" onclick="openEditHotel('${esc(h.id)}')">✏️ Edit</button>`}<button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.id)}')">🗑️</button></div></div>`;
+ const name=h.name||h.hotel_name||"Unnamed"; const hid=h.hotel_id||h.id; const status=String(h.status||"active").toLowerCase();
+ return `<div class="row" style="${isPending?'border-left:4px solid #fbbf24':''}"><div class="row-main"><div class="row-title">🏨 ${esc(name)} <span class="badge ${status==="pending"?'badge-yellow':'badge-green'}">${esc(status.toUpperCase())}</span> <span class="badge badge-blue">${esc(hid)}</span></div><div class="row-sub">📍 ${esc(h.city||"-")} • ✉️ ${esc(h.email||"-")} • 📱 ${esc(h.phone||"-")}<br>🆔 ${esc(shortId(h.id))} • Plan ${esc(h.plan||"Upendo")}<br>🕐 ${safeDate(h.created_at)}</div></div><div class="row-actions">${isPending?`<button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.id)}')">✅ Approve</button>`:`<button class="btn btn-blue btn-sm" onclick="showHotelQR('${esc(hid)}')">🔳 QR</button><button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(hid)}','_blank')">GM Dash</button>`}<button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.id)}')">🗑️</button></div></div>`;
 }
-async function approveHotel(id){ if(!confirm("Approve hotel?")) return; try{ const r=await secureFetch(`/api/hotels/${id}/approve`,{method:'POST',body:JSON.stringify({plan:"Upendo"})}); if(!r.ok) throw new Error(); toast("✅ Approved"); }catch(e){ await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true}).or(`id.eq.${id},hotel_id.eq.${id}`); toast("✅ Approved via Supabase"); } loadHotels(); }
-async function blockHotel(id){ if(!confirm("Block?")) return; await supa.from("hotels").update({status:"BLOCKED"}).or(`id.eq.${id},hotel_id.eq.${id}`); toast("Blocked"); loadHotels(); }
-async function deleteHotel(id){ if(!confirm("Delete hotel + OS 18.0 data?")) return; try{ await supa.schema('guesthub_os').from('orders').delete().eq('hotel_id',id); await supa.schema('guesthub_os').from('departments').delete().eq('hotel_id',id); }catch(e){} await supa.from("hotels").delete().or(`id.eq.${id},hotel_id.eq.${id}`); toast("Deleted"); loadHotels(); }
+async function approveHotel(id){ if(!confirm("Approve hotel?")) return; try{ const r=await secureFetch(`/api/hotels/${id}/approve`,{method:'POST',body:JSON.stringify({plan:"Upendo"})}); toast("✅ Approved"); }catch(e){ await supa.from("hotels").update({status:"APPROVED",approved_by_admin:true}).or(`id.eq.${id},hotel_id.eq.${id}`); toast("✅ Approved via Supabase"); } loadHotels(); }
+async function deleteHotel(id){ if(!confirm("Delete hotel?")) return; await supa.from("hotels").delete().or(`id.eq.${id},hotel_id.eq.${id}`); toast("Deleted"); loadHotels(); }
 function hotelGuestLink(id){return location.origin+"/guest.html?hotel="+encodeURIComponent(id)+"&room=101";}
 function showHotelQR(id){
  const h=HOTELS.find(x=>String(x.hotel_id)===String(id)||String(x.id)===String(id)); const link=hotelGuestLink(id);
- openModal("Hotel QR — OS 18.0 MERGED — GM Bulk Generator",`<div style="text-align:center"><b>${esc(h?.name||h?.hotel_name||id)}</b><div class="qr-box"><div id="qrCanvas"></div></div><input class="input" value="${esc(link)}" readonly><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" style="flex:1" onclick="navigator.clipboard.writeText('${esc(link)}');toast('Copied')">📋 Copy Link</button><button class="btn btn-gold" style="flex:1" onclick="window.open('${esc(link)}','_blank')">🚀 Guest View</button><button class="btn btn-blue" style="flex:1" onclick="window.open('/gm-dashboard.html?hotel=${esc(id)}','_blank')">GM QR Generator — Bulk 1-50</button></div><div style="font-size:10px;color:#777;margin-top:8px">GM Dashboard → Tab 🔳 Room & Table QRs → Bulk Room QRs From 1 To 50 → Generate → Print & Stick on Doors! Guest scan → Room auto + jina inaonekana Kitchen + WA auto!</div></div>`);
- setTimeout(()=>{ const el=document.getElementById("qrCanvas"); if(el&&window.QRCode) new QRCode(el,{text:link,width:220,height:220,colorDark:"#000",colorLight:"#fff",correctLevel:QRCode.CorrectLevel.H}); },100);
+ openModal("Hotel QR — "+id,`<div style="text-align:center"><b>${esc(h?.name||id)}</b><div class="qr-box"><div id="qrCanvas"></div></div><input class="input" value="${esc(link)}" readonly><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-primary" style="flex:1" onclick="navigator.clipboard.writeText('${esc(link)}');toast('Copied')">Copy</button><button class="btn btn-gold" style="flex:1" onclick="window.open('${esc(link)}','_blank')">Guest View</button></div></div>`);
+ setTimeout(()=>{ const el=document.getElementById("qrCanvas"); if(el&&window.QRCode) new QRCode(el,{text:link,width:220,height:220}); },100);
 }
-function openEditHotel(id){ const h=HOTELS.find(x=>String(x.id)===String(id)); if(!h) return; openModal("Edit Hotel — OS 18.0 MERGED",`<div style="display:grid;gap:10px"><div><label>Name</label><input id="editHotelName" class="input" value="${esc(h.name||h.hotel_name||"")}"></div><div><label>City</label><input id="editHotelCity" class="input" value="${esc(h.city||"")}"></div><div><label>Email</label><input id="editHotelEmail" class="input" value="${esc(h.email||"")}"></div><div><label>Phone</label><input id="editHotelPhone" class="input" value="${esc(h.phone||"")}"></div><div><label>Status</label><select id="editHotelStatus" class="select"><option value="PENDING" ${String(h.status).toUpperCase()==="PENDING"?"selected":""}>PENDING</option><option value="APPROVED" ${String(h.status).toUpperCase()==="APPROVED"?"selected":""}>APPROVED</option><option value="BLOCKED" ${String(h.status).toUpperCase()==="BLOCKED"?"selected":""}>BLOCKED</option></select></div><button class="btn btn-primary" onclick="saveHotel('${esc(h.id)}')">💾 Save</button></div>`); }
-async function saveHotel(id){ const payload={name:document.getElementById("editHotelName").value.trim(),city:document.getElementById("editHotelCity").value.trim(),email:document.getElementById("editHotelEmail").value.trim(),phone:document.getElementById("editHotelPhone").value.trim(),status:document.getElementById("editHotelStatus").value}; await supa.from("hotels").update(payload).eq("id",id); closeModal(); toast("Saved"); loadHotels(); }
 
+// ===== VENDORS =====
 async function loadVendors(){
- try{ let data; const token=getToken(); if(token){ const r=await secureFetch('/api/admin/vendors'); if(r.ok) data=await r.json(); } if(!data){ const {data:d,error}=await supa.from("vendors").select("*").order("created_at",{ascending:false}).limit(500); if(error) throw error; data=d; } VENDORS=data||[]; const pending=VENDORS.filter(v=>String(v.status||"").toLowerCase()==="pending"); document.getElementById("s_pending").innerText=pending.length; document.getElementById("c_v").innerText=pending.length?`(${pending.length})`:""; if(currentTab==="vendors") renderVendors(); }catch(e){ if(currentTab==="vendors") document.getElementById("view-vendors").innerHTML=errorBox(e.message); }
+ try{ let data; const token=getToken(); if(token){ const r=await secureFetch('/api/vendors'); if(r.ok){ const j=await r.json(); data=j.vendors||j; } } if(!data){ const {data:d}=await supa.from("vendors").select("*").order("created_at",{ascending:false}).limit(500); data=d; } VENDORS=data||[]; const pending=VENDORS.filter(v=>String(v.status||"").toLowerCase()==="pending"); document.getElementById("s_pending").innerText=pending.length; document.getElementById("c_v").innerText=pending.length?`(${pending.length})`:""; if(currentTab==="vendors") renderVendors(); }catch(e){ if(currentTab==="vendors") document.getElementById("view-vendors").innerHTML=errorBox(e.message); }
 }
 function renderVendors(){
- if(currentTab!=="vendors") return; const box=document.getElementById("view-vendors"); const q=(document.getElementById("vendorSearch")?.value||"").toLowerCase().trim(); const filtered=VENDORS.filter(v=>`${v.full_name||""} ${v.phone||""} ${v.city||""}`.toLowerCase().includes(q)); const pending=filtered.filter(v=>String(v.status||"").toLowerCase()==="pending");
- box.innerHTML=`<div class="card"><div class="card-title">🚚 Vendor Marketplace — ${VENDORS.length} • ${pending.length} pending</div></div>${filtered.map(v=>`<div class="row"><div class="row-main"><div class="row-title">${esc(v.full_name||"Vendor")} <span class="badge badge-yellow">${esc(v.status||"pending")}</span></div><div class="row-sub">📱 ${esc(v.phone||"-")} • 📍 ${esc(v.city||"-")} • 🛠️ ${esc(Array.isArray(v.services)?v.services.join(", "):v.services||"-")}</div></div><div class="row-actions"><button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button></div></div>`).join('')||empty("No vendors")}`;
+ if(currentTab!=="vendors") return; const box=document.getElementById("view-vendors"); const filtered=VENDORS;
+ box.innerHTML=`<div class="card"><div class="card-title">🚚 Vendor Marketplace — ${VENDORS.length} • ${VENDORS.filter(v=>String(v.status).toLowerCase()==="pending").length} pending • COMMISSION: 2 weeks, 15%, auto-lock</div></div>${filtered.map(v=>`<div class="row" style="${v.commission_locked?'border-left:4px solid #ef4444':''}"><div class="row-main"><div class="row-title">${esc(v.vendor_name||v.full_name||"Vendor")} ${v.commission_locked?'<span class="badge badge-red">LOCKED — COMMISSION DUE</span>':''} <span class="badge badge-yellow">${esc(v.status||"pending")}</span></div><div class="row-sub">📱 ${esc(v.phone||"-")} • 📍 ${esc(v.location||v.city||"-")} • 🏨 ${(v.hotel_ids||[]).join(', ')}<br>💰 Due: ${money(v.commission_due||0)} • Active: ${v.is_active?'YES':'NO'} • Available: ${v.is_available?'YES':'NO'}</div></div><div class="row-actions"><button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>${v.commission_locked?`<button class="btn btn-gold btn-sm" onclick="forceUnlock('${esc(v.id)}')">🔓 Force Unlock</button>`:''}</div></div>`).join('')||empty("No vendors")}`;
 }
-async function updateVendor(id,status){ await supa.from("vendors").update({status}).eq("id",id); toast("Vendor "+status); loadVendors(); }
+async function updateVendor(id,status){ await supa.schema('guesthub_os').from('vendors').update({status}).eq("id",id); await supa.from("vendors").update({status}).eq("id",id).catch(()=>{}); toast("Vendor "+status); loadVendors(); }
+async function forceUnlock(id){ if(!confirm("Force unlock vendor? This sets commission_due=0 and is_active=true")) return; await supa.schema('guesthub_os').from('vendors').update({is_active:true,commission_locked:false,commission_due:0,is_available:true}).eq('id',id); await supa.schema('guesthub_os').from('hotel_services').update({is_active:true}).eq('vendor_id',id); toast("Unlocked"); loadVendors(); }
 
-async function loadItems(){
+// ===== COMMISSION 19.0 — NEW =====
+async function loadCommissionPayments(){
  try{
-  const {data:d1}=await supa.schema('guesthub_os').from('hotel_services').select('*').order('created_at',{ascending:false}).limit(1000);
-  const {data:d2}=await supa.schema('guesthub_os').from('menu_items').select('*').order('created_at',{ascending:false}).limit(1000);
-  const legacy=await supa.from("hotel_services").select("*").limit(200).then(r=>r.data||[]).catch(()=>[]);
-  ITEMS=[...(d1||[]),...(d2||[]).map(x=>({...x,title:x.name,department:x.category})),...legacy];
-  if(currentTab==="menu") renderMenu();
- }catch(e){ if(currentTab==="menu") document.getElementById("view-menu").innerHTML=errorBox(e.message); }
+  const r=await secureFetch('/api/admin/commission-payments');
+  if(!r.ok) throw new Error("No admin token");
+  const d=await r.json(); COMM_PAYMENTS=d.payments||[]; CURRENT_TILL=d.till||{};
+  const pending=COMM_PAYMENTS.filter(p=>p.status==='pending');
+  document.getElementById("s_comm_pending").innerText=pending.length;
+  const badge=document.getElementById("c_comm"); if(pending.length){ badge.style.display='inline-flex'; badge.innerText=pending.length; } else { badge.style.display='none'; }
+  if(currentTab==="commission") renderCommission();
+ }catch(e){ COMM_PAYMENTS=[]; }
 }
-function renderMenu(){
- if(currentTab!=="menu") return; const box=document.getElementById("view-menu"); box.innerHTML=`<div class="card"><div class="card-title">🍽️ Services OS 18.0 — ${ITEMS.length} — GM + Admin</div><div class="card-sub">Everything guest can order via Room QR — Auto routed to WA dept GM setup. guesthub_os.menu_items + hotel_services merged.</div></div>${ITEMS.slice(0,150).map(i=>`<div class="row"><div class="row-main"><div class="row-title">${esc(i.title||i.name||"Untitled")} <span class="badge badge-green">${money(i.price)}</span> <span class="badge badge-blue">${esc((i.department||i.category||"").toUpperCase())}</span></div><div class="row-sub">🏨 ${esc(i.hotel_id||"-")} • ${esc(i.description||"")}</div></div><div class="row-actions"><button class="btn btn-red btn-sm" onclick="deleteService('${esc(i.id)}','${esc(i.hotel_id||"")}')">🗑️ Delete</button></div></div>`).join('')||empty("No services — GM add via GM Dashboard")}`;
+function renderCommission(){
+ if(currentTab!=="commission") return; const box=document.getElementById("view-commission");
+ const pending=COMM_PAYMENTS.filter(p=>p.status==='pending'); const confirmed=COMM_PAYMENTS.filter(p=>p.status==='confirmed'); const rejected=COMM_PAYMENTS.filter(p=>p.status==='rejected');
+ const till=CURRENT_TILL||{};
+ box.innerHTML=`
+  <div class="card" style="border-color:rgba(198,255,0,.4);background:linear-gradient(135deg,rgba(198,255,0,.08),#101010)">
+    <div class="card-title">💳 Vendor Commission — 2 Weeks • 15% • 2 Days Grace • Till + Admin Confirm</div>
+    <div class="card-sub">Vendor analipa kwa Till yako, anaweka M-Pesa Code, wewe una-confirm hapa — system inafungua auto. RLS ON — secure.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px">
+      <div class="kpi"><small>BUY GOODS TILL</small><b style="color:#c6ff00">${esc(till.till_number||'123456')}</b><small>${esc(till.business_name||'GuestHub Ltd')}</small></div>
+      <div class="kpi"><small>PAYBILL</small><b>${esc(till.paybill||'522522')}</b><small>Acc ${esc(till.account_number||'1234567')}</small></div>
+      <div class="kpi"><small>PENDING TO CONFIRM</small><b style="color:#fbbf24">${pending.length}</b><small>Need verification</small></div>
+    </div>
+    <div style="margin-top:10px;padding:10px;background:#000;border-radius:10px;border:1px solid #222;font-size:10px;line-height:1.6">
+      <b>How it works mkuu:</b><br>
+      1. System inacalculate 15% ya completed orders za wiki 2 za kila vendor<br>
+      2. Vendor dashboard inaonyesha: <i>Lipa kwa Till ${esc(till.till_number||'123456')} — Ksh 4500</i><br>
+      3. Vendor akilipa, anaweka M-Pesa Code hapa → status <b>PENDING</b><br>
+      4. Wewe una-check M-Pesa app yako, ukiona pesa, unabonyeza <b>✅ Confirm & Unlock</b><br>
+      5. Vendor anafunguliwa auto — services zake zinarudi LIVE kwa Guest App ya Baobab/Wasini/SGR + WhatsApp<br>
+      6. Asipolipa ndani ya Due + 2 days grace → system inajifunga auto (is_active=false)
+    </div>
+  </div>
+
+  <div class="card" style="border-color:rgba(251,191,36,.6)"><div class="card-title" style="color:#fbbf24">⏳ Pending Confirmation (${pending.length}) — Verify M-Pesa then Confirm</div><div class="card-sub">Hizi ndio vendor wameshalipa — check M-Pesa statement yako kwa Till ${esc(till.till_number||'123456')} uone kama pesa imeingia, kisha Confirm</div></div>
+  ${pending.map(p=>commissionCard(p,true)).join('')||empty("No pending payments — vendors wote wako clear")}
+
+  <div class="card"><div class="card-title">✅ Confirmed Payments (${confirmed.length})</div></div>
+  ${confirmed.slice(0,30).map(p=>commissionCard(p,false)).join('')||empty("No confirmed yet")}
+
+  <div class="card"><div class="card-title">❌ Rejected (${rejected.length})</div></div>
+  ${rejected.slice(0,20).map(p=>commissionCard(p,false)).join('')||empty("No rejected")}
+ `;
 }
-async function deleteService(id,hotel_id){ if(!confirm("Delete?")) return; await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',id); await supa.schema('guesthub_os').from('menu_items').delete().eq('id',id); await supa.from('hotel_services').delete().eq('id',id); toast("Deleted"); loadItems(); }
+function commissionCard(p,isPending){
+  const st=String(p.status||"pending").toLowerCase();
+  let cls='pending'; if(st==='confirmed') cls='confirmed'; if(st==='rejected') cls='rejected';
+  return `<div class="commission ${cls}"><div style="display:flex;justify-content:space-between;gap:10px"><div class="row-main"><div class="row-title">💳 ${esc(p.vendor_name||p.vendor_id)} <span class="badge ${st==='pending'?'badge-yellow':st==='confirmed'?'badge-green':'badge-red'}">${esc(st.toUpperCase())}</span> <span class="badge badge-blue">${esc(p.mpesa_code||"")}</span></div><div class="row-sub">💰 ${money(p.amount)} • 📱 ${esc(p.phone||"")} • 🏦 Till ${esc(p.till_number||"")} • 🕐 ${safeDate(p.created_at)}<br>🆔 Vendor ID: ${esc(p.vendor_id)} • ${p.confirmed_by?`Confirmed by ${esc(p.confirmed_by)} at ${safeDate(p.confirmed_at)}`:''} ${p.reject_reason?`• Reason: ${esc(p.reject_reason)}`:''}</div></div><div style="text-align:right"><div style="font-size:10px;color:#777">Code</div><b style="font-family:Space Grotesk;font-size:14px">${esc(p.mpesa_code)}</b></div></div>${isPending?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-primary" onclick="confirmPayment('${esc(p.id)}')">✅ Confirm — I saw ${money(p.amount)} on M-Pesa Till — Unlock Vendor</button><button class="btn btn-red" onclick="rejectPayment('${esc(p.id)}')">✕ Reject — Invalid Code</button></div><div style="margin-top:8px;font-size:9px;color:#777">⚠️ Before confirming, open your M-Pesa app → Till ${esc(CURRENT_TILL.till_number||'123456')} → Check kama ${money(p.amount)} na code ${esc(p.mpesa_code)} imeingia. Kama haijaingia, Reject.</div>`:''}</div>`;
+}
+async function confirmPayment(id){ if(!confirm("Umeona pesa kwa M-Pesa Till? Confirm na u-unlock vendor?")) return; try{ const r=await secureFetch(`/api/admin/commission-payments/${id}/confirm`,{method:'POST'}); const d=await r.json(); if(!d.ok) throw new Error(d.error||"Failed"); toast("✅ Confirmed — Vendor unlocked LIVE tena"); loadCommissionPayments(); loadVendors(); }catch(e){ toast("Failed: "+e.message,"error"); } }
+async function rejectPayment(id){ const reason=prompt("Reason for reject (e.g. Code not found, amount mismatch):"); if(reason===null) return; try{ const r=await secureFetch(`/api/admin/commission-payments/${id}/reject`,{method:'POST',body:JSON.stringify({reason})}); toast("Rejected"); loadCommissionPayments(); }catch(e){ toast(e.message,"error"); } }
+
+// ===== MENU, ORDERS, DEPT, CASH (same as 18.0) =====
+async function loadItems(){
+ try{ const {data:d1}=await supa.schema('guesthub_os').from('hotel_services').select('*').order('created_at',{ascending:false}).limit(1000); ITEMS=d1||[]; if(currentTab==="menu") renderMenu(); }catch(e){}
+}
+function renderMenu(){ if(currentTab!=="menu") return; const box=document.getElementById("view-menu"); box.innerHTML=`<div class="card"><div class="card-title">🍽️ Services — ${ITEMS.length}</div></div>${ITEMS.slice(0,150).map(i=>`<div class="row"><div class="row-main"><div class="row-title">${esc(i.title||i.name||"Untitled")} <span class="badge badge-green">${money(i.price)}</span> <span class="badge badge-blue">${esc((i.department||"").toUpperCase())}</span></div><div class="row-sub">🏨 ${esc(i.hotel_id||"-")} • ${esc(i.description||"")}</div></div><div class="row-actions"><button class="btn btn-red btn-sm" onclick="deleteService('${esc(i.id)}')">🗑️</button></div></div>`).join('')||empty("No services")}`; }
+async function deleteService(id){ if(!confirm("Delete?")) return; await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',id); toast("Deleted"); loadItems(); }
 
 async function loadOrders(){
- try{
-  // Try guesthub_os first (OS 18.0 new) + fallback public.orders (old)
-  const {data:d,error}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(500);
-  if(error) throw error; 
-  const {data:old}=await supa.from('orders').select('*').order('created_at',{ascending:false}).limit(200).then(r=>({data:r.data})).catch(()=>({data:[]}));
-  ORDERS=[...(d||[]),...(old||[]).map(o=>({...o,room_number:o.room,guest_name:o.guest_name||"Guest",department:o.service||"kitchen"}))];
-  let gmv=0; ORDERS.forEach(o=>{ gmv+=Number(o.total||o.amount||0); }); 
-  document.getElementById("s_gmv").innerText=money(gmv); document.getElementById("s_comm").innerText=money(Math.floor(gmv*.15)); document.getElementById("s_orders").innerText=ORDERS.filter(o=>["new","pending","received","preparing"].includes(String(o.status||"").toLowerCase())).length;
-  if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash();
- }catch(e){ if(currentTab==="orders") document.getElementById("view-orders").innerHTML=errorBox(e.message); }
+ try{ const {data:d}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(500); ORDERS=d||[]; let gmv=0; ORDERS.forEach(o=>{ gmv+=Number(o.total||0); }); document.getElementById("s_gmv").innerText=money(gmv); document.getElementById("s_comm").innerText=money(Math.floor(gmv*.15)); document.getElementById("s_orders").innerText=ORDERS.filter(o=>["new","pending"].includes(String(o.status||"").toLowerCase())).length; if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); }catch(e){}
 }
 function renderOrders(){
- if(currentTab!=="orders") return; const box=document.getElementById("view-orders"); const q=(document.getElementById("orderSearch")?.value||"").toLowerCase().trim(); const filtered=ORDERS.filter(o=>`${o.hotel_id} ${o.room_number} ${o.guest_name} ${o.guest_phone} ${o.department} ${o.whatsapp_sent_to||""}`.toLowerCase().includes(q));
- box.innerHTML=`
-  <div class="card"><div class="card-title">🔔 Live Orders OS 18.0 MERGED — ${ORDERS.length} — Jina + Room + Phone + WA Auto Routed</div><div class="card-sub">Guest scan Room 101 QR → Jaza Kip 0707 → Order Pilau → GM Orders DING! → Kitchen WhatsApp: 🔔 NEW ORDER KITCHEN BAOBAB Room 101 Kip 0707 Pilau Ksh 650 → Kitchen inaona jina la Guest + Room!</div><div class="toolbar"><input id="orderSearch" class="input" placeholder="🔎 Search room, guest name, phone, dept, hotel..." value="${esc(q)}" oninput="renderOrders()"></div></div>
-  ${filtered.map(o=>{ const st=String(o.status||"new").toLowerCase(); let badge="badge-blue"; if(["completed","delivered","paid","ready"].includes(st)) badge="badge-green"; if(["cancelled","rejected"].includes(st)) badge="badge-red"; if(["pending","new","received","preparing"].includes(st)) badge="badge-yellow"; return `<div class="row"><div class="row-main"><div class="row-title">🏨 ${esc(o.hotel_id||"-")} — ROOM ${esc(o.room_number||o.room||"-")} — ${esc(o.guest_name||"Guest")} — ${esc(o.guest_phone||"")} <span class="badge ${badge}">${esc(st.toUpperCase())}</span> <span class="badge badge-blue">${esc((o.department||"kitchen").toUpperCase())}</span></div><div class="row-sub">👤 ${esc(o.guest_name||"-")} • 📞 ${esc(o.guest_phone||"-")} • 🏨 Room ${esc(o.room_number||o.room||"-")} • Table ${esc(o.table_id||"")}<br>🛎️ ${(o.items||[]).map(i=>`${i.name} x${i.qty||1}`).join(', ')||o.service_title||o.service||"-"}<br>💰 ${money(o.total||o.amount||0)} • 📱 WA Sent to ${esc(o.whatsapp_sent_to||o.department||"")} • 📍 ${esc(o.location_label||"")}<br>🕐 ${safeDate(o.created_at)}</div></div><div class="row-actions"><button class="btn btn-dark btn-sm" onclick="viewOrder('${esc(o.id)}')">👁️ View</button><button class="btn btn-primary btn-sm" onclick="quickOrderStatus('${esc(o.id)}','ready')">✅ Ready</button><button class="btn btn-blue btn-sm" onclick="openWhatsAppGuest('${esc(o.id)}')">💬 Guest WA</button><button class="btn btn-gold btn-sm" onclick="openWhatsAppDept('${esc(o.id)}')">📱 Dept WA</button></div></div>`; }).join('')||empty("No orders — Guest atajaza jina na room 101 QR scan!")}`;
+ if(currentTab!=="orders") return; const box=document.getElementById("view-orders"); const q=(document.getElementById("orderSearch")?.value||"").toLowerCase().trim(); const filtered=ORDERS.filter(o=>`${o.hotel_id} ${o.room_number} ${o.guest_name}`.toLowerCase().includes(q));
+ box.innerHTML=`<div class="card"><div class="card-title">🔔 Live Orders — ${ORDERS.length}</div><div class="toolbar"><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${esc(q)}" oninput="renderOrders()"></div></div>${filtered.map(o=>`<div class="row"><div class="row-main"><div class="row-title">🏨 ${esc(o.hotel_id||"-")} — ROOM ${esc(o.room_number||"-")} — ${esc(o.guest_name||"Guest")} <span class="badge badge-yellow">${esc((o.status||"").toUpperCase())}</span></div><div class="row-sub">💰 ${money(o.total||0)} • ${esc(o.department||"")} • 🕐 ${safeDate(o.created_at)}</div></div></div>`).join('')||empty("No orders")}`;
 }
-function viewOrder(id){ const o=ORDERS.find(x=>String(x.id)===String(id)); if(!o) return; openModal("Order OS 18.0 MERGED — "+o.hotel_id+" Room "+(o.room_number||o.room),`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="kpi"><small>ROOM</small><b>${esc(o.room_number||o.room||"-")}</b></div><div class="kpi"><small>GUEST</small><b>${esc(o.guest_name||"-")}</b></div><div class="kpi"><small>PHONE</small><b>${esc(o.guest_phone||"-")}</b></div><div class="kpi"><small>AMOUNT</small><b>${money(o.total||o.amount||0)}</b></div><div class="kpi"><small>DEPT</small><b>${esc(o.department||"-")}</b></div><div class="kpi"><small>WA SENT TO</small><b>${esc(o.whatsapp_sent_to||"-")}</b></div></div><div class="card"><b>Items — Kitchen inaona hizi + jina la Guest</b><div class="card-sub">${(o.items||[]).map(i=>`${esc(i.name)} x${i.qty||1} — Ksh ${Number(i.price||0)*Number(i.qty||1)||i.price||0}`).join('<br>')||esc(o.service_title||"-")}</div></div><div class="card"><b>Location Label — Kitchen / Taxi inaona hii + jina + phone</b><div class="card-sub">${esc(o.location_label||`Room ${o.room_number} - ${o.guest_name} - ${o.guest_phone}`)}</div></div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-blue" style="flex:1" onclick="openWhatsAppGuest('${esc(o.id)}')">💬 Guest WA</button><button class="btn btn-gold" style="flex:1" onclick="openWhatsAppDept('${esc(o.id)}')">📱 Dept WA</button></div>`); }
-async function quickOrderStatus(id,status){ await supa.schema('guesthub_os').from('orders').update({status}).eq('id',id); await supa.from('orders').update({status}).eq('id',id).then(()=>{}).catch(()=>{}); toast("Order "+status); loadOrders(); }
-function openWhatsAppGuest(id){ const o=ORDERS.find(x=>String(x.id)===String(id)); if(!o) return; const msg=`Hi ${o.guest_name}, order yako Room ${o.room_number||o.room} iko ${o.status} — Ksh ${o.total||o.amount} — ${o.hotel_id}`; window.open(`https://wa.me/${String(o.guest_phone||"").replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); }
-function openWhatsAppDept(id){ const o=ORDERS.find(x=>String(x.id)===String(id)); if(!o) return; const deptNum=o.whatsapp_sent_to||''; const msg=`🔔 ORDER ${String(o.department||"").toUpperCase()} — ${o.hotel_id} — Room ${o.room_number||o.room} — ${o.guest_name} — ${o.guest_phone} — ${(o.items||[]).map(i=>i.name).join(', ')||o.service_title||''} — Ksh ${o.total||o.amount}`; if(deptNum) window.open(`https://wa.me/${String(deptNum).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); else toast("No WA saved for dept "+(o.department||""),"error"); }
-
-function renderDept(){
- const box=document.getElementById("view-dept"); 
- box.innerHTML=`<div class="card"><div class="card-title">🛎️ WhatsApp Department Routing — OS 18.0 MERGED — GM + Admin Setup</div><div class="card-sub">GM ana-setup kwenye GM Dashboard → Tab WhatsApp Depts → Save → Guest aki-order Pilau → Kitchen WA na jina. Taxi → Taxi WA. Hapa Admin unaona + edit routing ya kila hotel — Supports both guesthub_os.departments (new) + hotels.whatsapp_* columns (legacy Admin 11.0)</div></div><div class="card"><label>Select Hotel — OS 18.0 MERGED</label><select id="deptHotelSel" class="select" onchange="loadDeptVals()">${HOTELS.map(h=>`<option value="${esc(h.hotel_id||h.id)}">${esc(h.name||h.hotel_name||"Hotel")} — ${esc(h.hotel_id||h.id)}</option>`).join("")}</select></div><div id="deptForm"></div><div id="deptPreview"></div>`;
- if(HOTELS.length) loadDeptVals();
-}
-async function loadDeptVals(){
- const hotelId=document.getElementById("deptHotelSel")?.value; if(!hotelId) return;
- let deptData=[]; try{ const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id',hotelId); deptData=data||[]; }catch(e){}
- const hotel=HOTELS.find(h=>String(h.hotel_id)===String(hotelId)||String(h.id)===String(hotelId));
- const get=(name)=>{ const f=deptData.find(d=>d.name===name); if(f?.whatsapp_number) return f.whatsapp_number; if(hotel) return hotel['whatsapp_'+name]||hotel['whatsapp_'+name.charAt(0)]||""; return ""; };
- document.getElementById("deptForm").innerHTML=`<div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>🍽️ Kitchen</label><input id="wa_kitchen" class="input" value="${esc(get('kitchen'))}" placeholder="2547..."></div><div><label>🧹 Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(get('housekeeping'))||esc(get('house'))}" placeholder="2547..."></div><div><label>🧺 Laundry</label><input id="wa_laundry" class="input" value="${esc(get('laundry'))}" placeholder="2547..."></div><div><label>🔧 Maintenance</label><input id="wa_maintenance" class="input" value="${esc(get('maintenance'))}" placeholder="2547..."></div><div><label>🚕 Taxi</label><input id="wa_taxi" class="input" value="${esc(get('taxi'))}" placeholder="2547..."></div><div><label>🛎️ Frontdesk</label><input id="wa_frontdesk" class="input" value="${esc(get('frontdesk'))||esc(get('front'))}" placeholder="2547..."></div><div><label>🌍 Tours</label><input id="wa_tours" class="input" value="${esc(get('tours'))}" placeholder="2547..."></div><div><label>🧖 Spa</label><input id="wa_spa" class="input" value="${esc(get('spa'))}" placeholder="2547..."></div></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveDept()">💾 SAVE Routing — OS 18.0 + Legacy — ${esc(hotelId)}</button><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"><button class="btn btn-dark btn-sm" onclick="testDept('kitchen')">Test Kitchen WA</button><button class="btn btn-dark btn-sm" onclick="testDept('taxi')">Test Taxi WA</button></div></div>`;
- document.getElementById("deptPreview").innerHTML=`<div class="card"><div class="card-title">Live Routing Preview — ${esc(hotelId)} — Guest aki-order inaenda hizi WA</div>${deptData.map(d=>`<div class="row"><span>${esc(d.name.toUpperCase())} → ${esc(d.whatsapp_number)}</span><span class="badge badge-green">ACTIVE OS 18.0</span></div>`).join('')||`<div style="font-size:11px;color:#777">No guesthub_os.departments yet — GM bado haja-setup kwenye GM Dashboard → WhatsApp Depts tab. Legacy columns: Kitchen ${esc(hotel?.whatsapp_kitchen||"-")}, Taxi ${esc(hotel?.whatsapp_taxi||"-")}</div>`}</div>`;
-}
-async function saveDept(){
- const hotelId=document.getElementById("deptHotelSel").value;
- const depts=['kitchen','housekeeping','laundry','maintenance','taxi','frontdesk','tours','spa'];
- const payloadLegacy={};
- for(const d of depts){ const num=document.getElementById('wa_'+d)?.value.trim(); if(num){ await supa.schema('guesthub_os').from('departments').upsert({hotel_id:hotelId,name:d,whatsapp_number:num},{onConflict:'hotel_id,name'}); await fetch('/api/departments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({hotel_id:hotelId,name:d,whatsapp_number:num})}).catch(()=>{}); payloadLegacy['whatsapp_'+d]=num; if(d==='housekeeping') payloadLegacy['whatsapp_house']=num; if(d==='frontdesk') payloadLegacy['whatsapp_front']=num; } }
- try{ await supa.from('hotels').update(payloadLegacy).or(`hotel_id.eq.${hotelId},id.eq.${hotelId}`); }catch(e){}
- toast("✅ WhatsApp routing saved — OS 18.0 MERGED — "+hotelId); loadDeptVals();
-}
-function testDept(dept){ const num=document.getElementById('wa_'+dept)?.value; if(!num) return toast("Weka number","error"); const hotelId=document.getElementById("deptHotelSel").value; const msg=`🔔 TEST ORDER - ${dept.toUpperCase()} - ${hotelId}\n\n👤 Guest: Kip\n🏨 Room: 101 - T101\n📞 Phone: 0707xxxx\n📋 Order: Pilau Beef x1\n💰 Ksh 650\n\n_GM Test - GuestHub OS 18.0 Merged_`; window.open(`https://wa.me/${String(num).replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`,'_blank'); }
-
+function renderDept(){ const box=document.getElementById("view-dept"); box.innerHTML=`<div class="card"><div class="card-title">🛎️ WhatsApp Routing</div><div class="card-sub">GM ana-setup kwenye GM Dashboard → WhatsApp Depts</div></div>`; }
 function renderCash(){
- const box=document.getElementById("view-cash"); const completed=ORDERS.filter(o=>["completed","delivered","paid","ready"].includes(String(o.status||"").toLowerCase())); const completedGMV=completed.reduce((s,o)=>s+Number(o.total||o.amount||0),0); const allGMV=ORDERS.reduce((s,o)=>s+Number(o.total||o.amount||0),0); const commission=Math.floor(allGMV*.15); const completedCommission=Math.floor(completedGMV*.15);
- box.innerHTML=`<div class="card"><div class="card-title">💸 GuestHub Finance OS 18.0 MERGED — Room QR + WA Routing Empire</div><div class="card-sub">Revenue from Room QR orders — Jina la Guest + Room + Auto WA Routing to dept. Total GMV includes both guesthub_os.orders + legacy orders.</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="kpi"><small>TOTAL GMV OS 18.0 MERGED</small><b>${money(allGMV)}</b></div><div class="kpi"><small>COMMISSION 15%</small><b style="color:#c6ff00">${money(commission)}</b></div><div class="kpi"><small>COMPLETED GMV</small><b>${money(completedGMV)}</b></div><div class="kpi"><small>REALIZED COMMISSION</small><b style="color:#22c55e">${money(completedCommission)}</b></div></div><div class="card"><div class="card-title">Recent Orders — OS 18.0 MERGED — WA Routed</div>${ORDERS.slice(0,80).map(o=>`<div class="row"><span>🏨 ${esc(o.hotel_id||"-")} — ROOM ${esc(o.room_number||o.room||"-")} — ${esc(o.guest_name||"-")} — ${esc((o.department||"").toUpperCase())} — ${money(o.total||o.amount||0)}<br><small>WA ${esc(o.whatsapp_sent_to||"")||"auto"} • ${esc(o.guest_phone||"")}</small></span><span style="font-size:9px">${safeDate(o.created_at)}</span></div>`).join('')||empty("No orders")}</div>`;
+ const box=document.getElementById("view-cash"); const completed=ORDERS.filter(o=>["completed","delivered"].includes(String(o.status||"").toLowerCase())); const gmv=ORDERS.reduce((s,o)=>s+Number(o.total||0),0);
+ box.innerHTML=`<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="kpi"><small>TOTAL GMV</small><b>${money(gmv)}</b></div><div class="kpi"><small>COMMISSION 15%</small><b style="color:#c6ff00">${money(Math.floor(gmv*.15))}</b></div><div class="kpi"><small>COMPLETED</small><b>${money(completed.reduce((s,o)=>s+Number(o.total||0),0))}</b></div><div class="kpi"><small>PENDING COMMISSION PAYMENTS</small><b style="color:#fbbf24">${COMM_PAYMENTS.filter(p=>p.status==='pending').length}</b></div></div>`;
 }
 function switchTab(name,el){ currentTab=name; document.querySelectorAll(".view").forEach(v=>v.classList.add("hidden")); document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); const view=document.getElementById("view-"+name); if(view) view.classList.remove("hidden"); if(el) el.classList.add("active"); renderCurrentTab(); }
-function renderCurrentTab(){ if(currentTab==="hotels") renderHotels(); if(currentTab==="vendors") renderVendors(); if(currentTab==="menu") renderMenu(); if(currentTab==="dept") renderDept(); if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); }
+function renderCurrentTab(){ if(currentTab==="hotels") renderHotels(); if(currentTab==="vendors") renderVendors(); if(currentTab==="commission") renderCommission(); if(currentTab==="menu") renderMenu(); if(currentTab==="dept") renderDept(); if(currentTab==="orders") renderOrders(); if(currentTab==="cash") renderCash(); }
 init();
 </script>
 </body>
