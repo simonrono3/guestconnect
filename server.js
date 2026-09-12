@@ -431,6 +431,66 @@ app.delete("/api/admin/hotels/:id", async (req,res)=>{
 });
 // ========================= END ADMIN FIX =========================
 
+// VENDOR LOGIN — V33 FIX FOR OLD VENDORS (owner_id NULL)
+app.post("/api/vendors/login", loginLimiter, async (req,res)=>{
+  try{
+    const email = clean(req.body.email||"");
+    const password = String(req.body.password||"");
+    if(!email || !password) return sendError(res,400,"Email & password required");
+    if(!supa || !REAL_URL) return sendError(res,404,"No DB");
+    
+    // 1. Tafuta kwa guesthub_os.vendors
+    let {data:vendor} = await supa.schema('guesthub_os').from('vendors').select('*').eq('email', email).maybeSingle();
+    // 2. Kama haipo, tafuta public.vendors
+    if(!vendor){
+      const {data} = await supa.from('vendors').select('*').eq('email', email).maybeSingle();
+      vendor = data;
+    }
+    if(!vendor) return sendError(res,404,"Vendor not found — signup first");
+
+    // 3. Check password_hash kama ipo, kama haipo allow reset flow
+    if(vendor.password_hash){
+      const ok = await bcrypt.compare(password, vendor.password_hash);
+      if(!ok) return sendError(res,401,"Wrong password");
+    } else {
+      // Old vendor without password — auto-set kama user anaingiza 12345678
+      if(password === "12345678"){
+        const hash = await bcrypt.hash(password, 12);
+        await supa.schema('guesthub_os').from('vendors').update({password_hash: hash}).eq('id', vendor.id);
+        // also update public if exists
+        try{ await supa.from('vendors').update({password_hash: hash}).eq('id', vendor.id); }catch{}
+      } else {
+        return sendError(res,401,"Old account — click Forgot Password and set to 12345678");
+      }
+    }
+
+    const token = jwt.sign({vendor_id: vendor.id, email: vendor.email, role:'vendor'}, JWT_SECRET, {expiresIn:'7d'});
+    return sendSuccess(res, {token, vendor, message:"Logged in"});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+app.post("/api/vendors/forgot-password", async (req,res)=>{
+  try{
+    const email = clean(req.body.email||"");
+    const newPass = String(req.body.password||"12345678");
+    if(!email) return sendError(res,400,"Email required");
+    const hash = await bcrypt.hash(newPass, 12);
+    let updated = false;
+    try{
+      const {data} = await supa.schema('guesthub_os').from('vendors').update({password_hash: hash}).eq('email', email).select().maybeSingle();
+      if(data) updated = true;
+    }catch{}
+    try{
+      const {data} = await supa.from('vendors').update({password_hash: hash}).eq('email', email).select().maybeSingle();
+      if(data) updated = true;
+    }catch{}
+    if(!updated) return sendError(res,404,"Vendor email not found");
+    return sendSuccess(res, {message:"Password reset to "+newPass+" — now login"});
+  }catch(e){ return sendError(res,500,e.message); }
+});
+
+
+
 // STATIC
 app.use(express.static(path.join(__dirname,"public"),{
   setHeaders:(res,fp)=>{
