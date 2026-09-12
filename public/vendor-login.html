@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor Login - GuestHub WORLD - PERMANENT 15.4</title>
+<title>Vendor Login - GuestHub WORLD - V33 FIXED</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@600;800&display=swap" rel="stylesheet">
 <style>
 :root{--lime:#c6ff00;--bg:#080808;--card:#141414;--border:#222}
@@ -16,8 +16,9 @@ input{width:100%;margin-top:6px;padding:14px;background:#0a0a0a;border:1px solid
 input:focus{outline:none;border-color:var(--lime)}
 .btn{width:100%;background:var(--lime);color:#000;padding:16px;border:none;border-radius:14px;font-weight:900;font-size:16px;margin-top:18px;cursor:pointer}
 .btn:disabled{opacity:.6}
+.btn-dark{width:100%;background:#1a1a1a;color:#fff;padding:13px;border:1px solid #333;border-radius:14px;font-weight:800;font-size:13px;margin-top:10px;cursor:pointer}
 .links{display:flex;justify-content:space-between;margin-top:14px;font-size:12px}
-.links a{color:var(--lime);text-decoration:none;font-weight:800}
+.links a{color:var(--lime);text-decoration:none;font-weight:800;cursor:pointer}
 .notice{display:none;margin-bottom:12px;padding:12px;border-radius:12px;font-size:13px}
 .notice.error{display:block;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.3);color:#ffdfe0}
 .notice.success{display:block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#d9ffe5}
@@ -30,13 +31,14 @@ input:focus{outline:none;border-color:var(--lime)}
   <div id="notice" class="notice"></div>
   <form id="loginForm">
     <label>Email</label>
-    <input id="email" type="email" required placeholder="ronoo3@gmail.com">
+    <input id="email" type="email" required placeholder="simonrono3@gmail.com" value="simonrono3@gmail.com">
     <label>Password</label>
-    <input id="password" type="password" required placeholder="12345678">
+    <input id="password" type="password" required placeholder="12345678" value="12345678">
     <button class="btn" id="btn" type="submit">🔓 Sign In - WORLD</button>
+    <button type="button" class="btn-dark" id="resetBtn">🔑 Reset Password to 12345678 (old accounts)</button>
   </form>
   <div class="links">
-    <a href="#" id="forgot">Forgot Password?</a>
+    <a id="forgot">Forgot Password?</a>
     <a href="/vendor-signup.html">Join WORLD →</a>
   </div>
   <div style="margin-top:16px;background:#0a0a0a;border:1px dashed #333;border-radius:12px;padding:10px;font-size:11px;color:#777">
@@ -44,78 +46,65 @@ input:focus{outline:none;border-color:var(--lime)}
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
 <script>
 (() => {
   const $=id=>document.getElementById(id);
   const notice=$('notice');
   function show(m,t='error'){notice.className='notice '+t;notice.textContent=m;notice.style.display='block';}
-  
+
   async function handleLogin(e){
     e.preventDefault();
-    const btn=$('btn');
-    btn.disabled=true; btn.textContent='⏳ Checking...';
+    const btn=$('btn'); btn.disabled=true; btn.textContent='⏳ Checking...';
     try{
       const email=$('email').value.toLowerCase().trim();
       const password=$('password').value;
-      const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-      
-      const {data,error}=await supa.auth.signInWithPassword({email,password});
-      if(error){
-        show('Login failed: '+error.message+'\n\nIf you signed up BEFORE fix (owner_id NULL), click Forgot Password? with '+email+' to set password 12345678');
+      if(!email||!password) throw new Error('Weka email na password');
+
+      const r=await fetch('/api/vendors/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+      const j=await r.json();
+      if(!r.ok) throw new Error(j.error||'Login failed');
+
+      const v=j.vendor;
+      if(v.status==='pending'){
+        show('Hi '+ (v.full_name||v.vendor_name) +' - Account yako bado PENDING. GM aende admin.html → VENDORS → Approve '+email,'success');
         btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
         return;
       }
-      
-      // Check vendor status
-      const {data:vendor, error:vErr}=await supa.from('vendors').select('status,full_name,email').eq('owner_id',data.user.id).single();
-      
-      if(vErr){
-        // Try by email fallback (for old vendors without owner_id)
-        const {data:byEmail}=await supa.from('vendors').select('status,full_name').eq('email',email).single();
-        if(byEmail && byEmail.status==='pending'){
-          show('Hi '+byEmail.full_name+' - Your account is PENDING GM approval. Nenda GM Dashboard → VENDORS → Approve '+email,'success');
-          await supa.auth.signOut();
-          btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
-          return;
-        }
-      }
-
-      if(vendor && vendor.status==='pending'){
-        show('Hi '+vendor.full_name+' - Your account is still PENDING GM approval. GM will approve soon in VENDORS tab.','success');
-        await supa.auth.signOut();
+      if(v.status==='rejected'){
+        show('Sorry - Account rejected. Contact GM.');
         btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
         return;
       }
 
-      if(vendor && vendor.status==='rejected'){
-        show('Sorry '+vendor.full_name+' - Account rejected. Contact GM.');
-        await supa.auth.signOut();
-        btn.disabled=false; btn.textContent='🔓 Sign In - WORLD';
-        return;
-      }
-
-      show('✅ Welcome '+ (vendor?.full_name || email) +'! Redirecting to dashboard...','success');
-      setTimeout(()=>location.href='/vendor-dashboard.html',800);
-      
+      localStorage.setItem('vendor_token', j.token);
+      localStorage.setItem('vendor', JSON.stringify(v));
+      localStorage.setItem('vendor_id', v.id);
+      show('✅ Welcome '+(v.full_name||v.vendor_name)+'! Redirecting...','success');
+      setTimeout(()=>location.href='/vendor-dashboard.html',700);
     }catch(err){
-      show('Error: '+err.message);
+      show('Login failed: '+err.message);
       $('btn').disabled=false; $('btn').textContent='🔓 Sign In - WORLD';
     }
   }
 
-  $('loginForm').addEventListener('submit',handleLogin);
-
-  $('forgot').addEventListener('click',async (e)=>{
-    e.preventDefault();
+  async function handleReset(e){
+    if(e) e.preventDefault();
     const email=$('email').value.trim();
-    if(!email){ show('Weka email yako kwanza juu!'); return; }
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-    const {error}=await supa.auth.resetPasswordForEmail(email,{redirectTo: location.origin+'/vendor-login.html'});
-    if(error) show('Reset failed: '+error.message);
-    else show('✅ Reset link sent to '+email+' - Check Gmail & set new password 12345678','success');
-  });
+    if(!email){ show('Weka email kwanza juu!'); return; }
+    const btn=$('resetBtn'); btn.disabled=true; btn.textContent='⏳ Resetting...';
+    try{
+      const r=await fetch('/api/vendors/forgot-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:'12345678'})});
+      const j=await r.json();
+      if(!r.ok) throw new Error(j.error);
+      show('✅ Password yako sasa ni 12345678 - Bonyeza Sign In sai','success');
+      $('password').value='12345678';
+    }catch(err){ show('Reset failed: '+err.message); }
+    finally{ btn.disabled=false; btn.textContent='🔑 Reset Password to 12345678 (old accounts)'; }
+  }
+
+  $('loginForm').addEventListener('submit',handleLogin);
+  $('resetBtn').addEventListener('click',handleReset);
+  $('forgot').addEventListener('click',handleReset);
 })();
 </script>
 </body>
