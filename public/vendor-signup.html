@@ -2,21 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GuestHub Vendor WORLD V2 — Diani Scalable</title>
+<title>GuestHub Vendor WORLD V33 — FIXED</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
 <style>
 :root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709;--card:#121318}
 *{box-sizing:border-box}body{font-family:Inter,sans-serif;background:var(--bg);color:#fff;padding-bottom:40px}
 .font-boss{font-family:Anton,sans-serif}
 .glass{background:rgba(18,19,24,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
-.input{width:100%;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:13px;outline:none;transition:.2s}
-.input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,255,0,.12)}
+.input{width:100%;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:13px;outline:none}
+.input:focus{border-color:var(--lime)}
 .label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#8B95A5;margin-top:14px;display:block}
-.opt{border:1px solid #2A2A2A;background:#0A0A0A;border-radius:14px;padding:11px 12px;cursor:pointer;transition:.15s;position:relative}
-.opt.on{border-color:var(--lime);background:rgba(198,255,0,.12);transform:scale(.98)}
+.opt{border:1px solid #2A2A2A;background:#0A0A0A;border-radius:14px;padding:11px 12px;cursor:pointer;position:relative}
+.opt.on{border-color:var(--lime);background:rgba(198,255,0,.12)}
 .opt b{font-size:12px;display:block;padding-right:20px}.opt small{font-size:10px;color:#888;display:block;margin-top:2px}
 .opt.check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:1px solid #444;display:grid;place-items:center;font-size:10px}
 .opt.on.check{background:var(--lime);color:#000;border-color:var(--lime)}
@@ -29,235 +27,121 @@
 <body>
 
 <div class="min-h-screen lg:grid lg:grid-cols-[1.15fr_0.85fr]">
-
-<!-- LEFT FORM -->
 <div class="px-6 md:px-10 lg:px-14 py-7">
   <div class="flex justify-between items-center mb-6">
-    <div class="flex items-center gap-3"><div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div><span class="text-[10px] tracking-widest text-white/40 font-bold">VENDOR WORLD V2</span><span id="apiBadge" class="ml-2 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[9px]">CONNECTING...</span></div>
+    <div class="flex items-center gap-3"><div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div><span class="text-[10px] tracking-widest text-white/40 font-bold">VENDOR WORLD V33 FIXED</span><span id="apiBadge" class="ml-2 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[9px]">CONNECTING...</span></div>
     <a href="/" class="text-[11px] font-bold bg-white/10 px-4 py-2 rounded-full border border-white/10">← Home</a>
   </div>
-
-  <div class="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-[#C6FF00] border border-[#C6FF00]/30 rounded-full px-4 py-2 mb-4">
-    <span class="w-2 h-2 rounded-full bg-[#C6FF00] animate-pulse"></span> DIANI → WASINI ISLAND → SGR MOMBASA → SCALE TO WORLD
-  </div>
-
   <h1 class="font-boss text-[38px] md:text-[48px] leading-[0.9] uppercase">EARN WITH<br><span class="text-[#FFC61A]">GUESTHUB WORLD</span></h1>
-  <p class="text-[12px] text-white/50 mt-2 max-w-[560px]">🌍 Global vendors • Diani hub + Wasini boat + SGR transfer • Hotels bring clients to YOU • 85% you, 15% hotel • Lipa na M-Pesa</p>
   <div class="prog"><i id="pbar"></i></div>
   <div id="notice" class="notice"></div>
 
   <form id="f" novalidate class="max-w-[680px]">
-
-    <!-- BASIC + DIANI HUB -->
     <div class="glass rounded-2xl p-5 mt-4">
       <h3 class="font-boss text-[14px] text-[#C6FF00]">👤 BASIC INFO — DIANI HUB</h3>
-      <label class="label">Full Name</label><input id="full_name" class="input" required placeholder="Kevin Kipchumba / Diani Taxi John">
+      <label class="label">Full Name *</label><input id="full_name" class="input" required placeholder="Kevin Kipchumba">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div><label class="label">Phone / WhatsApp (with code)</label><input id="phone" class="input" required placeholder="+254722..."></div>
-        <div><label class="label">ID / Passport No</label><input id="id_number" class="input" required></div>
+        <div><label class="label">Phone *</label><input id="phone" class="input" required placeholder="0722..."></div>
+        <div><label class="label">ID Number *</label><input id="id_number" class="input" required></div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div><label class="label">Email + Login Password</label><input id="email" type="email" class="input" required placeholder="you@gmail.com"></div>
-        <div><label class="label">Password min 8</label><input id="password" type="password" class="input" required placeholder="min 8 chars"></div>
+        <div><label class="label">Email *</label><input id="email" type="email" class="input" required placeholder="you@gmail.com"></div>
+        <div><label class="label">Password min 8 *</label><input id="password" type="password" class="input" required placeholder="12345678" value="12345678"></div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div><label class="label">Country</label><select id="country" class="input" onchange="updateCities()"><option value="Kenya">🇰🇪 Kenya</option><option value="Tanzania">🇹🇿 Tanzania</option><option value="Uganda">🇺🇬 Uganda</option><option value="UAE">🇦🇪 UAE - Dubai</option><option value="USA">🇺🇸 USA</option><option value="UK">🇬🇧 UK</option><option value="Other">🌍 Other</option></select></div>
-        <div><label class="label">Base City</label><select id="city" class="input"><option>Diani</option><option>Wasini Island</option><option>Shimoni — Wasini Jetty</option><option>SGR Mombasa Terminus</option><option>SGR Mariakani</option><option>Mombasa Town</option><option>Watamu</option><option>Ukunda Airstrip</option><option>Moi Airport</option><option>Nairobi</option></select></div>
+        <div><label class="label">Country</label><select id="country" class="input"><option>Kenya</option><option>Tanzania</option><option>Uganda</option></select></div>
+        <div><label class="label">Base City</label><select id="city" class="input"><option>Diani</option><option>Wasini Island</option><option>Mombasa</option><option>Nairobi</option></select></div>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div><label class="label">Your Hub Location * (Diani Scalable)</label>
-          <select id="location_hub" class="input" required>
-            <option value="Diani Beach" selected>Diani Beach (Main Hub)</option><option value="Wasini Island">Wasini Island — Dolphin Hub</option><option value="Shimoni Jetty">Shimoni Jetty — Wasini Boats</option><option value="SGR Mombasa Terminus">SGR Mombasa Terminus (Miritini)</option><option value="SGR Mariakani">SGR Mariakani Station</option><option value="Moi Airport">Moi Airport Mombasa</option><option value="Ukunda Airstrip">Ukunda Airstrip</option><option value="Watamu / Malindi">Watamu / Malindi</option><option value="Mombasa Town">Mombasa Town / Nyali</option>
-          </select>
-        </div>
-        <div><label class="label">Service Radius</label>
-          <select id="radius" class="input"><option>5km — Diani only</option><option selected>15km — Diani + Wasini + Ukunda</option><option>40km — Up to SGR Mombasa</option><option>100km — Whole South Coast</option><option>Countrywide — Kenya</option></select>
-        </div>
-      </div>
+      <div><label class="label">Your Hub Location *</label><select id="location_hub" class="input" required><option value="Diani Beach" selected>Diani Beach (Main Hub)</option><option value="Wasini Island">Wasini Island</option><option value="SGR Mombasa Terminus">SGR Mombasa Terminus</option><option value="Moi Airport">Moi Airport</option></select></div>
     </div>
 
-    <!-- HOTEL CHOICE — THIS IS THE MAGIC -->
     <div class="glass rounded-2xl p-5 mt-4">
-      <h3 class="font-boss text-[14px] text-[#FFC61A]">🏨 CHOOSE HOTELS YOU WANT TO SERVE *</h3>
-      <p class="text-[10px] text-white/40 mt-1">Your services will appear INSTANTLY in Guest Dashboard of these hotels. Room 101 guest sees you.</p>
-      <div id="hotelList" class="mt-3 grid grid-cols-2 gap-2 max-h-[160px] overflow-auto p-3 rounded-xl bg-[#0A0A0A] border border-white/10 text-[11px]">
-        <label class="flex items-center gap-2"><input type="checkbox" value="BAOBAB" checked> Baobab Beach</label>
-        <label class="flex items-center gap-2"><input type="checkbox" value="SWAHILI"> Swahili Beach</label>
-        <label class="flex items-center gap-2"><input type="checkbox" value="DIANI_SEA"> Diani Sea</label>
-        <label class="flex items-center gap-2"><input type="checkbox" value="LEOPARD"> Leopard Beach</label>
-        <label class="flex items-center gap-2"><input type="checkbox" value="WASINI"> Wasini Hotels</label>
-        <label class="flex items-center gap-2"><input type="checkbox" value="SGR_HUB"> SGR Partner Hotels</label>
-        <label class="flex items-center gap-2 font-bold text-[#C6FF00]"><input type="checkbox" value="ALL" checked> ALL Hotels (Scale)</label>
-      </div>
-      <div id="hotelPreviewHint" class="mt-2 text-[10px] text-[#C6FF00]">✓ Will appear in 12 hotels live in Diani — Guest in Room 101 sees you now</div>
+      <h3 class="font-boss text-[14px] text-[#FFC61A]">🏨 CHOOSE HOTELS *</h3>
+      <div id="hotelList" class="mt-3 grid grid-cols-2 gap-2 max-h-[160px] overflow-auto p-3 rounded-xl bg-[#0A0A0A] border border-white/10 text-[11px]">Loading hotels...</div>
     </div>
 
-    <!-- SERVICES — YOUR ORIGINAL -->
-    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🚕 1. TRANSPORT & TAXI — DIANI + SGR</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g1"></div></div>
-    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🌍 2. TOURS — WASINI + SAFARI</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g2"></div></div>
-    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🧖 3. WELLNESS & HOTEL SERVICES</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g3"></div></div>
-    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">📸 4. MEDIA & CONCIERGE</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g4"></div></div>
+    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🚕 TRANSPORT + TOURS</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g1"></div></div>
+    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🌍 WASINI + SAFARI</h3><div class="grid grid-cols-2 gap-2 mt-3" id="g2"></div></div>
 
     <div class="glass rounded-2xl p-5 mt-4">
       <h3 class="font-boss text-[14px]">⚙️ Service Details <span id="selCount" class="text-white/40 text-[11px]">0 selected</span></h3>
-      <label class="label">Vehicle / Equipment</label><select id="vehicle" class="input"><option>Select</option><option>Sedan - Premio/Axio</option><option>SUV - Prado/TX/Landcruiser</option><option>Van - Alphard/Hiace 7-14 seater</option><option>Boat - Wasini Dolphin Dhow</option><option>SGR Transfer Van</option><option>Safari Landcruiser Open Roof</option><option>Boda / TukTuk</option><option>Massage Bed + Oils</option><option>Camera Kit + Drone</option></select>
-      <label class="label">Number Plate / License</label><input id="plate" class="input" placeholder="KDA 123A or Boat License">
-      <label class="label">Your Base Price (Guest sees this)</label><input id="price" type="number" class="input" value="2500" min="0">
-      <label class="label">Bio — Diani Style</label><textarea id="bio" maxlength="120" class="input" placeholder="e.g. 5yrs Diani-Wasini expert, SGR transfers, English/Swahili"></textarea>
-    </div>
-
-    <div class="glass rounded-2xl p-5 mt-4">
-      <h3 class="font-boss text-[14px]">🪪 KYC — TRUST BADGE</h3>
-      <div class="grid grid-cols-3 gap-2 mt-3">
-        <div><label class="label">ID Front</label><div class="border border-dashed border-white/20 rounded-xl p-3 text-center bg-[#0A0A0A] relative"><input type="file" id="id_photo" accept="image/*" class="absolute inset-0 opacity-0"><b class="text-[11px] text-[#C6FF00]">📸 Upload ID</b></div></div>
-        <div><label class="label">Selfie + ID</label><div class="border border-dashed border-white/20 rounded-xl p-3 text-center bg-[#0A0A0A] relative"><input type="file" id="selfie" accept="image/*" class="absolute inset-0 opacity-0"><b class="text-[11px]">🤳 Selfie</b></div></div>
-        <div><label class="label">Vehicle/Boat Photo</label><div class="border border-dashed border-white/20 rounded-xl p-3 text-center bg-[#0A0A0A] relative"><input type="file" id="car_photo" accept="image/*" class="absolute inset-0 opacity-0"><b class="text-[11px]">🚕📷 Proof</b></div></div>
-      </div>
-    </div>
-
-    <div class="glass rounded-2xl p-5 mt-4">
-      <h3 class="font-boss text-[14px] text-[#FFC61A]">💸 PAYOUT — LIPA NA M-PESA WORLD</h3>
-      <div class="flex gap-2 flex-wrap mt-3"><div class="paychip on" data-val="mpesa" onclick="setPay(this)">💚 M-PESA</div><div class="paychip" data-val="airtel" onclick="setPay(this)">📱 Airtel</div><div class="paychip" data-val="paypal" onclick="setPay(this)">💙 PayPal</div><div class="paychip" data-val="bank" onclick="setPay(this)">🏦 Bank</div><div class="paychip" data-val="binance" onclick="setPay(this)">₿ Binance</div></div>
-      <input type="hidden" id="payout_method" value="mpesa">
-      <div id="mpesaBox" class="mt-3"><label class="label">Lipa na M-Pesa Number</label><input id="mpesa" class="input" required placeholder="0722... or Till"><label class="label">M-Pesa Name</label><input id="mpesa_name" class="input" placeholder="As per ID"></div>
-      <div id="otherPayBox" style="display:none" class="mt-3"><label id="otherLabel" class="label">PayPal / Bank</label><input id="other_pay" class="input" placeholder="paypal@email.com / IBAN"></div>
-      <label class="label" style="text-transform:none;color:#ccc;display:flex;gap:8px"><input id="terms" type="checkbox" required style="width:auto"><span style="font-size:11px">I agree on time &lt;15min, polite, 15% via Lipa na M-Pesa — Diani to SGR</span></label>
+      <label class="label">Base Price (Guest sees)</label><input id="price" type="number" class="input" value="2500">
+      <label class="label">Bio</label><textarea id="bio" class="input" placeholder="5yrs Diani expert"></textarea>
+      <label class="label">M-Pesa Number *</label><input id="mpesa" class="input" required placeholder="0722...">
+      <label class="label" style="text-transform:none;color:#ccc;display:flex;gap:8px"><input id="terms" type="checkbox" required style="width:auto"><span style="font-size:11px">I agree 85% me, 15% hotel via Till 123456</span></label>
       <button class="w-full h-[54px] rounded-full bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] text-black font-black text-[15px] mt-4" type="submit" id="btn">🚀 Submit — Live in Guest App</button>
-      <p class="text-[10px] text-center text-white/30 mt-2">LIVE IN 2 MIN • NO CARD • SCALE FROM DIANI → WASINI → SGR → WORLD</p>
     </div>
-
   </form>
 </div>
 
-<!-- RIGHT — LIVE GUEST PREVIEW -->
-<div class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8 relative">
+<div class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8">
   <div class="sticky top-8">
-    <div class="flex justify-between items-center mb-4"><span class="text-[11px] font-bold tracking-widest text-white/40">GUEST VIEW — LIVE PREVIEW</span><span class="text-[10px] px-2.5 py-1 rounded-full bg-[#C6FF00] text-black font-bold">● LIVE</span></div>
-    <div class="bg-[#121318] border border-white/10 rounded-[20px] p-5">
-      <div class="text-[10px] font-bold tracking-widest text-white/40">GUEST IN ROOM 101 AT BAOBAB SEES THIS</div>
-      <div id="guestPreview" class="mt-4 space-y-2">
-        <div class="text-center py-10 text-[12px] text-white/30">Select services on left — they appear here instantly like Guest App</div>
-      </div>
-    </div>
-    <div class="mt-4 p-4 rounded-xl bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[11px] leading-5">
-      <b class="text-[#C6FF00]">Magic mkuu:</b><br>
-      Vendor chooses <b class="text-white">Baobab + Wasini</b> → Guest scanning QR at Baobab Room 101 sees <b class="text-white">Wasini Dolphin Tour</b> instantly.<br><br>
-      Guest taps + Add → Your WhatsApp gets: <b class="text-white">James — Room 101 — Wasini Tour — KSh 6500</b>
-    </div>
-    <div class="mt-4 grid grid-cols-2 gap-2">
-      <div class="glass rounded-xl p-3 text-center"><div class="font-boss text-[16px]">85%</div><div class="text-[9px] text-white/40">YOU KEEP</div></div>
-      <div class="glass rounded-xl p-3 text-center"><div class="font-boss text-[16px]">15%</div><div class="text-[9px] text-white/40">HOTEL</div></div>
-    </div>
-    <a href="/guest.html?hotel=BAOBAB&room=101" class="mt-4 block text-center h-10 rounded-full bg-white text-black font-bold text-[12px] leading-10">→ View Real Guest App</a>
+    <div class="bg-[#121318] border border-white/10 rounded-[20px] p-5"><div class="text-[10px] font-bold tracking-widest text-white/40">GUEST IN ROOM 101 SEES THIS</div><div id="guestPreview" class="mt-4 space-y-2"><div class="text-center py-10 text-[12px] text-white/30">Select services left</div></div></div>
   </div>
 </div>
-
 </div>
 
 <script>
 const API='/api'; const $=id=>document.getElementById(id);
-const S={g1:[{id:'airport_taxi',t:'Airport Taxi',d:'Moi/Uka/JKIA'},{id:'sgr_taxi',t:'SGR Transfer',d:'Miritini → Diani'},{id:'town_taxi',t:'Town Taxi',d:'Diani/Ukunda'},{id:'car_hire',t:'Car Hire + Driver',d:'Daily Ksh 5-15k'},{id:'wasini_boat',t:'Wasini Boat Taxi',d:'Shimoni → Wasini'},{id:'boda_tuktuk',t:'Boda / TukTuk',d:'Quick errands'}],g2:[{id:'wasini_dolphin',t:'Wasini Dolphin Tour',d:'Full day + lunch'},{id:'shimba_hills',t:'Shimba Hills Safari',d:'Half day'},{id:'mara_safari',t:'Maasai Mara Safari',d:'2-3 days'},{id:'sgr_experience',t:'SGR Experience Tour',d:'Mombasa SGR'},{id:'beach_safari',t:'Beach & Snorkeling',d:'Diani/Wasini'},{id:'city_tour',t:'Mombasa City Tour',d:'Fort Jesus'}],g3:[{id:'massage',t:'In-Room Massage',d:'Swedish, Deep'},{id:'spa_nails',t:'Spa / Nails / Hair',d:'In-room beauty'},{id:'laundry',t:'Express Laundry',d:'2hr return'},{id:'private_chef',t:'Private Chef',d:'Swahili Pilau'}],g4:[{id:'photography',t:'Photography',d:'Diani shots'},{id:'drone',t:'Drone + Videography',d:'Hotel shots'},{id:'shopping',t:'Curio Shop',d:'Maasai market'},{id:'concierge',t:'Concierge / Errands',d:'Anything'}]};
+const S={g1:[{id:'airport_taxi',t:'Airport Taxi',d:'Moi/Uka'},{id:'sgr_taxi',t:'SGR Transfer',d:'Miritini→Diani'},{id:'town_taxi',t:'Town Taxi',d:'Diani/Ukunda'},{id:'wasini_boat',t:'Wasini Boat',d:'Shimoni→Wasini'}],g2:[{id:'wasini_dolphin',t:'Wasini Dolphin Tour',d:'Full day'},{id:'shimba_hills',t:'Shimba Hills Safari',d:'Half day'},{id:'massage',t:'Massage',d:'In-room'},{id:'photography',t:'Photography',d:'Diani shots'}]};
 let sel=[], allHotels=[];
-function renderCats(){ Object.keys(S).forEach(g=>{const box=$(g); box.innerHTML=''; S[g].forEach(o=>{const div=document.createElement('div'); div.className='opt'; div.innerHTML=`<div class="check">✓</div><b>${o.t}</b><small>${o.d}</small>`; div.addEventListener('click',()=>toggle(o.id,div,o.t)); box.appendChild(div);});});}
-function toggle(id,div,title){ if(sel.includes(id)){ sel=sel.filter(s=>s!==id); div.classList.remove('on'); }else{ sel.push(id); div.classList.add('on'); } $('selCount').textContent=sel.length+' selected'; $('pbar').style.width=Math.min(20+sel.length*10,100)+'%'; updateGuestPreview(); }
-function updateGuestPreview(){
-  const vendor=$('full_name').value||'Your Business'; const hub=$('location_hub').value||'Diani'; const price=$('price').value||2500;
-  const hotels=[...document.querySelectorAll('#hotelList input:checked')].map(i=>i.value).join(', ')||'Baobab';
-  let html=`<div class="text-[10px] text-[#C6FF00] font-bold mb-2">${vendor.toUpperCase()} • ${hub.toUpperCase()} • LIVE IN ${hotels.toUpperCase()}</div>`;
-  if(sel.length===0) html+=`<div class="text-[11px] text-white/30 text-center py-6">Select services — they appear here like in Guest App</div>`;
-  else sel.forEach(id=>{ const all=[...S.g1,...S.g2,...S.g3,...S.g4]; const f=all.find(x=>x.id===id); if(f) html+=`<div class="flex gap-3 p-3 rounded-xl bg-[#0A0A0A] border border-white/10"><div class="w-10 h-10 rounded-xl bg-[#1A1C1F] grid place-items-center">${f.t.includes('Taxi')||f.t.includes('SGR')?'🚕':f.t.includes('Wasini')||f.t.includes('Dolphin')?'🐬':f.t.includes('Safari')?'🦁':'✨'}</div><div class="flex-1"><div class="font-bold text-[12px]">${f.t}</div><div class="text-[10px] text-white/40">${f.d} • ${hub}</div><div class="text-[11px] font-black text-[#C6FF00] mt-1">KSh ${price}</div></div><div class="text-[10px] bg-white text-black px-2 py-1 rounded-full h-fit font-bold">+ Add</div></div>`; });
-  $('guestPreview').innerHTML=html;
-}
-window.setPay=(el)=>{ document.querySelectorAll('.paychip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); $('payout_method').value=el.dataset.val; const v=el.dataset.val; if(v==='mpesa'||v==='airtel'){ $('mpesaBox').style.display='block'; $('otherPayBox').style.display='none'; }else{ $('mpesaBox').style.display='none'; $('otherPayBox').style.display='block'; $('otherLabel').textContent=v==='paypal'?'PayPal Email':v==='bank'?'Bank IBAN':'Binance USDT'; } };
-window.updateCities=()=>{}; // keep
-
-async function loadHotels(){
-  try{
-    const r=await fetch(API+'/data'); const j=await r.json(); const hotels=j.hotels||[];
-    if(hotels.length>0){
-      $('hotelList').innerHTML=hotels.slice(0,12).map(h=>`<label class="flex items-center gap-2"><input type="checkbox" value="${h.hotel_id||h.id}" ${h.hotel_id==='BAOBAB'?'checked':''}> ${h.hotel_name||h.name}</label>`).join('')+`<label class="flex items-center gap-2 font-bold text-[#C6FF00]"><input type="checkbox" value="ALL" checked> ALL Hotels (Scale)</label>`;
-      allHotels=hotels;
-    }
-  }catch{}
-  document.querySelectorAll('#hotelList input').forEach(i=>i.addEventListener('change',updateGuestPreview));
-  $('full_name').addEventListener('input',updateGuestPreview);
-  $('location_hub').addEventListener('change',updateGuestPreview);
-  $('price').addEventListener('input',updateGuestPreview);
-}
-async function checkHealth(){ try{ const r=await fetch(API+'/health',{cache:'no-store'}); const j=await r.json(); $('apiBadge').textContent=j.os+' • LIVE'; $('apiBadge').className='ml-2 px-2.5 py-1 rounded-full bg-[#C6FF00] text-black text-[10px] font-bold'; }catch{ $('apiBadge').textContent='WAKING...'; } }
+function renderCats(){ Object.keys(S).forEach(g=>{const box=$(g); box.innerHTML=''; S[g].forEach(o=>{const div=document.createElement('div'); div.className='opt'; div.innerHTML=`<div class="check">✓</div><b>${o.t}</b><small>${o.d}</small>`; div.addEventListener('click',()=>toggle(o.id,div)); box.appendChild(div);});});}
+function toggle(id,div){ if(sel.includes(id)){ sel=sel.filter(s=>s!==id); div.classList.remove('on'); }else{ sel.push(id); div.classList.add('on'); } $('selCount').textContent=sel.length+' selected'; $('pbar').style.width=Math.min(20+sel.length*15,100)+'%'; updatePreview(); }
+function updatePreview(){ const vendor=$('full_name').value||'Your Biz'; const hub=$('location_hub').value||'Diani'; const price=$('price').value||2500; let html=`<div class="text-[10px] text-[#C6FF00] font-bold mb-2">${vendor} • ${hub}</div>`; if(!sel.length) html+=`<div class="text-[11px] text-white/30 text-center py-6">Select services</div>`; else sel.forEach(id=>{ const f=[...S.g1,...S.g2].find(x=>x.id===id); html+=`<div class="flex gap-3 p-3 rounded-xl bg-[#0A0A0A] border border-white/10"><div class="flex-1"><div class="font-bold text-[12px]">${f.t}</div><div class="text-[11px] font-black text-[#C6FF00]">KSh ${price}</div></div><div class="text-[10px] bg-white text-black px-2 py-1 rounded-full h-fit font-bold">+ Add</div></div>`; }); $('guestPreview').innerHTML=html; }
+async function loadHotels(){ try{ const r=await fetch(API+'/data'); const j=await r.json(); const hotels=j.hotels||[]; allHotels=hotels; if(hotels.length) $('hotelList').innerHTML=hotels.slice(0,20).map(h=>`<label class="flex items-center gap-2"><input type="checkbox" value="${h.hotel_id}" ${h.hotel_id==='BAOBAB'?'checked':''}> ${h.name||h.hotel_name}</label>`).join('')+`<label class="flex items-center gap-2 font-bold text-[#C6FF00]"><input type="checkbox" value="ALL" checked> ALL (Scale)</label>`; }catch{ $('hotelList').innerHTML=`<label><input type="checkbox" value="BAOBAB" checked> Baobab</label><label><input type="checkbox" value="ALL" checked> ALL</label>`; } }
+async function checkHealth(){ try{ const r=await fetch(API+'/health'); const j=await r.json(); $('apiBadge').textContent=j.os+' • LIVE'; $('apiBadge').className='ml-2 px-2.5 py-1 rounded-full bg-[#C6FF00] text-black text-[10px] font-bold'; }catch{ $('apiBadge').textContent='WAKING...'; } }
 checkHealth(); renderCats(); loadHotels();
 
 async function handleSignup(e){
   e.preventDefault();
   const btn=$('btn'); const notice=$('notice');
-  function show(m,t='success'){ notice.className='notice '+t; notice.textContent=m; window.scrollTo({top:0,behavior:'smooth'}); }
-  btn.disabled=true; btn.textContent='⏳ Creating account...';
+  const show=(m,t='success')=>{ notice.className='notice '+t; notice.textContent=m; window.scrollTo({top:0,behavior:'smooth'}); };
+  if(sel.length===0) return show('Select at least 1 service!','error');
+  if(!$('terms').checked) return show('Kubali Terms','error');
+  if($('password').value.length<8) return show('Password min 8','error');
+  btn.disabled=true; btn.textContent='⏳ Creating...';
+
   try{
-    if(sel.length===0) throw new Error('Select at least 1 service — Bofya Airport Taxi au Wasini Dolphin!');
-    if(!$('terms').checked) throw new Error('Kubali Terms!');
-    if($('password').value.length<8) throw new Error('Password min 8 chars');
-    const email=$('email').value.toLowerCase().trim(); const password=$('password').value;
-    const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-
-    let userId=null;
-    let {data:signData, error:signErr}=await supa.auth.signUp({email,password,options:{data:{role:'vendor'}}});
-    if(signErr){
-      if(signErr.message.includes('already registered')||signErr.message.includes('User already')){
-        const {data:loginData, error:loginErr}=await supa.auth.signInWithPassword({email,password});
-        if(loginErr) throw new Error('Email exists but password wrong. Use different email.');
-        userId=loginData.user.id;
-      } else throw signErr;
-    }else{ userId=signData.user?.id || signData.session?.user?.id; if(!userId){ const {data:sess}=await supa.auth.getSession(); userId=sess?.session?.user?.id||null; } }
-
     const selectedHotels=[...document.querySelectorAll('#hotelList input:checked')].map(i=>i.value);
-    const hub=$('location_hub').value; const radius=$('radius').value;
+    if(!selectedHotels.length) throw new Error('Chagua at least 1 hotel');
 
-    // Build payload for old RPC + new hotel_services logic
-    const app={
-      owner_id:userId,
-      full_name:$('full_name').value.trim(),
-      phone:$('phone').value.replace(/\D/g,''),
-      id_number:$('id_number').value.trim(),
-      email, country:$('country').value, city:$('city').value,
-      services:sel, vehicle:$('vehicle').value, plate:$('plate').value, price:Number($('price').value||2500),
-      bio:$('bio').value.trim()+` | Hub: ${hub} | Radius: ${radius} | Hotels: ${selectedHotels.join(',')}`,
-      mpesa:$('mpesa').value.replace(/\D/g,'')||$('other_pay').value,
-      mpesa_name:$('mpesa_name').value||$('full_name').value,
-      payout_method:$('payout_method').value,
-      location_hub:hub, hotel_ids:selectedHotels
+    const payload={
+      full_name: $('full_name').value.trim(),
+      vendor_name: $('full_name').value.trim(),
+      email: $('email').value.toLowerCase().trim(),
+      password: $('password').value, // <— HII NDIO FIX KUBWA
+      phone: $('phone').value.replace(/\D/g,''),
+      id_number: $('id_number').value.trim(),
+      country: $('country').value,
+      city: $('city').value,
+      location: $('location_hub').value,
+      location_hub: $('location_hub').value,
+      hotel_ids: selectedHotels,
+      hotels: selectedHotels,
+      category: sel[0]||'general',
+      services: sel,
+      price: Number($('price').value||2500),
+      bio: $('bio').value.trim(),
+      mpesa: $('mpesa').value.replace(/\D/g,''),
+      payout_method: 'mpesa'
     };
 
-    // 1. Try old RPC (your original)
-    try{ await supa.rpc('submit_vendor_application',{p_application:app}); }catch(rpcErr){ console.log('RPC fallback',rpcErr.message); await supa.from('vendors').insert([{owner_id:userId, full_name:app.full_name, phone:app.phone, email:app.email, city:app.city, country:app.country, services:app.services, vehicle:app.vehicle, price:app.price, mpesa:app.mpesa, mpesa_name:app.mpesa_name, id_number:app.id_number, status:'pending', description:app.bio, payout_method:app.payout_method}]); }
+    // === CALL BACKEND ONLY — HII ndio ina-save na password_hash ===
+    const r=await fetch('/api/vendors/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const j=await r.json();
+    if(!r.ok) throw new Error(j.error||'Signup failed');
 
-    // 2. NEW — Make services appear in Guest Dashboard of chosen hotels
-    let targetHotels=selectedHotels;
-    if(selectedHotels.includes('ALL')){ targetHotels = allHotels.length? allHotels.map(h=>h.hotel_id||h.id) : ['BAOBAB','SWAHILI','DIANI_SEA','LEOPARD']; }
-    for(const hid of targetHotels){
-      for(const sid of sel){
-        const all=[...S.g1,...S.g2,...S.g3,...S.g4]; const svc=all.find(x=>x.id===sid); if(!svc) continue;
-        await supa.schema('guesthub_os').from('hotel_services').insert([{
-          hotel_id:hid.toUpperCase(),
-          title:`${svc.t} — ${app.full_name}`,
-          price:app.price,
-          description:`${svc.d} • ${hub} • ${radius} • by ${app.full_name} • ${app.phone}`,
-          department: ['airport_taxi','sgr_taxi','town_taxi','car_hire','wasini_boat','boda_tuktuk'].includes(sid)?'taxi':['wasini_dolphin','shimba_hills','mara_safari','beach_safari'].includes(sid)?'tours':sid==='massage'?'spa':'services',
-          icon: sid.includes('taxi')||sid.includes('sgr')?'🚕':sid.includes('wasini')||sid.includes('dolphin')?'🐬':sid.includes('safari')||sid.includes('shimba')?'🦁':sid.includes('massage')?'💆':'✨',
-          vendor_name:app.full_name, vendor_phone:app.phone, is_active:true
-        }]);
-      }
-    }
+    show(`✅ SUCCESS ${payload.full_name}! Email ${payload.email} created — Now LIVE in ${selectedHotels.join(', ')} — GM will approve in admin.html → Vendors → Approve`,'success');
+    btn.textContent='✅ Live — Go login';
+    setTimeout(()=>location.href='/vendor-login.html',1800);
 
-    // 3. Also call your /api/vendors/signup if you added it in server.js V31
-    try{ await fetch('/api/vendors/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vendor_name:app.full_name, category:sel[0], location:hub, phone:app.phone, email, hotels:selectedHotels, services:sel.map(sid=>({name:S.g1.concat(S.g2,S.g3,S.g4).find(x=>x.id===sid)?.t||sid, price:app.price, time:hub}))})}); }catch{}
-
-    show(`✅ SUCCESS ${app.full_name}! Vendor ${email} created — Hub ${hub} — Hotels ${selectedHotels.join(', ')} — Now LIVE in Guest App! GM will approve, then login.`,'success');
-    btn.textContent='✅ Live — Go to Guest View';
-    setTimeout(()=>location.href=`/guest.html?hotel=${targetHotels[0]||'BAOBAB'}&room=101`,2000);
-
-  }catch(err){ $('notice').className='notice error'; $('notice').style.display='block'; $('notice').textContent='Failed: '+(err.message||'Unknown'); btn.disabled=false; btn.textContent='🚀 Submit — Live in Guest App'; }
+  }catch(err){
+    show('Failed: '+err.message,'error');
+    btn.disabled=false; btn.textContent='🚀 Submit — Live in Guest App';
+  }
 }
 $('f').addEventListener('submit',handleSignup);
+['full_name','location_hub','price'].forEach(id=>{ $(id).addEventListener('input',updatePreview); });
 </script>
 </body>
 </html>
