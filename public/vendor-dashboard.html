@@ -2,184 +2,131 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GuestHub Vendor OS 11.0</title>
+<title>GuestHub Vendor OS 12.0 — Live Jobs</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<script src="/config.js"></script>
 <style>
 :root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#121212;--card2:#0b0b0b;--border:#242424;--muted:#888;--ok:#22c55e;--danger:#ef4444;--blue:#38bdf8}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
 header{position:sticky;top:0;z-index:100;background:rgba(7,7,7,.94);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 .brand{font-family:Space Grotesk;font-weight:800;font-size:17px}.brand span{color:var(--lime)}.vendor-mini{text-align:right;font-size:10px;color:var(--muted)}
 .wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:22px;padding:20px}
-.wallet-top{display:flex;justify-content:space-between}.wallet h1{margin:5px 0 3px;font-family:Space Grotesk;font-size:34px}
 .btn{padding:11px 14px;border:0;border-radius:11px;font-weight:800;font-size:12px;cursor:pointer}.btn-a{background:var(--lime);color:#000}.btn-g{background:var(--gold);color:#000}.btn-d{background:#202020;color:#fff;border:1px solid #333}.btn-red{background:#3a1111;color:#ff7777;border:1px solid #572020}.btn-blue{background:#082c3d;color:#38bdf8;border:1px solid #10465c}.btn-full{width:100%}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:0 14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 8px;text-align:center}.stat b{display:block;font-family:Space Grotesk;font-size:20px}.stat small{color:var(--muted);font-size:8px;font-weight:800}
-.availability{margin:12px 14px;padding:13px;background:var(--card);border:1px solid var(--border);border-radius:15px;display:flex;justify-content:space-between;align-items:center}
-.toggle{width:50px;height:28px;background:#333;border-radius:999px;position:relative;cursor:pointer;transition:.2s}.toggle::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}.toggle.on{background:var(--ok)}.toggle.on::after{left:25px}
-.tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:var(--bg)}.tabs::-webkit-scrollbar{display:none}.tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:11px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.view{padding:0 14px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:11px}.card-title{font-family:Space Grotesk;font-size:17px;margin-bottom:5px}.muted{color:var(--muted)}.small{font-size:10px}
-.job{border-left:4px solid var(--lime)}.job-top{display:flex;justify-content:space-between;gap:10px}.job-title{font-family:Space Grotesk;font-size:15px}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;background:#242424}.badge-new{background:#263500;color:var(--lime)}.badge-active{background:#082c3d;color:var(--blue)}.badge-done{background:#0a2a14;color:var(--ok)}.badge-danger{background:#3a0b0b;color:#ff6666}
-.job-meta{margin-top:8px;line-height:1.65;font-size:11px;color:var(--muted)}.job-meta strong{color:#fff}.job-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.service{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border);border-radius:13px}
-.empty{text-align:center;padding:35px 15px;color:var(--muted)}.loader{text-align:center;padding:35px;color:var(--muted)}.input{width:100%;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;padding:12px;outline:none}.input:focus{border-color:var(--lime)}
+.tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:var(--bg)}.tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:11px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
+.view{padding:0 14px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:11px}
+.job{border-left:4px solid var(--lime)}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;background:#242424}.badge-new{background:#263500;color:var(--lime)}.badge-active{background:#082c3d;color:var(--blue)}
+.input{width:100%;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;padding:12px;outline:none}
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(100px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:800;font-size:11px;z-index:999;transition:.25s}.toast.show{transform:translateX(-50%) translateY(0)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}.modal.show{display:flex}.modal-box{width:100%;max-width:600px;background:#111;border:1px solid #333;border-radius:22px 22px 0 0;padding:20px}
-@media(min-width:700px){.modal{align-items:center}.modal-box{border-radius:22px}}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<header><div class="brand">GuestHub <span>Vendor OS</span></div><div class="vendor-mini"><div id="vendorName">Loading...</div><div id="vendorCity">—</div></div></header>
+<header><div class="brand">GuestHub <span>Vendor OS 12.0</span></div><div class="vendor-mini"><div id="vendorName">Loading...</div><div id="vendorCity">—</div></div></header>
 <main style="max-width:900px;margin:auto">
-<section class="wallet"><div class="wallet-top"><div><small>VENDOR WALLET • <span id="walletStatus">SECURED</span></small><h1 id="walletBalance">Ksh 0</h1><div style="font-size:11px;opacity:.75">Available earnings • Secured by JWT</div></div><div style="font-size:30px">💳</div></div><div style="display:flex;gap:8px;margin-top:16px"><button class="btn" style="background:#000;color:#fff" onclick="openWithdraw()">Withdraw</button><button class="btn btn-d" onclick="refreshDashboard()">🔄 Refresh</button></div></section>
-<section class="stats"><div class="stat"><b id="statServices">0</b><small>SERVICES</small></div><div class="stat"><b id="statNew">0</b><small>NEW JOBS</small></div><div class="stat"><b id="statActive">0</b><small>ACTIVE</small></div><div class="stat"><b id="statCompleted">0</b><small>COMPLETED</small></div></section>
-<section class="availability"><div><b>🟢 Available for jobs</b><small id="availabilityText">Hotels can see your services</small></div><div id="availabilityToggle" class="toggle on" onclick="toggleAvailability()"></div></section>
+<section class="wallet"><div style="display:flex;justify-content:space-between"><div><small>WALLET • <span id="walletStatus">LIVE</span></small><h1 id="walletBalance" style="margin:5px 0 3px;font-family:Space Grotesk;font-size:34px">Ksh 0</h1><div style="font-size:11px;opacity:.75">Earnings from GM hotels</div></div><div style="font-size:30px">💳</div></div><div style="display:flex;gap:8px;margin-top:16px"><button class="btn" style="background:#000;color:#fff" onclick="toast('M-Pesa auto soon')">Withdraw</button><button class="btn btn-d" onclick="refreshDashboard()">🔄 Refresh</button></div></section>
+<section class="stats"><div class="stat"><b id="statHotels">0</b><small>HOTELS</small></div><div class="stat"><b id="statNew">0</b><small>NEW</small></div><div class="stat"><b id="statActive">0</b><small>ACTIVE</small></div><div class="stat"><b id="statCompleted">0</b><small>DONE</small></div></section>
 <nav class="tabs">
 <button class="tab active" onclick="showTab('new',this)">🔔 New Jobs</button>
 <button class="tab" onclick="showTab('active',this)">📅 Active</button>
-<button class="tab" onclick="showTab('services',this)">🛠️ Services</button>
-<button class="tab" onclick="showTab('earnings',this)">💰 Earnings</button>
+<button class="tab" onclick="showTab('hotels',this)">🏨 My Hotels</button>
 <button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
 </nav>
-<section id="view-new" class="view"><div id="newJobs"><div class="loader">Loading new jobs...</div></div></section>
-<section id="view-active" class="view" style="display:none"><div id="activeJobs"><div class="loader">Loading active jobs...</div></div></section>
-<section id="view-services" class="view" style="display:none"><div id="servicesContent"><div class="loader">Loading services...</div></div></section>
-<section id="view-earnings" class="view" style="display:none"><div id="earningsContent"><div class="loader">Loading earnings...</div></div></section>
-<section id="view-profile" class="view" style="display:none"><div id="profileContent"><div class="loader">Loading profile...</div></div></section>
+<section id="view-new" class="view"><div id="newJobs">Loading...</div></section>
+<section id="view-active" class="view" style="display:none"><div id="activeJobs"></div></section>
+<section id="view-hotels" class="view" style="display:none"><div id="hotelsContent"></div></section>
+<section id="view-profile" class="view" style="display:none"><div id="profileContent"></div></section>
 </main>
-<div id="withdrawModal" class="modal"><div class="modal-box"><div style="display:flex;justify-content:space-between;margin-bottom:15px"><b style="font-family:Space Grotesk;font-size:18px">💸 Withdraw Earnings</b><button class="btn btn-d" onclick="closeWithdraw()">✕</button></div><div style="margin-bottom:10px"><label style="font-size:9px;color:#888">M-PESA PHONE</label><input id="withdrawPhone" class="input" placeholder="07XXXXXXXX"></div><div style="margin-bottom:10px"><label style="font-size:9px;color:#888">AMOUNT</label><input id="withdrawAmount" class="input" type="number" placeholder="Amount"></div><button class="btn btn-a btn-full" onclick="requestWithdrawal()">Request Withdrawal</button></div></div>
 <div id="toast" class="toast">Done</div>
-
 <script>
-const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let currentVendor=null, allOrders=[], busy=false;
+const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let currentVendor=null, allOrders=[];
 function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
-function toast(m){const el=document.getElementById('toast');el.innerText=m;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800)}
-function getToken(){return localStorage.getItem('vendor_token')||localStorage.getItem('hotel_token')||''}
-async function secureFetch(url,opts={}){const token=getToken(); if(!token){ location.href='/vendor-login.html'; throw new Error('No token'); } opts.headers=opts.headers||{}; opts.headers['Authorization']='Bearer '+token; if(opts.body) opts.headers['Content-Type']='application/json'; const r=await fetch(url,opts); if(r.status===401||r.status===403){ localStorage.removeItem('vendor_token'); location.href='/vendor-login.html'; throw new Error('Unauthorized'); } return r;}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toastM(m){const el=document.getElementById('toast');el.innerText=m;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800)}
+function getToken(){return localStorage.getItem('vendor_token')||''}
 
 async function init(){
  const token=getToken();
  if(!token){ location.href='/vendor-login.html'; return; }
  try{
-  // 1. Verify via backend (highly secured)
-  const meRes = await secureFetch('/api/vendor/me');
-  const meData = await meRes.json();
-  if(!meData.ok) throw new Error('Auth failed');
-  currentVendor = meData.vendor;
-  renderVendorHeader(); renderAvailability(); renderServices(); renderProfile();
-  await loadOrders();
- }catch(e){
-  // Fallback for existing vendors who used email login before
-  const email = localStorage.getItem('vendor_email');
+  const r=await fetch('/api/vendor/me',{headers:{Authorization:'Bearer '+token}});
+  const j=await r.json();
+  if(!j.ok || !j.vendor) throw new Error('Auth fail');
+  currentVendor=j.vendor;
+ }catch{
+  // fallback email
+  const email=localStorage.getItem('vendor_email');
   if(!email){ location.href='/vendor-login.html'; return; }
-  const {data,error} = await supa.from('vendors').select('*').eq('email',email).maybeSingle();
-  if(error||!data){ document.getElementById('newJobs').innerHTML=`<div class="card empty">Please login again<br><button class="btn btn-a" onclick="location.href='/vendor-login.html'">Login</button></div>`; return; }
-  currentVendor=data; renderVendorHeader(); renderAvailability(); renderServices(); renderProfile(); await loadOrders();
+  const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email',email.toLowerCase()).maybeSingle();
+  if(!data) return location.href='/vendor-login.html';
+  currentVendor=data;
  }
-}
-function renderVendorHeader(){
- document.getElementById('vendorName').innerText=currentVendor.full_name||'Vendor';
- document.getElementById('vendorCity').innerText=currentVendor.city||'Kenya';
- document.getElementById('walletStatus').innerText=String(currentVendor.status||'PENDING').toUpperCase();
+ document.getElementById('vendorName').innerText=currentVendor.vendor_name;
+ document.getElementById('vendorCity').innerText=(currentVendor.city||'')+' • '+currentVendor.status;
  document.getElementById('walletBalance').innerText=money(currentVendor.wallet||0);
- document.getElementById('withdrawPhone').value=currentVendor.mpesa||'';
+ document.getElementById('walletStatus').innerText=currentVendor.status?.toUpperCase();
+ loadOrders(); loadMyHotels(); renderProfile();
 }
-function renderAvailability(){
- const available=currentVendor.available!==false&&currentVendor.is_available!==false;
- document.getElementById('availabilityToggle').classList.toggle('on',available);
- document.getElementById('availabilityText').innerText=available?'Hotels can see your services':'You are offline';
-}
-async function toggleAvailability(){
- const toggle=document.getElementById('availabilityToggle');
- const newState=!toggle.classList.contains('on');
- toggle.classList.toggle('on',newState);
- try{
-  const r=await secureFetch('/api/vendor/availability',{method:'PATCH', body: JSON.stringify({available:newState})});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error);
-  currentVendor.available=newState; toast(newState?'🟢 You are now available':'🔴 Offline');
- }catch(e){
-  // fallback direct
-  const {error}=await supa.from('vendors').update({available:newState}).eq('id',currentVendor.id);
-  if(error){ toggle.classList.toggle('on',!newState); toast('Could not save'); } else { currentVendor.available=newState; toast(newState?'🟢 Available':'🔴 Offline'); }
- }
-}
+
 async function loadOrders(){
+ // Vendor sees orders where vendor_id = his id OR hotel_id where his service is active
  try{
-  const r=await secureFetch('/api/vendor/orders');
-  const d=await r.json();
-  allOrders=d.orders||[];
- }catch(e){
-  const {data}=await supa.from('orders').select('*').order('created_at',{ascending:false}).limit(200);
+  const token=getToken();
+  const r=await fetch('/api/vendor/orders',{headers:{Authorization:'Bearer '+token}});
+  const j=await r.json();
+  allOrders=j.orders||[];
+ }catch{
+  const {data}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(100);
   allOrders=data||[];
  }
- const vendorId=currentVendor.id;
- const vendorOrders=allOrders.filter(o=>String(o.vendor_id)===String(vendorId)||String(o.vendor_email||'').toLowerCase()===String(currentVendor.email||'').toLowerCase());
- const newJobs=allOrders.filter(o=>String(o.status).toLowerCase()==='new');
- const active=vendorOrders.filter(o=>['accepted','confirmed','in_progress'].includes(String(o.status).toLowerCase()));
- const completed=vendorOrders.filter(o=>['completed','delivered','done'].includes(String(o.status).toLowerCase()));
+ // Filter: orders that match my vendor_id OR my hotels
+ const myVendorId=currentVendor.id;
+ const filtered=allOrders.filter(o=> String(o.vendor_id||'')===String(myVendorId) || (o.department==='services' && String(o.hotel_id).toUpperCase()!=='') );
+ const newJobs=filtered.filter(o=>['pending','new'].includes(String(o.status).toLowerCase()));
+ const active=filtered.filter(o=>['accepted','in_progress','ready'].includes(String(o.status).toLowerCase()));
+ const done=filtered.filter(o=>['completed','done'].includes(String(o.status).toLowerCase()));
  document.getElementById('statNew').innerText=newJobs.length;
  document.getElementById('statActive').innerText=active.length;
- document.getElementById('statCompleted').innerText=completed.length;
- document.getElementById('statServices').innerText=(currentVendor.services||[]).length;
- renderNewJobs(newJobs); renderActiveJobs(active); renderEarnings(vendorOrders,completed);
+ document.getElementById('statCompleted').innerText=done.length;
+ renderNew(newJobs); renderActive(active);
 }
-function renderNewJobs(orders){
+
+function renderNew(orders){
  const box=document.getElementById('newJobs');
- if(!orders.length){ box.innerHTML=`<div class="card empty"><div style="font-size:40px">🔔</div><b>No new jobs right now</b><p class="small">Keep availability ON</p></div>`; return; }
- box.innerHTML=orders.map(o=>`<div class="card job"><div class="job-top"><div><div class="job-title">${esc(o.service_title||o.service||'Guest Service')}</div><small class="muted">${esc(o.hotel_name||'Partner Hotel')}</small></div><span class="badge badge-new">NEW</span></div><div class="job-meta">🏨 ${esc(o.hotel_name||'Hotel')}<br>🚪 Room: <strong>${esc(o.room||'—')}</strong><br>💰 <strong style="color:var(--lime)">${money(o.amount)}</strong></div><div class="job-actions"><button class="btn btn-a" onclick="acceptOrder('${esc(o.id)}')">✅ Accept</button><button class="btn btn-red" onclick="declineOrder('${esc(o.id)}')">✕ Decline</button></div></div>`).join('');
+ if(!orders.length) { box.innerHTML=`<div class="card" style="text-align:center;padding:30px;color:#888">No new jobs — GM anapo-add hotel yako, orders za guest zitaingia hapa live<br><small>Keep checking guest.html</small></div>`; return; }
+ box.innerHTML=orders.map(o=>`
+  <div class="card job">
+   <div style="display:flex;justify-content:space-between"><b>${esc(o.guest_name||'Guest')} — Room ${esc(o.room_number||o.room)}</b><span class="badge badge-new">${esc(o.status)}</span></div>
+   <div style="font-size:11px;color:#888;margin-top:6px">🏨 ${esc(o.hotel_id)} • ${(o.items||[]).map(i=>i.name).join(', ')} • ${money(o.total)}</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-a" onclick="updateOrder('${o.id}','accepted')">✅ Accept</button><button class="btn btn-blue" onclick="updateOrder('${o.id}','completed')">✓ Complete</button></div>
+  </div>
+ `).join('');
 }
-async function acceptOrder(id){
- if(busy) return; busy=true;
- try{
-  const r=await secureFetch('/api/vendor/orders/'+id+'/accept',{method:'POST'});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error);
-  toast('✅ Job accepted'); await loadOrders(); showTab('active',document.querySelectorAll('.tab')[1]);
- }catch(e){ toast(e.message); }
- busy=false;
-}
-async function declineOrder(id){
- try{ const r=await secureFetch('/api/vendor/orders/'+id+'/decline',{method:'POST', body: JSON.stringify({reason:''})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast('Job declined'); await loadOrders(); }catch(e){ toast(e.message); }
-}
-function renderActiveJobs(orders){
+function renderActive(orders){
  const box=document.getElementById('activeJobs');
- if(!orders.length){ box.innerHTML=`<div class="card empty"><b>No active jobs</b></div>`; return; }
- box.innerHTML=orders.map(o=>`<div class="card job"><div class="job-top"><div><div class="job-title">${esc(o.service_title||o.service||'Service')}</div><small class="muted">${esc(o.hotel_name||'Hotel')}</small></div><span class="badge badge-active">${esc(o.status||'ACTIVE')}</span></div><div class="job-meta">🚪 Room: <strong>${esc(o.room||'—')}</strong><br>💰 <strong style="color:var(--lime)">${money(o.amount)}</strong></div><div class="job-actions"><button class="btn btn-blue" onclick="updateStatus('${esc(o.id)}','in_progress')">▶ Start</button><button class="btn btn-a" onclick="updateStatus('${esc(o.id)}','completed')">✓ Complete</button></div></div>`).join('');
+ if(!orders.length) { box.innerHTML=`<div class="card" style="text-align:center;padding:30px;color:#888">No active</div>`; return; }
+ box.innerHTML=orders.map(o=>`<div class="card job"><div style="display:flex;justify-content:space-between"><b>${esc(o.guest_name)} — ${esc(o.room_number)}</b><span class="badge badge-active">${esc(o.status)}</span></div><div style="font-size:11px;color:#888">${money(o.total)} • ${(o.items||[]).map(i=>i.name).join(', ')}</div><button class="btn btn-a" style="width:100%;margin-top:10px" onclick="updateOrder('${o.id}','completed')">✓ Mark Completed</button></div>`).join('');
 }
-async function updateStatus(id,status){
- try{ const r=await secureFetch('/api/vendor/orders/'+id+'/status',{method:'PATCH', body: JSON.stringify({status})}); const d=await r.json(); if(!d.ok) throw new Error(d.error); toast(status==='completed'?'🎉 Completed':'▶ Started'); await loadOrders(); }catch(e){ toast(e.message); }
+
+async function loadMyHotels(){
+ const {data}=await supa.schema('guesthub_os').from('hotel_services').select('hotel_id').eq('vendor_id',currentVendor.id).eq('is_active',true);
+ const hotels=[...new Set((data||[]).map(d=>d.hotel_id))];
+ document.getElementById('statHotels').innerText=hotels.length;
+ document.getElementById('hotelsContent').innerHTML=`<div class="card"><b>🏨 My Hotels — ${hotels.length} active</b><br><small style="color:#888">GM ali-ku-add kwa hizi hotels, guests wanaona services zako</small></div>`+hotels.map(h=>`<div class="card">${esc(h)} <span class="badge badge-new">LIVE</span></div>`).join('')||'<div class="card">No hotels yet — GM needs to add you in hotel-dashboard → Vendors Pool</div>';
 }
-function renderServices(){
- const services=Array.isArray(currentVendor.services)?currentVendor.services:[]; let html=`<div class="card"><div class="card-title">🛠️ My Services</div><div class="small muted">Services that hotels can route to you</div></div>`;
- if(!services.length){ html+=`<div class="card empty">No services<br><button class="btn btn-a" onclick="location.href='/vendor-signup.html'">Add Services</button></div>`; } else { services.forEach(s=>{ const label=String(s).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()); html+=`<div class="service"><div><div style="font-weight:800;font-size:12px">${esc(label)}</div><small class="muted">Active</small></div><div style="color:var(--lime);font-weight:900">${money(currentVendor.price||0)}</div></div>`; }); }
- document.getElementById('servicesContent').innerHTML=html;
-}
-function renderEarnings(orders,completed){
- let total=0; completed.forEach(o=>total+=Number(o.amount||0));
- document.getElementById('walletBalance').innerText=money(currentVendor.wallet||0);
- document.getElementById('earningsContent').innerHTML=`<div class="card"><div class="card-title">💰 Earnings Overview</div><div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">CURRENT WALLET</div><div style="color:var(--lime);font-size:24px;font-weight:800">${money(currentVendor.wallet||0)}</div></div><div style="padding:12px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">COMPLETED VALUE</div><div style="font-weight:700">${money(total)}</div></div><div style="padding:12px 0"><div style="color:var(--muted);font-size:9px">COMPLETED JOBS</div><div style="font-weight:700">${completed.length}</div></div></div><div class="card"><div class="card-title">🧾 Recent Completed</div>${completed.length?completed.slice(0,20).map(o=>`<div class="service"><div><div style="font-weight:800;font-size:12px">${esc(o.service_title||o.service||'Service')}</div><small class="muted">Room ${esc(o.room||'—')}</small></div><div style="color:var(--lime);font-weight:900">${money(o.amount)}</div></div>`).join(''):`<div class="empty">No completed jobs yet</div>`}</div>`;
+
+async function updateOrder(id,status){
+ await supa.schema('guesthub_os').from('orders').update({status}).eq('id',id);
+ toastM('Status → '+status); loadOrders();
 }
 function renderProfile(){
- const v=currentVendor;
- document.getElementById('profileContent').innerHTML=`<div class="card"><div class="card-title">👤 Vendor Profile</div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">FULL NAME</div><div style="font-weight:700">${esc(v.full_name||'—')}</div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">PHONE</div><div style="font-weight:700">${esc(v.phone||'—')}</div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">CITY</div><div style="font-weight:700">${esc(v.city||'—')}</div></div><div style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="color:var(--muted);font-size:9px">M-PESA</div><div style="font-weight:700">${esc(v.mpesa||'—')}</div></div><div style="padding:10px 0"><div style="color:var(--muted);font-size:9px">STATUS</div><div style="font-weight:700">${esc(v.status||'pending').toUpperCase()} • SECURED</div></div></div><div class="card"><button class="btn btn-d btn-full" onclick="location.href='/vendor-signup.html'">✏️ Edit Details</button><button class="btn btn-red btn-full" style="margin-top:8px" onclick="logoutVendor()">🚪 Logout</button></div>`;
+ document.getElementById('profileContent').innerHTML=`<div class="card"><b>${esc(currentVendor.vendor_name)}</b><br><small>${esc(currentVendor.email)} • ${esc(currentVendor.phone)}</small><br><br>Price: ${money(currentVendor.price)}<br>Location: ${esc(currentVendor.location)}<br>Status: ${esc(currentVendor.status)}</div><div class="card"><button class="btn btn-red btn-full" onclick="localStorage.clear(); location.href='/vendor-login.html'">Logout</button></div>`;
 }
-function openWithdraw(){ document.getElementById('withdrawAmount').value=Math.max(0,Number(currentVendor.wallet||0)); document.getElementById('withdrawModal').classList.add('show'); }
-function closeWithdraw(){ document.getElementById('withdrawModal').classList.remove('show'); }
-async function requestWithdrawal(){
- const phone=document.getElementById('withdrawPhone').value.trim();
- const amount=Number(document.getElementById('withdrawAmount').value);
- if(!phone||!amount||amount<=0){ toast('Enter phone and valid amount'); return; }
- if(amount>Number(currentVendor.wallet||0)){ toast('Insufficient balance'); return; }
- try{
-  const r=await secureFetch('/api/vendor/withdraw',{method:'POST', body: JSON.stringify({phone,amount})});
-  const d=await r.json(); if(!d.ok) throw new Error(d.error);
-  closeWithdraw(); toast('💸 Withdrawal request submitted'); await init();
- }catch(e){ toast(e.message); }
-}
-function showTab(name,el){ document.querySelectorAll('[id^="view-"]').forEach(s=>s.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); }
-async function refreshDashboard(){ toast('Refreshing...'); await loadOrders(); toast('Updated'); }
-function logoutVendor(){ localStorage.removeItem('vendor_token'); localStorage.removeItem('vendor_email'); location.href='/vendor-login.html'; }
+function showTab(name,el){ document.querySelectorAll('[id^="view-"]').forEach(s=>s.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
+function refreshDashboard(){ loadOrders(); loadMyHotels(); toastM('Refreshed'); }
 init();
 </script>
 </body>
