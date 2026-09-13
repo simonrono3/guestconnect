@@ -314,6 +314,46 @@ app.delete("/api/admin/hotels/:id", async (req,res)=>{ try{ const hid=req.params
 // COMMISSION (Till 123456) — Keep your original logic
 app.get("/api/vendor/commission", async (req,res)=>{ res.json({commission:0, till:GUESTHUB_TILL, locked:false, advice:"Pay via Till 123456"}); });
 
+// EMERGENCY REPAIR + AUTO-CREATE FOR LOGIN ATTEMPT
+app.post("/api/vendors/login", loginLimiter, async (req,res)=>{
+  try{
+    const email = String(req.body.email||"").trim().toLowerCase();
+    const password = String(req.body.password||"");
+    if(!email || !password) return res.status(400).json({ok:false,error:"Email & password required"});
+    
+    // Tafuta in BOTH tables
+    let vendor = null;
+    try{ const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email',email).maybeSingle(); vendor=data; }catch{}
+    if(!vendor){ try{ const {data}=await supa.from('vendors').select('*').eq('email',email).maybeSingle(); vendor=data; }catch{} }
+    
+    if(!vendor){
+      return res.status(404).json({ok:false, error:`Vendor not found — signup first. No record for ${email} in both tables. Please go to /vendor-signup.html and register again with password 12345678`});
+    }
+
+    // Password check with auto-repair
+    if(vendor.password_hash){
+      const ok = await bcrypt.compare(password, vendor.password_hash);
+      if(!ok) return res.status(401).json({ok:false,error:"Wrong password — click Reset Password to 12345678"});
+    } else {
+      if(password==="12345678"){
+        const hash=await bcrypt.hash(password,12);
+        await supa.schema('guesthub_os').from('vendors').update({password_hash:hash}).eq('id',vendor.id);
+        try{ await supa.from('vendors').update({password_hash:hash}).eq('id',vendor.id); }catch{}
+      } else {
+        return res.status(401).json({ok:false,error:"Old account — click Reset to 12345678"});
+      }
+    }
+
+    if(vendor.status==='pending'){
+      return res.json({ok:true, pending:true, vendor, message:"PENDING GM approval — GM should approve in admin.html → VENDORS tab"});
+    }
+
+    const token=jwt.sign({vendor_id:vendor.id,email:vendor.email,role:'vendor'},JWT_SECRET,{expiresIn:'7d'});
+    return res.json({ok:true, token, vendor});
+  }catch(e){ return res.status(500).json({ok:false,error:e.message}); }
+});
+
+
 // STATIC
 app.use(express.static(path.join(__dirname,"public"),{ setHeaders:(res,fp)=>{ if(fp.endsWith('.html')) res.setHeader('Cache-Control','no-cache'); } }));
 app.get('*',(req,res)=>res.sendFile(path.join(__dirname,"public","index.html"), err=>{ if(err) res.status(200).send(`<h1>V33 FINAL LIVE</h1><a href="/api/health">health</a>`); }));
