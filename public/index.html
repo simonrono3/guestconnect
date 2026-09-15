@@ -79,7 +79,8 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <section class="hero">
-  <div class="badge"><span class="dot"></span> LIVE IN DIANI • 12 HOTELS • 2,341 ORDERS TODAY</div>
+  <!-- ✅ FIX: removed fake traction numbers -->
+  <div class="badge"><span class="dot"></span> LIVE IN DIANI • ONBOARDING HOTELS</div>
   <h1>CONNECTING EVERY GUEST <b> TO EVERYTHING</b> <span style="color:var(--lime)">.</span></h1>
   <p>One QR per room & table. Guest scans, orders food, taxi, safari. You track LIVE. Vendors pay you 15%. No app download. This is your Hotel OS.</p>
   <div class="heroBtns">
@@ -87,8 +88,9 @@ a{text-decoration:none;color:inherit}
     <a href="/hotel-signup.html" class="btn-gold">🏨 List Your Hotel - 14 Days Free</a>
     <a href="#hotelsGrid" class="btn-small">View Partner Hotels ↓</a>
   </div>
-  <div class="social"><b>TRUSTED BY 12 HOTELS IN DIANI</b></div>
-  <div class="logos"><span>🌴 BAOBAB BEACH</span><span>🏖️ SWAHILI BEACH</span><span>🌊 DIANI SEA</span><span>⭐ 9 MORE</span></div>
+  <!-- ✅ FIX: honest until you have real partners -->
+  <div class="social"><b>EARLY ACCESS • DIANI PILOT</b></div>
+  <div class="logos"><span>🌴 BAOBAB BEACH</span><span>🏖️ SWAHILI BEACH</span><span>🌊 DIANI SEA</span><span>⭐ JOIN US</span></div>
   <div class="os-demo">
     <div class="os-card"><div style="font-size:24px">📱</div><b>1. Guest Scans QR</b><small>Room 101 or Table T05 opens SuperApp in 1 sec</small><div class="code">/guest.html?hotel=BAOBAB&room=101</div></div>
     <div class="os-card"><div style="font-size:24px">⚡</div><b>2. Order LIVE to GM OS</b><small>Dashboard dings! Kitchen & vendors auto-assigned</small><div class="code" style="color:var(--lime)">🔔 Room 101 - Pilau Beef Ksh 650</div></div>
@@ -114,29 +116,110 @@ a{text-decoration:none;color:inherit}
 <div class="container" style="padding-bottom:0">
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
     <h2 class="section-title" style="margin:0">Partner Hotels</h2>
-    <div class="search-wrap" style="margin:0;max-width:400px;flex:1"><input id="searchInput" type="text" placeholder="Search hotel..." onkeyup="filterHotels()"></div>
+    <div class="search-wrap" style="margin:0;max-width:400px;flex:1"><input id="searchInput" type="text" placeholder="Search hotel..." oninput="filterHotels()"></div>
   </div>
 </div>
 <div class="cat-filter">
-  <button class="cat-btn active" onclick="filterByCategory('All',this)">All Hotels</button>
-  <button class="cat-btn" onclick="filterByCategory('Beach',this)">🏖 Beach</button>
-  <button class="cat-btn" onclick="filterByCategory('Safari',this)">🦁 Safari</button>
-  <button class="cat-btn" onclick="filterByCategory('City',this)">🏙 City</button>
+  <button class="cat-btn active" data-cat="All">All Hotels</button>
+  <button class="cat-btn" data-cat="Beach">🏖 Beach</button>
+  <button class="cat-btn" data-cat="Safari">🦁 Safari</button>
+  <button class="cat-btn" data-cat="City">🏙 City</button>
 </div>
 <section class="container" style="padding-top:0">
   <div id="hotelsGrid" class="grid"></div>
   <div id="noResults" style="display:none;text-align:center;padding:60px;opacity:.6">No hotels found.</div>
 </section>
 
-<footer class="footer"><h2 style="color:var(--gold);font-family:'Playfair Display';font-size:26px">GUESTHUB OS 12.2</h2><p>GM + Vendor Login + GM Demo Fixed ✅</p></footer>
+<footer class="footer"><h2 style="color:var(--gold);font-family:'Playfair Display';font-size:26px">GUESTHUB OS</h2><p>Hotel OS • Vendor Marketplace • Guest SuperApp</p></footer>
 
 <script>
-let allHotels=[];let currentCategory="All";
-function goToHotel(id){window.location.href=`/gm-dashboard.html?hotel=${id}&demo=1`}
-function filterByCategory(cat,el){currentCategory=cat;document.querySelectorAll(".cat-btn").forEach(b=>b.classList.remove("active"));el.classList.add("active");filterHotels()}
-function filterHotels(){const s=document.getElementById("searchInput").value.toLowerCase();let f=allHotels.filter(h=>{const n=(h.hotel_name||h.name||"").toLowerCase();const l=(h.location||"").toLowerCase();return n.includes(s)||l.includes(s)});if(currentCategory!=="All"){f=f.filter(h=>(h.hotel_type||h.category)===currentCategory)}renderHotels(f)}
-function renderHotels(hotels){document.getElementById("hotelCount").innerText=allHotels.length;const g=document.getElementById("hotelsGrid");if(!hotels.length){g.innerHTML="";document.getElementById("noResults").style.display="block";return}document.getElementById("noResults").style.display="none";g.innerHTML=hotels.map(h=>`<div class="hotel-card" onclick="goToHotel('${h.hotel_id||h.id}')"><img src="${h.image||'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200'}"><div class="hotel-body"><h3>${h.hotel_name||h.name}</h3><div class="location">📍 ${h.location||'Kenya'} • OS LIVE</div><div class="btn">Manage Hotel OS →</div></div></div>`).join("")}
-fetch('/api/data').then(r=>r.json()).then(data=>{allHotels=data.hotels||data;renderHotels(allHotels)}).catch(()=>{allHotels=[{id:'BAOBAB',hotel_name:'Baobab Beach Resort',location:'Diani',hotel_type:'Beach'}];renderHotels(allHotels)});
+// ✅ FIX: HTML escaper for anything injected into innerHTML
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
+  {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+));
+
+let allHotels = [];
+let currentCategory = "All";
+
+function goToHotel(id) {
+  window.location.href = `/gm-dashboard.html?hotel=${encodeURIComponent(id)}&demo=1`;
+}
+
+// ✅ FIX: category filter via data attributes + event delegation
+document.querySelectorAll(".cat-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentCategory = btn.dataset.cat;
+    document.querySelectorAll(".cat-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    filterHotels();
+  });
+});
+
+function filterHotels() {
+  const s = (document.getElementById("searchInput").value || "").toLowerCase();
+  let f = allHotels.filter(h => {
+    const n = (h.hotel_name || h.name || "").toLowerCase();
+    const l = (h.location || h.city || "").toLowerCase();
+    return n.includes(s) || l.includes(s);
+  });
+  if (currentCategory !== "All") {
+    // ✅ FIX: use includes() so "Beach Resort" matches "Beach"
+    f = f.filter(h => {
+      const t = (h.hotel_type || h.category || "").toString();
+      return t.toLowerCase().includes(currentCategory.toLowerCase());
+    });
+  }
+  renderHotels(f);
+}
+
+function renderHotels(hotels) {
+  // ✅ FIX: stat reflects the currently shown set
+  document.getElementById("hotelCount").innerText = hotels.length;
+
+  const g = document.getElementById("hotelsGrid");
+  const noRes = document.getElementById("noResults");
+
+  if (!hotels.length) {
+    g.innerHTML = "";
+    noRes.style.display = "block";
+    return;
+  }
+  noRes.style.display = "none";
+
+  g.innerHTML = hotels.map(h => {
+    const id = h.hotel_id || h.id || "";
+    const name = h.hotel_name || h.name || "Hotel";
+    const loc = h.location || h.city || "Kenya";
+    const img = h.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200";
+    return `
+      <div class="hotel-card" data-id="${esc(id)}">
+        <img src="${esc(img)}" alt="${esc(name)}" loading="lazy">
+        <div class="hotel-body">
+          <h3>${esc(name)}</h3>
+          <div class="location">📍 ${esc(loc)} • OS LIVE</div>
+          <div class="btn">Manage Hotel OS →</div>
+        </div>
+      </div>`;
+  }).join("");
+
+  // ✅ FIX: event delegation instead of inline onclick
+  g.querySelectorAll(".hotel-card").forEach(card => {
+    card.addEventListener("click", () => goToHotel(card.dataset.id));
+  });
+}
+
+// ✅ FIX: log fetch errors so you can debug, instead of silent fallback
+fetch('/api/data')
+  .then(r => r.json())
+  .then(data => {
+    allHotels = Array.isArray(data) ? data : (data.hotels || []);
+    renderHotels(allHotels);
+  })
+  .catch(err => {
+    console.warn("Could not load /api/data — using demo hotel:", err);
+    allHotels = [{ id: 'BAOBAB', hotel_name: 'Baobab Beach Resort', location: 'Diani', hotel_type: 'Beach' }];
+    renderHotels(allHotels);
+  });
 </script>
 </body>
 </html>
