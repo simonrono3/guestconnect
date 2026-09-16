@@ -1,101 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotel Login - GuestHub</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hotel Login — GuestHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-body{background:#0a0a0a; color:#fff; font-family:Arial; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;}
-.login-box{background:#1a1a1a; padding:30px; border-radius:15px; border:2px solid #B8860B; width:90%; max-width:400px;}
-h1{text-align:center; color:#B8860B; margin-bottom:20px;}
-label{display:block; margin-top:15px; color:#DAA520; font-weight:bold;}
-input{width:100%; padding:12px; margin-top:5px; background:#222; border:1px solid #333; border-radius:8px; color:#fff; box-sizing:border-box;}
-button{background:#B8860B; color:#000; padding:15px; width:100%; border:none; border-radius:10px; font-weight:bold; font-size:16px; margin-top:20px; cursor:pointer;}
-button:hover{background:#DAA520;}
-button:disabled{opacity:.6; cursor:not-allowed;}
-.note{font-size:12px; color:#aaa; text-align:center; margin-top:15px;}
-.msg{margin-top:14px; padding:10px; border-radius:8px; font-size:13px; font-weight:700; display:none; text-align:center;}
-.msg.err{display:block; background:#2a0d0d; color:#ff7b7b; border:1px solid #7f1d1d;}
-.msg.ok{display:block; background:#0d2a15; color:#4ade80; border:1px solid #166534;}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#121212;--border:#222}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -20%,rgba(251,191,36,.08),transparent 40%),var(--bg);color:#fff;font-family:Inter,sans-serif;display:grid;place-items:center;min-height:100vh;padding:20px}
+.box{width:100%;max-width:420px;background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px}
+.logo{text-align:center;margin-bottom:22px}
+.logo b{font-family:Space Grotesk;font-size:26px;color:var(--gold);display:block}
+.logo span{font-size:10px;letter-spacing:3px;color:#888;font-weight:800}
+label{font-size:10px;font-weight:900;color:#777;letter-spacing:.1em;text-transform:uppercase;display:block;margin-top:14px}
+input{width:100%;margin-top:6px;padding:14px;background:#080808;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;outline:none;font-family:inherit}
+input:focus{border-color:var(--gold)}
+.btn{width:100%;background:linear-gradient(135deg,var(--gold),#eab308);color:#000;padding:16px;border:none;border-radius:14px;font-weight:900;font-size:15px;margin-top:20px;cursor:pointer}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin-top:14px;padding:12px;border-radius:12px;font-size:13px;font-weight:700;display:none;text-align:center}
+.msg.err{display:block;background:#2a0d0d;color:#ff7b7b;border:1px solid #7f1d1d}
+.msg.ok{display:block;background:#0d2a15;color:#4ade80;border:1px solid #166534}
+.note{text-align:center;color:#666;font-size:12px;margin-top:18px}
+.note a{color:var(--lime);text-decoration:none;font-weight:800}
 </style>
 </head>
 <body>
-
-<div class="login-box">
-  <h1>🏨 Hotel Dashboard Login</h1>
-
-  <form onsubmit="login(event)">
+<div class="box">
+  <div class="logo"><b>GUESTHUB</b><span>HOTEL DASHBOARD</span></div>
+  <form id="form">
     <label>Hotel ID</label>
-    <input type="text" id="hotelId" required placeholder="e.g. grandhotel">
-
+    <input id="hotelId" required placeholder="e.g. BAOBAB" autocapitalize="characters" autocomplete="username">
     <label>Password</label>
-    <input type="password" id="password" required placeholder="********">
-
-    <button type="submit" id="btn">Login to Dashboard</button>
+    <input id="password" type="password" required placeholder="••••••••" autocomplete="current-password">
+    <button type="submit" class="btn" id="btn">Login to Dashboard →</button>
   </form>
-
-  <div class="msg" id="msg"></div>
-
-  <p class="note">Your Hotel ID was shown when you signed up. Don't have an account? <a href="/hotel-signup.html" style="color:#00FF7F;">Register your hotel</a></p>
+  <div id="msg" class="msg"></div>
+  <div class="note">No account? <a href="/hotel-signup.html">Register your hotel</a></div>
 </div>
-
 <script>
+const $ = id => document.getElementById(id);
+const msg = $('msg');
 
-async function login(e){
-
+$('form').addEventListener('submit', async e => {
   e.preventDefault();
-
-  const btn = document.getElementById("btn");
-  const msg = document.getElementById("msg");
-
-  const hotelId = document.getElementById("hotelId").value.trim();
-  const password = document.getElementById("password").value;
-
-  msg.className = "msg";
-  msg.innerHTML = "";
-
+  msg.className = 'msg';
+  const btn = $('btn');
   btn.disabled = true;
-  btn.innerHTML = "Signing In...";
+  btn.innerText = 'Signing in...';
 
-  try{
-
-    const res = await fetch("/api/hotel/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hotelId, password })
+  try {
+    const r = await fetch('/api/hotels/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hotel_id: $('hotelId').value.trim().toUpperCase(),
+        password: $('password').value
+      })
     });
 
-    const data = await res.json();
+    if (r.status === 429) throw new Error('Too many attempts — wait 15 minutes');
 
-    if(!res.ok || !data.ok){
-      throw new Error(data.error || "Login failed. Please try again.");
-    }
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Login failed');
 
-    localStorage.setItem("hotel_token", data.token);
-    localStorage.setItem("hotel_id", data.hotel.hotel_id || data.hotel.id);
-    localStorage.setItem("hotel_name", data.hotel.name || data.hotel.hotel_name || "");
+    localStorage.setItem('hotel_token', j.token);
+    localStorage.setItem('hotel_id', j.hotel_id);
+    localStorage.setItem('hotel_name', j.hotel?.name || j.hotel?.hotel_name || '');
 
-    msg.className = "msg ok";
-    msg.innerHTML = "Welcome back! Redirecting...";
-
-    setTimeout(()=>{
-      location.href = "/hotel-dashboard.html";
-    }, 700);
-
-  }catch(ex){
-
-    msg.className = "msg err";
-    msg.innerHTML = ex.message;
-
+    msg.className = 'msg ok';
+    msg.textContent = 'Welcome! Redirecting...';
+    setTimeout(() => { window.location.href = '/gm-dashboard.html?hotel=' + encodeURIComponent(j.hotel_id); }, 500);
+  } catch (err) {
+    msg.className = 'msg err';
+    msg.textContent = err.message || 'Login failed';
     btn.disabled = false;
-    btn.innerHTML = "Login to Dashboard";
+    btn.innerText = 'Login to Dashboard →';
   }
-
-}
-
+});
 </script>
-
 </body>
 </html>
-
