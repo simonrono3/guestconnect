@@ -1,7 +1,5 @@
 // ============================================================
-// GuestHub V1.0 — Complete Backend
-// All browser writes go through this server (service_role key).
-// Browsers only READ with the anon key + RLS.
+// GuestHub V1.0 — Complete Backend (FIXED)
 // ============================================================
 
 import express from "express";
@@ -21,24 +19,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 10000;
 
-// ---------- env guards ----------
+// ---------- env check (WARN only — do NOT exit) ----------
 const REQUIRED = ["SUPABASE_URL", "SUPABASE_KEY", "SUPABASE_SERVICE_KEY", "JWT_SECRET", "ADMIN_PASSWORD"];
 const missing = REQUIRED.filter(k => !process.env[k]);
 if (missing.length) {
-  console.error("❌ Missing env vars:", missing.join(", "));
-  if (process.env.NODE_ENV === "production") process.exit(1);
+  console.warn("⚠️  Missing env vars:", missing.join(", "));
+  console.warn("⚠️  Server will start, but API calls that need these will fail.");
 }
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON = process.env.SUPABASE_KEY;
-const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || "";
+const SUPABASE_ANON = process.env.SUPABASE_KEY || "";
+const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY || "";
 const JWT_SECRET = process.env.JWT_SECRET || "dev_only_change_me";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
-// Server-side Supabase client — SERVICE key bypasses RLS
-const supa = createClient(SUPABASE_URL, SUPABASE_SERVICE, {
-  auth: { persistSession: false, autoRefreshToken: false }
-});
+// Only create client if we have valid keys
+let supa = null;
+if (SUPABASE_URL && SUPABASE_SERVICE) {
+  supa = createClient(SUPABASE_URL, SUPABASE_SERVICE, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  console.log("✅ Supabase client ready");
+} else {
+  console.error("❌ Supabase client NOT created — missing SUPABASE_URL or SUPABASE_SERVICE_KEY");
+}
 
 const app = express();
 app.disable("x-powered-by");
@@ -50,6 +54,7 @@ app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 // ---------- CORS ----------
 const ALLOWED_ORIGINS = [
   "https://guestconnect-ap2q.onrender.com",
+  "https://ap2q.onrender.com",
   "http://localhost:10000",
   "http://localhost:3000"
 ];
@@ -69,8 +74,19 @@ const signupLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 30, standardHea
 const orderLimiter  = rateLimit({ windowMs: 60 * 1000,      max: 30, standardHeaders: true });
 app.use("/api/", rateLimit({ windowMs: 60 * 1000, max: 300, standardHeaders: true }));
 
+// ---------- Health checks ----------
+app.get("/healthz", (req, res) => res.status(200).send("ok"));
+app.get("/api/health", (req, res) =>
+  res.json({
+    ok: true,
+    os: "GuestHub V1.0",
+    time: new Date().toISOString(),
+    supabase: !!supa,
+    missing_env: missing
+  })
+);
+
 // ---------- Config served to browsers ----------
-// Only the ANON key. Never the service key.
 app.get("/config.js", (req, res) => {
   res.type("application/javascript");
   res.setHeader("Cache-Control", "no-cache");
@@ -94,6 +110,12 @@ const cleanPhone = v => {
 const sendError = (res, s, m) => res.status(s).json({ ok: false, error: m });
 const sendSuccess = (res, d = {}) => res.json({ ok: true, ...d });
 const makeRef = () => "GH-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(100 + Math.random() * 900);
+
+// Guard so routes don't crash if supa is null
+function requireSupabase(req, res, next) {
+  if (!supa) return sendError(res, 503, "Server not configured. Contact admin.");
+  next();
+}
 
 // ---------- Auth ----------
 const createToken = (payload, exp = "7d") => jwt.sign(payload, JWT_SECRET, { expiresIn: exp });
@@ -119,11 +141,6 @@ function requireVendor(req, res, next) {
   req.user = t; next();
 }
 
-// ---------- Health ----------
-app.get("/api/health", (req, res) =>
-  res.json({ ok: true, os: "GuestHub V1.0", time: new Date().toISOString() })
-);
-
 // ============================================================
 // ADMIN
 // ============================================================
@@ -140,7 +157,7 @@ app.post("/api/admin/login", loginLimiter, async (req, res) => {
   } catch { return sendError(res, 500, "Server error"); }
 });
 
-app.get("/api/admin/stats", requireAdmin, async (req, res) => {
+app.get("/api/admin/stats", requireAdmin, requireSupabase, async (req, res) => {
   const [hotels, vendors, orders, services] = await Promise.all([
     supa.from("hotels").select("id,status", { count: "exact" }),
     supa.from("vendors").select("id,status", { count: "exact" }),
@@ -161,39 +178,39 @@ app.get("/api/admin/stats", requireAdmin, async (req, res) => {
   });
 });
 
-app.get("/api/admin/hotels", requireAdmin, async (req, res) => {
+app.get("/api/admin/hotels", requireAdmin, requireSupabase, async (req, res) => {
   const { data } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,email,phone,city,location,hotel_type,plan,status,created_at")
     .order("created_at", { ascending: false }).limit(500);
   res.json({ hotels: data || [] });
 });
 
-app.post("/api/admin/hotels/:id/approve", requireAdmin, async (req, res) => {
+app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
   const id = req.params.id;
   await supa.from("hotels").update({ status: "APPROVED", approved_by_admin: true })
     .or(`hotel_id.eq.${id},id.eq.${id}`);
   sendSuccess(res);
 });
 
-app.post("/api/admin/hotels/:id/block", requireAdmin, async (req, res) => {
+app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (req, res) => {
   const id = req.params.id;
   await supa.from("hotels").update({ status: "BLOCKED" }).or(`hotel_id.eq.${id},id.eq.${id}`);
   sendSuccess(res);
 });
 
-app.delete("/api/admin/hotels/:id", requireAdmin, async (req, res) => {
+app.delete("/api/admin/hotels/:id", requireAdmin, requireSupabase, async (req, res) => {
   const id = req.params.id;
   await supa.from("hotels").delete().or(`hotel_id.eq.${id},id.eq.${id}`);
   sendSuccess(res);
 });
 
-app.get("/api/admin/vendors", requireAdmin, async (req, res) => {
+app.get("/api/admin/vendors", requireAdmin, requireSupabase, async (req, res) => {
   const { data } = await supa.from("vendors").select("*")
     .order("created_at", { ascending: false }).limit(500);
   res.json({ vendors: data || [] });
 });
 
-app.post("/api/admin/vendors/:id/approve", requireAdmin, async (req, res) => {
+app.post("/api/admin/vendors/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
   const status = String(req.body.status || "approved").toLowerCase();
   if (!["approved", "rejected", "blocked"].includes(status))
     return sendError(res, 400, "Invalid status");
@@ -201,29 +218,29 @@ app.post("/api/admin/vendors/:id/approve", requireAdmin, async (req, res) => {
   sendSuccess(res);
 });
 
-app.delete("/api/admin/vendors/:id", requireAdmin, async (req, res) => {
+app.delete("/api/admin/vendors/:id", requireAdmin, requireSupabase, async (req, res) => {
   await supa.from("vendors").delete().eq("id", req.params.id);
   await supa.from("vendor_hotels").delete().eq("vendor_id", req.params.id);
   sendSuccess(res);
 });
 
-app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+app.get("/api/admin/orders", requireAdmin, requireSupabase, async (req, res) => {
   const { data } = await supa.from("orders").select("*")
     .order("created_at", { ascending: false }).limit(200);
   res.json({ orders: data || [] });
 });
 
 // ============================================================
-// HOTELS — public + auth
+// HOTELS
 // ============================================================
-app.get("/api/data", async (req, res) => {
+app.get("/api/data", requireSupabase, async (req, res) => {
   const { data } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status")
     .eq("status", "APPROVED").limit(500);
   res.json({ hotels: data || [] });
 });
 
-app.get("/api/public/hotel/:id", async (req, res) => {
+app.get("/api/public/hotel/:id", requireSupabase, async (req, res) => {
   const id = req.params.id;
   const { data } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,city,location,hotel_type")
@@ -232,7 +249,7 @@ app.get("/api/public/hotel/:id", async (req, res) => {
   return sendSuccess(res, { hotel: data });
 });
 
-app.post("/api/hotels/signup", signupLimiter, async (req, res) => {
+app.post("/api/hotels/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
     const { hotel_name, name, manager_name, location, city, hotel_type, rooms, website, email, phone, password } = req.body;
     const finalName = cleanText(hotel_name || name, 100);
@@ -275,7 +292,7 @@ app.post("/api/hotels/signup", signupLimiter, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-app.post("/api/hotels/login", loginLimiter, async (req, res) => {
+app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) => {
   try {
     const { hotel_id, hotelId, email, password } = req.body;
     const id = clean(hotel_id || hotelId);
@@ -302,9 +319,9 @@ app.post("/api/hotels/login", loginLimiter, async (req, res) => {
 });
 
 // ============================================================
-// VENDOR SIGNUP (public) — matches Vendor Signup V34.1 form
+// VENDOR SIGNUP (public)
 // ============================================================
-app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
+app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
     const {
       full_name, vendor_name, email, password, phone,
@@ -314,7 +331,6 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
       hotels, hotel_ids
     } = req.body;
 
-    // ---------- validation ----------
     const finalName = cleanText(vendor_name || full_name, 100);
     if (!finalName || finalName.length < 2)
       return sendError(res, 400, "Vendor name too short");
@@ -329,19 +345,13 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
     if (!id_number) return sendError(res, 400, "ID number required");
     if (!mpesa) return sendError(res, 400, "M-Pesa number required");
 
-    // ---------- duplicate check ----------
     const { data: existing } = await supa
       .from("vendors").select("id").eq("email", finalEmail).maybeSingle();
     if (existing) return sendError(res, 409, "Vendor already registered with this email");
 
-    // ---------- create vendor ----------
     const hash = await bcrypt.hash(String(password), 12);
     const serviceList = Array.isArray(services) ? services : [];
 
-    // Insert only columns that definitely exist in your vendors table.
-    // If your table has extra columns (full_name, id_number, hub_location,
-    // services, mpesa, payout_method), they will be included automatically
-    // below — but Supabase will error if a column doesn't exist.
     const insertPayload = {
       vendor_name: finalName,
       email: finalEmail,
@@ -355,7 +365,6 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
       is_active: false
     };
 
-    // Optional columns — only add if they exist in your schema
     const optional = {
       full_name: finalName,
       id_number: cleanText(id_number, 40),
@@ -365,11 +374,11 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
       payout_method: cleanText(payout_method || "mpesa", 20)
     };
 
-    // Try first with all columns
+    // Try with all columns first
     let { data: vendor, error } = await supa
       .from("vendors").insert([{ ...insertPayload, ...optional }]).select().single();
 
-    // If it failed because an optional column doesn't exist, retry without them
+    // If a column doesn't exist, retry with minimal payload
     if (error && /column|schema cache/i.test(error.message || "")) {
       console.warn("⚠️ Optional vendor columns missing, retrying minimal insert:", error.message);
       const retry = await supa.from("vendors").insert([insertPayload]).select().single();
@@ -382,7 +391,7 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
       return sendError(res, 500, error.message);
     }
 
-    // ---------- pre-link chosen hotels (inactive until admin approves) ----------
+    // Pre-link chosen hotels (inactive until approved)
     const chosen = Array.isArray(hotels) && hotels.length ? hotels
                  : Array.isArray(hotel_ids) && hotel_ids.length ? hotel_ids
                  : [];
@@ -398,7 +407,7 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
       const links = hotelIds.map(hid => ({
         vendor_id: vendor.id,
         hotel_id: String(hid).toUpperCase(),
-        is_active: false   // GM must activate
+        is_active: false
       }));
       await supa.from("vendor_hotels").upsert(links, { onConflict: "vendor_id,hotel_id" });
     }
@@ -416,9 +425,9 @@ app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
 });
 
 // ============================================================
-// VENDOR LOGIN (public)
+// VENDOR LOGIN
 // ============================================================
-app.post("/api/vendors/login", loginLimiter, async (req, res) => {
+app.post("/api/vendors/login", loginLimiter, requireSupabase, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password)
@@ -447,7 +456,7 @@ app.post("/api/vendors/login", loginLimiter, async (req, res) => {
 // ============================================================
 // GM endpoints
 // ============================================================
-app.get("/api/gm/me", requireHotel, async (req, res) => {
+app.get("/api/gm/me", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
   const { data: hotel } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,email,phone,city,location,hotel_type,plan,status,rooms,website")
@@ -456,14 +465,14 @@ app.get("/api/gm/me", requireHotel, async (req, res) => {
   return sendSuccess(res, { hotel, departments: depts || [] });
 });
 
-app.get("/api/gm/services", requireHotel, async (req, res) => {
+app.get("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
   const { data } = await supa.from("hotel_services")
     .select("*").eq("hotel_id", req.user.hotel_id)
     .order("created_at", { ascending: false });
   return sendSuccess(res, { services: data || [] });
 });
 
-app.post("/api/gm/services", requireHotel, async (req, res) => {
+app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
   const { title, description, price, category, icon } = req.body;
   if (!title) return sendError(res, 400, "Title required");
   const { data, error } = await supa.from("hotel_services").insert([{
@@ -479,7 +488,7 @@ app.post("/api/gm/services", requireHotel, async (req, res) => {
   return sendSuccess(res, { service: data });
 });
 
-app.patch("/api/gm/services/:id", requireHotel, async (req, res) => {
+app.patch("/api/gm/services/:id", requireHotel, requireSupabase, async (req, res) => {
   const { data: existing } = await supa.from("hotel_services")
     .select("hotel_id").eq("id", req.params.id).maybeSingle();
   if (!existing || existing.hotel_id !== req.user.hotel_id)
@@ -495,7 +504,7 @@ app.patch("/api/gm/services/:id", requireHotel, async (req, res) => {
   sendSuccess(res, { service: data });
 });
 
-app.delete("/api/gm/services/:id", requireHotel, async (req, res) => {
+app.delete("/api/gm/services/:id", requireHotel, requireSupabase, async (req, res) => {
   const { data: existing } = await supa.from("hotel_services")
     .select("hotel_id").eq("id", req.params.id).maybeSingle();
   if (!existing || existing.hotel_id !== req.user.hotel_id)
@@ -504,7 +513,7 @@ app.delete("/api/gm/services/:id", requireHotel, async (req, res) => {
   sendSuccess(res);
 });
 
-app.get("/api/gm/vendors-pool", requireHotel, async (req, res) => {
+app.get("/api/gm/vendors-pool", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
   const { data: pool } = await supa.from("vendors").select("*").eq("status", "approved").limit(300);
   const { data: linked } = await supa.from("vendor_hotels")
@@ -513,7 +522,7 @@ app.get("/api/gm/vendors-pool", requireHotel, async (req, res) => {
   sendSuccess(res, { pool: pool || [], myVendorIds: myIds });
 });
 
-app.post("/api/gm/vendors/:vendorId/add", requireHotel, async (req, res) => {
+app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
   const vid = req.params.vendorId;
   if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
@@ -547,7 +556,7 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, async (req, res) => {
   sendSuccess(res, { message: v.vendor_name + " added" });
 });
 
-app.post("/api/gm/vendors/:vendorId/remove", requireHotel, async (req, res) => {
+app.post("/api/gm/vendors/:vendorId/remove", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
   const vid = req.params.vendorId;
   await supa.from("vendor_hotels").update({ is_active: false }).eq("hotel_id", hid).eq("vendor_id", vid);
@@ -555,12 +564,12 @@ app.post("/api/gm/vendors/:vendorId/remove", requireHotel, async (req, res) => {
   sendSuccess(res);
 });
 
-app.get("/api/gm/departments", requireHotel, async (req, res) => {
+app.get("/api/gm/departments", requireHotel, requireSupabase, async (req, res) => {
   const { data } = await supa.from("departments").select("*").eq("hotel_id", req.user.hotel_id);
   sendSuccess(res, { departments: data || [] });
 });
 
-app.post("/api/gm/departments", requireHotel, async (req, res) => {
+app.post("/api/gm/departments", requireHotel, requireSupabase, async (req, res) => {
   const { name, whatsapp } = req.body;
   if (!name) return sendError(res, 400, "Department name required");
   const { data, error } = await supa.from("departments").upsert(
@@ -571,14 +580,14 @@ app.post("/api/gm/departments", requireHotel, async (req, res) => {
   sendSuccess(res, { department: data });
 });
 
-app.get("/api/gm/orders", requireHotel, async (req, res) => {
+app.get("/api/gm/orders", requireHotel, requireSupabase, async (req, res) => {
   const { data } = await supa.from("orders").select("*")
     .eq("hotel_id", req.user.hotel_id)
     .order("created_at", { ascending: false }).limit(200);
   sendSuccess(res, { orders: data || [] });
 });
 
-app.patch("/api/gm/orders/:id", requireHotel, async (req, res) => {
+app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) => {
   const { data: existing } = await supa.from("orders")
     .select("hotel_id").eq("id", req.params.id).maybeSingle();
   if (!existing || existing.hotel_id !== req.user.hotel_id)
@@ -601,14 +610,14 @@ app.patch("/api/gm/orders/:id", requireHotel, async (req, res) => {
 // ============================================================
 // VENDOR endpoints (authenticated)
 // ============================================================
-app.get("/api/vendor/me", requireVendor, async (req, res) => {
+app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   const { data } = await supa.from("vendors").select("*").eq("id", req.user.vendor_id).maybeSingle();
   if (!data) return sendError(res, 404, "Vendor not found");
   delete data.password_hash;
   return sendSuccess(res, { vendor: data });
 });
 
-app.get("/api/vendor/orders", requireVendor, async (req, res) => {
+app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
   const { data: links } = await supa.from("vendor_hotels")
     .select("hotel_id").eq("vendor_id", vid).eq("is_active", true);
@@ -622,7 +631,7 @@ app.get("/api/vendor/orders", requireVendor, async (req, res) => {
   return sendSuccess(res, { orders: data || [] });
 });
 
-app.patch("/api/vendor/orders/:id", requireVendor, async (req, res) => {
+app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
   const status = cleanText(req.body.status, 20);
   if (!["accepted", "completed", "cancelled"].includes(status))
@@ -637,16 +646,16 @@ app.patch("/api/vendor/orders/:id", requireVendor, async (req, res) => {
   sendSuccess(res, { order: data });
 });
 
-app.get("/api/vendor/hotels", requireVendor, async (req, res) => {
+app.get("/api/vendor/hotels", requireVendor, requireSupabase, async (req, res) => {
   const { data } = await supa.from("vendor_hotels")
     .select("hotel_id, is_active").eq("vendor_id", req.user.vendor_id).eq("is_active", true);
   sendSuccess(res, { hotels: data || [] });
 });
 
 // ============================================================
-// GUEST — public order + menu fetch
+// GUEST — public
 // ============================================================
-app.get("/api/public/hotel/:hotelId/services", async (req, res) => {
+app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
   const hid = req.params.hotelId.toUpperCase();
   const { data } = await supa.from("hotel_services").select("*")
     .eq("hotel_id", hid).eq("is_active", true)
@@ -655,7 +664,7 @@ app.get("/api/public/hotel/:hotelId/services", async (req, res) => {
   res.json({ services: data || [], departments: depts || [] });
 });
 
-app.post("/api/orders", orderLimiter, async (req, res) => {
+app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const { hotel_id, room_number, guest_name, guest_phone, service_id, service_title,
             category, details, amount, department } = req.body;
@@ -689,4 +698,70 @@ app.post("/api/orders", orderLimiter, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-app.get("/api/orders
+app.get("/api/orders/:id", requireSupabase, async (req, res) => {
+  const id = req.params.id;
+  const { data } = await supa.from("orders").select("*")
+    .or(`id.eq.${id},reference.eq.${id}`).maybeSingle();
+  if (!data) return sendError(res, 404, "Order not found");
+  return sendSuccess(res, { order: data });
+});
+
+app.get("/api/guest/orders", requireSupabase, async (req, res) => {
+  const phone = cleanPhone(req.query.phone || "");
+  const hotel_id = String(req.query.hotel_id || "").toUpperCase();
+  if (!phone || !hotel_id) return sendError(res, 400, "phone and hotel_id required");
+  const { data } = await supa.from("orders").select("*")
+    .eq("hotel_id", hotel_id)
+    .eq("guest_phone", phone)
+    .order("created_at", { ascending: false }).limit(20);
+  return sendSuccess(res, { orders: data || [] });
+});
+
+// ============================================================
+// STATIC FRONTEND + SPA fallback
+// ============================================================
+const publicDir = path.join(__dirname, "public");
+app.use(express.static(publicDir, { maxAge: "1h", etag: true }));
+
+app.get("*", (req, res) => {
+  if (req.path.startsWith("/api/") || req.path.startsWith("/config.js")) {
+    return res.status(404).json({ ok: false, error: "API route not found: " + req.path });
+  }
+  const filePath = path.join(publicDir, req.path);
+  if (req.path.endsWith(".html")) {
+    return res.sendFile(filePath, (err) => {
+      if (err) res.sendFile(path.join(publicDir, "index.html"));
+    });
+  }
+  const htmlMap = {
+    "/admin": "admin.html",
+    "/guest": "guest.html",
+    "/hotel": "hotel-dashboard.html",
+    "/vendor": "vendor-dashboard.html",
+    "/vendor-login": "vendor-login.html",
+    "/hotel-login": "hotel-login.html",
+    "/": "index.html"
+  };
+  const mapped = htmlMap[req.path] || "index.html";
+  res.sendFile(path.join(publicDir, mapped), (err) => {
+    if (err) res.sendFile(path.join(publicDir, "index.html"));
+  });
+});
+
+// ---------- Error handler ----------
+app.use((err, req, res, next) => {
+  console.error("❌", err.message);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ ok: false, error: "Server error" });
+});
+
+// ---------- Listen ----------
+app.listen(PORT, "0.0.0.0", () => {
+  console.log("============================================");
+  console.log(`✅ GuestHub V1.0 running on 0.0.0.0:${PORT}`);
+  console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
+  console.log(`🔗 URL: https://guestconnect-ap2q.onrender.com`);
+  console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
+  if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
+  console.log("============================================");
+});
