@@ -302,6 +302,149 @@ app.post("/api/hotels/login", loginLimiter, async (req, res) => {
 });
 
 // ============================================================
+// VENDOR SIGNUP (public) — matches Vendor Signup V34.1 form
+// ============================================================
+app.post("/api/vendors/signup", signupLimiter, async (req, res) => {
+  try {
+    const {
+      full_name, vendor_name, email, password, phone,
+      id_number, city, location, location_hub,
+      category, services, price, bio,
+      mpesa, payout_method,
+      hotels, hotel_ids
+    } = req.body;
+
+    // ---------- validation ----------
+    const finalName = cleanText(vendor_name || full_name, 100);
+    if (!finalName || finalName.length < 2)
+      return sendError(res, 400, "Vendor name too short");
+
+    const finalEmail = clean(email);
+    if (!isValidEmail(finalEmail)) return sendError(res, 400, "Invalid email");
+
+    if (!password || String(password).length < 8)
+      return sendError(res, 400, "Password must be 8+");
+
+    if (!phone) return sendError(res, 400, "Phone required");
+    if (!id_number) return sendError(res, 400, "ID number required");
+    if (!mpesa) return sendError(res, 400, "M-Pesa number required");
+
+    // ---------- duplicate check ----------
+    const { data: existing } = await supa
+      .from("vendors").select("id").eq("email", finalEmail).maybeSingle();
+    if (existing) return sendError(res, 409, "Vendor already registered with this email");
+
+    // ---------- create vendor ----------
+    const hash = await bcrypt.hash(String(password), 12);
+    const serviceList = Array.isArray(services) ? services : [];
+
+    // Insert only columns that definitely exist in your vendors table.
+    // If your table has extra columns (full_name, id_number, hub_location,
+    // services, mpesa, payout_method), they will be included automatically
+    // below — but Supabase will error if a column doesn't exist.
+    const insertPayload = {
+      vendor_name: finalName,
+      email: finalEmail,
+      phone: cleanPhone(phone),
+      password_hash: hash,
+      category: cleanText(category || serviceList[0] || "services", 40),
+      bio: cleanText(bio || "", 300),
+      price: safeNumber(price, 0),
+      city: cleanText(city || "", 80),
+      status: "pending",
+      is_active: false
+    };
+
+    // Optional columns — only add if they exist in your schema
+    const optional = {
+      full_name: finalName,
+      id_number: cleanText(id_number, 40),
+      hub_location: cleanText(location_hub || location || "", 100),
+      services: serviceList,
+      mpesa: cleanPhone(mpesa),
+      payout_method: cleanText(payout_method || "mpesa", 20)
+    };
+
+    // Try first with all columns
+    let { data: vendor, error } = await supa
+      .from("vendors").insert([{ ...insertPayload, ...optional }]).select().single();
+
+    // If it failed because an optional column doesn't exist, retry without them
+    if (error && /column|schema cache/i.test(error.message || "")) {
+      console.warn("⚠️ Optional vendor columns missing, retrying minimal insert:", error.message);
+      const retry = await supa.from("vendors").insert([insertPayload]).select().single();
+      vendor = retry.data;
+      error = retry.error;
+    }
+
+    if (error) {
+      if (error.code === "23505") return sendError(res, 409, "Vendor already registered");
+      return sendError(res, 500, error.message);
+    }
+
+    // ---------- pre-link chosen hotels (inactive until admin approves) ----------
+    const chosen = Array.isArray(hotels) && hotels.length ? hotels
+                 : Array.isArray(hotel_ids) && hotel_ids.length ? hotel_ids
+                 : [];
+
+    let hotelIds = chosen.filter(h => isValidId(h) && h !== "ALL");
+    if (chosen.includes("ALL")) {
+      const { data: allHotels } = await supa.from("hotels")
+        .select("hotel_id").eq("status", "APPROVED");
+      hotelIds = (allHotels || []).map(h => h.hotel_id).filter(Boolean);
+    }
+
+    if (hotelIds.length) {
+      const links = hotelIds.map(hid => ({
+        vendor_id: vendor.id,
+        hotel_id: String(hid).toUpperCase(),
+        is_active: false   // GM must activate
+      }));
+      await supa.from("vendor_hotels").upsert(links, { onConflict: "vendor_id,hotel_id" });
+    }
+
+    return sendSuccess(res, {
+      vendor_id: vendor.id,
+      status: "pending",
+      hotels_linked: hotelIds.length,
+      message: "Signup received. Awaiting admin approval."
+    });
+  } catch (e) {
+    console.error("Vendor signup error:", e);
+    return sendError(res, 500, e.message);
+  }
+});
+
+// ============================================================
+// VENDOR LOGIN (public)
+// ============================================================
+app.post("/api/vendors/login", loginLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return sendError(res, 400, "Email and password required");
+
+    const { data: vendor } = await supa
+      .from("vendors").select("*").eq("email", clean(email)).maybeSingle();
+
+    if (!vendor) return sendError(res, 404, "Vendor not found");
+
+    const ok = await bcrypt.compare(String(password), vendor.password_hash);
+    if (!ok) return sendError(res, 401, "Wrong password");
+
+    if (String(vendor.status).toLowerCase() !== "approved")
+      return sendError(res, 403, "Vendor not approved. Status: " + vendor.status);
+
+    const token = createToken({ role: "vendor", vendor_id: vendor.id }, "7d");
+    delete vendor.password_hash;
+    return sendSuccess(res, { token, vendor });
+  } catch (e) {
+    console.error("Vendor login error:", e);
+    return sendError(res, 500, e.message);
+  }
+});
+
+// ============================================================
 // GM endpoints
 // ============================================================
 app.get("/api/gm/me", requireHotel, async (req, res) => {
@@ -456,7 +599,7 @@ app.patch("/api/gm/orders/:id", requireHotel, async (req, res) => {
 });
 
 // ============================================================
-// VENDOR endpoints
+// VENDOR endpoints (authenticated)
 // ============================================================
 app.get("/api/vendor/me", requireVendor, async (req, res) => {
   const { data } = await supa.from("vendors").select("*").eq("id", req.user.vendor_id).maybeSingle();
@@ -546,32 +689,4 @@ app.post("/api/orders", orderLimiter, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-app.get("/api/orders/:hotelId/:room", async (req, res) => {
-  const hid = req.params.hotelId.toUpperCase();
-  const room = req.params.room;
-  const { data } = await supa.from("orders").select("*")
-    .eq("hotel_id", hid).eq("room_number", room)
-    .order("created_at", { ascending: false }).limit(30);
-  res.json({ orders: data || [] });
-});
-
-// ============================================================
-// STATIC + SPA fallback
-// ============================================================
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/api/*", (req, res) => res.status(404).json({ ok: false, error: "API route not found" }));
-
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
-
-// ---------- Error handler ----------
-app.use((err, req, res, next) => {
-  console.error("❌", err.message);
-  if (res.headersSent) return next(err);
-  res.status(500).json({ ok: false, error: "Server error" });
-});
-
-// ---------- Listen ----------
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🔒 GuestHub V1.0 — listening on ${PORT}`);
-});
+app.get("/api/orders
