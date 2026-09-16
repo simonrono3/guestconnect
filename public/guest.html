@@ -162,4 +162,250 @@ const money = v => 'Ksh ' + Number(v||0).toLocaleString('en-KE');
 const params = new URLSearchParams(location.search);
 const HOTEL_ID = (params.get('hotel') || params.get('hotel_id') || params.get('h') || 'BAOBAB').toUpperCase();
 const ROOM = params.get('room') || params.get('room_no') || localStorage.getItem('guest_room') || '';
-const TABLE = params
+const TABLE = params.get('table') || '';
+
+let HOTEL = null;
+let SERVICES = [];
+let DEPARTMENTS = [];
+let selected = null;
+
+if (ROOM) $('roomNo').value = ROOM;
+$('roomBadge').innerText = '🛏️ Room ' + (ROOM || '—') + (TABLE ? ' • Table ' + TABLE : '');
+
+document.querySelectorAll('.navBtn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.navBtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (tab === 'orders') viewOrders();
+    if (tab === 'help') openModal('helpModal');
+    if (tab === 'info') openModal('infoModal');
+  });
+});
+
+function openModal(id){ $(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeModal(id){ $(id).classList.remove('active'); document.body.style.overflow = ''; }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
+
+function toast(msg){
+  const el = $('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function saveGuestInfo(){
+  const name = $('guestName').value.trim();
+  const room = $('roomNo').value.trim();
+  const phone = $('guestPhone').value.trim();
+  if (name) localStorage.setItem('guest_name', name);
+  if (room) localStorage.setItem('guest_room', room);
+  if (phone) localStorage.setItem('guest_phone', phone);
+}
+
+function validGuest(){
+  const name = $('guestName').value.trim();
+  const room = $('roomNo').value.trim();
+  if (!name) { toast('Please enter your name'); $('guestName').focus(); return false; }
+  if (!room) { toast('Please enter your room number'); $('roomNo').focus(); return false; }
+  return true;
+}
+
+async function init(){
+  try {
+    const r = await fetch('/api/public/hotel/' + encodeURIComponent(HOTEL_ID));
+    if (r.ok) {
+      const j = await r.json();
+      HOTEL = j.hotel;
+      $('hotelName').innerText = (HOTEL.name || HOTEL.hotel_name || HOTEL_ID).toUpperCase();
+    } else {
+      $('hotelName').innerText = HOTEL_ID;
+    }
+  } catch {
+    $('hotelName').innerText = HOTEL_ID;
+  }
+
+  try {
+    const r = await fetch('/api/public/hotel/' + encodeURIComponent(HOTEL_ID) + '/services');
+    const j = await r.json();
+    SERVICES = j.services || [];
+    DEPARTMENTS = j.departments || [];
+  } catch (e) {
+    console.warn('services load failed', e);
+    SERVICES = [];
+  }
+
+  $('loading').style.display = 'none';
+  $('serviceArea').style.display = 'block';
+  renderAll();
+}
+
+function renderAll(){
+  const area = $('serviceArea');
+  if (!SERVICES.length) {
+    area.innerHTML = `<div class="section"><h3>No services yet</h3><p style="color:#777;font-size:12px;line-height:1.5">This hotel hasn't set up its services yet. Try again later or ask the front desk.</p></div>`;
+    renderHelp();
+    return;
+  }
+
+  const groups = { food: [], taxi: [], tour: [], spa: [], services: [], other: [] };
+  SERVICES.forEach(s => {
+    const c = (s.category || 'food').toLowerCase();
+    if (groups[c]) groups[c].push(s);
+    else groups.other.push(s);
+  });
+
+  let html = '';
+
+  if (groups.food.length) html += sectionBlock('🍽️ Food & Room Service', groups.food);
+  if (groups.taxi.length) html += sectionBlock('🚕 Transport', groups.taxi);
+  if (groups.tour.length) html += sectionBlock('🌍 Tours & Safari', groups.tour);
+  if (groups.spa.length) html += sectionBlock('🧖 Spa & Wellness', groups.spa);
+  if (groups.services.length) html += sectionBlock('🏪 Hotel Services', groups.services);
+  if (groups.other.length) html += sectionBlock('✨ More', groups.other);
+
+  html += renderHelp();
+
+  area.innerHTML = html;
+
+  document.querySelectorAll('.svc').forEach(el => {
+    el.addEventListener('click', () => openOrder(el.dataset.id));
+  });
+  document.querySelectorAll('.help-btn').forEach(el => {
+    el.addEventListener('click', () => whatsapp(el.dataset.dept));
+  });
+}
+
+function sectionBlock(title, items){
+  return `<div class="section">
+    <h3>${title} <span class="count">${items.length}</span></h3>
+    <div class="grid2">${items.map(s => `
+      <button class="svc" data-id="${esc(s.id)}">
+        <div class="price">${s.price > 0 ? money(s.price) : 'Ask'}</div>
+        <i>${esc(s.icon || '🍔')}</i>
+        <b>${esc(s.title)}</b>
+        <small>${esc(s.description || s.vendor_name || '')}</small>
+      </button>
+    `).join('')}</div>
+  </div>`;
+}
+
+function renderHelp(){
+  if (!DEPARTMENTS.length) return '';
+  return `<div class="section help-section">
+    <h3>💬 Talk to the Hotel</h3>
+    <div class="help-grid">
+      ${DEPARTMENTS.map(d => `
+        <button class="help-btn" data-dept="${esc(d.name)}">
+          <span>💬</span>
+          <b>${esc(d.name.charAt(0).toUpperCase() + d.name.slice(1))}</b>
+          <small>WhatsApp instantly</small>
+        </button>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+function openOrder(id){
+  if (!validGuest()) return;
+  selected = SERVICES.find(s => String(s.id) === String(id));
+  if (!selected) return;
+  $('mTitle').innerText = selected.title;
+  $('mDesc').innerText = (selected.description || '') + (selected.price > 0 ? ' • ' + money(selected.price) : '');
+  $('guestPhone').value = localStorage.getItem('guest_phone') || '';
+  $('orderNote').value = '';
+  openModal('orderModal');
+}
+
+$('confirmOrder').addEventListener('click', async () => {
+  if (!selected) return;
+  if (!validGuest()) return;
+  const phone = $('guestPhone').value.trim().replace(/\D/g, '');
+  if (!/^254(7|1)\d{8}$/.test(phone.startsWith('254') ? phone : '254' + phone.replace(/^0/, ''))) {
+    toast('Enter a valid Kenyan number (e.g. 254712345678)');
+    $('guestPhone').focus();
+    return;
+  }
+  const finalPhone = phone.startsWith('254') ? phone : '254' + phone.replace(/^0/, '');
+
+  const btn = $('confirmOrder');
+  btn.disabled = true;
+  btn.innerText = '⏳ Sending…';
+
+  try {
+    const r = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        hotel_id: HOTEL_ID,
+        room_number: $('roomNo').value.trim(),
+        guest_name: $('guestName').value.trim(),
+        guest_phone: finalPhone,
+        service_id: selected.id,
+        service_title: selected.title,
+        category: selected.category,
+        details: $('orderNote').value.trim() || selected.description,
+        amount: Number(selected.price) || 0,
+        department: selected.category
+      })
+    });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || 'Order failed');
+
+    saveGuestInfo();
+    closeModal('orderModal');
+    $('orderRef').innerText = j.order.reference || '—';
+    $('successText').innerText = `${selected.title} sent to ${HOTEL?.name || HOTEL_ID} for Room ${$('roomNo').value.trim()}. You'll hear back shortly.`;
+    openModal('successModal');
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  } catch (e) {
+    toast(e.message || 'Something went wrong');
+  } finally {
+    btn.disabled = false;
+    btn.innerText = '✅ Place Order';
+  }
+});
+
+async function viewOrders(){
+  const room = $('roomNo').value.trim();
+  if (!room) { toast('Enter your room number first'); $('roomNo').focus(); return; }
+  openModal('ordersModal');
+  $('ordersList').innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div>Loading…</div>';
+  try {
+    const r = await fetch('/api/orders/' + encodeURIComponent(HOTEL_ID) + '/' + encodeURIComponent(room));
+    const j = await r.json();
+    const orders = j.orders || [];
+    if (!orders.length) {
+      $('ordersList').innerHTML = '<div style="text-align:center;padding:30px;color:#777"><div style="font-size:30px;margin-bottom:8px">📋</div>No orders yet.</div>';
+      return;
+    }
+    $('ordersList').innerHTML = orders.map(o => `
+      <div class="orderItem">
+        <strong>${esc(o.service_title)} — ${money(o.amount)}</strong>
+        <small>Room ${esc(o.room_number)} • ${new Date(o.created_at).toLocaleString()}</small>
+        <div class="status ${esc(o.status)}">${esc(o.status).toUpperCase()}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    $('ordersList').innerHTML = '<div style="color:#ef4444;text-align:center">Could not load orders.</div>';
+  }
+}
+
+function whatsapp(dept){
+  const room = $('roomNo').value.trim() || '—';
+  const d = DEPARTMENTS.find(x => String(x.name).toLowerCase() === String(dept).toLowerCase());
+  if (!d || !d.whatsapp) return toast('This department has no WhatsApp yet');
+  const phone = String(d.whatsapp).replace(/\D/g, '');
+  const msg = encodeURIComponent(`Hi, I'm a GuestHub guest in Room ${room}. I need ${dept} assistance.`);
+  window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
+}
+
+$('guestName').value = localStorage.getItem('guest_name') || '';
+$('guestPhone').value = localStorage.getItem('guest_phone') || '';
+$('roomNo').addEventListener('input', saveGuestInfo);
+$('guestName').addEventListener('input', saveGuestInfo);
+
+init();
+</script>
+</body>
+</html>
