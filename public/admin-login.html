@@ -2,272 +2,86 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — GuestHub</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<title>Admin Login — GuestHub</title>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--bg:#050505;--card:#101010;--border:#242424}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:60px}
-.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(251,191,36,.4);padding:12px}
-.header-inner{max-width:1400px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.brand{font-family:Space Grotesk;font-weight:800;font-size:16px}
-.brand span{color:var(--lime)}
-.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}
-.btn-primary{background:var(--lime);color:#000}
-.btn-gold{background:var(--gold);color:#000}
-.btn-dark{background:#171717;border:1px solid #303030;color:#fff}
-.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}
-.btn-sm{padding:7px 10px;font-size:10px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 12px;max-width:1400px;margin:auto}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px}
-.stat b{display:block;font-family:Space Grotesk;font-size:22px}
-.stat small{color:#777;font-size:9px;font-weight:900;letter-spacing:.1em}
-.tabs{position:sticky;top:60px;z-index:80;background:rgba(5,5,5,.96);padding:10px 12px;border-bottom:1px solid #161616}
-.tabs-inner{max-width:1400px;margin:auto;display:flex;gap:7px;overflow-x:auto}
-.tab{white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}
-.tab.active{background:var(--lime);color:#000}
-.view{padding:14px 12px;max-width:1400px;margin:auto}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
-.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900}
-.badge-green{background:#0a2914;color:#4ade80}
-.badge-yellow{background:#352200;color:#fbbf24}
-.badge-red{background:#320d0d;color:#f87171}
-.hidden{display:none!important}
-.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s}
-.toast.show{transform:translateY(0);opacity:1}
-.empty{color:#777;text-align:center;padding:40px;font-size:13px}
-@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
+body{background:#050505;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;font-family:Inter,system-ui,sans-serif;padding:16px}
+.box{background:#101010;padding:30px;border-radius:16px;width:100%;max-width:400px;border:1px solid #242424}
+h2{margin:0 0 6px;color:#fbbf24;font-size:22px}
+.sub{color:#888;font-size:12px;margin-bottom:22px}
+label{font-size:11px;color:#888;font-weight:800;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:6px}
+input{width:100%;padding:14px;border-radius:10px;border:1px solid #333;background:#080808;color:#fff;font-size:14px;box-sizing:border-box}
+input:focus{outline:none;border-color:#fbbf24}
+.btn{width:100%;padding:14px;background:#fbbf24;border:none;border-radius:10px;font-weight:900;font-size:15px;cursor:pointer;color:#000;margin-top:16px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+#msg{margin-top:14px;padding:12px;border-radius:10px;font-size:13px;font-weight:700;display:none;text-align:center}
+#msg.err{display:block;background:#2a0d0d;color:#ff7b7b;border:1px solid #7f1d1d}
+#msg.ok{display:block;background:#0d2a15;color:#4ade80;border:1px solid #166534}
+.back{color:#666;font-size:11px;text-align:center;margin-top:18px;display:block;text-decoration:none}
+.back:hover{color:#fbbf24}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner">
-  <div class="brand">GUESTHUB <span>ADMIN</span></div>
-  <div style="display:flex;gap:6px">
-    <button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button>
-    <button class="btn btn-red btn-sm" onclick="logout()">Logout</button>
-  </div>
-</div></header>
+<div class="box">
+  <h2>🔐 Super Admin</h2>
+  <div class="sub">GuestHub platform control</div>
 
-<main>
-<section class="stats">
-  <div class="stat"><b id="s_hotels">0</b><small>HOTELS</small></div>
-  <div class="stat"><b id="s_pending_h">0</b><small>PENDING HOTELS</small></div>
-  <div class="stat"><b id="s_vendors">0</b><small>VENDORS</small></div>
-  <div class="stat"><b id="s_pending_v">0</b><small>PENDING VENDORS</small></div>
-</section>
+  <label>Admin Password</label>
+  <input id="p" type="password" placeholder="••••••••" autocomplete="current-password" autofocus>
 
-<div class="tabs"><div class="tabs-inner">
-  <button class="tab active" data-tab="hotels">🏨 Hotels <span id="c_h"></span></button>
-  <button class="tab" data-tab="vendors">🚚 Vendors <span id="c_v"></span></button>
-  <button class="tab" data-tab="orders">🔔 Orders</button>
-</div></div>
-
-<section id="view-hotels" class="view"></section>
-<section id="view-vendors" class="view hidden"></section>
-<section id="view-orders" class="view hidden"></section>
-</main>
-
-<div id="toast" class="toast"></div>
+  <button class="btn" id="btn" type="button">Login</button>
+  <p id="msg"></p>
+  <a href="/" class="back">← Back to GuestHub</a>
+</div>
 
 <script>
-const $ = id => document.getElementById(id);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
+(() => {
+  'use strict';
+  const msg = document.getElementById('msg');
+  const btn = document.getElementById('btn');
+  const input = document.getElementById('p');
 
-let HOTELS = [], VENDORS = [], ORDERS = [];
-let currentTab = 'hotels';
-
-function adminHeaders(extra = {}){
-  const t = localStorage.getItem('admin_token') || '';
-  return { 'Authorization': 'Bearer ' + t, ...extra };
-}
-
-async function safeFetch(url, opts = {}){
-  const r = await fetch(url, { ...opts, headers: adminHeaders(opts.headers || {}) });
-  if (r.status === 401) { logout(); throw new Error('Session expired'); }
-  if (r.status === 429) throw new Error('Too many requests — slow down');
-  return r;
-}
-
-function toast(msg){
-  const el = $('toast');
-  el.textContent = msg;
-  el.className = 'toast show';
-  setTimeout(() => el.className = 'toast', 3000);
-}
-
-function logout(){
-  localStorage.removeItem('admin_token');
-  window.location.href = '/admin-login.html';
-}
-
-async function refreshAll(){
-  try {
-    await Promise.all([loadHotels(), loadVendors(), loadOrders()]);
-    renderCurrent();
-  } catch (e) { toast('Error: ' + e.message); }
-}
-
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    currentTab = btn.dataset.tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    renderCurrent();
-  });
-});
-
-async function loadHotels(){
-  const r = await safeFetch('/api/admin/hotels');
-  const j = await r.json();
-  HOTELS = j.hotels || [];
-  const pend = HOTELS.filter(h => String(h.status).toUpperCase() === 'PENDING').length;
-  $('s_hotels').innerText = HOTELS.length;
-  $('s_pending_h').innerText = pend;
-  $('c_h').innerText = pend ? `(${pend})` : '';
-}
-
-function renderHotels(){
-  const box = $('view-hotels');
-  if (!HOTELS.length) {
-    box.innerHTML = '<div class="card empty">No hotels registered yet.</div>';
-    return;
+  function show(text, type){
+    msg.className = type || 'err';
+    msg.textContent = text;
   }
-  const pending = HOTELS.filter(h => String(h.status).toUpperCase() === 'PENDING');
-  const approved = HOTELS.filter(h => String(h.status).toUpperCase() !== 'PENDING');
 
-  box.innerHTML =
-    `<div class="card"><b>⏳ Pending (${pending.length})</b></div>` +
-    (pending.length ? pending.map(h => `
-      <div class="row">
-        <div>
-          <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
-          <small style="color:#777">${esc(h.city || '')} • ${esc(h.email || '')} • ${esc(h.phone || '')}</small>
-        </div>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.hotel_id)}')">✅ Approve</button>
-          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
-        </div>
-      </div>`).join('') : '<div class="card empty" style="padding:16px">None pending.</div>') +
-    `<div class="card"><b>✅ Approved (${approved.length})</b></div>` +
-    (approved.length ? approved.map(h => `
-      <div class="row">
-        <div>
-          <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
-          <small style="color:#777">${esc(h.city || '')}</small>
-        </div>
-        <div style="display:flex;gap:5px">
-          <button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(h.hotel_id)}','_blank')">GM Dash</button>
-          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
-        </div>
-      </div>`).join('') : '<div class="card empty" style="padding:16px">None approved.</div>');
-}
+  async function login(){
+    const password = input.value;
+    if (!password) return show('Enter admin password');
 
-async function approveHotel(id){
-  await safeFetch('/api/admin/hotels/' + id + '/approve', { method: 'POST' });
-  toast('✅ Hotel approved');
-  await loadHotels();
-  renderCurrent();
-}
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    msg.className = '';
+    msg.textContent = '';
 
-async function deleteHotel(id){
-  if (!confirm('Delete hotel ' + id + '?')) return;
-  await safeFetch('/api/admin/hotels/' + id, { method: 'DELETE' });
-  toast('Deleted');
-  await loadHotels();
-  renderCurrent();
-}
+    try {
+      const r = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
 
-async function loadVendors(){
-  const r = await safeFetch('/api/admin/vendors');
-  const j = await r.json();
-  VENDORS = j.vendors || [];
-  const pend = VENDORS.filter(v => String(v.status).toLowerCase() === 'pending').length;
-  $('s_vendors').innerText = VENDORS.length;
-  $('s_pending_v').innerText = pend;
-  $('c_v').innerText = pend ? `(${pend})` : '';
-}
+      if (r.status === 429) throw new Error('Too many attempts — wait 15 minutes');
+      if (r.status >= 500) throw new Error('Server error — try again in 30 seconds');
 
-function renderVendors(){
-  const box = $('view-vendors');
-  if (!VENDORS.length) {
-    box.innerHTML = '<div class="card empty">No vendors yet.</div>';
-    return;
+      let d;
+      try { d = await r.json(); } catch { throw new Error('Invalid server response'); }
+
+      if (!d.ok || !d.token) throw new Error(d.error || 'Wrong password');
+
+      localStorage.setItem('admin_token', d.token);
+      show('Welcome — redirecting...', 'ok');
+      setTimeout(() => { window.location.href = '/admin.html'; }, 400);
+    } catch (err) {
+      show(err.message || 'Login failed');
+      btn.disabled = false;
+      btn.textContent = 'Login';
+    }
   }
-  box.innerHTML = VENDORS.map(v => {
-    const st = String(v.status).toLowerCase();
-    const cls = st === 'approved' ? 'badge-green' : st === 'rejected' ? 'badge-red' : 'badge-yellow';
-    return `<div class="row">
-      <div>
-        <b>${esc(v.vendor_name)}</b> <span class="badge ${cls}">${esc(v.status)}</span><br>
-        <small style="color:#777">${esc(v.phone || '')} • ${esc(v.email || '')}</small><br>
-        <small style="color:#777">${esc(v.city || '')} • ${(v.services || []).join(', ')} • ${money(v.price)}</small>
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button>
-        <button class="btn btn-dark btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>
-        <button class="btn btn-red btn-sm" onclick="deleteVendor('${esc(v.id)}')">Del</button>
-      </div>
-    </div>`;
-  }).join('');
-}
 
-async function updateVendor(id, status){
-  await safeFetch('/api/admin/vendors/' + id + '/approve', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status })
-  });
-  toast('Vendor ' + status);
-  await loadVendors();
-  renderCurrent();
-}
-
-async function deleteVendor(id){
-  if (!confirm('Delete this vendor?')) return;
-  await safeFetch('/api/admin/vendors/' + id, { method: 'DELETE' });
-  toast('Deleted');
-  await loadVendors();
-  renderCurrent();
-}
-
-async function loadOrders(){
-  const r = await safeFetch('/api/admin/orders');
-  const j = await r.json();
-  ORDERS = j.orders || [];
-}
-
-function renderOrders(){
-  const box = $('view-orders');
-  if (!ORDERS.length) {
-    box.innerHTML = '<div class="card empty">No orders yet.</div>';
-    return;
-  }
-  box.innerHTML = `<div class="card"><b>🔔 Last ${ORDERS.length} orders</b></div>` +
-    ORDERS.map(o => `
-      <div class="row">
-        <div>
-          <b>${esc(o.hotel_id)} • Room ${esc(o.room_number)} • ${esc(o.guest_name)}</b><br>
-          <small style="color:#777">${esc(o.service_title)} • ${money(o.amount)} • ${esc(o.status)}</small><br>
-          <small style="color:#555">${esc(o.guest_phone)} • ${new Date(o.created_at).toLocaleString()}</small>
-        </div>
-      </div>`).join('');
-}
-
-function renderCurrent(){
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  $('view-' + currentTab).classList.remove('hidden');
-  if (currentTab === 'hotels') renderHotels();
-  if (currentTab === 'vendors') renderVendors();
-  if (currentTab === 'orders') renderOrders();
-}
-
-// Boot
-if (!localStorage.getItem('admin_token')) {
-  window.location.href = '/admin-login.html';
-} else {
-  refreshAll();
-}
+  btn.addEventListener('click', login);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+})();
 </script>
 </body>
 </html>
