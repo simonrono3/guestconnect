@@ -2,77 +2,272 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin 34.1 — Full Flow OS</title>
+<title>Admin — GuestHub</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--bg:#050505;--card:#101010;--border:#242424;--muted:#858585;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,sans-serif;padding-bottom:80px}
-.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(251,191,36,.45);padding:12px}
-.header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center}
-.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-sm{padding:7px 10px;font-size:10px}
-.container{width:min(1500px,100%);margin:auto}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 12px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px}.stat b{display:block;font-family:Space Grotesk;font-size:22px}.stat small{color:#777;font-size:9px;font-weight:900}
-.tabs-wrap{position:sticky;top:66px;z-index:80;background:rgba(5,5,5,.94);padding:8px 12px;border-bottom:1px solid #161616}.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto}.tab{white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.view{padding:14px 12px;max-width:1500px;margin:auto}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:10px}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px}.badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900}.badge-green{background:#0a2914;color:#4ade80}.badge-yellow{background:#352200;color:#fbbf24}.badge-red{background:#320d0d;color:#f87171}.badge-blue{background:#092536;color:#67e8f9}
-.input,.select{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.hidden{display:none!important}
-.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s}.toast.show{transform:translateY(0);opacity:1}
-@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.row{flex-direction:column;align-items:flex-start}}
+:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--bg:#050505;--card:#101010;--border:#242424}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:60px}
+.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.96);backdrop-filter:blur(18px);border-bottom:1px solid rgba(251,191,36,.4);padding:12px}
+.header-inner{max-width:1400px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.brand{font-family:Space Grotesk;font-weight:800;font-size:16px}
+.brand span{color:var(--lime)}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}
+.btn-primary{background:var(--lime);color:#000}
+.btn-gold{background:var(--gold);color:#000}
+.btn-dark{background:#171717;border:1px solid #303030;color:#fff}
+.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}
+.btn-sm{padding:7px 10px;font-size:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 12px;max-width:1400px;margin:auto}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px}
+.stat b{display:block;font-family:Space Grotesk;font-size:22px}
+.stat small{color:#777;font-size:9px;font-weight:900;letter-spacing:.1em}
+.tabs{position:sticky;top:60px;z-index:80;background:rgba(5,5,5,.96);padding:10px 12px;border-bottom:1px solid #161616}
+.tabs-inner{max-width:1400px;margin:auto;display:flex;gap:7px;overflow-x:auto}
+.tab{white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}
+.tab.active{background:var(--lime);color:#000}
+.view{padding:14px 12px;max-width:1400px;margin:auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900}
+.badge-green{background:#0a2914;color:#4ade80}
+.badge-yellow{background:#352200;color:#fbbf24}
+.badge-red{background:#320d0d;color:#f87171}
+.hidden{display:none!important}
+.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s}
+.toast.show{transform:translateY(0);opacity:1}
+.empty{color:#777;text-align:center;padding:40px;font-size:13px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div style="font-family:Space Grotesk;font-weight:800">GUESTHUB <span style="color:var(--lime)">ADMIN 34.1 FULL FLOW</span></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-red btn-sm" onclick="localStorage.clear();location.href='/admin-login.html'">Logout</button></div></div></header>
-<main class="container">
-<div class="stats"><div class="stat"><b id="s_hotels">0</b><small>HOTELS</small></div><div class="stat"><b id="s_pending_h">0</b><small>PENDING HOTELS</small></div><div class="stat"><b id="s_vendors">0</b><small>VENDORS</small></div><div class="stat"><b id="s_pending_v">0</b><small>PENDING VENDORS</small></div></div>
-<div class="tabs-wrap"><div class="tabs">
-<button class="tab active" onclick="switchTab('hotels',this)">🏨 Hotels <span id="c_h"></span></button>
-<button class="tab" onclick="switchTab('vendors',this)">🚚 Vendors <span id="c_v"></span></button>
-<button class="tab" onclick="switchTab('assign',this)">🔗 Assign Vendors to Hotels</button>
-<button class="tab" onclick="switchTab('orders',this)">🔔 Orders</button>
+<header class="header"><div class="header-inner">
+  <div class="brand">GUESTHUB <span>ADMIN</span></div>
+  <div style="display:flex;gap:6px">
+    <button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button>
+    <button class="btn btn-red btn-sm" onclick="logout()">Logout</button>
+  </div>
+</div></header>
+
+<main>
+<section class="stats">
+  <div class="stat"><b id="s_hotels">0</b><small>HOTELS</small></div>
+  <div class="stat"><b id="s_pending_h">0</b><small>PENDING HOTELS</small></div>
+  <div class="stat"><b id="s_vendors">0</b><small>VENDORS</small></div>
+  <div class="stat"><b id="s_pending_v">0</b><small>PENDING VENDORS</small></div>
+</section>
+
+<div class="tabs"><div class="tabs-inner">
+  <button class="tab active" data-tab="hotels">🏨 Hotels <span id="c_h"></span></button>
+  <button class="tab" data-tab="vendors">🚚 Vendors <span id="c_v"></span></button>
+  <button class="tab" data-tab="orders">🔔 Orders</button>
 </div></div>
+
 <section id="view-hotels" class="view"></section>
 <section id="view-vendors" class="view hidden"></section>
-<section id="view-assign" class="view hidden"></section>
 <section id="view-orders" class="view hidden"></section>
 </main>
+
 <div id="toast" class="toast"></div>
+
 <script>
-const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let HOTELS=[],VENDORS=[],ORDERS=[];
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
-function toast(m){const el=document.getElementById('toast');el.textContent=m;el.className='toast show';setTimeout(()=>el.className='toast',3000)}
-async function refreshAll(){await Promise.all([loadHotels(),loadVendors(),loadOrders()]);renderCurrent()}
-let currentTab='hotels';
-async function loadHotels(){const r=await fetch('/api/admin/hotels');const j=await r.json();HOTELS=j.hotels||[];document.getElementById('s_hotels').innerText=HOTELS.length;document.getElementById('s_pending_h').innerText=HOTELS.filter(h=>String(h.status).toUpperCase()==='PENDING').length;document.getElementById('c_h').innerText=`(${HOTELS.filter(h=>String(h.status).toUpperCase()==='PENDING').length})`;if(currentTab==='hotels')renderHotels();}
-function renderHotels(){const box=document.getElementById('view-hotels');const pending=HOTELS.filter(h=>String(h.status).toUpperCase()==='PENDING');const approved=HOTELS.filter(h=>String(h.status).toUpperCase()!=='PENDING');box.innerHTML=`<div class="card"><b>⏳ Pending Hotels (${pending.length})</b></div>${pending.map(h=>`<div class="row"><div><b>${esc(h.hotel_name||h.name)} — ${esc(h.hotel_id||h.id)}</b><br><small style="color:#777">${esc(h.city)} • ${esc(h.email)}</small></div><div style="display:flex;gap:5px"><button class="btn btn-primary btn-sm" onclick="approveHotel('${h.id||h.hotel_id}')">Approve</button><button class="btn btn-red btn-sm" onclick="deleteHotel('${h.id||h.hotel_id}')">Del</button></div></div>`).join('')}<div class="card"><b>✅ Approved (${approved.length})</b></div>${approved.map(h=>`<div class="row"><div><b>${esc(h.hotel_name||h.name)} — ${esc(h.hotel_id)}</b><br><small style="color:#777">${esc(h.city)}</small></div><div><button class="btn btn-gold btn-sm" onclick="window.open('/hotel-dashboard.html?hotel=${esc(h.hotel_id||h.id)}','_blank')">GM Dash</button><button class="btn btn-red btn-sm" onclick="deleteHotel('${h.id||h.hotel_id}')">Del</button></div></div>`).join('')}`;}
-async function approveHotel(id){await fetch('/api/admin/hotels/'+id+'/approve',{method:'POST'});toast('Hotel approved');loadHotels();}
-async function deleteHotel(id){if(!confirm('Delete?'))return;await fetch('/api/admin/hotels/'+id,{method:'DELETE'});toast('Deleted');loadHotels();}
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
 
-async function loadVendors(){const r=await fetch('/api/admin/vendors');const j=await r.json();VENDORS=j.vendors||[];document.getElementById('s_vendors').innerText=VENDORS.length;document.getElementById('s_pending_v').innerText=VENDORS.filter(v=>String(v.status).toLowerCase()==='pending').length;document.getElementById('c_v').innerText=`(${VENDORS.filter(v=>String(v.status).toLowerCase()==='pending').length})`;if(currentTab==='vendors')renderVendors();if(currentTab==='assign')renderAssign();}
-function renderVendors(){const box=document.getElementById('view-vendors');if(!VENDORS.length){box.innerHTML='<div class="card">No vendors — Register at /vendor-signup.html</div>';return;}box.innerHTML=VENDORS.map(v=>`<div class="row" style="border-left:4px solid ${String(v.status).toLowerCase()==='approved'?'#22c55e':'#fbbf24'}"><div><b>${esc(v.vendor_name)} <span class="badge ${String(v.status).toLowerCase()==='approved'?'badge-green':'badge-yellow'}">${esc(v.status)}</span></b><br><small style="color:#777">${esc(v.phone)} • ${esc(v.email)} • ${(v.services||[]).join(', ')} • ${money(v.price)}</small></div><div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="updateVendor('${v.id}','approved')">Approve</button><button class="btn btn-dark btn-sm" onclick="updateVendor('${v.id}','rejected')">Reject</button><button class="btn btn-red btn-sm" onclick="deleteVendor('${v.id}')">Del</button></div></div>`).join('');}
-async function updateVendor(id,status){await fetch('/api/admin/vendors/'+id+'/approve',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})});toast('Vendor '+status);loadVendors();}
-async function deleteVendor(id){if(!confirm('Delete vendor?'))return;await fetch('/api/admin/vendors/'+id,{method:'DELETE'});toast('Deleted');loadVendors();}
+let HOTELS = [], VENDORS = [], ORDERS = [];
+let currentTab = 'hotels';
 
-function renderAssign(){
- const box=document.getElementById('view-assign');
- const approvedV=VENDORS.filter(v=>String(v.status).toLowerCase()==='approved');
- const approvedH=HOTELS.filter(h=>String(h.status).toUpperCase()!=='PENDING');
- if(!approvedV.length){box.innerHTML='<div class="card">No approved vendors — Approve first in Vendors tab</div>';return;}
- box.innerHTML=`<div class="card"><b>🔗 Assign Approved Vendors to Hotels — GM Flow</b><p style="font-size:11px;color:#888">Chagua vendor, chagua hotel, bonyeza Add — guest ataona instantly kwa guest.html</p></div>`+approvedV.map(v=>`<div class="card"><b>${esc(v.vendor_name)} — ${esc(v.category)} — ${money(v.price)}</b><br><small style="color:#777">${esc(v.phone)}</small><div style="display:flex;gap:6px;margin-top:10px"><select id="hotelSel_${v.id}" class="select" style="flex:1">${approvedH.map(h=>`<option value="${h.hotel_id||h.id}">${esc(h.hotel_name||h.name)} — ${esc(h.hotel_id||h.id)}</option>`).join('')}</select><button class="btn btn-primary btn-sm" onclick="assignVendor('${v.id}')">➕ Add to Hotel</button></div></div>`).join('');
-}
-async function assignVendor(vendorId){
- const sel=document.getElementById('hotelSel_'+vendorId); const hotelId=sel.value;
- const res=await fetch(`/api/gm/vendors/${vendorId}/add?hotel_id=${hotelId}`,{method:'POST'});
- const j=await res.json();
- if(j.ok) toast(`✅ ${vendorId} added to ${hotelId} — Guest will see!`); else toast('Error adding');
+function adminHeaders(extra = {}){
+  const t = localStorage.getItem('admin_token') || '';
+  return { 'Authorization': 'Bearer ' + t, ...extra };
 }
 
-async function loadOrders(){const {data}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(100);ORDERS=data||[];if(currentTab==='orders')renderOrders();}
-function renderOrders(){const box=document.getElementById('view-orders');box.innerHTML=`<div class="card"><b>🔔 Orders — ${ORDERS.length}</b></div>`+ORDERS.map(o=>`<div class="row"><div><b>${esc(o.hotel_id)} — Room ${esc(o.room_number)} — ${esc(o.guest_name)}</b><br><small style="color:#777">${esc(o.guest_phone)} • ${(o.items||[]).map(i=>i.name).join(', ')} • ${money(o.total)} • ${esc(o.status)}</small></div></div>`).join('')||'<div class="card">No orders</div>';}
-function switchTab(name,el){currentTab=name;document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('view-'+name).classList.remove('hidden');el.classList.add('active');if(name==='hotels')renderHotels();if(name==='vendors')renderVendors();if(name==='assign')renderAssign();if(name==='orders')renderOrders();}
-function renderCurrent(){if(currentTab==='hotels')renderHotels();if(currentTab==='vendors')renderVendors();if(currentTab==='assign')renderAssign();if(currentTab==='orders')renderOrders();}
-refreshAll();
+async function safeFetch(url, opts = {}){
+  const r = await fetch(url, { ...opts, headers: adminHeaders(opts.headers || {}) });
+  if (r.status === 401) { logout(); throw new Error('Session expired'); }
+  if (r.status === 429) throw new Error('Too many requests — slow down');
+  return r;
+}
+
+function toast(msg){
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show';
+  setTimeout(() => el.className = 'toast', 3000);
+}
+
+function logout(){
+  localStorage.removeItem('admin_token');
+  window.location.href = '/admin-login.html';
+}
+
+async function refreshAll(){
+  try {
+    await Promise.all([loadHotels(), loadVendors(), loadOrders()]);
+    renderCurrent();
+  } catch (e) { toast('Error: ' + e.message); }
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentTab = btn.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderCurrent();
+  });
+});
+
+async function loadHotels(){
+  const r = await safeFetch('/api/admin/hotels');
+  const j = await r.json();
+  HOTELS = j.hotels || [];
+  const pend = HOTELS.filter(h => String(h.status).toUpperCase() === 'PENDING').length;
+  $('s_hotels').innerText = HOTELS.length;
+  $('s_pending_h').innerText = pend;
+  $('c_h').innerText = pend ? `(${pend})` : '';
+}
+
+function renderHotels(){
+  const box = $('view-hotels');
+  if (!HOTELS.length) {
+    box.innerHTML = '<div class="card empty">No hotels registered yet.</div>';
+    return;
+  }
+  const pending = HOTELS.filter(h => String(h.status).toUpperCase() === 'PENDING');
+  const approved = HOTELS.filter(h => String(h.status).toUpperCase() !== 'PENDING');
+
+  box.innerHTML =
+    `<div class="card"><b>⏳ Pending (${pending.length})</b></div>` +
+    (pending.length ? pending.map(h => `
+      <div class="row">
+        <div>
+          <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
+          <small style="color:#777">${esc(h.city || '')} • ${esc(h.email || '')} • ${esc(h.phone || '')}</small>
+        </div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.hotel_id)}')">✅ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
+        </div>
+      </div>`).join('') : '<div class="card empty" style="padding:16px">None pending.</div>') +
+    `<div class="card"><b>✅ Approved (${approved.length})</b></div>` +
+    (approved.length ? approved.map(h => `
+      <div class="row">
+        <div>
+          <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
+          <small style="color:#777">${esc(h.city || '')}</small>
+        </div>
+        <div style="display:flex;gap:5px">
+          <button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(h.hotel_id)}','_blank')">GM Dash</button>
+          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
+        </div>
+      </div>`).join('') : '<div class="card empty" style="padding:16px">None approved.</div>');
+}
+
+async function approveHotel(id){
+  await safeFetch('/api/admin/hotels/' + id + '/approve', { method: 'POST' });
+  toast('✅ Hotel approved');
+  await loadHotels();
+  renderCurrent();
+}
+
+async function deleteHotel(id){
+  if (!confirm('Delete hotel ' + id + '?')) return;
+  await safeFetch('/api/admin/hotels/' + id, { method: 'DELETE' });
+  toast('Deleted');
+  await loadHotels();
+  renderCurrent();
+}
+
+async function loadVendors(){
+  const r = await safeFetch('/api/admin/vendors');
+  const j = await r.json();
+  VENDORS = j.vendors || [];
+  const pend = VENDORS.filter(v => String(v.status).toLowerCase() === 'pending').length;
+  $('s_vendors').innerText = VENDORS.length;
+  $('s_pending_v').innerText = pend;
+  $('c_v').innerText = pend ? `(${pend})` : '';
+}
+
+function renderVendors(){
+  const box = $('view-vendors');
+  if (!VENDORS.length) {
+    box.innerHTML = '<div class="card empty">No vendors yet.</div>';
+    return;
+  }
+  box.innerHTML = VENDORS.map(v => {
+    const st = String(v.status).toLowerCase();
+    const cls = st === 'approved' ? 'badge-green' : st === 'rejected' ? 'badge-red' : 'badge-yellow';
+    return `<div class="row">
+      <div>
+        <b>${esc(v.vendor_name)}</b> <span class="badge ${cls}">${esc(v.status)}</span><br>
+        <small style="color:#777">${esc(v.phone || '')} • ${esc(v.email || '')}</small><br>
+        <small style="color:#777">${esc(v.city || '')} • ${(v.services || []).join(', ')} • ${money(v.price)}</small>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button>
+        <button class="btn btn-dark btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>
+        <button class="btn btn-red btn-sm" onclick="deleteVendor('${esc(v.id)}')">Del</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateVendor(id, status){
+  await safeFetch('/api/admin/vendors/' + id + '/approve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  toast('Vendor ' + status);
+  await loadVendors();
+  renderCurrent();
+}
+
+async function deleteVendor(id){
+  if (!confirm('Delete this vendor?')) return;
+  await safeFetch('/api/admin/vendors/' + id, { method: 'DELETE' });
+  toast('Deleted');
+  await loadVendors();
+  renderCurrent();
+}
+
+async function loadOrders(){
+  const r = await safeFetch('/api/admin/orders');
+  const j = await r.json();
+  ORDERS = j.orders || [];
+}
+
+function renderOrders(){
+  const box = $('view-orders');
+  if (!ORDERS.length) {
+    box.innerHTML = '<div class="card empty">No orders yet.</div>';
+    return;
+  }
+  box.innerHTML = `<div class="card"><b>🔔 Last ${ORDERS.length} orders</b></div>` +
+    ORDERS.map(o => `
+      <div class="row">
+        <div>
+          <b>${esc(o.hotel_id)} • Room ${esc(o.room_number)} • ${esc(o.guest_name)}</b><br>
+          <small style="color:#777">${esc(o.service_title)} • ${money(o.amount)} • ${esc(o.status)}</small><br>
+          <small style="color:#555">${esc(o.guest_phone)} • ${new Date(o.created_at).toLocaleString()}</small>
+        </div>
+      </div>`).join('');
+}
+
+function renderCurrent(){
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  $('view-' + currentTab).classList.remove('hidden');
+  if (currentTab === 'hotels') renderHotels();
+  if (currentTab === 'vendors') renderVendors();
+  if (currentTab === 'orders') renderOrders();
+}
+
+// Boot
+if (!localStorage.getItem('admin_token')) {
+  window.location.href = '/admin-login.html';
+} else {
+  refreshAll();
+}
 </script>
 </body>
 </html>
