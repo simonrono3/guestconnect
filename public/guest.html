@@ -1,210 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GuestHub — Guest OS V6 Vendors Live</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070707">
+<title>GuestHub — Your Hotel SuperApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709}
-body{font-family:Inter,sans-serif;background:var(--bg);color:#fff;padding-bottom:120px;-webkit-tap-highlight-color:transparent}
-.font-boss{font-family:Anton,sans-serif}
-.popup-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);z-index:300;display:none;place-items:center;padding:16px}
-.popup-bg.show{display:grid}
-.popup-card{width:100%;max-width:420px;max-height:85vh;background:#0F1012;border:1px solid rgba(255,255,255,.12);border-radius:28px;overflow:hidden;animation:pop.35s cubic-bezier(.16,1,.3,1)}
-@keyframes pop{from{transform:scale(.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-.cart-float{transform:translateY(120px);transition:.45s cubic-bezier(.16,1,.3,1)}
-.cart-float.show{transform:translateY(0)}
-.live-dot{animation:pulse 1.5s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#060606;--card:#121212;--border:#252525}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 32%),var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
+.hero{padding:22px 16px 20px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:200px;height:200px;right:-100px;bottom:-100px;border:1px solid rgba(0,0,0,.15);border-radius:50%}
+.hero h1{margin:0;font-family:Space Grotesk;font-size:32px;line-height:.95;font-weight:800}
+.hero p{margin:8px 0 0;font-size:12px;font-weight:700;opacity:.75}
+.roomBadge{display:inline-block;background:#000;color:#fff;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900;margin-top:12px}
+.panel{margin:14px 12px 0;padding:14px;border:1px solid var(--border);background:#101010;border-radius:18px}
+.panel-head{display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px;font-weight:800;color:#888}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.input{width:100%;padding:12px;background:#080808;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:13px;font-weight:600}
+.input:focus{outline:none;border-color:var(--lime)}
+.section{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px}
+.section h3{margin:0 0 12px;font-family:Space Grotesk;color:var(--lime);font-size:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
+.count{background:#202020;color:#888;font-size:9px;font-weight:900;padding:3px 8px;border-radius:999px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.svc{position:relative;text-align:left;background:#0a0a0a;border:1px solid #222;border-radius:16px;padding:12px;cursor:pointer;transition:.15s;color:#fff}
+.svc:active{transform:scale(.97);border-color:var(--lime)}
+.svc i{font-style:normal;font-size:22px;display:block;margin-bottom:6px}
+.svc b{font-size:12px;display:block;line-height:1.25;padding-right:6px}
+.svc small{color:#7a7a7a;font-size:10px;display:block;margin-top:4px;line-height:1.3}
+.price{position:absolute;top:8px;right:8px;background:var(--lime);color:#000;font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px}
+.loading{text-align:center;padding:40px;color:#666;font-size:12px}
+.spinner{width:26px;height:26px;margin:0 auto 10px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.help-section{border-color:rgba(251,191,36,.3)}
+.help-section h3{color:var(--gold)}
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.help-btn{background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:12px;color:#fff;text-align:left;cursor:pointer}
+.help-btn span{display:block;font-size:20px;margin-bottom:5px}
+.help-btn b{display:block;font-size:11px}
+.help-btn small{display:block;color:#777;font-size:9px;margin-top:3px}
+.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.96);backdrop-filter:blur(18px);border-top:1px solid #242424}
+.navBtn{border:0;background:transparent;color:#666;min-height:52px;font-size:9px;font-weight:900;border-radius:13px;cursor:pointer}
+.navBtn span{display:block;font-size:18px;margin-bottom:2px}
+.navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
+.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.88);backdrop-filter:blur(12px)}
+.modal.active{display:grid}
+.modalBox{width:100%;max-width:450px;max-height:90vh;overflow:auto;padding:18px;border:1px solid #303030;border-radius:24px;background:linear-gradient(145deg,#191919,#0f0f0f)}
+.modalHead{display:flex;justify-content:space-between;gap:10px}
+.modalTitle{margin:0;font-family:Space Grotesk;font-size:20px;font-weight:900}
+.modalDesc{margin-top:5px;color:#888;font-size:11px;line-height:1.5}
+.close{width:34px;height:34px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:19px;cursor:pointer}
+.label{display:block;color:#777;font-size:10px;font-weight:800;margin-top:14px;letter-spacing:.1em;text-transform:uppercase}
+.btn{width:100%;margin-top:12px;padding:14px;border:0;border-radius:13px;background:var(--lime);color:#000;font-size:13px;font-weight:900;cursor:pointer}
+.btn:disabled{opacity:.6}
+.btn.secondary{background:#202020;border:1px solid #333;color:#fff}
+.twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.toast{position:fixed;left:12px;right:12px;bottom:78px;z-index:2000;display:none;padding:13px 14px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;font-size:12px;font-weight:700;text-align:center}
+.toast.show{display:block}
+.success{text-align:center;padding:10px}
+.successIcon{width:70px;height:70px;display:grid;place-items:center;margin:0 auto 14px;border-radius:50%;background:rgba(198,255,0,.1);font-size:34px}
+.reference{margin:15px 0;padding:14px;background:#0a0a0a;border:1px dashed #3c3c3c;border-radius:14px}
+.reference small{display:block;color:#666;font-size:9px;letter-spacing:.1em}
+.reference strong{display:block;color:var(--lime);font-family:Space Grotesk;font-size:16px;margin-top:5px;letter-spacing:1px}
+.orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:12px;margin-bottom:8px}
+.orderItem strong{font-size:12px;display:block}
+.orderItem small{color:#777;font-size:10px;display:block;margin-top:4px;line-height:1.4}
+.status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:9px;font-weight:900;margin-top:6px}
+.status.pending{background:#202020;color:#aaa}
+.status.accepted{background:rgba(56,189,248,.15);color:#38bdf8}
+.status.completed{background:rgba(34,197,94,.15);color:#22c55e}
+.status.cancelled{background:rgba(239,68,68,.15);color:#ef4444}
+.footer{text-align:center;color:#555;padding:20px 20px 100px;font-size:10px;line-height:1.7}
+@media(min-width:650px){body{max-width:720px;margin:auto}.bottomNav{max-width:720px;left:50%;transform:translateX(-50%)}.modal{place-items:center}}
 </style>
 </head>
 <body>
 
-<div class="sticky top-0 z-50 bg-[#060709]/90 backdrop-blur-2xl border-b border-white/10 px-5 py-3.5 flex justify-between items-center">
-  <div class="flex items-center gap-2"><div class="font-boss text-[20px] text-[#FFD400]">GUESTHUB</div><span id="hotelBadge" class="px-2 py-1 rounded-full bg-white/10 text-[10px] font-bold">BAOBAB</span><span id="vendorsCountBadge" class="hidden px-2 py-1 rounded-full bg-[#C6FF00] text-black text-[9px] font-black">0 VENDORS LIVE</span></div>
-  <div class="flex items-center gap-2">
-    <div class="px-3 py-1.5 rounded-full bg-[#121318] border border-white/10 text-[11px] font-bold"><span class="w-1.5 h-1.5 bg-[#C6FF00] rounded-full inline-block live-dot"></span> <span id="roomLabel">101</span></div>
-    <div id="guestAvatar" class="w-8 h-8 rounded-full bg-[#C6FF00] text-black grid place-items-center font-black text-[12px]">G</div>
+<section class="hero">
+  <h1>WELCOME TO<br><span id="hotelName">YOUR HOTEL</span></h1>
+  <p>Room service • Transport • Tours • Spa • Concierge</p>
+  <div class="roomBadge" id="roomBadge">🛏️ Room —</div>
+</section>
+
+<div class="panel">
+  <div class="panel-head"><strong>👋 Your Details</strong><small>SECURED</small></div>
+  <div class="panel-grid">
+    <input id="guestName" class="input" placeholder="Your name" autocomplete="name">
+    <input id="roomNo" class="input" placeholder="Room number" inputmode="numeric">
   </div>
 </div>
 
-<div class="px-5 pt-6">
-  <h1 class="font-boss text-[32px] leading-[0.9] uppercase">Karibu <span id="guestName" class="text-[#C6FF00]">Guest</span>! 👋</h1>
-  <p class="text-[12px] text-white/50 mt-1">Tap any icon — GM approved vendors now live in ✨ Diani!</p>
-</div>
+<div id="loading" class="loading"><div class="spinner"></div>Loading services…</div>
 
-<div class="px-5 mt-6">
-  <h3 class="font-boss text-[13px] tracking-widest">WHAT DO YOU NEED?</h3>
-  <div class="grid grid-cols-4 gap-3 mt-3">
-    <button onclick="openPopup('food')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">🍽️</div><div class="text-[11px] font-bold">Food</div><div class="text-[9px] text-white/40">18 min</div>
-    </button>
-    <button onclick="openPopup('drinks')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">🍹</div><div class="text-[11px] font-bold">Drinks</div><div class="text-[9px] text-white/40">5 min</div>
-    </button>
-    <button onclick="openPopup('taxi')" class="group bg-[#FFC61A] rounded-[20px] py-5 flex flex-col items-center gap-1.5 text-black active:scale-[0.96]">
-      <div class="text-[28px]">🚕</div><div class="text-[11px] font-extrabold">Taxi</div><div class="text-[9px] font-bold opacity-70">2 min</div>
-    </button>
-    <button onclick="openPopup('diani')" class="group bg-[#C6FF00] rounded-[20px] py-5 flex flex-col items-center gap-1.5 text-black active:scale-[0.96] relative">
-      <div class="text-[28px]">✨</div><div class="text-[11px] font-extrabold">Diani</div><div class="text-[9px] font-bold opacity-70">Vendors Live</div>
-      <span id="dianiDot" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] grid place-items-center font-black">!</span>
-    </button>
-    <button onclick="openPopup('spa')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">💆</div><div class="text-[11px] font-bold">Spa</div><div class="text-[9px] text-white/40">In-room</div>
-    </button>
-    <button onclick="openPopup('laundry')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">🧺</div><div class="text-[11px] font-bold">Laundry</div><div class="text-[9px] text-white/40">2hr</div>
-    </button>
-    <button onclick="openPopup('housekeeping')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">🛏️</div><div class="text-[11px] font-bold">Room</div><div class="text-[9px] text-white/40">Clean</div>
-    </button>
-    <button onclick="openPopup('more')" class="group bg-[#121318] border border-white/10 rounded-[20px] py-5 flex flex-col items-center gap-1.5 hover:border-[#C6FF00]/50 transition active:scale-[0.96]">
-      <div class="text-[28px]">🗂️</div><div class="text-[11px] font-bold">More</div><div class="text-[9px] text-white/40">All</div>
-    </button>
+<main id="serviceArea" style="display:none"></main>
+
+<button class="navBtn" style="display:none" id="hiddenBtn"></button>
+
+<nav class="bottomNav">
+  <button class="navBtn active" data-tab="home"><span>⌂</span>Home</button>
+  <button class="navBtn" data-tab="orders"><span>📋</span>My Orders</button>
+  <button class="navBtn" data-tab="help"><span>💬</span>Help</button>
+  <button class="navBtn" data-tab="info"><span>ℹ️</span>Info</button>
+</nav>
+
+<div class="modal" id="orderModal"><div class="modalBox">
+  <div class="modalHead">
+    <div><h3 id="mTitle" class="modalTitle">Confirm</h3><div id="mDesc" class="modalDesc"></div></div>
+    <button class="close" onclick="closeModal('orderModal')">×</button>
   </div>
-</div>
-
-<div id="liveTracker" class="hidden mx-5 mt-6 rounded-2xl bg-[#121318] border border-[#C6FF00]/50 p-4 flex gap-3 items-center">
-  <div class="w-12 h-12 rounded-xl bg-[#C6FF00]/20 grid place-items-center text-[20px]">🔔</div>
-  <div class="flex-1"><div class="text-[10px] font-black tracking-widest"><span class="w-2 h-2 bg-emerald-400 rounded-full inline-block live-dot"></span> LIVE TRACKER</div><div id="liveTitle" class="text-[13px] font-bold">Order on the way</div><div id="liveSub" class="text-[10px] text-white/50">Kitchen • WA sent</div></div>
-  <button onclick="openPopup('orders')" class="px-3 py-1.5 rounded-full bg-white text-black text-[10px] font-bold">Track</button>
-</div>
-
-<div id="popupBg" class="popup-bg" onclick="if(event.target===this) closePopup()">
-  <div class="popup-card">
-    <div class="px-6 py-5 flex justify-between items-center border-b border-white/10 bg-[#121318]">
-      <div><h2 id="popupTitle" class="font-boss text-[20px] uppercase">FOOD MENU</h2><p id="popupSub" class="text-[11px] text-white/50 mt-1">Choose what you love</p></div>
-      <button onclick="closePopup()" class="w-9 h-9 rounded-full bg-white/10 grid place-items-center">✕</button>
-    </div>
-    <div class="px-4 py-3 bg-[#0A0A0A]"><input id="popupSearch" oninput="searchPopup()" placeholder="Search..." class="w-full bg-[#121318] border border-white/10 rounded-full px-4 py-2.5 text-[13px] outline-none focus:border-[#C6FF00]"></div>
-    <div id="popupContent" class="p-3 space-y-2.5 max-h-[55vh] overflow-auto"></div>
-    <div class="p-4 border-t border-white/10 bg-[#121318] flex justify-between items-center">
-      <div class="text-[11px] text-white/50"><span id="popupCount">0</span> items</div>
-      <button onclick="closePopup(); openCart()" class="h-10 px-5 rounded-full bg-[#C6FF00] text-black font-black text-[12px]">View Cart →</button>
-    </div>
+  <label class="label">Your WhatsApp number</label>
+  <input id="guestPhone" class="input" placeholder="254712345678" inputmode="tel">
+  <label class="label">Special instructions</label>
+  <input id="orderNote" class="input" placeholder="Time, preference, or request">
+  <div class="twoButtons" style="margin-top:12px">
+    <button class="btn secondary" onclick="closeModal('orderModal')">Cancel</button>
+    <button class="btn" id="confirmOrder">✅ Place Order</button>
   </div>
-</div>
+</div></div>
 
-<div id="cartFloat" class="cart-float fixed bottom-5 left-3 right-3 z-40 bg-[#C6FF00] text-black rounded-full px-5 py-3.5 flex justify-between items-center font-black text-[13px]" onclick="openCart()">
-  <span>🛒 <span id="cartCount">0</span> • KSh <span id="cartTotal">0</span></span><span class="bg-black text-[#C6FF00] px-3 py-1 rounded-full text-[11px]">CHECKOUT →</span>
-</div>
+<div class="modal" id="successModal"><div class="modalBox success">
+  <div class="successIcon">✓</div>
+  <h3 class="modalTitle" style="text-align:center">Order Received!</h3>
+  <p id="successText" class="modalDesc" style="text-align:center;margin-top:8px"></p>
+  <div class="reference"><small>REFERENCE</small><strong id="orderRef">GH-XXXX</strong></div>
+  <button class="btn" onclick="closeModal('successModal');viewOrders()">Great — Track My Order</button>
+</div></div>
 
-<div id="cartSheet" class="fixed bottom-0 left-0 right-0 z-[400] bg-[#0E0E12] border-t border-white/10 rounded-t-[28px] p-6 max-h-[85vh] overflow-auto hidden">
-  <div class="w-9 h-1 bg-white/20 rounded-full mx-auto mb-4"></div>
-  <h2 class="font-boss text-[18px]">YOUR CART — <span id="cartRoom">Room 101</span></h2>
-  <div id="cartItems" class="mt-4 space-y-2"></div>
-  <input id="guestInput" placeholder="Your name" class="w-full mt-3 bg-[#1A1A20] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none">
-  <button onclick="checkout()" class="w-full mt-3 h-14 rounded-full bg-[#C6FF00] text-black font-black">💳 ORDER — VENDOR + KITCHEN GETS IT</button>
-  <button onclick="closeCart()" class="w-full mt-2 h-12 rounded-full bg-white/10 border border-white/10 font-bold text-[13px]">Continue</button>
-</div>
-
-<div id="identityModal" class="fixed inset-0 z-[999] bg-black/90 backdrop-blur-md grid place-items-center p-5">
-  <div class="w-full max-w-[360px] bg-[#151517] border border-white/10 rounded-[24px] p-6">
-    <h2 class="font-boss text-[22px] text-[#C6FF00]">Karibu! OS V6 👋</h2>
-    <p class="text-[11px] text-white/50 mt-2">Jina lako ili GM + Vendors wakujue.</p>
-    <input id="gName" placeholder="Your name" class="w-full mt-4 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none">
-    <input id="gPhone" placeholder="WhatsApp 0707..." class="w-full mt-3 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none">
-    <input id="gRoom" placeholder="Room 101" class="w-full mt-3 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-[14px] outline-none">
-    <button onclick="saveIdentity()" class="w-full mt-5 h-12 rounded-full bg-[#C6FF00] text-black font-black">✅ Continue</button>
+<div class="modal" id="ordersModal"><div class="modalBox">
+  <div class="modalHead">
+    <div><h3 class="modalTitle">📋 My Orders</h3><div class="modalDesc">Live tracking</div></div>
+    <button class="close" onclick="closeModal('ordersModal')">×</button>
   </div>
-</div>
+  <div id="ordersList" style="margin-top:14px"></div>
+</div></div>
+
+<div class="modal" id="helpModal"><div class="modalBox">
+  <div class="modalHead">
+    <div><h3 class="modalTitle">💬 Talk to the Hotel</h3><div class="modalDesc">Direct WhatsApp</div></div>
+    <button class="close" onclick="closeModal('helpModal')">×</button>
+  </div>
+  <div id="helpList" style="margin-top:14px"></div>
+</div></div>
+
+<div class="modal" id="infoModal"><div class="modalBox">
+  <div class="modalHead">
+    <div><h3 class="modalTitle">ℹ️ How It Works</h3><div class="modalDesc">GuestHub</div></div>
+    <button class="close" onclick="closeModal('infoModal')">×</button>
+  </div>
+  <div class="orderItem"><strong>1️⃣ Choose a service</strong><small>Food, taxi, safari, spa, concierge — all in one place.</small></div>
+  <div class="orderItem"><strong>2️⃣ Confirm your room</strong><small>Enter your name and room number.</small></div>
+  <div class="orderItem"><strong>3️⃣ Hotel gets it live</strong><small>GM sees your request instantly, notifies the vendor.</small></div>
+  <div class="orderItem"><strong>4️⃣ Track it</strong><small>Follow status under "My Orders."</small></div>
+</div></div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-const API='/api'; const $=id=>document.getElementById(id);
-const params=new URLSearchParams(location.search);
-const HOTEL_ID=(params.get('hotel')||'BAOBAB').toUpperCase();
-const ROOM_PARAM=params.get('room')||'101';
-let cart=[], myOrders=[], currentPopup='', allData=[], VENDORS_LIVE=[], SERVICES_LIVE=[];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = v => 'Ksh ' + Number(v||0).toLocaleString('en-KE');
 
-const STATIC_DATA={
-  food:[{id:'f1',name:'Grilled Seafood Platter',price:2450,desc:'Catch of day',icon:'🦞',time:'18 min',dept:'kitchen'},{id:'f2',name:'Swahili Pilau',price:950,desc:'Coastal pilau',icon:'🍛',time:'14 min',dept:'kitchen'}],
-  drinks:[{id:'d1',name:'Dawa Cocktail',price:650,desc:'Diani classic',icon:'🍹',time:'5 min',dept:'bar'}],
-  taxi:[{id:'tx1',name:'Taxi to Diani',price:800,desc:'Driver 2 min',icon:'🚕',time:'2 min',dept:'taxi'}],
-  spa:[{id:'sp1',name:'Swedish Massage 60min',price:3500,desc:'In-room',icon:'💆',time:'30 min',dept:'spa'}],
-  laundry:[{id:'ld1',name:'Express Laundry',price:500,desc:'Wash + iron',icon:'🧺',time:'2 hr',dept:'laundry'}],
-  housekeeping:[{id:'hk1',name:'Room Cleaning',price:0,desc:'Clean now',icon:'🛏️',time:'10 min',dept:'housekeeping'}]
-};
-
-async function loadVendorsLive(){
- try{
-  const res=await fetch(`/api/vendors?hotel_id=${HOTEL_ID}`);
-  const j=await res.json();
-  VENDORS_LIVE=j.vendors||[]; SERVICES_LIVE=j.services||[];
-  if(VENDORS_LIVE.length>0){
-    $('vendorsCountBadge').classList.remove('hidden');
-    $('vendorsCountBadge').textContent=`${VENDORS_LIVE.length} VENDORS LIVE`;
-    $('dianiDot').classList.remove('hidden');
-    $('dianiDot').textContent=VENDORS_LIVE.length;
-  }
-  // also fetch hotel_services for deeper
-  const res2=await fetch(`/api/hotel-services?hotel_id=${HOTEL_ID}`);
-  const j2=await res2.json();
-  if(j2.services) SERVICES_LIVE=[...SERVICES_LIVE,...j2.services];
- }catch(e){ console.log('vendors err',e.message); }
-}
-
-function vendorsToItems(){
- return VENDORS_LIVE.map(v=>({
-  id:'v_'+v.id, name:`${v.vendor_name} — ${(v.services||[v.category])[0]}`, price:v.price||2500,
-  desc:`${v.location||'Diani'} • ${v.phone} • ${v.bio||'Approved by GM'}`,
-  icon:'✨', time:'30 min', dept:'services', vendor_id:v.id, vendor_name:v.vendor_name, badge:'GM APPROVED', is_vendor:true
- })).concat(SERVICES_LIVE.filter(s=>s.vendor_id).map(s=>({
-  id:'s_'+s.id, name:s.title, price:s.price||2500, desc:`by ${s.vendor_name} • ${s.vendor_phone}`, icon:s.icon||'✨', time:'30 min', dept:'services', vendor_id:s.vendor_id, badge:'LIVE'
- })));
-}
-
-function openPopup(type){
-  currentPopup=type;
-  const bg=$('popupBg'), title=$('popupTitle'), sub=$('popupSub');
-  const map={food:['🍽️ FOOD','Chef sees your name'],drinks:['🍹 DRINKS','Cold to room'],taxi:['🚕 TAXI','Driver 2 min'],diani:['✨ DIANI EXPERIENCES — LIVE','GM approved vendors — book now!'],spa:['💆 SPA','In-room'],laundry:['🧺 LAUNDRY','2hr express'],housekeeping:['🛏️ ROOM SERVICE','Free'],more:['🗂️ ALL','Everything'],orders:['📋 MY ORDERS','Track live']};
-  const [t,s]=map[type]||['SERVICES','Choose']; title.textContent=t; sub.textContent=s;
-  $('popupSearch').value='';
-  let items=[];
-  if(type==='diani'){ items=vendorsToItems(); if(items.length===0) items=[{id:'none',name:'No vendors yet',price:0,desc:'GM needs to add vendors in hotel-dashboard → Vendors Pool',icon:'⏳',time:'',dept:'services'}]; }
-  else if(type==='more') items=[...Object.values(STATIC_DATA).flat(),...vendorsToItems()];
-  else if(type==='orders'){ renderOrdersInPopup(); bg.classList.add('show'); return; }
-  else items=STATIC_DATA[type]||[];
-  allData=items; renderPopupItems(items); bg.classList.add('show');
-}
-
-function renderPopupItems(items){
-  $('popupContent').innerHTML=items.map(it=>`
-    <div class="flex gap-3 p-3.5 rounded-2xl bg-[#121318] border border-white/10 hover:border-[#C6FF00]/40 transition cursor-pointer" onclick="addToCart('${it.id}')">
-      <div class="w-12 h-12 rounded-xl bg-[#1A1C1F] grid place-items-center text-[22px] shrink-0">${it.icon}</div>
-      <div class="flex-1 min-w-0">
-        <div class="flex justify-between gap-2"><span class="font-bold text-[13px] truncate">${it.name}</span>${it.badge?`<span class="text-[8px] font-bold px-2 py-0.5 rounded-full bg-[#C6FF00] text-black h-fit">${it.badge}</span>`:''}</div>
-        <div class="text-[11px] text-white/50 truncate">${it.desc} • ⏱️ ${it.time}</div>
-        <div class="flex justify-between items-center mt-2"><span class="font-black text-[#C6FF00] text-[13px]">${it.price===0?'FREE':'KSh '+it.price.toLocaleString()}</span><span class="h-7 px-3 rounded-full bg-white text-black text-[11px] font-bold grid place-items-center">+ Add</span></div>
-      </div>
-    </div>
-  `).join(''); $('popupCount').textContent=cart.length;
-}
-function searchPopup(){ const q=$('popupSearch').value.toLowerCase(); const filtered=allData.filter(i=>i.name.toLowerCase().includes(q)||i.desc.toLowerCase().includes(q)); renderPopupItems(filtered); }
-function closePopup(){ $('popupBg').classList.remove('show'); }
-function renderOrdersInPopup(){ const c=$('popupContent'); if(myOrders.length===0) c.innerHTML=`<div class="text-center py-12 opacity-40">No orders yet</div>`; else c.innerHTML=myOrders.map(o=>`<div class="bg-[#121318] border border-white/10 rounded-2xl p-4"><div class="text-[10px] text-white/40">${o.time} • Room ${o.room}</div><div class="font-bold text-[13px] mt-2">${o.items.map(i=>i.name).join(', ')}</div><div class="text-[11px] text-white/50">KSh ${o.total.toLocaleString()}</div></div>`).join(''); }
-function addToCart(id){ let item=[...Object.values(STATIC_DATA).flat(),...vendorsToItems()].find(i=>i.id===id); if(!item) return; let ex=cart.find(c=>c.id===id); if(ex) ex.qty++; else cart.push({...item,qty:1}); updateCart(); }
-function updateCart(){ const count=cart.reduce((s,i)=>s+i.qty,0), total=cart.reduce((s,i)=>s+i.price*i.qty,0); $('cartCount').textContent=count; $('cartTotal').textContent=total.toLocaleString(); $('popupCount').textContent=count; $('cartFloat').classList.toggle('show',count>0); $('cartItems').innerHTML=cart.map(i=>`<div class="flex justify-between py-2.5 border-b border-white/10"><div><b class="text-[13px]">${i.name} x${i.qty}</b><br><span class="text-[10px] text-white/40">${i.dept}${i.vendor_name?` • ${i.vendor_name}`:''}</span></div><div class="text-right"><b class="text-[13px]">KSh ${(i.price*i.qty).toLocaleString()}</b><br><button onclick="removeCart('${i.id}')" class="text-[10px] text-red-400">Remove</button></div></div>`).join('')+`<div class="flex justify-between font-black text-[15px] pt-3"><span>Total</span><span>KSh ${total.toLocaleString()}</span></div>`; }
-function removeCart(id){ cart=cart.filter(c=>c.id!==id); updateCart(); }
-function openCart(){ $('cartSheet').classList.remove('hidden'); }
-function closeCart(){ $('cartSheet').classList.add('hidden'); }
-async function checkout(){
-  if(cart.length===0) return alert('Cart empty');
-  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gName=$('guestInput').value||localStorage.getItem('guest_name')||'Guest';
-  const gRoom=localStorage.getItem('guest_room')||ROOM_PARAM, gPhone=localStorage.getItem('guest_phone')||'';
-  const byDept={}; cart.forEach(c=>{const d=c.dept||'kitchen'; if(!byDept[d])byDept[d]=[]; byDept[d].push(c);});
-  for(const dept in byDept){
-    const items=byDept[dept], deptTotal=items.reduce((s,i)=>s+i.price*i.qty,0);
-    const payload={hotel_id:HOTEL_ID,room_number:gRoom,guest_name:gName,guest_phone:gPhone,items,total:deptTotal,department:dept,location_label:`Room ${gRoom} - ${gName}`};
-    try{ await fetch(API+'/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); }catch{}
-  }
-  myOrders.unshift({time:new Date().toLocaleTimeString(),items:cart,total,room:gRoom}); alert(`✅ ORDER CONFIRMED! Room ${gRoom} KSh ${total.toLocaleString()}`); cart=[]; updateCart(); closeCart(); closePopup(); $('liveTracker').classList.remove('hidden'); $('liveTitle').textContent=cart[0]?.name||'Order on way';
-}
-function checkIdentity(){ const name=localStorage.getItem('guest_name'), room=localStorage.getItem('guest_room'); if(name&&room){ $('identityModal').style.display='none'; $('guestName').textContent=name.split(' ')[0]; $('roomLabel').textContent=room; $('guestAvatar').textContent=name[0].toUpperCase(); $('cartRoom').textContent='Room '+room; $('guestInput').value=name; $('hotelBadge').textContent=HOTEL_ID; } else { $('gRoom').value=ROOM_PARAM; $('identityModal').style.display='grid'; } }
-function saveIdentity(){ const name=$('gName').value.trim(), phone=$('gPhone').value.trim(), room=$('gRoom').value.trim(); if(!name||!phone||!room) return alert('Jaza zote!'); localStorage.setItem('guest_name',name); localStorage.setItem('guest_phone',phone); localStorage.setItem('guest_room',room); checkIdentity(); }
-checkIdentity(); loadVendorsLive();
-</script>
-</body>
-</html>
+const params = new URLSearchParams(location.search);
+const HOTEL_ID = (params.get('hotel') || params.get('hotel_id') || params.get('h') || 'BAOBAB').toUpperCase();
+const ROOM = params.get('room') || params.get('room_no') || localStorage.getItem('guest_room') || '';
+const TABLE = params
