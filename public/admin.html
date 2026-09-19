@@ -17,6 +17,7 @@
 .btn-dark{background:#171717;border:1px solid #303030;color:#fff}
 .btn-red{background:#351010;border:1px solid #672020;color:#ff7777}
 .btn-sm{padding:7px 10px;font-size:10px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 12px;max-width:1400px;margin:auto}
 .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px}
 .stat b{display:block;font-family:Space Grotesk;font-size:22px}
@@ -33,8 +34,10 @@
 .badge-yellow{background:#352200;color:#fbbf24}
 .badge-red{background:#320d0d;color:#f87171}
 .hidden{display:none!important}
-.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s}
+.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s;max-width:340px;word-break:break-word}
 .toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
+.toast.success{background:#0a2b16;border-color:#1e5c33;color:#b6ffcb}
 .empty{color:#777;text-align:center;padding:40px;font-size:13px}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
@@ -89,11 +92,23 @@ async function safeFetch(url, opts = {}){
   return r;
 }
 
-function toast(msg){
+// ⭐ NEW: Parses response, throws on failure so we can catch it
+async function apiCall(url, opts = {}){
+  const r = await safeFetch(url, opts);
+  let data = {};
+  try { data = await r.json(); } catch {}
+  if (!r.ok || data.ok === false) {
+    throw new Error(data.error || ('HTTP ' + r.status));
+  }
+  return data;
+}
+
+function toast(msg, type = 'success'){
   const el = $('toast');
   el.textContent = msg;
-  el.className = 'toast show';
-  setTimeout(() => el.className = 'toast', 3000);
+  el.className = 'toast show ' + type;
+  clearTimeout(window.__toastT);
+  window.__toastT = setTimeout(() => el.className = 'toast', 4000);
 }
 
 function logout(){
@@ -105,7 +120,7 @@ async function refreshAll(){
   try {
     await Promise.all([loadHotels(), loadVendors(), loadOrders()]);
     renderCurrent();
-  } catch (e) { toast('Error: ' + e.message); }
+  } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 
 document.querySelectorAll('.tab').forEach(btn => {
@@ -118,8 +133,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 });
 
 async function loadHotels(){
-  const r = await safeFetch('/api/admin/hotels');
-  const j = await r.json();
+  const j = await apiCall('/api/admin/hotels');
   HOTELS = j.hotels || [];
   const pend = HOTELS.filter(h => String(h.status).toUpperCase() === 'PENDING').length;
   $('s_hotels').innerText = HOTELS.length;
@@ -138,19 +152,25 @@ function renderHotels(){
 
   box.innerHTML =
     `<div class="card"><b>⏳ Pending (${pending.length})</b></div>` +
-    (pending.length ? pending.map(h => `
+    (pending.length ? pending.map(h => {
+      // ⭐ Use UUID if available, else hotel_id (both are safe — backend handles both)
+      const key = h.id || h.hotel_id;
+      return `
       <div class="row">
         <div>
           <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
           <small style="color:#777">${esc(h.city || '')} • ${esc(h.email || '')} • ${esc(h.phone || '')}</small>
         </div>
         <div style="display:flex;gap:5px">
-          <button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(h.hotel_id)}')">✅ Approve</button>
-          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
+          <button class="btn btn-primary btn-sm" onclick="approveHotel('${esc(key)}', this)">✅ Approve</button>
+          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(key)}', this)">Del</button>
         </div>
-      </div>`).join('') : '<div class="card empty" style="padding:16px">None pending.</div>') +
+      </div>`;
+    }).join('') : '<div class="card empty" style="padding:16px">None pending.</div>') +
     `<div class="card"><b>✅ Approved (${approved.length})</b></div>` +
-    (approved.length ? approved.map(h => `
+    (approved.length ? approved.map(h => {
+      const key = h.id || h.hotel_id;
+      return `
       <div class="row">
         <div>
           <b>${esc(h.hotel_name || h.name)} — <code style="color:var(--lime)">${esc(h.hotel_id)}</code></b><br>
@@ -158,29 +178,50 @@ function renderHotels(){
         </div>
         <div style="display:flex;gap:5px">
           <button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(h.hotel_id)}','_blank')">GM Dash</button>
-          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(h.hotel_id)}')">Del</button>
+          <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(key)}', this)">Del</button>
         </div>
-      </div>`).join('') : '<div class="card empty" style="padding:16px">None approved.</div>');
+      </div>`;
+    }).join('') : '<div class="card empty" style="padding:16px">None approved.</div>');
 }
 
-async function approveHotel(id){
-  await safeFetch('/api/admin/hotels/' + id + '/approve', { method: 'POST' });
-  toast('✅ Hotel approved');
-  await loadHotels();
-  renderCurrent();
+// ⭐ FIXED: Approve hotel — shows errors, disables button
+async function approveHotel(id, btnEl){
+  if (!id) return toast('No hotel ID', 'error');
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    const url = '/api/admin/hotels/' + encodeURIComponent(id) + '/approve';
+    console.log('▶️ POST', url);
+    const j = await apiCall(url, { method: 'POST' });
+    console.log('✅ Approve response:', j);
+    toast('✅ Hotel approved: ' + (j.hotel?.hotel_id || id), 'success');
+    await loadHotels();
+    renderCurrent();
+  } catch (e) {
+    console.error('❌ Approve failed:', e);
+    toast('❌ Approve failed: ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '✅ Approve'; }
+  }
 }
 
-async function deleteHotel(id){
+async function deleteHotel(id, btnEl){
+  if (!id) return toast('No hotel ID', 'error');
   if (!confirm('Delete hotel ' + id + '?')) return;
-  await safeFetch('/api/admin/hotels/' + id, { method: 'DELETE' });
-  toast('Deleted');
-  await loadHotels();
-  renderCurrent();
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    const url = '/api/admin/hotels/' + encodeURIComponent(id);
+    const j = await apiCall(url, { method: 'DELETE' });
+    toast('Deleted', 'success');
+    await loadHotels();
+    renderCurrent();
+  } catch (e) {
+    console.error('❌ Delete failed:', e);
+    toast('❌ Delete failed: ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Del'; }
+  }
 }
 
 async function loadVendors(){
-  const r = await safeFetch('/api/admin/vendors');
-  const j = await r.json();
+  const j = await apiCall('/api/admin/vendors');
   VENDORS = j.vendors || [];
   const pend = VENDORS.filter(v => String(v.status).toLowerCase() === 'pending').length;
   $('s_vendors').innerText = VENDORS.length;
@@ -204,36 +245,47 @@ function renderVendors(){
         <small style="color:#777">${esc(v.city || '')} • ${(v.services || []).join(', ')} • ${money(v.price)}</small>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved')">Approve</button>
-        <button class="btn btn-dark btn-sm" onclick="updateVendor('${esc(v.id)}','rejected')">Reject</button>
-        <button class="btn btn-red btn-sm" onclick="deleteVendor('${esc(v.id)}')">Del</button>
+        <button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved', this)">Approve</button>
+        <button class="btn btn-dark btn-sm" onclick="updateVendor('${esc(v.id)}','rejected', this)">Reject</button>
+        <button class="btn btn-red btn-sm" onclick="deleteVendor('${esc(v.id)}', this)">Del</button>
       </div>
     </div>`;
   }).join('');
 }
 
-async function updateVendor(id, status){
-  await safeFetch('/api/admin/vendors/' + id + '/approve', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ status })
-  });
-  toast('Vendor ' + status);
-  await loadVendors();
-  renderCurrent();
+async function updateVendor(id, status, btnEl){
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    await apiCall('/api/admin/vendors/' + encodeURIComponent(id) + '/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    toast('Vendor ' + status, 'success');
+    await loadVendors();
+    renderCurrent();
+  } catch (e) {
+    toast('❌ ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = status === 'approved' ? 'Approve' : 'Reject'; }
+  }
 }
 
-async function deleteVendor(id){
+async function deleteVendor(id, btnEl){
   if (!confirm('Delete this vendor?')) return;
-  await safeFetch('/api/admin/vendors/' + id, { method: 'DELETE' });
-  toast('Deleted');
-  await loadVendors();
-  renderCurrent();
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    await apiCall('/api/admin/vendors/' + encodeURIComponent(id), { method: 'DELETE' });
+    toast('Deleted', 'success');
+    await loadVendors();
+    renderCurrent();
+  } catch (e) {
+    toast('❌ ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Del'; }
+  }
 }
 
 async function loadOrders(){
-  const r = await safeFetch('/api/admin/orders');
-  const j = await r.json();
+  const j = await apiCall('/api/admin/orders');
   ORDERS = j.orders || [];
 }
 
