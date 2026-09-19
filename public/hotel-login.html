@@ -68,7 +68,10 @@ $('form').addEventListener('submit', async e => {
 
     msg.className = 'msg ok';
     msg.textContent = 'Welcome! Redirecting...';
-    setTimeout(() => { window.location.href = '/gm-dashboard.html?hotel=' + encodeURIComponent(j.hotel_id); }, 500);
+
+
+setTimeout(() => { window.location.href = '/hotel-dashboard.html?hotel=' + encodeURIComponent(j.hotel_id); }, 500);
+    
   } catch (err) {
     msg.className = 'msg err';
     msg.textContent = err.message || 'Login failed';
