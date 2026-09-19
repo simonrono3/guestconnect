@@ -185,23 +185,131 @@ app.get("/api/admin/hotels", requireAdmin, requireSupabase, async (req, res) => 
   res.json({ hotels: data || [] });
 });
 
+// ---------- FIXED: Approve Hotel ----------
 app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
-  const id = req.params.id;
-  await supa.from("hotels").update({ status: "APPROVED", approved_by_admin: true })
-    .or(`hotel_id.eq.${id},id.eq.${id}`);
-  sendSuccess(res);
+  try {
+    const id = req.params.id;
+    console.log("🔍 [ADMIN] Approving hotel with ID:", id);
+
+    // 1. Find the hotel first (case-insensitive for hotel_id, or by UUID)
+    const { data: hotel, error: findError } = await supa
+      .from("hotels")
+      .select("id, hotel_id, status")
+      .or(`hotel_id.eq.${id},id.eq.${id}`)
+      .maybeSingle();
+
+    if (findError) {
+      console.error("❌ [ADMIN] Find error:", findError);
+      return sendError(res, 500, "Failed to find hotel: " + findError.message);
+    }
+
+    if (!hotel) {
+      // Try case-insensitive fallback using ilike
+      console.log("⚠️ [ADMIN] Exact match failed, trying case-insensitive...");
+      const { data: hotel2 } = await supa
+        .from("hotels")
+        .select("id, hotel_id, status")
+        .ilike("hotel_id", id)
+        .maybeSingle();
+
+      if (!hotel2) {
+        console.warn("⚠️ [ADMIN] No hotel found with id:", id);
+        return sendError(res, 404, "Hotel not found with id: " + id);
+      }
+      return doApprove(res, hotel2);
+    }
+
+    return doApprove(res, hotel);
+
+  } catch (e) {
+    console.error("❌ [ADMIN] Approve exception:", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
+async function doApprove(res, hotel) {
+  console.log("✅ [ADMIN] Found hotel:", hotel.hotel_id, "| DB id:", hotel.id);
+
+  // 2. Update by the actual database UUID (safest method)
+  const { data: updated, error: updateError } = await supa
+    .from("hotels")
+    .update({ status: "APPROVED", approved_by_admin: true })
+    .eq("id", hotel.id)
+    .select()
+    .single();
+
+  if (updateError) {
+    console.error("❌ [ADMIN] Update error:", updateError);
+    return sendError(res, 500, "Update failed: " + updateError.message);
+  }
+
+  console.log("✅ [ADMIN] Hotel approved successfully:", updated.hotel_id);
+  return sendSuccess(res, { hotel: updated });
+}
+
+// ---------- FIXED: Block Hotel ----------
 app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (req, res) => {
-  const id = req.params.id;
-  await supa.from("hotels").update({ status: "BLOCKED" }).or(`hotel_id.eq.${id},id.eq.${id}`);
-  sendSuccess(res);
+  try {
+    const id = req.params.id;
+    console.log("🔍 [ADMIN] Blocking hotel with ID:", id);
+
+    let { data: hotel } = await supa.from("hotels").select("id, hotel_id")
+      .or(`hotel_id.eq.${id},id.eq.${id}`).maybeSingle();
+
+    if (!hotel) {
+      const { data: hotel2 } = await supa.from("hotels").select("id, hotel_id")
+        .ilike("hotel_id", id).maybeSingle();
+      hotel = hotel2;
+    }
+
+    if (!hotel) return sendError(res, 404, "Hotel not found with id: " + id);
+
+    const { error } = await supa.from("hotels")
+      .update({ status: "BLOCKED" }).eq("id", hotel.id);
+
+    if (error) {
+      console.error("❌ [ADMIN] Block error:", error);
+      return sendError(res, 500, error.message);
+    }
+
+    console.log("✅ [ADMIN] Hotel blocked:", hotel.hotel_id);
+    sendSuccess(res);
+  } catch (e) {
+    console.error("❌ [ADMIN] Block exception:", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
+// ---------- FIXED: Delete Hotel ----------
 app.delete("/api/admin/hotels/:id", requireAdmin, requireSupabase, async (req, res) => {
-  const id = req.params.id;
-  await supa.from("hotels").delete().or(`hotel_id.eq.${id},id.eq.${id}`);
-  sendSuccess(res);
+  try {
+    const id = req.params.id;
+    console.log("🔍 [ADMIN] Deleting hotel with ID:", id);
+
+    let { data: hotel } = await supa.from("hotels").select("id, hotel_id")
+      .or(`hotel_id.eq.${id},id.eq.${id}`).maybeSingle();
+
+    if (!hotel) {
+      const { data: hotel2 } = await supa.from("hotels").select("id, hotel_id")
+        .ilike("hotel_id", id).maybeSingle();
+      hotel = hotel2;
+    }
+
+    if (!hotel) return sendError(res, 404, "Hotel not found with id: " + id);
+
+    const { error } = await supa.from("hotels").delete().eq("id", hotel.id);
+
+    if (error) {
+      console.error("❌ [ADMIN] Delete error:", error);
+      return sendError(res, 500, error.message);
+    }
+
+    console.log("✅ [ADMIN] Hotel deleted:", hotel.hotel_id);
+    sendSuccess(res);
+  } catch (e) {
+    console.error("❌ [ADMIN] Delete exception:", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
 app.get("/api/admin/vendors", requireAdmin, requireSupabase, async (req, res) => {
@@ -210,18 +318,56 @@ app.get("/api/admin/vendors", requireAdmin, requireSupabase, async (req, res) =>
   res.json({ vendors: data || [] });
 });
 
+// ---------- FIXED: Approve/Reject Vendor ----------
 app.post("/api/admin/vendors/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
-  const status = String(req.body.status || "approved").toLowerCase();
-  if (!["approved", "rejected", "blocked"].includes(status))
-    return sendError(res, 400, "Invalid status");
-  await supa.from("vendors").update({ status, is_active: status === "approved" }).eq("id", req.params.id);
-  sendSuccess(res);
+  try {
+    const status = String(req.body.status || "approved").toLowerCase();
+    if (!["approved", "rejected", "blocked"].includes(status))
+      return sendError(res, 400, "Invalid status");
+
+    console.log(`🔍 [ADMIN] Setting vendor ${req.params.id} to ${status}`);
+
+    const { data, error } = await supa
+      .from("vendors")
+      .update({ status, is_active: status === "approved" })
+      .eq("id", req.params.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("❌ [ADMIN] Vendor update error:", error);
+      return sendError(res, 500, error.message);
+    }
+
+    console.log("✅ [ADMIN] Vendor updated:", data?.vendor_name);
+    sendSuccess(res, { vendor: data });
+  } catch (e) {
+    console.error("❌ [ADMIN] Vendor approve exception:", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
+// ---------- FIXED: Delete Vendor ----------
 app.delete("/api/admin/vendors/:id", requireAdmin, requireSupabase, async (req, res) => {
-  await supa.from("vendors").delete().eq("id", req.params.id);
-  await supa.from("vendor_hotels").delete().eq("vendor_id", req.params.id);
-  sendSuccess(res);
+  try {
+    const vid = req.params.id;
+    console.log("🔍 [ADMIN] Deleting vendor:", vid);
+
+    const { error: e1 } = await supa.from("vendor_hotels").delete().eq("vendor_id", vid);
+    if (e1) console.warn("⚠️ vendor_hotels delete warning:", e1.message);
+
+    const { error: e2 } = await supa.from("vendors").delete().eq("id", vid);
+    if (e2) {
+      console.error("❌ [ADMIN] Vendor delete error:", e2);
+      return sendError(res, 500, e2.message);
+    }
+
+    console.log("✅ [ADMIN] Vendor deleted:", vid);
+    sendSuccess(res);
+  } catch (e) {
+    console.error("❌ [ADMIN] Vendor delete exception:", e);
+    return sendError(res, 500, e.message);
+  }
 });
 
 app.get("/api/admin/orders", requireAdmin, requireSupabase, async (req, res) => {
@@ -374,11 +520,9 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       payout_method: cleanText(payout_method || "mpesa", 20)
     };
 
-    // Try with all columns first
     let { data: vendor, error } = await supa
       .from("vendors").insert([{ ...insertPayload, ...optional }]).select().single();
 
-    // If a column doesn't exist, retry with minimal payload
     if (error && /column|schema cache/i.test(error.message || "")) {
       console.warn("⚠️ Optional vendor columns missing, retrying minimal insert:", error.message);
       const retry = await supa.from("vendors").insert([insertPayload]).select().single();
@@ -391,7 +535,6 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       return sendError(res, 500, error.message);
     }
 
-    // Pre-link chosen hotels (inactive until approved)
     const chosen = Array.isArray(hotels) && hotels.length ? hotels
                  : Array.isArray(hotel_ids) && hotel_ids.length ? hotel_ids
                  : [];
