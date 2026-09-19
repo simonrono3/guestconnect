@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>GM Dashboard 19.0 — OS + Vendors Marketplace</title>
+<title>Hotel Dashboard 19.0 — OS + Vendors Marketplace</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -30,7 +30,7 @@
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 19.0</span></div><div class="brand-sub" id="hotelSub">BAOBAB • VENDORS OS</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button></div></div></header>
+<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 19.0</span></div><div class="brand-sub" id="hotelSub">BAOBAB • VENDORS OS</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
 <main>
 <section class="dashboard"><div class="hero"><h1>Welcome <span id="hotelNameHero">Baobab</span> — Empire Control.</h1><p>New: Vendors Marketplace — Approve vendors from Admin, add to your hotel, guest sees instantly!</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">GM OS 19.0 • VENDORS MARKETPLACE</span></div></div>
 <div class="stats"><div class="stat"><b id="s_orders">0</b><small>LIVE ORDERS</small></div><div class="stat"><b id="s_menu">0</b><small>MENU</small></div><div class="stat"><b id="s_services">0</b><small>SERVICES</small></div><div class="stat"><b id="s_vendors">0</b><small>MY VENDORS</small></div><div class="stat"><b id="s_rev">Ksh 0</b><small>TODAY</small></div></div></section>
@@ -53,88 +53,249 @@
 </main>
 <div id="toast" class="toast"></div>
 <script>
-const params=new URLSearchParams(location.search);
-const HOTEL_ID=(params.get('hotel')||'BAOBAB').toUpperCase();
-document.getElementById('hotelSub').innerText=HOTEL_ID+' • GM 19.0 • VENDORS MARKETPLACE';
-document.getElementById('hotelNameHero').innerText=HOTEL_ID;
-const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let MENU=[],SERVICES=[],ORDERS=[],DEPTS=[],VENDORS_POOL=[],MY_VENDOR_IDS=[];
-let currentTab='orders';
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
-function toast(m,t='success'){const el=document.getElementById('toast');el.textContent=m;el.className='toast show '+t;setTimeout(()=>el.className='toast',3200)}
-function guestLink(room){return location.origin+'/guest.html?hotel='+encodeURIComponent(HOTEL_ID)+'&room='+encodeURIComponent(room)}
-function tableLink(table){return location.origin+'/guest.html?hotel='+encodeURIComponent(HOTEL_ID)+'&room='+encodeURIComponent(table)+'&table='+encodeURIComponent(table)}
-async function refreshAll(){await Promise.all([loadMenu(),loadServices(),loadOrders(),loadDepts(),loadVendorsPool()]);renderCurrentTab()}
-async function loadMenu(){const {data}=await supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false});MENU=data||[];document.getElementById('s_menu').innerText=MENU.length}
-async function loadServices(){const {data}=await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false});SERVICES=data||[];document.getElementById('s_services').innerText=SERVICES.length}
-async function loadOrders(){const {data}=await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id',HOTEL_ID).order('created_at',{ascending:false}).limit(100);ORDERS=data||[];document.getElementById('s_orders').innerText=ORDERS.length;document.getElementById('c_orders').innerText=ORDERS.length?`(${ORDERS.length})`:'';const today=new Date().toISOString().slice(0,10);const rev=ORDERS.filter(o=>o.created_at?.startsWith(today)).reduce((s,o)=>s+Number(o.total||0),0);document.getElementById('s_rev').innerText=money(rev);if(currentTab==='orders')renderOrders();if(currentTab==='finance')renderFinance()}
-async function loadDepts(){const {data}=await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id',HOTEL_ID);DEPTS=data||[]}
+// ============================================================
+// AUTH GUARD — matches what hotel-login.html saves
+// ============================================================
+(function authGuard(){
+  const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
+  const savedHotelId = localStorage.getItem('hotel_id');
 
-// === NEW VENDORS MARKETPLACE LOGIC ===
-async function loadVendorsPool(){
- try{
-  const token=localStorage.getItem('gm_token')||localStorage.getItem('hotel_token');
-  const headers=token?{Authorization:'Bearer '+token}:{};
-  // Fetch from new GM endpoint
-  const res=await fetch(`/api/gm/vendors-pool?hotel_id=${HOTEL_ID}`,{headers});
-  const j=await res.json();
-  if(j.pool){ VENDORS_POOL=j.pool; MY_VENDOR_IDS=j.myVendorIds||[]; }
-  else {
-   const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('status','approved').limit(100);
-   VENDORS_POOL=data||[];
-   const {data:my}=await supa.schema('guesthub_os').from('hotel_services').select('vendor_id').eq('hotel_id',HOTEL_ID).eq('is_active',true);
-   MY_VENDOR_IDS=(my||[]).map(x=>x.vendor_id);
+  // 1. Not logged in? → go to login page (NOT home)
+  if (!token) {
+    console.warn('🔒 No hotel_token found — redirecting to /hotel-login.html');
+    window.location.replace('/hotel-login.html');
+    return;
   }
-  document.getElementById('s_vendors').innerText=MY_VENDOR_IDS.length;
-  document.getElementById('c_vendors').innerText=`(${MY_VENDOR_IDS.length}/${VENDORS_POOL.length})`;
-  if(currentTab==='vendors') renderVendors();
- }catch{ VENDORS_POOL=[]; }
+
+  // 2. Logged in but URL has no ?hotel= → add it from localStorage
+  const urlParams = new URLSearchParams(location.search);
+  if (!urlParams.get('hotel') && savedHotelId) {
+    urlParams.set('hotel', savedHotelId);
+    window.location.replace('/hotel-dashboard.html?' + urlParams.toString());
+    return;
+  }
+
+  console.log('✅ Auth guard passed. Hotel:', savedHotelId);
+})();
+
+// ============================================================
+// MAIN APP
+// ============================================================
+const params = new URLSearchParams(location.search);
+const HOTEL_ID = (params.get('hotel') || localStorage.getItem('hotel_id') || 'BAOBAB').toUpperCase();
+
+document.getElementById('hotelSub').innerText = HOTEL_ID + ' • GM 19.0 • VENDORS MARKETPLACE';
+document.getElementById('hotelNameHero').innerText = HOTEL_ID;
+
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let MENU = [], SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
+let currentTab = 'orders';
+
+function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function money(v){ return 'Ksh ' + Number(v || 0).toLocaleString(); }
+function toast(m, t = 'success'){
+  const el = document.getElementById('toast');
+  el.textContent = m;
+  el.className = 'toast show ' + t;
+  setTimeout(() => el.className = 'toast', 3200);
 }
+function logout(){
+  localStorage.removeItem('hotel_token');
+  localStorage.removeItem('gm_token');
+  localStorage.removeItem('hotel_id');
+  localStorage.removeItem('hotel_name');
+  window.location.href = '/hotel-login.html';
+}
+function guestLink(room){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(room); }
+function tableLink(table){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(table) + '&table=' + encodeURIComponent(table); }
+
+async function refreshAll(){
+  await Promise.all([loadMenu(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+  renderCurrentTab();
+}
+
+async function loadMenu(){
+  const { data } = await supa.schema('guesthub_os').from('menu_items').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
+  MENU = data || [];
+  document.getElementById('s_menu').innerText = MENU.length;
+}
+async function loadServices(){
+  const { data } = await supa.schema('guesthub_os').from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
+  SERVICES = data || [];
+  document.getElementById('s_services').innerText = SERVICES.length;
+}
+async function loadOrders(){
+  const { data } = await supa.schema('guesthub_os').from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(100);
+  ORDERS = data || [];
+  document.getElementById('s_orders').innerText = ORDERS.length;
+  document.getElementById('c_orders').innerText = ORDERS.length ? `(${ORDERS.length})` : '';
+  const today = new Date().toISOString().slice(0, 10);
+  const rev = ORDERS.filter(o => o.created_at?.startsWith(today)).reduce((s, o) => s + Number(o.total || 0), 0);
+  document.getElementById('s_rev').innerText = money(rev);
+  if (currentTab === 'orders') renderOrders();
+  if (currentTab === 'finance') renderFinance();
+}
+async function loadDepts(){
+  const { data } = await supa.schema('guesthub_os').from('departments').select('*').eq('hotel_id', HOTEL_ID);
+  DEPTS = data || [];
+}
+
+// === VENDORS MARKETPLACE LOGIC ===
+async function loadVendorsPool(){
+  try {
+    const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
+    const headers = token ? { Authorization: 'Bearer ' + token } : {};
+    const res = await fetch(`/api/gm/vendors-pool?hotel_id=${HOTEL_ID}`, { headers });
+    const j = await res.json();
+    if (j.pool) { VENDORS_POOL = j.pool; MY_VENDOR_IDS = j.myVendorIds || []; }
+    else {
+      const { data } = await supa.schema('guesthub_os').from('vendors').select('*').eq('status', 'approved').limit(100);
+      VENDORS_POOL = data || [];
+      const { data: my } = await supa.schema('guesthub_os').from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
+      MY_VENDOR_IDS = (my || []).map(x => x.vendor_id);
+    }
+    document.getElementById('s_vendors').innerText = MY_VENDOR_IDS.length;
+    document.getElementById('c_vendors').innerText = `(${MY_VENDOR_IDS.length}/${VENDORS_POOL.length})`;
+    if (currentTab === 'vendors') renderVendors();
+  } catch { VENDORS_POOL = []; }
+}
+
 function renderVendors(){
- const box=document.getElementById('view-vendors');
- box.innerHTML=`<div class="card"><div class="card-title">🏪 Vendors Marketplace — ${HOTEL_ID}</div><p class="card-sub">Admin approved vendors. Click "Add to My Hotel" → guest sees instantly in guest.html</p></div>
- ${VENDORS_POOL.map(v=>{
-  const added=MY_VENDOR_IDS.includes(v.id);
-  return `<div class="row"><div><b>${esc(v.vendor_name)} — ${esc(v.category||'service')}</b> <span class="badge ${added?'badge-green':'badge-yellow'}">${added?'ADDED':'AVAILABLE'}</span><br><small>${esc(v.phone)} • ${esc(v.location)} • ${money(v.price)} • ${esc(v.services?.join(', '))}</small></div><div style="display:flex;gap:6px">${added?`<button class="btn btn-red btn-sm" onclick="removeVendor('${v.id}')">Remove</button>`:`<button class="btn btn-primary btn-sm" onclick="addVendor('${v.id}')">➕ Add to ${HOTEL_ID}</button>`}</div></div>`
- }).join('') || '<div class="card">No approved vendors yet — Admin needs to approve in admin.html</div>'`;
+  const box = document.getElementById('view-vendors');
+  box.innerHTML = `<div class="card"><div class="card-title">🏪 Vendors Marketplace — ${HOTEL_ID}</div><p class="card-sub">Admin approved vendors. Click "Add to My Hotel" → guest sees instantly in guest.html</p></div>
+  ${VENDORS_POOL.map(v => {
+    const added = MY_VENDOR_IDS.includes(v.id);
+    return `<div class="row"><div><b>${esc(v.vendor_name)} — ${esc(v.category || 'service')}</b> <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? 'ADDED' : 'AVAILABLE'}</span><br><small>${esc(v.phone)} • ${esc(v.location)} • ${money(v.price)} • ${esc(v.services?.join(', '))}</small></div><div style="display:flex;gap:6px">${added ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${v.id}')">Remove</button>` : `<button class="btn btn-primary btn-sm" onclick="addVendor('${v.id}')">➕ Add to ${HOTEL_ID}</button>`}</div></div>`;
+  }).join('') || '<div class="card">No approved vendors yet — Admin needs to approve in admin.html</div>'}`;
 }
 async function addVendor(vendorId){
- try{
-  const token=localStorage.getItem('gm_token')||localStorage.getItem('hotel_token');
-  const res=await fetch(`/api/gm/vendors/${vendorId}/add?hotel_id=${HOTEL_ID}`,{method:'POST',headers:{'Content-Type':'application/json', Authorization:'Bearer '+token}});
-  const j=await res.json();
-  if(j.ok){ toast('✅ Added to '+HOTEL_ID+' — Guest can now book!'); loadVendorsPool(); loadServices(); }
-  else { // fallback direct
-   const v=VENDORS_POOL.find(x=>x.id===vendorId);
-   await supa.schema('guesthub_os').from('hotel_services').insert([{hotel_id:HOTEL_ID,title:`${v.services?.[0]||'Service'} — ${v.vendor_name}`,price:v.price,department:'services',vendor_name:v.vendor_name,vendor_phone:v.phone,vendor_id:vendorId,is_active:true}]);
-   toast('✅ Added (direct)'); loadVendorsPool();
-  }
- }catch(e){ toast('Error: '+e.message,'error'); }
+  try {
+    const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
+    const res = await fetch(`/api/gm/vendors/${vendorId}/add?hotel_id=${HOTEL_ID}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }
+    });
+    const j = await res.json();
+    if (j.ok) { toast('✅ Added to ' + HOTEL_ID + ' — Guest can now book!'); loadVendorsPool(); loadServices(); }
+    else {
+      const v = VENDORS_POOL.find(x => x.id === vendorId);
+      await supa.schema('guesthub_os').from('hotel_services').insert([{ hotel_id: HOTEL_ID, title: `${v.services?.[0] || 'Service'} — ${v.vendor_name}`, price: v.price, department: 'services', vendor_name: v.vendor_name, vendor_phone: v.phone, vendor_id: vendorId, is_active: true }]);
+      toast('✅ Added (direct)'); loadVendorsPool();
+    }
+  } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
 async function removeVendor(vendorId){
- await supa.schema('guesthub_os').from('hotel_services').update({is_active:false}).eq('hotel_id',HOTEL_ID).eq('vendor_id',vendorId);
- toast('Removed from hotel'); loadVendorsPool(); loadServices();
+  await supa.schema('guesthub_os').from('hotel_services').update({ is_active: false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
+  toast('Removed from hotel'); loadVendorsPool(); loadServices();
 }
 
-function renderOrders(){const box=document.getElementById('view-orders');const q=(document.getElementById('orderSearch')?.value||'').toLowerCase();const filtered=ORDERS.filter(o=>`${o.room_number} ${o.guest_name} ${o.department}`.toLowerCase().includes(q));box.innerHTML=`<div class="card"><div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${q}" oninput="renderOrders()"></div>${filtered.map(o=>`<div class="row"><div><b>ROOM ${esc(o.room_number)} — ${esc(o.guest_name)}</b> <span class="badge badge-yellow">${esc(o.department?.toUpperCase())}</span><br><small>${(o.items||[]).map(i=>i.name).join(', ')} — ${money(o.total)}</small></div><div><button class="btn btn-primary btn-sm" onclick="updateStatus('${o.id}','ready')">Ready</button></div></div>`).join('')||'<div class="card">No orders</div>'}`}
-async function updateStatus(id,s){await supa.schema('guesthub_os').from('orders').update({status:s}).eq('id',id);toast('Status → '+s);loadOrders()}
-function renderMenu(){const box=document.getElementById('view-menu');box.innerHTML=`<div class="card"><div class="card-title">🍽️ Menu Builder</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="mName" class="input" placeholder="Pilau Beef"><input id="mPrice" type="number" class="input" placeholder="650"><input id="mCat" class="input" placeholder="Main"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu</button></div>${MENU.map(i=>`<div class="row"><span>${esc(i.name)} — ${money(i.price)}</span><button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button></div>`).join('')}`}
-async function addMenu(){const name=document.getElementById('mName').value.trim();const price=parseInt(document.getElementById('mPrice').value);if(!name||!price)return toast('Name & price','error');await supa.schema('guesthub_os').from('menu_items').insert([{hotel_id:HOTEL_ID,name,price,category:document.getElementById('mCat').value||'Main'}]);toast('Added');loadMenu()}
-async function delMenu(id){await supa.schema('guesthub_os').from('menu_items').delete().eq('id',id);loadMenu()}
-function renderServices(){const box=document.getElementById('view-services');box.innerHTML=`<div class="card"><div class="card-title">🛎️ My Hotel Services (${SERVICES.filter(s=>s.is_active).length} active)</div></div>${SERVICES.map(s=>`<div class="row"><span>${esc(s.icon||'🏨')} ${esc(s.title)} — ${money(s.price)} ${s.is_active?'✅':'❌'}</span><div style="display:flex;gap:5px"><button class="btn ${s.is_active?'btn-dark':'btn-primary'} btn-sm" onclick="toggleService('${s.id}',${!s.is_active})">${s.is_active?'Disable':'Enable'}</button><button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button></div></div>`).join('')}`}
-async function toggleService(id,active){await supa.schema('guesthub_os').from('hotel_services').update({is_active:active}).eq('id',id);loadServices()}
-async function delService(id){await supa.schema('guesthub_os').from('hotel_services').delete().eq('id',id);loadServices()}
-function renderWhatsApp(){const box=document.getElementById('view-whatsapp');const getVal=n=>{const d=DEPTS.find(x=>x.name===n);return d?d.whatsapp_number:''};box.innerHTML=`<div class="card"><div class="card-title">📱 WhatsApp Departments</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${getVal('kitchen')}"></div><div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${getVal('housekeeping')}"></div><div><label>Laundry</label><input id="wa_laundry" class="input" value="${getVal('laundry')}"></div><div><label>Taxi</label><input id="wa_taxi" class="input" value="${getVal('taxi')}"></div></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button></div>`}
-async function saveWhatsApp(){for(const d of ['kitchen','housekeeping','laundry','taxi','frontdesk']){const num=document.getElementById('wa_'+d)?.value.trim(); if(num){ await supa.schema('guesthub_os').from('departments').upsert({hotel_id:HOTEL_ID,name:d,whatsapp_number:num},{onConflict:'hotel_id,name'});}} toast('✅ WhatsApp Saved'); loadDepts();}
-function renderQR(){const box=document.getElementById('view-qr');box.innerHTML=`<div class="card"><div class="card-title">🔳 QR Generator</div></div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="qrRoom" class="input" placeholder="Room 101"><button class="btn btn-primary" onclick="genSingle()">Generate</button></div><div id="singleQR" style="text-align:center;margin-top:12px"></div></div>`}
-function genSingle(){const room=document.getElementById('qrRoom').value.trim()||'101';const link=guestLink(room);const box=document.getElementById('singleQR');box.innerHTML=`<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900">${HOTEL_ID} - ROOM ${room}</div></div>`;setTimeout(()=>{new QRCode(document.getElementById('qrSingleCanvas'),{text:link,width:200,height:200});},100)}
-function renderFinance(){const today=new Date().toISOString().slice(0,10);const todayOrders=ORDERS.filter(o=>o.created_at?.startsWith(today));const todayRev=todayOrders.reduce((s,o)=>s+Number(o.total||0),0);const allRev=ORDERS.reduce((s,o)=>s+Number(o.total||0),0);const box=document.getElementById('view-finance');box.innerHTML=`<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="card"><small>TODAY</small><br><b>${money(todayRev)}</b></div><div class="card"><small>TOTAL</small><br><b>${money(allRev)}</b></div></div>`}
-function switchTab(name,el){currentTab=name;document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById('view-'+name).classList.remove('hidden');if(el)el.classList.add('active');if(name==='orders')renderOrders();if(name==='vendors')renderVendors();if(name==='menu')renderMenu();if(name==='services')renderServices();if(name==='whatsapp')renderWhatsApp();if(name==='qr')renderQR();if(name==='finance')renderFinance()}
-function renderCurrentTab(){if(currentTab==='orders')renderOrders();if(currentTab==='vendors')renderVendors();if(currentTab==='menu')renderMenu();if(currentTab==='services')renderServices();if(currentTab==='whatsapp')renderWhatsApp();if(currentTab==='qr')renderQR();if(currentTab==='finance')renderFinance()}
-refreshAll();
-supa.channel('gm-'+HOTEL_ID).on('postgres_changes',{event:'INSERT',schema:'guesthub_os',table:'orders',filter:`hotel_id=eq.${HOTEL_ID}`},(p)=>{toast(`🔔 NEW ROOM ${p.new.room_number}`);loadOrders()}).subscribe();
-setInterval(loadOrders,15000);
+function renderOrders(){
+  const box = document.getElementById('view-orders');
+  const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
+  const filtered = ORDERS.filter(o => `${o.room_number} ${o.guest_name} ${o.department}`.toLowerCase().includes(q));
+  box.innerHTML = `<div class="card"><div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${q}" oninput="renderOrders()"></div>${filtered.map(o => `<div class="row"><div><b>ROOM ${esc(o.room_number)} — ${esc(o.guest_name)}</b> <span class="badge badge-yellow">${esc(o.department?.toUpperCase())}</span><br><small>${(o.items || []).map(i => i.name).join(', ')} — ${money(o.total)}</small></div><div><button class="btn btn-primary btn-sm" onclick="updateStatus('${o.id}','ready')">Ready</button></div></div>`).join('') || '<div class="card">No orders</div>'}`;
+}
+async function updateStatus(id, s){ await supa.schema('guesthub_os').from('orders').update({ status: s }).eq('id', id); toast('Status → ' + s); loadOrders(); }
+
+function renderMenu(){
+  const box = document.getElementById('view-menu');
+  box.innerHTML = `<div class="card"><div class="card-title">🍽️ Menu Builder</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="mName" class="input" placeholder="Pilau Beef"><input id="mPrice" type="number" class="input" placeholder="650"><input id="mCat" class="input" placeholder="Main"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu</button></div>${MENU.map(i => `<div class="row"><span>${esc(i.name)} — ${money(i.price)}</span><button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button></div>`).join('')}`;
+}
+async function addMenu(){
+  const name = document.getElementById('mName').value.trim();
+  const price = parseInt(document.getElementById('mPrice').value);
+  if (!name || !price) return toast('Name & price', 'error');
+  await supa.schema('guesthub_os').from('menu_items').insert([{ hotel_id: HOTEL_ID, name, price, category: document.getElementById('mCat').value || 'Main' }]);
+  toast('Added'); loadMenu();
+}
+async function delMenu(id){ await supa.schema('guesthub_os').from('menu_items').delete().eq('id', id); loadMenu(); }
+
+function renderServices(){
+  const box = document.getElementById('view-services');
+  box.innerHTML = `<div class="card"><div class="card-title">🛎️ My Hotel Services (${SERVICES.filter(s => s.is_active).length} active)</div></div>${SERVICES.map(s => `<div class="row"><span>${esc(s.icon || '🏨')} ${esc(s.title)} — ${money(s.price)} ${s.is_active ? '✅' : '❌'}</span><div style="display:flex;gap:5px"><button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${s.id}',${!s.is_active})">${s.is_active ? 'Disable' : 'Enable'}</button><button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button></div></div>`).join('')}`;
+}
+async function toggleService(id, active){ await supa.schema('guesthub_os').from('hotel_services').update({ is_active: active }).eq('id', id); loadServices(); }
+async function delService(id){ await supa.schema('guesthub_os').from('hotel_services').delete().eq('id', id); loadServices(); }
+
+function renderWhatsApp(){
+  const box = document.getElementById('view-whatsapp');
+  const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? d.whatsapp_number : ''; };
+  box.innerHTML = `<div class="card"><div class="card-title">📱 WhatsApp Departments</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${getVal('kitchen')}"></div><div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${getVal('housekeeping')}"></div><div><label>Laundry</label><input id="wa_laundry" class="input" value="${getVal('laundry')}"></div><div><label>Taxi</label><input id="wa_taxi" class="input" value="${getVal('taxi')}"></div></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button></div>`;
+}
+async function saveWhatsApp(){
+  for (const d of ['kitchen', 'housekeeping', 'laundry', 'taxi', 'frontdesk']) {
+    const num = document.getElementById('wa_' + d)?.value.trim();
+    if (num) {
+      await supa.schema('guesthub_os').from('departments').upsert({ hotel_id: HOTEL_ID, name: d, whatsapp_number: num }, { onConflict: 'hotel_id,name' });
+    }
+  }
+  toast('✅ WhatsApp Saved'); loadDepts();
+}
+
+function renderQR(){
+  const box = document.getElementById('view-qr');
+  box.innerHTML = `<div class="card"><div class="card-title">🔳 QR Generator</div></div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="qrRoom" class="input" placeholder="Room 101"><button class="btn btn-primary" onclick="genSingle()">Generate</button></div><div id="singleQR" style="text-align:center;margin-top:12px"></div></div>`;
+}
+function genSingle(){
+  const room = document.getElementById('qrRoom').value.trim() || '101';
+  const link = guestLink(room);
+  const box = document.getElementById('singleQR');
+  box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900">${HOTEL_ID} - ROOM ${room}</div></div>`;
+  setTimeout(() => { new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 }); }, 100);
+}
+
+function renderFinance(){
+  const today = new Date().toISOString().slice(0, 10);
+  const todayOrders = ORDERS.filter(o => o.created_at?.startsWith(today));
+  const todayRev = todayOrders.reduce((s, o) => s + Number(o.total || 0), 0);
+  const allRev = ORDERS.reduce((s, o) => s + Number(o.total || 0), 0);
+  const box = document.getElementById('view-finance');
+  box.innerHTML = `<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="card"><small>TODAY</small><br><b>${money(todayRev)}</b></div><div class="card"><small>TOTAL</small><br><b>${money(allRev)}</b></div></div>`;
+}
+
+function switchTab(name, el){
+  currentTab = name;
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.remove('hidden');
+  if (el) el.classList.add('active');
+  if (name === 'orders') renderOrders();
+  if (name === 'vendors') renderVendors();
+  if (name === 'menu') renderMenu();
+  if (name === 'services') renderServices();
+  if (name === 'whatsapp') renderWhatsApp();
+  if (name === 'qr') renderQR();
+  if (name === 'finance') renderFinance();
+}
+function renderCurrentTab(){
+  if (currentTab === 'orders') renderOrders();
+  if (currentTab === 'vendors') renderVendors();
+  if (currentTab === 'menu') renderMenu();
+  if (currentTab === 'services') renderServices();
+  if (currentTab === 'whatsapp') renderWhatsApp();
+  if (currentTab === 'qr') renderQR();
+  if (currentTab === 'finance') renderFinance();
+}
+
+// ============================================================
+// BOOT — only runs if auth guard passed (token exists)
+// ============================================================
+(function boot(){
+  const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
+  if (!token) return; // auth guard already redirected
+
+  refreshAll();
+
+  try {
+    supa.channel('gm-' + HOTEL_ID)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'guesthub_os', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
+        (p) => { toast(`🔔 NEW ROOM ${p.new.room_number}`); loadOrders(); })
+      .subscribe();
+  } catch (e) { console.warn('Realtime channel failed:', e.message); }
+
+  setInterval(loadOrders, 15000);
+})();
 </script>
 </body>
 </html>
