@@ -92,7 +92,6 @@ async function safeFetch(url, opts = {}){
   return r;
 }
 
-// ⭐ NEW: Parses response, throws on failure so we can catch it
 async function apiCall(url, opts = {}){
   const r = await safeFetch(url, opts);
   let data = {};
@@ -153,7 +152,6 @@ function renderHotels(){
   box.innerHTML =
     `<div class="card"><b>⏳ Pending (${pending.length})</b></div>` +
     (pending.length ? pending.map(h => {
-      // ⭐ Use UUID if available, else hotel_id (both are safe — backend handles both)
       const key = h.id || h.hotel_id;
       return `
       <div class="row">
@@ -177,14 +175,13 @@ function renderHotels(){
           <small style="color:#777">${esc(h.city || '')}</small>
         </div>
         <div style="display:flex;gap:5px">
-          <button class="btn btn-gold btn-sm" onclick="window.open('/gm-dashboard.html?hotel=${esc(h.hotel_id)}','_blank')">GM Dash</button>
+          <button class="btn btn-gold btn-sm" onclick="window.open('/hotel-dashboard.html?hotel=${esc(h.hotel_id)}','_blank')">GM Dash</button>
           <button class="btn btn-red btn-sm" onclick="deleteHotel('${esc(key)}', this)">Del</button>
         </div>
       </div>`;
     }).join('') : '<div class="card empty" style="padding:16px">None approved.</div>');
 }
 
-// ⭐ FIXED: Approve hotel — shows errors, disables button
 async function approveHotel(id, btnEl){
   if (!id) return toast('No hotel ID', 'error');
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
@@ -209,7 +206,7 @@ async function deleteHotel(id, btnEl){
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
   try {
     const url = '/api/admin/hotels/' + encodeURIComponent(id);
-    const j = await apiCall(url, { method: 'DELETE' });
+    await apiCall(url, { method: 'DELETE' });
     toast('Deleted', 'success');
     await loadHotels();
     renderCurrent();
