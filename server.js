@@ -100,6 +100,7 @@ const clean     = v => String(v || "").trim().toLowerCase();
 const cleanText = (v, m = 500) => String(v || "").trim().slice(0, m).replace(/[<>]/g, "");
 const isValidEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e || ""));
 const isValidId = id => /^[A-Za-z0-9_-]{1,100}$/.test(String(id || ""));
+const isUUID = id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ""));
 const safeNumber = (v, f = 0) => { const n = Number(v); return Number.isFinite(n) ? n : f; };
 const cleanPhone = v => {
   const d = String(v || "").replace(/\D/g, "");
@@ -139,6 +140,46 @@ function requireVendor(req, res, next) {
   const t = verifyToken(req);
   if (!t || t.role !== "vendor") return sendError(res, 401, "Vendor login required");
   req.user = t; next();
+}
+
+// ============================================================
+// SAFE HOTEL LOOKUP
+// Avoids "invalid input syntax for type uuid" by never
+// comparing a text string against the UUID column.
+// ============================================================
+async function findHotel(identifier) {
+  if (!identifier) return { hotel: null };
+  const id = String(identifier).trim();
+
+  // 1. Try by hotel_id (text) — case-insensitive
+  try {
+    const { data, error } = await supa
+      .from("hotels")
+      .select("id, hotel_id, name, hotel_name, status")
+      .ilike("hotel_id", id)
+      .maybeSingle();
+    if (error) console.warn("⚠️ [findHotel] ilike hotel_id error:", error.message);
+    if (data) return { hotel: data };
+  } catch (e) {
+    console.warn("⚠️ [findHotel] ilike exception:", e.message);
+  }
+
+  // 2. If it's a valid UUID, try the id column
+  if (isUUID(id)) {
+    try {
+      const { data, error } = await supa
+        .from("hotels")
+        .select("id, hotel_id, name, hotel_name, status")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) console.warn("⚠️ [findHotel] eq id error:", error.message);
+      if (data) return { hotel: data };
+    } catch (e) {
+      console.warn("⚠️ [findHotel] eq id exception:", e.message);
+    }
+  }
+
+  return { hotel: null };
 }
 
 // ============================================================
@@ -191,61 +232,33 @@ app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (
     const id = req.params.id;
     console.log("🔍 [ADMIN] Approving hotel with ID:", id);
 
-    // 1. Find the hotel first (case-insensitive for hotel_id, or by UUID)
-    const { data: hotel, error: findError } = await supa
-      .from("hotels")
-      .select("id, hotel_id, status")
-      .or(`hotel_id.eq.${id},id.eq.${id}`)
-      .maybeSingle();
-
-    if (findError) {
-      console.error("❌ [ADMIN] Find error:", findError);
-      return sendError(res, 500, "Failed to find hotel: " + findError.message);
-    }
-
+    const { hotel } = await findHotel(id);
     if (!hotel) {
-      // Try case-insensitive fallback using ilike
-      console.log("⚠️ [ADMIN] Exact match failed, trying case-insensitive...");
-      const { data: hotel2 } = await supa
-        .from("hotels")
-        .select("id, hotel_id, status")
-        .ilike("hotel_id", id)
-        .maybeSingle();
-
-      if (!hotel2) {
-        console.warn("⚠️ [ADMIN] No hotel found with id:", id);
-        return sendError(res, 404, "Hotel not found with id: " + id);
-      }
-      return doApprove(res, hotel2);
+      console.warn("⚠️ [ADMIN] No hotel found with id:", id);
+      return sendError(res, 404, "Hotel not found: " + id);
     }
 
-    return doApprove(res, hotel);
+    console.log("✅ [ADMIN] Found hotel:", hotel.hotel_id, "| DB id:", hotel.id);
 
+    const { data: updated, error: updateError } = await supa
+      .from("hotels")
+      .update({ status: "APPROVED" })
+      .eq("id", hotel.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error("❌ [ADMIN] Update error:", updateError);
+      return sendError(res, 500, "Update failed: " + updateError.message);
+    }
+
+    console.log("✅ [ADMIN] Hotel approved:", updated.hotel_id);
+    return sendSuccess(res, { hotel: updated });
   } catch (e) {
     console.error("❌ [ADMIN] Approve exception:", e);
     return sendError(res, 500, e.message);
   }
 });
-
-async function doApprove(res, hotel) {
-  console.log("✅ [ADMIN] Found hotel:", hotel.hotel_id, "| DB id:", hotel.id);
-
-  // 2. Update by the actual database UUID (safest method)
-  const { data: updated, error: updateError } = await supa
-    .from("hotels")
-    .update({ status: "APPROVED", approved_by_admin: true })
-    .eq("id", hotel.id)
-    .select()
-    .single();
-
-  if (updateError) {
-    console.error("❌ [ADMIN] Update error:", updateError);
-    return sendError(res, 500, "Update failed: " + updateError.message);
-  }
-
-  console.log("✅ [ADMIN] Hotel approved successfully:", updated.hotel_id);
-  return sendSuccess(res, { hotel: updated });
-}
 
 // ---------- FIXED: Block Hotel ----------
 app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (req, res) => {
@@ -253,20 +266,11 @@ app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (re
     const id = req.params.id;
     console.log("🔍 [ADMIN] Blocking hotel with ID:", id);
 
-    let { data: hotel } = await supa.from("hotels").select("id, hotel_id")
-      .or(`hotel_id.eq.${id},id.eq.${id}`).maybeSingle();
-
-    if (!hotel) {
-      const { data: hotel2 } = await supa.from("hotels").select("id, hotel_id")
-        .ilike("hotel_id", id).maybeSingle();
-      hotel = hotel2;
-    }
-
-    if (!hotel) return sendError(res, 404, "Hotel not found with id: " + id);
+    const { hotel } = await findHotel(id);
+    if (!hotel) return sendError(res, 404, "Hotel not found: " + id);
 
     const { error } = await supa.from("hotels")
       .update({ status: "BLOCKED" }).eq("id", hotel.id);
-
     if (error) {
       console.error("❌ [ADMIN] Block error:", error);
       return sendError(res, 500, error.message);
@@ -286,19 +290,10 @@ app.delete("/api/admin/hotels/:id", requireAdmin, requireSupabase, async (req, r
     const id = req.params.id;
     console.log("🔍 [ADMIN] Deleting hotel with ID:", id);
 
-    let { data: hotel } = await supa.from("hotels").select("id, hotel_id")
-      .or(`hotel_id.eq.${id},id.eq.${id}`).maybeSingle();
-
-    if (!hotel) {
-      const { data: hotel2 } = await supa.from("hotels").select("id, hotel_id")
-        .ilike("hotel_id", id).maybeSingle();
-      hotel = hotel2;
-    }
-
-    if (!hotel) return sendError(res, 404, "Hotel not found with id: " + id);
+    const { hotel } = await findHotel(id);
+    if (!hotel) return sendError(res, 404, "Hotel not found: " + id);
 
     const { error } = await supa.from("hotels").delete().eq("id", hotel.id);
-
     if (error) {
       console.error("❌ [ADMIN] Delete error:", error);
       return sendError(res, 500, error.message);
@@ -388,11 +383,9 @@ app.get("/api/data", requireSupabase, async (req, res) => {
 
 app.get("/api/public/hotel/:id", requireSupabase, async (req, res) => {
   const id = req.params.id;
-  const { data } = await supa.from("hotels")
-    .select("id,hotel_id,name,hotel_name,city,location,hotel_type")
-    .or(`hotel_id.eq.${id},id.eq.${id}`).maybeSingle();
-  if (!data) return sendError(res, 404, "Hotel not found");
-  return sendSuccess(res, { hotel: data });
+  const { hotel } = await findHotel(id);
+  if (!hotel) return sendError(res, 404, "Hotel not found");
+  return sendSuccess(res, { hotel });
 });
 
 app.post("/api/hotels/signup", signupLimiter, requireSupabase, async (req, res) => {
@@ -443,24 +436,32 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
     const { hotel_id, hotelId, email, password } = req.body;
     const id = clean(hotel_id || hotelId);
     if (!password) return sendError(res, 400, "Password required");
-    let q = supa.from("hotels").select("*");
+    if (!id && !email) return sendError(res, 400, "Hotel ID or email required");
+
+    let hotel = null;
     if (id) {
       if (!isValidId(id)) return sendError(res, 400, "Invalid hotel ID");
-      q = q.or(`hotel_id.eq.${id},id.eq.${id}`);
-    } else if (email) {
-      q = q.eq("email", clean(email));
-    } else return sendError(res, 400, "Hotel ID or email required");
+      const found = await findHotel(id);
+      hotel = found.hotel;
+    } else {
+      const { data } = await supa.from("hotels").select("*").eq("email", clean(email)).maybeSingle();
+      hotel = data;
+    }
 
-    const { data: hotel } = await q.maybeSingle();
     if (!hotel) return sendError(res, 404, "Hotel not found");
-    const ok = await bcrypt.compare(String(password), hotel.password_hash);
-    if (!ok) return sendError(res, 401, "Wrong password");
-    if (String(hotel.status).toUpperCase() !== "APPROVED")
-      return sendError(res, 403, "Hotel not approved. Status: " + hotel.status);
 
-    const token = createToken({ role: "hotel", hotel_id: hotel.hotel_id, email: hotel.email }, "7d");
-    delete hotel.password_hash;
-    return sendSuccess(res, { token, hotel_id: hotel.hotel_id, hotel });
+    // Need full record for password check
+    const { data: fullHotel } = await supa.from("hotels").select("*").eq("id", hotel.id).maybeSingle();
+    if (!fullHotel) return sendError(res, 404, "Hotel not found");
+
+    const ok = await bcrypt.compare(String(password), fullHotel.password_hash);
+    if (!ok) return sendError(res, 401, "Wrong password");
+    if (String(fullHotel.status).toUpperCase() !== "APPROVED")
+      return sendError(res, 403, "Hotel not approved. Status: " + fullHotel.status);
+
+    const token = createToken({ role: "hotel", hotel_id: fullHotel.hotel_id, email: fullHotel.email }, "7d");
+    delete fullHotel.password_hash;
+    return sendSuccess(res, { token, hotel_id: fullHotel.hotel_id, hotel: fullHotel });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
@@ -601,9 +602,7 @@ app.post("/api/vendors/login", loginLimiter, requireSupabase, async (req, res) =
 // ============================================================
 app.get("/api/gm/me", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
-  const { data: hotel } = await supa.from("hotels")
-    .select("id,hotel_id,name,hotel_name,email,phone,city,location,hotel_type,plan,status,rooms,website")
-    .or(`hotel_id.eq.${hid},id.eq.${hid}`).maybeSingle();
+  const { hotel } = await findHotel(hid);
   const { data: depts } = await supa.from("departments").select("*").eq("hotel_id", hid);
   return sendSuccess(res, { hotel, departments: depts || [] });
 });
