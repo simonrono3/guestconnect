@@ -3,37 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Hotel Dashboard 19.0 — OS + Vendors Marketplace</title>
+<title>Hotel Dashboard 19.1 — GM OS + Guest Sync</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="/config.js"></script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--bg:#050505;--card:#101010;--border:#242424;--white:#fff;--shadow:0 12px 35px rgba(0,0,0,.35)}
+:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--purple:#a78bfa;--bg:#050505;--card:#101010;--border:#242424;--white:#fff;--shadow:0 12px 35px rgba(0,0,0,.35)}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(198,255,0,.07),transparent 25%),var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh;padding-bottom:80px}
 .header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(198,255,0,.45);padding:12px}
 .header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center}
 .brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--lime);color:#000;font-weight:900}
 .brand-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.brand-title span{color:var(--lime)}.brand-sub{color:#777;font-size:9px}
-.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-sm{padding:7px 10px;font-size:10px}
+.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-purple{background:#231336;border:1px solid #4c2a6d;color:#c4b5fd}.btn-sm{padding:7px 10px;font-size:10px}
 .dashboard{padding:14px 12px;max-width:1500px;margin:auto}.hero{border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:20px;margin-bottom:14px}
 .hero h1{margin:0;font-family:Space Grotesk;font-size:clamp(23px,5vw,38px)}.hero h1 span{color:var(--lime)}.hero p{margin:7px 0 0;color:#999;font-size:12px}
-.status-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 10px;border-radius:999px;font-size:9px;font-weight:900}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.status-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 10px;border-radius:999px;font-size:9px;font-weight:900}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}.dot.warn{background:var(--gold)}.dot.off{background:#555}
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px}.stat b{display:block;font-family:Space Grotesk;font-size:22px}.stat small{color:#777;font-size:9px;font-weight:900}
 .tabs-wrap{position:sticky;top:66px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto}.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.tab.active{background:var(--lime);color:#000}
 .view{padding:14px 12px;max-width:1500px;margin:auto}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:10px}.card-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.card-sub{color:#777;font-size:10px;margin-top:4px}
-.input,.select,textarea{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px}
-.badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900}.badge-green{background:#0a2914;color:#4ade80}.badge-yellow{background:#352200;color:#fbbf24}.badge-blue{background:#092536;color:#67e8f9}
+.input,.select,textarea{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
+.badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900}.badge-green{background:#0a2914;color:#4ade80}.badge-yellow{background:#352200;color:#fbbf24}.badge-blue{background:#092536;color:#67e8f9}.badge-purple{background:#231336;color:#c4b5fd}.badge-red{background:#2b0d0d;color:#ffb4b4}.badge-gray{background:#1b1b1b;color:#999}
 .qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;margin:15px auto}.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}.qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
 .hidden{display:none!important}.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s;max-width:340px;word-break:break-word}.toast.show{transform:translateY(0);opacity:1}.toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
+.orderMeta{color:#777;font-size:9.5px;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.orderRef{font-family:Space Grotesk;color:var(--lime);letter-spacing:.6px;font-weight:800}
 @media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.qr-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 19.0</span></div><div class="brand-sub" id="hotelSub">BAOBAB • VENDORS OS</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
+<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 19.1</span></div><div class="brand-sub" id="hotelSub">BAOBAB • GUEST SYNC</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
 <main>
-<section class="dashboard"><div class="hero"><h1>Welcome <span id="hotelNameHero">Baobab</span> — Empire Control.</h1><p>New: Vendors Marketplace — Approve vendors from Admin, add to your hotel, guest sees instantly!</p><div class="status-pill"><span class="dot"></span><span id="systemStatus">GM OS 19.0 • VENDORS MARKETPLACE</span></div></div>
-<div class="stats"><div class="stat"><b id="s_orders">0</b><small>LIVE ORDERS</small></div><div class="stat"><b id="s_menu">0</b><small>MENU</small></div><div class="stat"><b id="s_services">0</b><small>SERVICES</small></div><div class="stat"><b id="s_vendors">0</b><small>MY VENDORS</small></div><div class="stat"><b id="s_rev">Ksh 0</b><small>TODAY</small></div></div></section>
+<section class="dashboard"><div class="hero"><h1>Welcome <span id="hotelNameHero">Baobab</span> — Empire Control.</h1><p>Every status you tap reaches the guest's phone in under a second. Green dot = live sync active.</p><div class="status-pill"><span class="dot" id="rtDot"></span><span id="systemStatus">Connecting to live sync…</span></div></div>
+<div class="stats"><div class="stat"><b id="s_orders">0</b><small>LIVE ORDERS</small></div><div class="stat"><b id="s_active">0</b><small>IN PROGRESS</small></div><div class="stat"><b id="s_services">0</b><small>SERVICES</small></div><div class="stat"><b id="s_vendors">0</b><small>MY VENDORS</small></div><div class="stat"><b id="s_rev">Ksh 0</b><small>TODAY</small></div></div></section>
 <div class="tabs-wrap"><div class="tabs">
 <button class="tab active" onclick="switchTab('orders',this)">🔔 Orders <span id="c_orders">0</span></button>
 <button class="tab" onclick="switchTab('vendors',this)">🏪 Vendors Pool <span id="c_vendors"></span></button>
@@ -54,12 +56,11 @@
 <div id="toast" class="toast"></div>
 <script>
 // ============================================================
-// AUTH GUARD — matches what hotel-login.html saves
+// AUTH GUARD — unchanged
 // ============================================================
 (function authGuard(){
   const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
   const savedHotelId = localStorage.getItem('hotel_id');
-
   if (!token) {
     console.warn('🔒 No hotel_token found — redirecting to /hotel-login.html');
     window.location.replace('/hotel-login.html');
@@ -80,12 +81,47 @@
 const params = new URLSearchParams(location.search);
 const HOTEL_ID = (params.get('hotel') || localStorage.getItem('hotel_id') || 'BAOBAB').toUpperCase();
 
-document.getElementById('hotelSub').innerText = HOTEL_ID + ' • GM 19.0 • VENDORS MARKETPLACE';
+document.getElementById('hotelSub').innerText = HOTEL_ID + ' • GM 19.1 • GUEST SYNC';
 document.getElementById('hotelNameHero').innerText = HOTEL_ID;
 
 const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let MENU = [], SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
+let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
 let currentTab = 'orders';
+let rtChannel = null;
+
+/* ============================================================
+   ⭐ GUEST SYNC CONTRACT
+   ------------------------------------------------------------
+   These are the ONLY status values the guest app understands.
+   Anything else and the guest's progress bar falls back to step 1.
+   ============================================================ */
+const GUEST_STATUSES = {
+  pending:    { label: 'Pending',    step: 1, badge: 'badge-gray'   },
+  new:        { label: 'New',        step: 1, badge: 'badge-gray'   },
+  accepted:   { label: 'Accepted',   step: 2, badge: 'badge-blue'   },
+  preparing:  { label: 'Preparing',  step: 3, badge: 'badge-yellow' },
+  on_the_way: { label: 'On the way', step: 3, badge: 'badge-purple' },
+  completed:  { label: 'Completed',  step: 4, badge: 'badge-green'  },
+  cancelled:  { label: 'Cancelled',  step: 0, badge: 'badge-red'    }
+};
+
+/* Legacy aliases — if some old rows have these, map them on read */
+const STATUS_ALIASES = { ready: 'on_the_way', done: 'completed', ontheway: 'on_the_way' };
+function normalizeStatus(s){
+  const k = String(s || 'pending').toLowerCase().trim();
+  return STATUS_ALIASES[k] || k;
+}
+
+/* The next status a GM would naturally move to */
+const NEXT_STATUS = {
+  pending:    ['accepted', 'cancelled'],
+  new:        ['accepted', 'cancelled'],
+  accepted:   ['preparing', 'cancelled'],
+  preparing:  ['on_the_way', 'cancelled'],
+  on_the_way: ['completed', 'cancelled'],
+  completed:  [],
+  cancelled:  []
+};
 
 function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function money(v){ return 'Ksh ' + Number(v || 0).toLocaleString(); }
@@ -96,73 +132,65 @@ function toast(m, t = 'success'){
   setTimeout(() => el.className = 'toast', 3200);
 }
 function logout(){
-  localStorage.removeItem('hotel_token');
-  localStorage.removeItem('gm_token');
-  localStorage.removeItem('hotel_id');
-  localStorage.removeItem('hotel_name');
+  ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
   window.location.href = '/hotel-login.html';
 }
 function guestLink(room){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(room); }
-function tableLink(table){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(table) + '&table=' + encodeURIComponent(table); }
 
-// ⭐ Helper: extract order amount from either `amount` or `total`
+/* Order helpers — match what the guest app writes/reads */
 function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
-// ⭐ Helper: extract order items display
 function orderItemsText(o){
   if (o.service_title) return o.service_title;
   if (Array.isArray(o.items) && o.items.length) return o.items.map(i => i.name).join(', ');
   return '—';
 }
+function orderRef(o){ return o.reference || o.ref || ('#' + String(o.id).slice(0,6)); }
 
+/* ============================================================
+   LOADERS
+   ============================================================ */
 async function refreshAll(){
-  await Promise.all([loadMenu(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+  await Promise.all([loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
   renderCurrentTab();
 }
 
-// ⭐ MENU now uses hotel_services (category: food/drinks)
-async function loadMenu(){
-  const { data, error } = await supa.from('hotel_services')
-    .select('*')
-    .eq('hotel_id', HOTEL_ID)
-    .in('category', ['food', 'drinks', 'menu'])
-    .order('created_at', { ascending: false });
-  if (error) console.warn('loadMenu error:', error.message);
-  MENU = data || [];
-  document.getElementById('s_menu').innerText = MENU.length;
-}
-// ⭐ SERVICES uses everything else (or all — we'll show non-food here)
 async function loadServices(){
   const { data, error } = await supa.from('hotel_services')
-    .select('*')
-    .eq('hotel_id', HOTEL_ID)
+    .select('*').eq('hotel_id', HOTEL_ID)
     .order('created_at', { ascending: false });
   if (error) console.warn('loadServices error:', error.message);
   SERVICES = data || [];
   document.getElementById('s_services').innerText = SERVICES.length;
 }
+
 async function loadOrders(){
   const { data, error } = await supa.from('orders')
-    .select('*')
-    .eq('hotel_id', HOTEL_ID)
-    .order('created_at', { ascending: false })
-    .limit(100);
+    .select('*').eq('hotel_id', HOTEL_ID)
+    .order('created_at', { ascending: false }).limit(100);
   if (error) console.warn('loadOrders error:', error.message);
-  ORDERS = data || [];
+  ORDERS = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
+
   document.getElementById('s_orders').innerText = ORDERS.length;
   document.getElementById('c_orders').innerText = ORDERS.length ? `(${ORDERS.length})` : '';
+
+  const active = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
+  document.getElementById('s_active').innerText = active;
+
   const today = new Date().toISOString().slice(0, 10);
-  const rev = ORDERS.filter(o => o.created_at?.startsWith(today)).reduce((s, o) => s + orderAmount(o), 0);
+  const rev = ORDERS.filter(o => o.created_at?.startsWith(today))
+    .reduce((s, o) => s + orderAmount(o), 0);
   document.getElementById('s_rev').innerText = money(rev);
+
   if (currentTab === 'orders') renderOrders();
   if (currentTab === 'finance') renderFinance();
 }
+
 async function loadDepts(){
   const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
   if (error) console.warn('loadDepts error:', error.message);
   DEPTS = data || [];
 }
 
-// === VENDORS MARKETPLACE ===
 async function loadVendorsPool(){
   try {
     const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
@@ -173,11 +201,11 @@ async function loadVendorsPool(){
     if (j.pool) { VENDORS_POOL = j.pool; MY_VENDOR_IDS = j.myVendorIds || []; }
     else throw new Error('No pool');
   } catch (e) {
-    console.warn('vendors-pool API failed, falling back to direct Supabase:', e.message);
     try {
       const { data } = await supa.from('vendors').select('*').eq('status', 'approved').limit(100);
       VENDORS_POOL = data || [];
-      const { data: my } = await supa.from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
+      const { data: my } = await supa.from('hotel_services')
+        .select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
       MY_VENDOR_IDS = (my || []).map(x => x.vendor_id).filter(Boolean);
     } catch (e2) { VENDORS_POOL = []; MY_VENDOR_IDS = []; }
   }
@@ -186,13 +214,138 @@ async function loadVendorsPool(){
   if (currentTab === 'vendors') renderVendors();
 }
 
+/* ============================================================
+   ⭐ ORDERS — GUEST-COMPATIBLE STATUS FLOW
+   ============================================================ */
+function renderOrders(){
+  const box = document.getElementById('view-orders');
+  const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
+
+  const filtered = ORDERS.filter(o =>
+    `${o.room_number||''} ${o.guest_name||''} ${o.department||''} ${o.service_title||''} ${orderRef(o)}`
+      .toLowerCase().includes(q)
+  );
+
+  const activeOrders = filtered.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
+  const doneOrders = filtered.filter(o => o.status === 'completed' || o.status === 'cancelled');
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div>
+      <div class="card-sub">Tap a status button and the guest's phone updates in ~0.4s</div>
+      <input id="orderSearch" class="input" style="margin-top:10px" placeholder="Search room, guest, ref…" value="${esc(q)}" oninput="renderOrders()">
+    </div>
+    ${activeOrders.length ? activeOrders.map(orderCard).join('') : '<div class="card">No active orders.</div>'}
+    ${doneOrders.length ? `<div class="card" style="margin-top:16px"><div class="card-title">History</div></div>${doneOrders.map(orderCard).join('')}` : ''}
+  `;
+}
+
+function orderCard(o){
+  const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
+  const nexts = NEXT_STATUS[o.status] || [];
+  const canAdvance = nexts.filter(s => s !== 'cancelled');
+
+  const buttons = [
+    ...canAdvance.map(s => {
+      const isPrimary = s === 'accepted' || s === 'on_the_way' || s === 'completed';
+      const cls = isPrimary ? 'btn-primary' : 'btn-blue';
+      const label = GUEST_STATUSES[s]?.label || s;
+      return `<button class="btn ${cls} btn-sm" onclick="updateStatus('${o.id}','${s}')">${label}</button>`;
+    }),
+    ...(nexts.includes('cancelled')
+      ? [`<button class="btn btn-red btn-sm" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>`]
+      : [])
+  ].join('');
+
+  const when = o.created_at ? new Date(o.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+
+  return `
+    <div class="row">
+      <div style="flex:1;min-width:220px">
+        <b>ROOM ${esc(o.room_number || '—')} — ${esc(o.guest_name || 'Guest')}</b>
+        <span class="badge ${st.badge}">${esc(st.label.toUpperCase())}</span>
+        <br>
+        <small>${esc(orderItemsText(o))} — ${money(orderAmount(o))}</small>
+        <div class="orderMeta">
+          <span class="orderRef">${esc(orderRef(o))}</span>
+          <span>${esc((o.department || o.category || 'service'))}</span>
+          ${when ? `<span>${when}</span>` : ''}
+          ${o.guest_phone ? `<span>📱 ${esc(o.guest_phone)}</span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">${buttons || '<span class="badge badge-gray">CLOSED</span>'}</div>
+    </div>`;
+}
+
+async function updateStatus(id, s){
+  const clean = normalizeStatus(s);
+  if (!GUEST_STATUSES[clean]) {
+    return toast('Unknown status: ' + s, 'error');
+  }
+
+  const patch = {
+    status: clean,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await supa.from('orders').update(patch).eq('id', id);
+  if (error) return toast('Error: ' + error.message, 'error');
+
+  toast(`✅ Guest notified → ${GUEST_STATUSES[clean].label}`);
+
+  // Optimistic local update so the card reflects instantly
+  const idx = ORDERS.findIndex(o => String(o.id) === String(id));
+  if (idx >= 0) { ORDERS[idx] = { ...ORDERS[idx], ...patch }; renderOrders(); }
+
+  // Also refresh from server shortly after (in case realtime is slow)
+  setTimeout(loadOrders, 800);
+}
+
+/* ============================================================
+   VENDORS MARKETPLACE — normalize category for guest app
+   ============================================================ */
+/* Same normalizer the guest app uses, so vendors land in the
+   right category tab on the guest phone. */
+function normalizeCategory(raw){
+  const c = String(raw || '').toLowerCase().trim();
+  if (!c) return 'other';
+  if (c.includes('taxi') || c.includes('transport') || c.includes('transfer')) return 'taxi';
+  if (c.includes('tour') || c.includes('safari') || c.includes('travel')) return 'tour';
+  if (c.includes('spa') || c.includes('massage') || c.includes('wellness') ||
+      c.includes('laundry') || c.includes('gym') || c.includes('beauty')) return 'spa';
+  if (c.includes('food') || c.includes('drink') || c.includes('menu') ||
+      c.includes('restaurant') || c.includes('dining') || c.includes('bar') ||
+      c.includes('kitchen')) return 'food';
+  if (c.includes('housekeep') || c.includes('front') || c.includes('maint')) return 'services';
+  return 'other';
+}
+
 function renderVendors(){
   const box = document.getElementById('view-vendors');
-  box.innerHTML = `<div class="card"><div class="card-title">🏪 Vendors Marketplace — ${HOTEL_ID}</div><p class="card-sub">Admin approved vendors. Click "Add to My Hotel" → guest sees instantly in guest.html</p></div>
-  ${VENDORS_POOL.map(v => {
-    const added = MY_VENDOR_IDS.includes(v.id);
-    return `<div class="row"><div><b>${esc(v.vendor_name)} — ${esc(v.category || 'service')}</b> <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? 'ADDED' : 'AVAILABLE'}</span><br><small>${esc(v.phone || '')} • ${esc(v.location || v.city || '')} • ${money(v.price)} • ${esc((v.services || []).join(', '))}</small></div><div style="display:flex;gap:6px">${added ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${v.id}')">Remove</button>` : `<button class="btn btn-primary btn-sm" onclick="addVendor('${v.id}')">➕ Add to ${HOTEL_ID}</button>`}</div></div>`;
-  }).join('') || '<div class="card">No approved vendors yet — Admin needs to approve in admin.html</div>'}`;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">🏪 Vendors Marketplace — ${HOTEL_ID}</div>
+      <p class="card-sub">Admin-approved vendors. Adding one here makes it appear on every guest's phone instantly.</p>
+    </div>
+    ${VENDORS_POOL.map(v => {
+      const added = MY_VENDOR_IDS.includes(v.id);
+      const cat = normalizeCategory(v.category);
+      return `
+        <div class="row">
+          <div style="flex:1;min-width:200px">
+            <b>${esc(v.vendor_name)} — ${esc(v.category || 'service')}</b>
+            <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? 'ADDED' : 'AVAILABLE'}</span>
+            <span class="badge badge-gray">${cat.toUpperCase()}</span>
+            <br>
+            <small>${esc(v.phone || '')} • ${esc(v.location || v.city || '')} • ${money(v.price)} • ${esc((v.services || []).join(', '))}</small>
+          </div>
+          <div style="display:flex;gap:6px">
+            ${added
+              ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${v.id}')">Remove</button>`
+              : `<button class="btn btn-primary btn-sm" onclick="addVendor('${v.id}')">➕ Add to ${HOTEL_ID}</button>`}
+          </div>
+        </div>`;
+    }).join('') || '<div class="card">No approved vendors yet — Admin needs to approve in admin.html</div>'}`;
 }
 
 async function addVendor(vendorId){
@@ -203,20 +356,27 @@ async function addVendor(vendorId){
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }
     });
     const j = await res.json();
-    if (j.ok) { toast('✅ Added to ' + HOTEL_ID + ' — Guest can now book!'); loadVendorsPool(); loadServices(); }
+    if (j.ok) { toast('✅ Added — Guest sees it now'); loadVendorsPool(); loadServices(); }
     else throw new Error(j.error || 'Failed');
   } catch (e) {
-    console.warn('addVendor API failed, using direct Supabase:', e.message);
     try {
       const v = VENDORS_POOL.find(x => x.id === vendorId);
       if (!v) return toast('Vendor not found', 'error');
+
+      // ⭐ Normalize category so guest app groups it correctly
+      const guestCategory = normalizeCategory(v.category);
+
       const { error } = await supa.from('hotel_services').insert([{
         hotel_id: HOTEL_ID,
-        title: `${(v.services && v.services[0]) || v.category || 'Service'} — ${v.vendor_name}`,
-        description: v.bio || 'Available through GuestHub',
+        title: v.vendor_name,                              // keep title clean; guest shows vendor_name separately
+        description: v.bio || `Available through GuestHub`,
         price: v.price || 0,
-        category: v.category || 'services',
-        icon: '🏪',
+        category: guestCategory,
+        icon: guestCategory === 'food' ? '🍔'
+             : guestCategory === 'taxi' ? '🚕'
+             : guestCategory === 'tour' ? '🌍'
+             : guestCategory === 'spa'  ? '🧖'
+             : '🏪',
         vendor_id: vendorId,
         vendor_name: v.vendor_name,
         vendor_phone: v.phone,
@@ -229,35 +389,39 @@ async function addVendor(vendorId){
 }
 
 async function removeVendor(vendorId){
-  await supa.from('hotel_services').update({ is_active: false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
+  await supa.from('hotel_services')
+    .update({ is_active: false })
+    .eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
   toast('Removed from hotel'); loadVendorsPool(); loadServices();
 }
 
-function renderOrders(){
-  const box = document.getElementById('view-orders');
-  const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-  const filtered = ORDERS.filter(o => `${o.room_number || ''} ${o.guest_name || ''} ${o.department || ''} ${o.service_title || ''}`.toLowerCase().includes(q));
-  box.innerHTML = `<div class="card"><div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div><input id="orderSearch" class="input" placeholder="Search room, guest..." value="${q}" oninput="renderOrders()"></div>${
-    filtered.map(o => `<div class="row"><div><b>ROOM ${esc(o.room_number)} — ${esc(o.guest_name)}</b> <span class="badge badge-yellow">${esc((o.department || o.category || 'service').toUpperCase())}</span><br><small>${esc(orderItemsText(o))} — ${money(orderAmount(o))}</small></div><div style="display:flex;gap:5px"><button class="btn btn-primary btn-sm" onclick="updateStatus('${o.id}','ready')">Ready</button><button class="btn btn-dark btn-sm" onclick="updateStatus('${o.id}','completed')">Done</button></div></div>`).join('')
-    || '<div class="card">No orders</div>'
-  }`;
-}
-async function updateStatus(id, s){
-  const { error } = await supa.from('orders').update({ status: s }).eq('id', id);
-  if (error) return toast('Error: ' + error.message, 'error');
-  toast('Status → ' + s); loadOrders();
-}
-
-// ============================================================
-// MENU (uses hotel_services with category='food')
-// ============================================================
+/* ============================================================
+   MENU (unified into services with category='food')
+   ============================================================ */
 function renderMenu(){
   const box = document.getElementById('view-menu');
-  box.innerHTML = `<div class="card"><div class="card-title">🍽️ Menu Builder (Food & Drinks)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><input id="mName" class="input" placeholder="Pilau Beef"><input id="mPrice" type="number" class="input" placeholder="650"><input id="mCat" class="input" placeholder="Main"></div><button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu</button></div>${
-    MENU.map(i => `<div class="row"><span>${esc(i.title || i.name)} — ${money(i.price)} <small style="color:#777">(${esc(i.category || 'food')})</small></span><button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button></div>`).join('')
-    || '<div class="card">No menu items yet.</div>'
-  }`;
+  const food = SERVICES.filter(s => normalizeCategory(s.category) === 'food');
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">🍽️ Menu Builder (Food & Drinks)</div>
+      <div class="card-sub">These items appear under "Food & Room Service" on the guest phone.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+        <input id="mName" class="input" placeholder="Pilau Beef">
+        <input id="mPrice" type="number" class="input" placeholder="650">
+        <input id="mCat" class="input" placeholder="Main">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu Item</button>
+    </div>
+    ${food.map(i => `
+      <div class="row">
+        <span>${esc(i.title)} — ${money(i.price)}
+          <small style="color:#777">(${esc(i.category || 'food')})</small>
+        </span>
+        <button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button>
+      </div>`).join('') || '<div class="card">No menu items yet.</div>'}
+  `;
 }
+
 async function addMenu(){
   const name = document.getElementById('mName').value.trim();
   const price = parseInt(document.getElementById('mPrice').value);
@@ -266,29 +430,48 @@ async function addMenu(){
     hotel_id: HOTEL_ID,
     title: name,
     price: price,
-    category: (document.getElementById('mCat').value || 'food').toLowerCase(),
+    category: normalizeCategory(document.getElementById('mCat').value || 'food'),  // ⭐ normalize
     icon: '🍔',
     is_active: true
   }]);
   if (error) return toast('Error: ' + error.message, 'error');
-  toast('Added'); loadMenu(); loadServices();
+  toast('Added'); loadServices();
+  renderMenu();
 }
+
 async function delMenu(id){
   const { error } = await supa.from('hotel_services').delete().eq('id', id);
   if (error) return toast('Error: ' + error.message, 'error');
-  loadMenu(); loadServices();
+  loadServices(); renderMenu();
 }
 
-// ============================================================
-// SERVICES
-// ============================================================
+/* ============================================================
+   SERVICES
+   ============================================================ */
 function renderServices(){
   const box = document.getElementById('view-services');
-  box.innerHTML = `<div class="card"><div class="card-title">🛎️ My Hotel Services (${SERVICES.filter(s => s.is_active).length} active)</div></div>${
-    SERVICES.map(s => `<div class="row"><span>${esc(s.icon || '🏨')} ${esc(s.title)} — ${money(s.price)} <small style="color:#777">(${esc(s.category || 'service')})</small> ${s.is_active ? '✅' : '❌'}</span><div style="display:flex;gap:5px"><button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${s.id}',${!s.is_active})">${s.is_active ? 'Disable' : 'Enable'}</button><button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button></div></div>`).join('')
-    || '<div class="card">No services yet.</div>'
-  }`;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">🛎️ My Hotel Services</div>
+      <div class="card-sub">${SERVICES.filter(s => s.is_active).length} active • visible on guest phone</div>
+    </div>
+    ${SERVICES.map(s => `
+      <div class="row">
+        <span>${esc(s.icon || '🏨')} ${esc(s.title)} — ${money(s.price)}
+          <small style="color:#777">(${esc(normalizeCategory(s.category))})</small>
+          ${s.is_active ? '✅' : '❌'}
+        </span>
+        <div style="display:flex;gap:5px">
+          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm"
+            onclick="toggleService('${s.id}',${!s.is_active})">
+            ${s.is_active ? 'Disable' : 'Enable'}
+          </button>
+          <button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button>
+        </div>
+      </div>`).join('') || '<div class="card">No services yet.</div>'}
+  `;
 }
+
 async function toggleService(id, active){
   await supa.from('hotel_services').update({ is_active: active }).eq('id', id);
   loadServices();
@@ -298,14 +481,27 @@ async function delService(id){
   loadServices();
 }
 
-// ============================================================
-// WHATSAPP — uses `whatsapp` column (matches DB + backend)
-// ============================================================
+/* ============================================================
+   WHATSAPP
+   ============================================================ */
 function renderWhatsApp(){
   const box = document.getElementById('view-whatsapp');
-  const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || d.whatsapp_number || '') : ''; };
-  box.innerHTML = `<div class="card"><div class="card-title">📱 WhatsApp Departments</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${getVal('kitchen')}"></div><div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${getVal('housekeeping')}"></div><div><label>Laundry</label><input id="wa_laundry" class="input" value="${getVal('laundry')}"></div><div><label>Taxi</label><input id="wa_taxi" class="input" value="${getVal('taxi')}"></div></div><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button></div>`;
+  const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">📱 WhatsApp Departments</div>
+      <div class="card-sub">Guests tap these buttons in the "Help" tab of their app.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${esc(getVal('kitchen'))}"></div>
+        <div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(getVal('housekeeping'))}"></div>
+        <div><label>Laundry</label><input id="wa_laundry" class="input" value="${esc(getVal('laundry'))}"></div>
+        <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}"></div>
+        <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}"></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button>
+    </div>`;
 }
+
 async function saveWhatsApp(){
   for (const d of ['kitchen', 'housekeeping', 'laundry', 'taxi', 'frontdesk']) {
     const num = document.getElementById('wa_' + d)?.value.trim();
@@ -317,53 +513,65 @@ async function saveWhatsApp(){
       if (error) { toast('Error: ' + error.message, 'error'); return; }
     }
   }
-  toast('✅ WhatsApp Saved'); loadDepts();
+  toast('✅ WhatsApp Saved — guest sees it instantly'); loadDepts();
 }
 
-// ============================================================
-// QR
-// ============================================================
+/* ============================================================
+   QR
+   ============================================================ */
 function renderQR(){
   const box = document.getElementById('view-qr');
-  box.innerHTML = `<div class="card"><div class="card-title">🔳 QR Generator</div></div><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><input id="qrRoom" class="input" placeholder="Room 101"><button class="btn btn-primary" onclick="genSingle()">Generate</button></div><div id="singleQR" style="text-align:center;margin-top:12px"></div></div>`;
+  box.innerHTML = `
+    <div class="card"><div class="card-title">🔳 QR Generator</div>
+    <div class="card-sub">Each QR deep-links the guest to their room.</div></div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input id="qrRoom" class="input" placeholder="Room 101">
+        <button class="btn btn-primary" onclick="genSingle()">Generate</button>
+      </div>
+      <div id="singleQR" style="text-align:center;margin-top:12px"></div>
+    </div>`;
 }
+
 function genSingle(){
   const room = document.getElementById('qrRoom').value.trim() || '101';
   const link = guestLink(room);
   const box = document.getElementById('singleQR');
   box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900">${HOTEL_ID} - ROOM ${room}</div></div>`;
-  setTimeout(() => { new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 }); }, 100);
+  setTimeout(() => {
+    new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 });
+  }, 100);
 }
 
-// ============================================================
-// FINANCE
-// ============================================================
+/* ============================================================
+   FINANCE
+   ============================================================ */
 function renderFinance(){
   const today = new Date().toISOString().slice(0, 10);
   const todayOrders = ORDERS.filter(o => o.created_at?.startsWith(today));
   const todayRev = todayOrders.reduce((s, o) => s + orderAmount(o), 0);
   const allRev = ORDERS.reduce((s, o) => s + orderAmount(o), 0);
   const box = document.getElementById('view-finance');
-  box.innerHTML = `<div class="card"><div class="card-title">💸 Finance</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="card"><small>TODAY</small><br><b>${money(todayRev)}</b></div><div class="card"><small>TOTAL</small><br><b>${money(allRev)}</b></div></div>`;
+  box.innerHTML = `
+    <div class="card"><div class="card-title">💸 Finance</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="card"><small>TODAY</small><br><b>${money(todayRev)}</b><br><small>${todayOrders.length} orders</small></div>
+      <div class="card"><small>ALL TIME</small><br><b>${money(allRev)}</b><br><small>${ORDERS.length} orders</small></div>
+    </div>`;
 }
 
-// ============================================================
-// TABS
-// ============================================================
+/* ============================================================
+   TABS
+   ============================================================ */
 function switchTab(name, el){
   currentTab = name;
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + name).classList.remove('hidden');
   if (el) el.classList.add('active');
-  if (name === 'orders') renderOrders();
-  if (name === 'vendors') renderVendors();
-  if (name === 'menu') renderMenu();
-  if (name === 'services') renderServices();
-  if (name === 'whatsapp') renderWhatsApp();
-  if (name === 'qr') renderQR();
-  if (name === 'finance') renderFinance();
+  renderCurrentTab();
 }
+
 function renderCurrentTab(){
   if (currentTab === 'orders') renderOrders();
   if (currentTab === 'vendors') renderVendors();
@@ -374,24 +582,81 @@ function renderCurrentTab(){
   if (currentTab === 'finance') renderFinance();
 }
 
-// ============================================================
-// BOOT
-// ============================================================
-(function boot(){
+/* ============================================================
+   ⭐ REALTIME — subscribe to INSERT *and* UPDATE
+   ============================================================ */
+function setSyncDot(state){
+  const dot = document.getElementById('rtDot');
+  const txt = document.getElementById('systemStatus');
+  if (state === 'live'){
+    dot.className = 'dot';
+    txt.innerText = 'Live sync active — guest updates instantly';
+  } else if (state === 'connecting'){
+    dot.className = 'dot warn';
+    txt.innerText = 'Connecting to live sync…';
+  } else {
+    dot.className = 'dot off';
+    txt.innerText = 'Offline — polling every 15s';
+  }
+}
+
+function subscribeRealtime(){
+  if (rtChannel) { try { supa.removeChannel(rtChannel); } catch(_) {} }
+  setSyncDot('connecting');
+
+  try {
+    rtChannel = supa
+      .channel('gm-' + HOTEL_ID)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
+        (p) => {
+          toast(`🔔 NEW — Room ${p.new?.room_number || '?'}`);
+          if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+          loadOrders();
+        })
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
+        (p) => {
+          // Another staff member moved it — update the queue silently
+          const idx = ORDERS.findIndex(o => String(o.id) === String(p.new.id));
+          if (idx >= 0) {
+            ORDERS[idx] = { ...ORDERS[idx], ...p.new, status: normalizeStatus(p.new.status) };
+            if (currentTab === 'orders') renderOrders();
+          } else {
+            loadOrders();
+          }
+        })
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') setSyncDot('live');
+        else if (['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)) {
+          setSyncDot('off');
+          if (err) console.warn('Realtime error:', err);
+        }
+      });
+  } catch (e) {
+    console.warn('Realtime subscribe failed:', e.message);
+    setSyncDot('off');
+  }
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(async function boot(){
   const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
   if (!token) return;
 
-  refreshAll();
+  await refreshAll();
+  subscribeRealtime();
 
-  try {
-    supa.channel('gm-' + HOTEL_ID)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
-        (p) => { toast(`🔔 NEW ROOM ${p.new.room_number}`); loadOrders(); })
-      .subscribe();
-  } catch (e) { console.warn('Realtime channel failed:', e.message); }
+  // Fallback poll every 15s in case realtime drops
+  setInterval(() => { loadOrders(); }, 15000);
 
-  setInterval(loadOrders, 15000);
+  // Reconnect on network regained
+  window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) { loadOrders(); }
+  });
 })();
 </script>
 </body>
