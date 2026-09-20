@@ -55,32 +55,20 @@
 </main>
 <div id="toast" class="toast"></div>
 <script>
-// ============================================================
-// AUTH GUARD — unchanged
-// ============================================================
 (function authGuard(){
   const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
   const savedHotelId = localStorage.getItem('hotel_id');
-  if (!token) {
-    console.warn('🔒 No hotel_token found — redirecting to /hotel-login.html');
-    window.location.replace('/hotel-login.html');
-    return;
-  }
+  if (!token) { window.location.replace('/hotel-login.html'); return; }
   const urlParams = new URLSearchParams(location.search);
   if (!urlParams.get('hotel') && savedHotelId) {
     urlParams.set('hotel', savedHotelId);
     window.location.replace('/hotel-dashboard.html?' + urlParams.toString());
     return;
   }
-  console.log('✅ Auth guard passed. Hotel:', savedHotelId);
 })();
 
-// ============================================================
-// MAIN APP
-// ============================================================
 const params = new URLSearchParams(location.search);
 const HOTEL_ID = (params.get('hotel') || localStorage.getItem('hotel_id') || 'BAOBAB').toUpperCase();
-
 document.getElementById('hotelSub').innerText = HOTEL_ID + ' • GM 19.1 • GUEST SYNC';
 document.getElementById('hotelNameHero').innerText = HOTEL_ID;
 
@@ -89,12 +77,6 @@ let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [
 let currentTab = 'orders';
 let rtChannel = null;
 
-/* ============================================================
-   ⭐ GUEST SYNC CONTRACT
-   ------------------------------------------------------------
-   These are the ONLY status values the guest app understands.
-   Anything else and the guest's progress bar falls back to step 1.
-   ============================================================ */
 const GUEST_STATUSES = {
   pending:    { label: 'Pending',    step: 1, badge: 'badge-gray'   },
   new:        { label: 'New',        step: 1, badge: 'badge-gray'   },
@@ -104,15 +86,11 @@ const GUEST_STATUSES = {
   completed:  { label: 'Completed',  step: 4, badge: 'badge-green'  },
   cancelled:  { label: 'Cancelled',  step: 0, badge: 'badge-red'    }
 };
-
-/* Legacy aliases — if some old rows have these, map them on read */
 const STATUS_ALIASES = { ready: 'on_the_way', done: 'completed', ontheway: 'on_the_way' };
 function normalizeStatus(s){
   const k = String(s || 'pending').toLowerCase().trim();
   return STATUS_ALIASES[k] || k;
 }
-
-/* The next status a GM would naturally move to */
 const NEXT_STATUS = {
   pending:    ['accepted', 'cancelled'],
   new:        ['accepted', 'cancelled'],
@@ -136,8 +114,6 @@ function logout(){
   window.location.href = '/hotel-login.html';
 }
 function guestLink(room){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(room); }
-
-/* Order helpers — match what the guest app writes/reads */
 function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
 function orderItemsText(o){
   if (o.service_title) return o.service_title;
@@ -146,51 +122,35 @@ function orderItemsText(o){
 }
 function orderRef(o){ return o.reference || o.ref || ('#' + String(o.id).slice(0,6)); }
 
-/* ============================================================
-   LOADERS
-   ============================================================ */
 async function refreshAll(){
   await Promise.all([loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
   renderCurrentTab();
 }
-
 async function loadServices(){
-  const { data, error } = await supa.from('hotel_services')
-    .select('*').eq('hotel_id', HOTEL_ID)
-    .order('created_at', { ascending: false });
+  const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
   if (error) console.warn('loadServices error:', error.message);
   SERVICES = data || [];
   document.getElementById('s_services').innerText = SERVICES.length;
 }
-
 async function loadOrders(){
-  const { data, error } = await supa.from('orders')
-    .select('*').eq('hotel_id', HOTEL_ID)
-    .order('created_at', { ascending: false }).limit(100);
+  const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(100);
   if (error) console.warn('loadOrders error:', error.message);
   ORDERS = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
-
   document.getElementById('s_orders').innerText = ORDERS.length;
   document.getElementById('c_orders').innerText = ORDERS.length ? `(${ORDERS.length})` : '';
-
   const active = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
   document.getElementById('s_active').innerText = active;
-
   const today = new Date().toISOString().slice(0, 10);
-  const rev = ORDERS.filter(o => o.created_at?.startsWith(today))
-    .reduce((s, o) => s + orderAmount(o), 0);
+  const rev = ORDERS.filter(o => o.created_at?.startsWith(today)).reduce((s, o) => s + orderAmount(o), 0);
   document.getElementById('s_rev').innerText = money(rev);
-
   if (currentTab === 'orders') renderOrders();
   if (currentTab === 'finance') renderFinance();
 }
-
 async function loadDepts(){
   const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
   if (error) console.warn('loadDepts error:', error.message);
   DEPTS = data || [];
 }
-
 async function loadVendorsPool(){
   try {
     const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
@@ -204,8 +164,7 @@ async function loadVendorsPool(){
     try {
       const { data } = await supa.from('vendors').select('*').eq('status', 'approved').limit(100);
       VENDORS_POOL = data || [];
-      const { data: my } = await supa.from('hotel_services')
-        .select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
+      const { data: my } = await supa.from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
       MY_VENDOR_IDS = (my || []).map(x => x.vendor_id).filter(Boolean);
     } catch (e2) { VENDORS_POOL = []; MY_VENDOR_IDS = []; }
   }
@@ -214,21 +173,12 @@ async function loadVendorsPool(){
   if (currentTab === 'vendors') renderVendors();
 }
 
-/* ============================================================
-   ⭐ ORDERS — GUEST-COMPATIBLE STATUS FLOW
-   ============================================================ */
 function renderOrders(){
   const box = document.getElementById('view-orders');
   const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-
-  const filtered = ORDERS.filter(o =>
-    `${o.room_number||''} ${o.guest_name||''} ${o.department||''} ${o.service_title||''} ${orderRef(o)}`
-      .toLowerCase().includes(q)
-  );
-
+  const filtered = ORDERS.filter(o => `${o.room_number||''} ${o.guest_name||''} ${o.department||''} ${o.service_title||''} ${orderRef(o)}`.toLowerCase().includes(q));
   const activeOrders = filtered.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
   const doneOrders = filtered.filter(o => o.status === 'completed' || o.status === 'cancelled');
-
   box.innerHTML = `
     <div class="card">
       <div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div>
@@ -239,12 +189,10 @@ function renderOrders(){
     ${doneOrders.length ? `<div class="card" style="margin-top:16px"><div class="card-title">History</div></div>${doneOrders.map(orderCard).join('')}` : ''}
   `;
 }
-
 function orderCard(o){
   const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
   const nexts = NEXT_STATUS[o.status] || [];
   const canAdvance = nexts.filter(s => s !== 'cancelled');
-
   const buttons = [
     ...canAdvance.map(s => {
       const isPrimary = s === 'accepted' || s === 'on_the_way' || s === 'completed';
@@ -252,13 +200,9 @@ function orderCard(o){
       const label = GUEST_STATUSES[s]?.label || s;
       return `<button class="btn ${cls} btn-sm" onclick="updateStatus('${o.id}','${s}')">${label}</button>`;
     }),
-    ...(nexts.includes('cancelled')
-      ? [`<button class="btn btn-red btn-sm" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>`]
-      : [])
+    ...(nexts.includes('cancelled') ? [`<button class="btn btn-red btn-sm" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>`] : [])
   ].join('');
-
   const when = o.created_at ? new Date(o.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
-
   return `
     <div class="row">
       <div style="flex:1;min-width:220px">
@@ -276,47 +220,50 @@ function orderCard(o){
       <div style="display:flex;gap:5px;flex-wrap:wrap">${buttons || '<span class="badge badge-gray">CLOSED</span>'}</div>
     </div>`;
 }
-
 async function updateStatus(id, s){
   const clean = normalizeStatus(s);
-  if (!GUEST_STATUSES[clean]) {
-    return toast('Unknown status: ' + s, 'error');
-  }
-
-  const patch = {
-    status: clean,
-    updated_at: new Date().toISOString()
-  };
-
+  if (!GUEST_STATUSES[clean]) return toast('Unknown status: ' + s, 'error');
+  const patch = { status: clean, updated_at: new Date().toISOString() };
   const { error } = await supa.from('orders').update(patch).eq('id', id);
   if (error) return toast('Error: ' + error.message, 'error');
-
   toast(`✅ Guest notified → ${GUEST_STATUSES[clean].label}`);
-
-  // Optimistic local update so the card reflects instantly
   const idx = ORDERS.findIndex(o => String(o.id) === String(id));
   if (idx >= 0) { ORDERS[idx] = { ...ORDERS[idx], ...patch }; renderOrders(); }
-
-  // Also refresh from server shortly after (in case realtime is slow)
   setTimeout(loadOrders, 800);
 }
 
 /* ============================================================
-   VENDORS MARKETPLACE — normalize category for guest app
+   ⭐ CATEGORY NORMALIZER — mirrors guest app so vendors land right
    ============================================================ */
-/* Same normalizer the guest app uses, so vendors land in the
-   right category tab on the guest phone. */
 function normalizeCategory(raw){
   const c = String(raw || '').toLowerCase().trim();
   if (!c) return 'other';
-  if (c.includes('taxi') || c.includes('transport') || c.includes('transfer')) return 'taxi';
-  if (c.includes('tour') || c.includes('safari') || c.includes('travel')) return 'tour';
+  if (c.includes('taxi') || c.includes('transport') || c.includes('transfer') ||
+      c.includes('ride') || c.includes('airport') || c.includes('shuttle') ||
+      c.includes('driver') || c.includes('car ')) return 'taxi';
+  if (c.includes('tour') || c.includes('safari') || c.includes('travel') ||
+      c.includes('excursion') || c.includes('trip') || c.includes('park') ||
+      c.includes('game drive') || c.includes('adventure')) return 'tour';
   if (c.includes('spa') || c.includes('massage') || c.includes('wellness') ||
-      c.includes('laundry') || c.includes('gym') || c.includes('beauty')) return 'spa';
-  if (c.includes('food') || c.includes('drink') || c.includes('menu') ||
-      c.includes('restaurant') || c.includes('dining') || c.includes('bar') ||
-      c.includes('kitchen')) return 'food';
-  if (c.includes('housekeep') || c.includes('front') || c.includes('maint')) return 'services';
+      c.includes('laundry') || c.includes('gym') || c.includes('beauty') ||
+      c.includes('fitness') || c.includes('salon') || c.includes('hair') ||
+      c.includes('nail') || c.includes('sauna') || c.includes('steam')) return 'spa';
+  if (c.includes('food') || c.includes('restaurant') || c.includes('dining') ||
+      c.includes('room service') || c.includes('drink') || c.includes('bar') ||
+      c.includes('kitchen') || c.includes('menu') || c.includes('meal') ||
+      c.includes('main') || c.includes('starter') || c.includes('appetizer') ||
+      c.includes('dessert') || c.includes('snack') || c.includes('breakfast') ||
+      c.includes('lunch') || c.includes('dinner') || c.includes('beverage') ||
+      c.includes('juice') || c.includes('cocktail') || c.includes('wine') ||
+      c.includes('beer') || c.includes('tea') || c.includes('coffee') ||
+      c.includes('soda') || c.includes('water') ||
+      c.includes('pizza') || c.includes('burger') || c.includes('chicken') ||
+      c.includes('rice') || c.includes('pilau') || c.includes('nyama') ||
+      c.includes('ugali') || c.includes('soup') || c.includes('salad') ||
+      c.includes('fish') || c.includes('beef') || c.includes('vegetarian')) return 'food';
+  if (c.includes('housekeep') || c.includes('front') || c.includes('service') ||
+      c.includes('maintenance') || c.includes('maint') || c.includes('clean') ||
+      c.includes('towel') || c.includes('amenity')) return 'services';
   return 'other';
 }
 
@@ -362,13 +309,10 @@ async function addVendor(vendorId){
     try {
       const v = VENDORS_POOL.find(x => x.id === vendorId);
       if (!v) return toast('Vendor not found', 'error');
-
-      // ⭐ Normalize category so guest app groups it correctly
       const guestCategory = normalizeCategory(v.category);
-
       const { error } = await supa.from('hotel_services').insert([{
         hotel_id: HOTEL_ID,
-        title: v.vendor_name,                              // keep title clean; guest shows vendor_name separately
+        title: v.vendor_name,
         description: v.bio || `Available through GuestHub`,
         price: v.price || 0,
         category: guestCategory,
@@ -387,16 +331,13 @@ async function addVendor(vendorId){
     } catch (e2) { toast('Error: ' + e2.message, 'error'); }
   }
 }
-
 async function removeVendor(vendorId){
-  await supa.from('hotel_services')
-    .update({ is_active: false })
-    .eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
+  await supa.from('hotel_services').update({ is_active: false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
   toast('Removed from hotel'); loadVendorsPool(); loadServices();
 }
 
 /* ============================================================
-   MENU (unified into services with category='food')
+   ⭐ MENU — dropdown category (fixes "Main"/"Dessert" misfiling)
    ============================================================ */
 function renderMenu(){
   const box = document.getElementById('view-menu');
@@ -405,10 +346,18 @@ function renderMenu(){
     <div class="card">
       <div class="card-title">🍽️ Menu Builder (Food & Drinks)</div>
       <div class="card-sub">These items appear under "Food & Room Service" on the guest phone.</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px;margin-top:10px">
         <input id="mName" class="input" placeholder="Pilau Beef">
         <input id="mPrice" type="number" class="input" placeholder="650">
-        <input id="mCat" class="input" placeholder="Main">
+        <select id="mCat" class="input">
+          <option value="food">Food</option>
+          <option value="drinks">Drinks</option>
+          <option value="main">Main Course</option>
+          <option value="starter">Starter</option>
+          <option value="dessert">Dessert</option>
+          <option value="breakfast">Breakfast</option>
+          <option value="snack">Snack</option>
+        </select>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu Item</button>
     </div>
@@ -421,33 +370,28 @@ function renderMenu(){
       </div>`).join('') || '<div class="card">No menu items yet.</div>'}
   `;
 }
-
 async function addMenu(){
   const name = document.getElementById('mName').value.trim();
   const price = parseInt(document.getElementById('mPrice').value);
+  const cat = document.getElementById('mCat').value;
   if (!name || !price) return toast('Name & price required', 'error');
   const { error } = await supa.from('hotel_services').insert([{
     hotel_id: HOTEL_ID,
     title: name,
     price: price,
-    category: normalizeCategory(document.getElementById('mCat').value || 'food'),  // ⭐ normalize
+    category: normalizeCategory(cat),
     icon: '🍔',
     is_active: true
   }]);
   if (error) return toast('Error: ' + error.message, 'error');
-  toast('Added'); loadServices();
-  renderMenu();
+  toast('Added'); loadServices(); renderMenu();
 }
-
 async function delMenu(id){
   const { error } = await supa.from('hotel_services').delete().eq('id', id);
   if (error) return toast('Error: ' + error.message, 'error');
   loadServices(); renderMenu();
 }
 
-/* ============================================================
-   SERVICES
-   ============================================================ */
 function renderServices(){
   const box = document.getElementById('view-services');
   box.innerHTML = `
@@ -462,16 +406,12 @@ function renderServices(){
           ${s.is_active ? '✅' : '❌'}
         </span>
         <div style="display:flex;gap:5px">
-          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm"
-            onclick="toggleService('${s.id}',${!s.is_active})">
-            ${s.is_active ? 'Disable' : 'Enable'}
-          </button>
+          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${s.id}',${!s.is_active})">${s.is_active ? 'Disable' : 'Enable'}</button>
           <button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button>
         </div>
       </div>`).join('') || '<div class="card">No services yet.</div>'}
   `;
 }
-
 async function toggleService(id, active){
   await supa.from('hotel_services').update({ is_active: active }).eq('id', id);
   loadServices();
@@ -481,9 +421,6 @@ async function delService(id){
   loadServices();
 }
 
-/* ============================================================
-   WHATSAPP
-   ============================================================ */
 function renderWhatsApp(){
   const box = document.getElementById('view-whatsapp');
   const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
@@ -501,29 +438,21 @@ function renderWhatsApp(){
       <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button>
     </div>`;
 }
-
 async function saveWhatsApp(){
   for (const d of ['kitchen', 'housekeeping', 'laundry', 'taxi', 'frontdesk']) {
     const num = document.getElementById('wa_' + d)?.value.trim();
     if (num) {
-      const { error } = await supa.from('departments').upsert(
-        { hotel_id: HOTEL_ID, name: d, whatsapp: num },
-        { onConflict: 'hotel_id,name' }
-      );
+      const { error } = await supa.from('departments').upsert({ hotel_id: HOTEL_ID, name: d, whatsapp: num }, { onConflict: 'hotel_id,name' });
       if (error) { toast('Error: ' + error.message, 'error'); return; }
     }
   }
   toast('✅ WhatsApp Saved — guest sees it instantly'); loadDepts();
 }
 
-/* ============================================================
-   QR
-   ============================================================ */
 function renderQR(){
   const box = document.getElementById('view-qr');
   box.innerHTML = `
-    <div class="card"><div class="card-title">🔳 QR Generator</div>
-    <div class="card-sub">Each QR deep-links the guest to their room.</div></div>
+    <div class="card"><div class="card-title">🔳 QR Generator</div><div class="card-sub">Each QR deep-links the guest to their room.</div></div>
     <div class="card">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <input id="qrRoom" class="input" placeholder="Room 101">
@@ -532,20 +461,14 @@ function renderQR(){
       <div id="singleQR" style="text-align:center;margin-top:12px"></div>
     </div>`;
 }
-
 function genSingle(){
   const room = document.getElementById('qrRoom').value.trim() || '101';
   const link = guestLink(room);
   const box = document.getElementById('singleQR');
   box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900">${HOTEL_ID} - ROOM ${room}</div></div>`;
-  setTimeout(() => {
-    new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 });
-  }, 100);
+  setTimeout(() => { new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 }); }, 100);
 }
 
-/* ============================================================
-   FINANCE
-   ============================================================ */
 function renderFinance(){
   const today = new Date().toISOString().slice(0, 10);
   const todayOrders = ORDERS.filter(o => o.created_at?.startsWith(today));
@@ -560,9 +483,6 @@ function renderFinance(){
     </div>`;
 }
 
-/* ============================================================
-   TABS
-   ============================================================ */
 function switchTab(name, el){
   currentTab = name;
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -571,7 +491,6 @@ function switchTab(name, el){
   if (el) el.classList.add('active');
   renderCurrentTab();
 }
-
 function renderCurrentTab(){
   if (currentTab === 'orders') renderOrders();
   if (currentTab === 'vendors') renderVendors();
@@ -582,50 +501,30 @@ function renderCurrentTab(){
   if (currentTab === 'finance') renderFinance();
 }
 
-/* ============================================================
-   ⭐ REALTIME — subscribe to INSERT *and* UPDATE
-   ============================================================ */
 function setSyncDot(state){
   const dot = document.getElementById('rtDot');
   const txt = document.getElementById('systemStatus');
-  if (state === 'live'){
-    dot.className = 'dot';
-    txt.innerText = 'Live sync active — guest updates instantly';
-  } else if (state === 'connecting'){
-    dot.className = 'dot warn';
-    txt.innerText = 'Connecting to live sync…';
-  } else {
-    dot.className = 'dot off';
-    txt.innerText = 'Offline — polling every 15s';
-  }
+  if (state === 'live'){ dot.className = 'dot'; txt.innerText = 'Live sync active — guest updates instantly'; }
+  else if (state === 'connecting'){ dot.className = 'dot warn'; txt.innerText = 'Connecting to live sync…'; }
+  else { dot.className = 'dot off'; txt.innerText = 'Offline — polling every 15s'; }
 }
-
 function subscribeRealtime(){
   if (rtChannel) { try { supa.removeChannel(rtChannel); } catch(_) {} }
   setSyncDot('connecting');
-
   try {
-    rtChannel = supa
-      .channel('gm-' + HOTEL_ID)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
-        (p) => {
-          toast(`🔔 NEW — Room ${p.new?.room_number || '?'}`);
-          if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-          loadOrders();
-        })
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` },
-        (p) => {
-          // Another staff member moved it — update the queue silently
-          const idx = ORDERS.findIndex(o => String(o.id) === String(p.new.id));
-          if (idx >= 0) {
-            ORDERS[idx] = { ...ORDERS[idx], ...p.new, status: normalizeStatus(p.new.status) };
-            if (currentTab === 'orders') renderOrders();
-          } else {
-            loadOrders();
-          }
-        })
+    rtChannel = supa.channel('gm-' + HOTEL_ID)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, (p) => {
+        toast(`🔔 NEW — Room ${p.new?.room_number || '?'}`);
+        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
+        loadOrders();
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, (p) => {
+        const idx = ORDERS.findIndex(o => String(o.id) === String(p.new.id));
+        if (idx >= 0) {
+          ORDERS[idx] = { ...ORDERS[idx], ...p.new, status: normalizeStatus(p.new.status) };
+          if (currentTab === 'orders') renderOrders();
+        } else loadOrders();
+      })
       .subscribe((status, err) => {
         if (status === 'SUBSCRIBED') setSyncDot('live');
         else if (['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)) {
@@ -639,24 +538,14 @@ function subscribeRealtime(){
   }
 }
 
-/* ============================================================
-   BOOT
-   ============================================================ */
 (async function boot(){
   const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
   if (!token) return;
-
   await refreshAll();
   subscribeRealtime();
-
-  // Fallback poll every 15s in case realtime drops
   setInterval(() => { loadOrders(); }, 15000);
-
-  // Reconnect on network regained
   window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) { loadOrders(); }
-  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loadOrders(); });
 })();
 </script>
 </body>
