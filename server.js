@@ -1,5 +1,5 @@
 // ============================================================
-// GuestHub V1.0 — Complete Backend (FIXED)
+// GuestHub V1.1 — Complete Backend (aligned with GM OS + Guest SuperApp)
 // ============================================================
 
 import express from "express";
@@ -79,7 +79,7 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V1.0",
+    os: "GuestHub V1.1",
     time: new Date().toISOString(),
     supabase: !!supa,
     missing_env: missing
@@ -87,12 +87,20 @@ app.get("/api/health", (req, res) =>
 );
 
 // ---------- Config served to browsers ----------
+// Exposes both plain and GUESTHUB_* namespaced globals so both the
+// guest SuperApp and the GM dashboard read the same config.
 app.get("/config.js", (req, res) => {
   res.type("application/javascript");
   res.setHeader("Cache-Control", "no-cache");
   const u = JSON.stringify(SUPABASE_URL || "");
   const k = JSON.stringify(SUPABASE_ANON || "");
-  res.send(`window.SUPABASE_URL=${u};window.SUPABASE_KEY=${k};window.SUPABASE_ANON_KEY=${k};`);
+  res.send(
+    `window.SUPABASE_URL=${u};` +
+    `window.SUPABASE_KEY=${k};` +
+    `window.SUPABASE_ANON_KEY=${k};` +
+    `window.GUESTHUB_SUPABASE_URL=${u};` +
+    `window.GUESTHUB_SUPABASE_KEY=${k};`
+  );
 });
 
 // ---------- Helpers ----------
@@ -108,6 +116,8 @@ const cleanPhone = v => {
   if (d.startsWith("0")) return "254" + d.slice(1);
   return d;
 };
+// Prevent LIKE wildcard abuse in findHotel
+const sanitizeIdentifier = v => String(v || "").trim().replace(/[%_]/g, "");
 const sendError = (res, s, m) => res.status(s).json({ ok: false, error: m });
 const sendSuccess = (res, d = {}) => res.json({ ok: true, ...d });
 const makeRef = () => "GH-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(100 + Math.random() * 900);
@@ -117,6 +127,21 @@ function requireSupabase(req, res, next) {
   if (!supa) return sendError(res, 503, "Server not configured. Contact admin.");
   next();
 }
+
+// ---------- Order status model ----------
+const ALLOWED_STATUSES = [
+  "pending", "new", "accepted", "preparing", "on_the_way", "completed", "cancelled"
+];
+const VALID_TRANSITIONS = {
+  pending:    ["accepted", "preparing", "on_the_way", "completed", "cancelled"],
+  new:        ["accepted", "preparing", "on_the_way", "completed", "cancelled"],
+  accepted:   ["preparing", "on_the_way", "completed", "cancelled"],
+  preparing:  ["on_the_way", "completed", "cancelled"],
+  on_the_way: ["completed", "cancelled"],
+  completed:  [],
+  cancelled:  []
+};
+const normalizeStatusKey = v => String(v || "pending").toLowerCase().trim().replace(/\s+/g, "_");
 
 // ---------- Auth ----------
 const createToken = (payload, exp = "7d") => jwt.sign(payload, JWT_SECRET, { expiresIn: exp });
@@ -149,7 +174,7 @@ function requireVendor(req, res, next) {
 // ============================================================
 async function findHotel(identifier) {
   if (!identifier) return { hotel: null };
-  const id = String(identifier).trim();
+  const id = sanitizeIdentifier(identifier);
 
   // 1. Try by hotel_id (text) — case-insensitive
   try {
@@ -226,7 +251,7 @@ app.get("/api/admin/hotels", requireAdmin, requireSupabase, async (req, res) => 
   res.json({ hotels: data || [] });
 });
 
-// ---------- FIXED: Approve Hotel ----------
+// ---------- Approve Hotel ----------
 app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
   try {
     const id = req.params.id;
@@ -260,7 +285,7 @@ app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (
   }
 });
 
-// ---------- FIXED: Block Hotel ----------
+// ---------- Block Hotel ----------
 app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (req, res) => {
   try {
     const id = req.params.id;
@@ -284,7 +309,7 @@ app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (re
   }
 });
 
-// ---------- FIXED: Delete Hotel ----------
+// ---------- Delete Hotel ----------
 app.delete("/api/admin/hotels/:id", requireAdmin, requireSupabase, async (req, res) => {
   try {
     const id = req.params.id;
@@ -313,7 +338,7 @@ app.get("/api/admin/vendors", requireAdmin, requireSupabase, async (req, res) =>
   res.json({ vendors: data || [] });
 });
 
-// ---------- FIXED: Approve/Reject Vendor ----------
+// ---------- Approve/Reject Vendor ----------
 app.post("/api/admin/vendors/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
   try {
     const status = String(req.body.status || "approved").toLowerCase();
@@ -342,7 +367,7 @@ app.post("/api/admin/vendors/:id/approve", requireAdmin, requireSupabase, async 
   }
 });
 
-// ---------- FIXED: Delete Vendor ----------
+// ---------- Delete Vendor ----------
 app.delete("/api/admin/vendors/:id", requireAdmin, requireSupabase, async (req, res) => {
   try {
     const vid = req.params.id;
@@ -381,11 +406,29 @@ app.get("/api/data", requireSupabase, async (req, res) => {
   res.json({ hotels: data || [] });
 });
 
+// ---------- Public hotel record (full + status-gated) ----------
 app.get("/api/public/hotel/:id", requireSupabase, async (req, res) => {
-  const id = req.params.id;
-  const { hotel } = await findHotel(id);
-  if (!hotel) return sendError(res, 404, "Hotel not found");
-  return sendSuccess(res, { hotel });
+  try {
+    const id = req.params.id;
+    const { hotel } = await findHotel(id);
+    if (!hotel) return sendError(res, 404, "Hotel not found");
+
+    // Blocked / pending hotels should not serve a guest page
+    const status = String(hotel.status || "").toUpperCase();
+    if (status && status !== "APPROVED") {
+      return sendError(res, 403, "Hotel not available");
+    }
+
+    // Fetch full public record (checkin/checkout/promo/tagline flow through)
+    const { data: full } = await supa.from("hotels").select("*").eq("id", hotel.id).maybeSingle();
+    const safe = { ...(full || hotel) };
+    delete safe.password_hash;
+    delete safe.manager_password;
+    delete safe.manager_email;
+    return sendSuccess(res, { hotel: safe });
+  } catch (e) {
+    return sendError(res, 500, e.message);
+  }
 });
 
 app.post("/api/hotels/signup", signupLimiter, requireSupabase, async (req, res) => {
@@ -450,7 +493,6 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
 
     if (!hotel) return sendError(res, 404, "Hotel not found");
 
-    // Need full record for password check
     const { data: fullHotel } = await supa.from("hotels").select("*").eq("id", hotel.id).maybeSingle();
     if (!fullHotel) return sendError(res, 404, "Hotel not found");
 
@@ -729,23 +771,80 @@ app.get("/api/gm/orders", requireHotel, requireSupabase, async (req, res) => {
   sendSuccess(res, { orders: data || [] });
 });
 
+// ---------- PATCH order status (validated) — preferred path ----------
+app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req, res) => {
+  try {
+    const next = normalizeStatusKey(req.body.status);
+    if (!ALLOWED_STATUSES.includes(next)) return sendError(res, 400, "Invalid status");
+
+    const { data: existing } = await supa.from("orders")
+      .select("hotel_id, status, reference")
+      .eq("id", req.params.id).maybeSingle();
+    if (!existing) return sendError(res, 404, "Order not found");
+    if (existing.hotel_id !== req.user.hotel_id) return sendError(res, 403, "Not yours");
+
+    const current = normalizeStatusKey(existing.status);
+    if (next !== current) {
+      const allowed = VALID_TRANSITIONS[current] || [];
+      if (!allowed.includes(next)) {
+        return sendError(res, 400, `Cannot transition ${current} → ${next}`);
+      }
+    }
+
+    const now = new Date().toISOString();
+    const patch = { status: next, updated_at: now };
+    if (next === "accepted")   patch.accepted_at   = now;
+    if (next === "on_the_way") patch.on_the_way_at = now;
+    if (next === "completed")  patch.completed_at  = now;
+    if (next === "cancelled")  patch.cancelled_at  = now;
+
+    // Try with timestamps; fall back to minimal if columns missing
+    let { data, error } = await supa.from("orders").update(patch).eq("id", req.params.id).select().single();
+    if (error && /column|schema cache/i.test(error.message || "")) {
+      const r2 = await supa.from("orders").update({ status: next }).eq("id", req.params.id).select().single();
+      data = r2.data; error = r2.error;
+    }
+    if (error) return sendError(res, 500, error.message);
+
+    console.log(`📣 [GM ${req.user.hotel_id}] Order ${existing.reference || req.params.id}: ${current} → ${next}`);
+    return sendSuccess(res, { order: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// ---------- PATCH order — legacy path, now status-safe ----------
 app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) => {
   const { data: existing } = await supa.from("orders")
-    .select("hotel_id").eq("id", req.params.id).maybeSingle();
+    .select("hotel_id, status").eq("id", req.params.id).maybeSingle();
   if (!existing || existing.hotel_id !== req.user.hotel_id)
     return sendError(res, 403, "Not yours");
 
   const patch = {};
-  if (req.body.status) patch.status = cleanText(req.body.status, 20);
+
+  if (req.body.status !== undefined) {
+    const next = normalizeStatusKey(req.body.status);
+    if (!ALLOWED_STATUSES.includes(next)) return sendError(res, 400, "Invalid status");
+    const current = normalizeStatusKey(existing.status);
+    if (next !== current && !(VALID_TRANSITIONS[current] || []).includes(next)) {
+      return sendError(res, 400, `Cannot transition ${current} → ${next}`);
+    }
+    patch.status = next;
+    patch.updated_at = new Date().toISOString();
+  }
+
   if (req.body.vendor_id) {
-    const { data: v } = await supa.from("vendors").select("vendor_name,phone").eq("id", req.body.vendor_id).maybeSingle();
+    const { data: v } = await supa.from("vendors")
+      .select("vendor_name,phone").eq("id", req.body.vendor_id).maybeSingle();
     if (v) {
       patch.vendor_id = req.body.vendor_id;
       patch.vendor_name = v.vendor_name;
       patch.vendor_phone = v.phone;
     }
   }
-  const { data } = await supa.from("orders").update(patch).eq("id", req.params.id).select().single();
+
+  if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
+
+  const { data, error } = await supa.from("orders").update(patch).eq("id", req.params.id).select().single();
+  if (error) return sendError(res, 500, error.message);
   sendSuccess(res, { order: data });
 });
 
@@ -775,7 +874,7 @@ app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) =
 
 app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
-  const status = cleanText(req.body.status, 20);
+  const status = normalizeStatusKey(req.body.status);
   if (!["accepted", "completed", "cancelled"].includes(status))
     return sendError(res, 400, "Invalid status");
 
@@ -797,8 +896,10 @@ app.get("/api/vendor/hotels", requireVendor, requireSupabase, async (req, res) =
 // ============================================================
 // GUEST — public
 // ============================================================
+
+// Public services + departments for a hotel
 app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
-  const hid = req.params.hotelId.toUpperCase();
+  const hid = String(req.params.hotelId || "").toUpperCase();
   const { data } = await supa.from("hotel_services").select("*")
     .eq("hotel_id", hid).eq("is_active", true)
     .order("created_at", { ascending: false }).limit(200);
@@ -806,6 +907,7 @@ app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res)
   res.json({ services: data || [], departments: depts || [] });
 });
 
+// Create order (guest)
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const { hotel_id, room_number, guest_name, guest_phone, service_id, service_title,
@@ -840,6 +942,7 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
+// Single order by id OR reference (2 segments)
 app.get("/api/orders/:id", requireSupabase, async (req, res) => {
   const id = req.params.id;
   const { data } = await supa.from("orders").select("*")
@@ -848,6 +951,53 @@ app.get("/api/orders/:id", requireSupabase, async (req, res) => {
   return sendSuccess(res, { order: data });
 });
 
+// Rate a completed order (3 segments, literal "rate" — register BEFORE the room list route)
+app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
+  try {
+    const stars = safeNumber(req.body.rating, 0);
+    if (stars < 1 || stars > 5) return sendError(res, 400, "Rating must be 1–5");
+
+    const { data: existing } = await supa.from("orders")
+      .select("id, status").eq("id", req.params.id).maybeSingle();
+    if (!existing) return sendError(res, 404, "Order not found");
+    if (String(existing.status).toLowerCase() !== "completed")
+      return sendError(res, 400, "Only completed orders can be rated");
+
+    const now = new Date().toISOString();
+    let { data, error } = await supa.from("orders")
+      .update({ rating: stars, rated_at: now }).eq("id", req.params.id).select().single();
+    if (error && /column|schema cache/i.test(error.message || "")) {
+      return sendError(res, 501, "Rating not configured on orders table");
+    }
+    if (error) return sendError(res, 500, error.message);
+    return sendSuccess(res, { order: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// Order history by hotel + room (3 segments, dynamic)
+// Used by the guest dashboard's active-order banner and My Orders modal.
+app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
+  try {
+    const hotelId = String(req.params.hotelId || "").toUpperCase();
+    const room = cleanText(req.params.room, 30);
+
+    // Guard: if "room" is literally a reserved word, it's a routing miss.
+    if (!hotelId || !room || room.toLowerCase() === "rate") {
+      return sendError(res, 400, "hotelId and room required");
+    }
+
+    const { data, error } = await supa.from("orders")
+      .select("*")
+      .eq("hotel_id", hotelId)
+      .eq("room_number", room)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) return sendError(res, 500, error.message);
+    return sendSuccess(res, { orders: data || [] });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// Guest order history by phone (alternate flow)
 app.get("/api/guest/orders", requireSupabase, async (req, res) => {
   const phone = cleanPhone(req.query.phone || "");
   const hotel_id = String(req.query.hotel_id || "").toUpperCase();
@@ -900,10 +1050,16 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V1.0 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V1.1 running on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔗 URL: https://guestconnect-ap2q.onrender.com`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
+  console.log("--------------------------------------------");
+  console.log("📌 Optional columns you can add to unlock full features:");
+  console.log("   hotels:  checkin, checkout, promo_title, promo_text");
+  console.log("   orders:  rating, rated_at, accepted_at, on_the_way_at,");
+  console.log("            completed_at, cancelled_at, updated_at");
+  console.log("   (Routes fall back gracefully if these are missing.)");
   console.log("============================================");
 });
