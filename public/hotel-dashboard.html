@@ -2,353 +2,954 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Hotel Dashboard 19.1 — GM OS + Guest Sync</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>GuestHub GM OS — Hotel Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="/config.js"></script>
+<script src="/config.js" onerror="console.warn('config.js missing')"></script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--purple:#a78bfa;--bg:#050505;--card:#101010;--border:#242424;--white:#fff;--shadow:0 12px 35px rgba(0,0,0,.35)}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,rgba(198,255,0,.07),transparent 25%),var(--bg);color:var(--white);font-family:Inter,sans-serif;min-height:100vh;padding-bottom:80px}
-.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(18px);border-bottom:1px solid rgba(198,255,0,.45);padding:12px}
-.header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center}
-.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--lime);color:#000;font-weight:900}
-.brand-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.brand-title span{color:var(--lime)}.brand-sub{color:#777;font-size:9px}
-.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.btn-primary{background:var(--lime);color:#000}.btn-gold{background:var(--gold);color:#000}.btn-dark{background:#171717;border:1px solid #303030;color:#fff}.btn-red{background:#351010;border:1px solid #672020;color:#ff7777}.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}.btn-purple{background:#231336;border:1px solid #4c2a6d;color:#c4b5fd}.btn-sm{padding:7px 10px;font-size:10px}
-.dashboard{padding:14px 12px;max-width:1500px;margin:auto}.hero{border:1px solid var(--border);border-radius:22px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:20px;margin-bottom:14px}
-.hero h1{margin:0;font-family:Space Grotesk;font-size:clamp(23px,5vw,38px)}.hero h1 span{color:var(--lime)}.hero p{margin:7px 0 0;color:#999;font-size:12px}
-.status-pill{display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 10px;border-radius:999px;font-size:9px;font-weight:900}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}.dot.warn{background:var(--gold)}.dot.off{background:#555}
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px}.stat b{display:block;font-family:Space Grotesk;font-size:22px}.stat small{color:#777;font-size:9px;font-weight:900}
-.tabs-wrap{position:sticky;top:66px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto}.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.view{padding:14px 12px;max-width:1500px;margin:auto}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:10px}.card-title{font-family:Space Grotesk;font-weight:800;font-size:15px}.card-sub{color:#777;font-size:10px;margin-top:4px}
-.input,.select,textarea{width:100%;padding:11px 12px;background:#090909;border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none}.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:12px;margin-bottom:8px;flex-wrap:wrap}
-.badge{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:900}.badge-green{background:#0a2914;color:#4ade80}.badge-yellow{background:#352200;color:#fbbf24}.badge-blue{background:#092536;color:#67e8f9}.badge-purple{background:#231336;color:#c4b5fd}.badge-red{background:#2b0d0d;color:#ffb4b4}.badge-gray{background:#1b1b1b;color:#999}
-.qr-box{background:#fff;border-radius:15px;padding:15px;width:max-content;margin:15px auto}.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}.qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
-.hidden{display:none!important}.toast{position:fixed;right:14px;bottom:20px;z-index:500;background:#161616;border:1px solid #333;border-radius:13px;padding:12px 15px;font-size:11px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s;max-width:340px;word-break:break-word}.toast.show{transform:translateY(0);opacity:1}.toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
-.orderMeta{color:#777;font-size:9.5px;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
-.orderRef{font-family:Space Grotesk;color:var(--lime);letter-spacing:.6px;font-weight:800}
-@media(max-width:700px){.stats{grid-template-columns:repeat(2,1fr)}.qr-grid{grid-template-columns:repeat(2,1fr)}}
+:root{
+  --lime:#c6ff00;--lime-soft:rgba(198,255,0,.1);--lime-line:rgba(198,255,0,.35);
+  --gold:#fbbf24;--green:#22c55e;--red:#ef4444;--blue:#38bdf8;--purple:#a78bfa;
+  --bg:#050505;--card:#101010;--card-2:#161616;--input:#090909;
+  --border:#242424;--border-2:#303030;
+  --muted:#999;--muted-2:#6a6a6a;--muted-3:#4a4a4a;
+  --shadow:0 14px 40px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:
+  radial-gradient(circle at 10% 0%,rgba(198,255,0,.07),transparent 25%),
+  radial-gradient(circle at 100% 100%,rgba(56,189,248,.04),transparent 30%),
+  var(--bg);color:#fff;font-family:Inter,system-ui,sans-serif;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;cursor:pointer;border:0}
+input,select,textarea{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+/* ── HEADER ───────────────────────────── */
+.header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(198,255,0,.35);padding:11px 14px}
+.header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:40px;height:40px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lime),#a3d100);color:#000;font-weight:900;font-family:'Space Grotesk';font-size:15px}
+.brand-title{font-family:'Space Grotesk';font-weight:800;font-size:14.5px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-title span{color:var(--lime)}
+.brand-sub{color:var(--muted-2);font-size:9.5px;font-weight:800;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.headActions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.iconBtn{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:15px;transition:all .15s;position:relative}
+.iconBtn:hover,.iconBtn:active{border-color:var(--lime);color:var(--lime)}
+.iconBtn.muted{color:#5a5a5a}
+.iconBtn .dot-notif{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1.5px solid #141414;display:none}
+.iconBtn.has-notif .dot-notif{display:block}
+
+/* ── BUTTONS ──────────────────────────── */
+.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11.5px;font-weight:900;cursor:pointer;transition:transform .12s,opacity .15s;letter-spacing:.2px;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:wait}
+.btn-primary{background:var(--lime);color:#000}
+.btn-gold{background:var(--gold);color:#000}
+.btn-green{background:#0f3d20;border:1px solid #1f6b39;color:#7ee59c}
+.btn-dark{background:#171717;border:1px solid #303030;color:#fff}
+.btn-red{background:#351010;border:1px solid #672020;color:#ff8888}
+.btn-blue{background:#082331;border:1px solid #16465f;color:#7dd3fc}
+.btn-purple{background:#231336;border:1px solid #4c2a6d;color:#c4b5fd}
+.btn-sm{padding:7px 10px;font-size:10.5px}
+.btn-lg{padding:13px 18px;font-size:13px}
+
+/* ── LAYOUT ───────────────────────────── */
+.dashboard{padding:14px 12px;max-width:1500px;margin:auto}
+.hero{border:1px solid var(--border);border-radius:20px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;width:200px;height:200px;right:-100px;top:-100px;border:1px solid rgba(198,255,0,.1);border-radius:50%}
+.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(22px,4.5vw,32px);line-height:1.05;letter-spacing:-.6px}
+.hero h1 span{color:var(--lime)}
+.hero p{margin:8px 0 0;color:#999;font-size:12px;max-width:600px;line-height:1.5}
+.status-pill{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 12px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.3px}
+.status-pill.warn{background:#2a1e05;border-color:#5f4508;color:#fbbf24}
+.status-pill.off{background:#1a1a1a;border-color:#333;color:#888}
+.dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+.dot.warn{background:var(--gold);animation:pulse 1.4s infinite}
+.dot.off{background:#555;animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+/* ── STATS ────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;transition:border-color .15s}
+.stat:hover{border-color:#333}
+.stat b{display:block;font-family:'Space Grotesk';font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.5px}
+.stat small{color:var(--muted-2);font-size:9.5px;font-weight:900;letter-spacing:.6px;margin-top:5px;display:block}
+.stat.highlight{border-color:var(--lime-line);background:linear-gradient(135deg,rgba(198,255,0,.06),rgba(255,255,255,.01))}
+.stat.highlight b{color:var(--lime)}
+.stat .trend{position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;color:var(--green)}
+.stat .trend.down{color:var(--red)}
+
+/* ── TABS ─────────────────────────────── */
+.tabs-wrap{position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}
+.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:9px 14px;font-size:11px;font-weight:900;cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:6px}
+.tab:hover{border-color:#3a3a3a}
+.tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
+.tab .badge-count{background:#202020;color:#fff;font-size:9.5px;font-weight:900;padding:1px 6px;border-radius:999px;min-width:18px;text-align:center}
+.tab.active .badge-count{background:rgba(0,0,0,.2);color:#000}
+.tab .badge-count.hot{background:var(--red);color:#fff;animation:shake .4s ease 3}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+
+/* ── VIEW ─────────────────────────────── */
+.view{padding:14px 12px;max-width:1500px;margin:auto}
+.card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px;margin-bottom:10px}
+.card-title{font-family:'Space Grotesk';font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-sub{color:var(--muted-2);font-size:11px;margin-top:5px;line-height:1.5}
+
+/* ── INPUTS ───────────────────────────── */
+.input,.select,textarea{width:100%;padding:11px 13px;background:var(--input);border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none;font-size:13px;font-weight:600;transition:border-color .15s}
+.input:focus,.select:focus,textarea:focus{border-color:var(--lime)}
+.input::placeholder{color:#555}
+label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
+
+/* ── FILTER PILLS ─────────────────────── */
+.filterRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none}
+.filterRow::-webkit-scrollbar{display:none}
+.fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.fpill.active{background:var(--lime);border-color:var(--lime);color:#000}
+.fpill:hover:not(.active){border-color:#3a3a3a}
+.fpill .n{font-size:10px;opacity:.7}
+
+/* ── ORDER ROW ────────────────────────── */
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:13px;margin-bottom:8px;flex-wrap:wrap;transition:border-color .15s,background .15s;position:relative}
+.row:hover{border-color:#2a2a2a}
+.row.new-order{border-color:var(--lime-line);background:linear-gradient(90deg,rgba(198,255,0,.06),rgba(255,255,255,.005));animation:flashRow 1s ease 4}
+@keyframes flashRow{0%,100%{box-shadow:0 0 0 0 rgba(198,255,0,0)}50%{box-shadow:0 0 0 8px rgba(198,255,0,0)}}
+.row.priority{border-left:3px solid var(--gold)}
+.row.clickable{cursor:pointer}
+.row .rowMain{flex:1;min-width:220px}
+.row .rowMain b{font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.row .rowMain small{color:#999;font-size:11.5px;display:block;margin-top:5px}
+.rowActions{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+
+/* ── BADGES ───────────────────────────── */
+.badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9.5px;font-weight:900;letter-spacing:.4px}
+.badge-green{background:#0a2914;color:#4ade80}
+.badge-yellow{background:#352200;color:#fbbf24}
+.badge-blue{background:#092536;color:#67e8f9}
+.badge-purple{background:#231336;color:#c4b5fd}
+.badge-red{background:#2b0d0d;color:#ffb4b4}
+.badge-gray{background:#1b1b1b;color:#999}
+
+/* ── ORDER META ───────────────────────── */
+.orderMeta{color:var(--muted-2);font-size:10.5px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-weight:700}
+.orderRef{font-family:'Space Grotesk';color:var(--lime);letter-spacing:.6px;font-weight:800;font-size:10.5px}
+.elapsed{color:var(--gold);font-weight:900;font-size:10.5px}
+.elapsed.fresh{color:var(--green)}
+.elapsed.old{color:var(--red);animation:pulse-t 2s infinite}
+@keyframes pulse-t{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ── SKELETON ─────────────────────────── */
+.skel{height:78px;border-radius:14px;background:linear-gradient(90deg,#111 0%,#1a1a1a 50%,#111 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;margin-bottom:8px;border:1px solid #1a1a1a}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── MODAL ────────────────────────────── */
+.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.modal.active{display:grid}
+.modalBox{width:100%;max-width:520px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:24px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.modalHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.modalTitle{margin:0;font-family:'Space Grotesk';font-size:19px;font-weight:900;letter-spacing:-.3px}
+.modalDesc{margin-top:6px;color:var(--muted-2);font-size:12px;line-height:1.5}
+.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1;transition:border-color .15s}
+.close:hover{border-color:#555}
+
+/* ── QR ───────────────────────────────── */
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
+.qr-box{background:#fff;border-radius:12px;padding:12px;width:max-content;margin:14px auto}
+.qr-label{color:#000;font-weight:900;font-size:11px;margin-top:8px}
+
+/* ── TOAST ────────────────────────────── */
+.toast{position:fixed;right:14px;bottom:20px;left:14px;max-width:400px;margin-left:auto;z-index:500;background:#161616;border:1px solid #333;border-radius:14px;padding:14px 16px;font-size:12.5px;font-weight:700;transform:translateY(140%);opacity:0;transition:all .28s cubic-bezier(.3,1.3,.5,1);word-break:break-word;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+@media(min-width:640px){.toast{left:auto}}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
+.toast.success{background:#0c1d10;border-color:#1f5a2c;color:#86efac}
+
+/* ── CHART ────────────────────────────── */
+.chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:140px;padding:10px 0}
+.bar{background:linear-gradient(180deg,var(--lime),#a3d100);border-radius:6px 6px 3px 3px;min-height:4px;position:relative;transition:opacity .15s}
+.bar:hover{opacity:.85}
+.bar .barLabel{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--muted-2);font-weight:800}
+.bar .barVal{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--lime);font-weight:900}
+.chart-wrap{padding-bottom:26px}
+
+/* ── HEATMAP ──────────────────────────── */
+.heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:44px;margin-top:10px}
+.hm{background:#141414;border-radius:3px;transition:background .15s;position:relative}
+.hm[data-lvl="1"]{background:#2a3a0c}
+.hm[data-lvl="2"]{background:#4a6b14}
+.hm[data-lvl="3"]{background:#7aa61f}
+.hm[data-lvl="4"]{background:var(--lime)}
+.hm:hover{outline:2px solid var(--lime);outline-offset:1px;z-index:2}
+
+/* ── EMPTY STATE ──────────────────────── */
+.empty{text-align:center;padding:40px 20px;color:var(--muted-2);font-size:12.5px}
+.emptyIcon{font-size:38px;margin-bottom:10px;opacity:.7}
+.empty strong{display:block;color:#fff;font-size:14px;margin-bottom:6px}
+
+/* ── LANG MODAL GRID ──────────────────── */
+.langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
+.langCard:hover{border-color:var(--lime)}
+.langCard.active{border-color:var(--lime);background:var(--lime-soft)}
+.langCard .flag{font-size:22px;line-height:1}
+.langCard b{font-size:13px;font-weight:800}
+.langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
+.langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900}
+
+/* ── RTL ──────────────────────────────── */
+[dir="rtl"] .rowActions{flex-direction:row-reverse}
+[dir="rtl"] .tabs{direction:rtl}
+[dir="rtl"] .toast{right:auto;left:14px}
+@media(min-width:640px){[dir="rtl"] .toast{left:auto;right:14px}}
+
+/* ── RESPONSIVE ───────────────────────── */
+@media(max-width:560px){
+  .brand-sub{display:none}
+  .hero{padding:16px}
+  .headActions .btn span.label{display:none}
+  .rowActions .btn{padding:8px 10px;font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
-<header class="header"><div class="header-inner"><div class="brand"><div class="logo">GM</div><div><div class="brand-title">GUESTHUB <span>GM 19.1</span></div><div class="brand-sub" id="hotelSub">BAOBAB • GUEST SYNC</div></div></div><div style="display:flex;gap:6px"><button class="btn btn-dark btn-sm" onclick="refreshAll()">🔄 Refresh</button><button class="btn btn-gold btn-sm" onclick="location.href='/guest.html?hotel='+HOTEL_ID+'&room=101'">👁️ Guest</button><button class="btn btn-red btn-sm" onclick="logout()">Logout</button></div></div></header>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="logo" id="brandLogo">GM</div>
+      <div style="min-width:0">
+        <div class="brand-title">GUESTHUB <span>GM OS</span></div>
+        <div class="brand-sub" id="hotelSub">Loading…</div>
+      </div>
+    </div>
+    <div class="headActions">
+      <button class="iconBtn" id="notifBtn" title="Notifications" aria-label="Toggle notifications">🔔<span class="dot-notif"></span></button>
+      <button class="iconBtn" id="langBtn" title="Language" aria-label="Language">🌐</button>
+      <button class="iconBtn" id="refreshBtn" title="Refresh (R)" aria-label="Refresh">🔄</button>
+      <button class="btn btn-gold btn-sm" id="guestBtn" title="Open guest view">👁️ <span class="label">Guest</span></button>
+      <button class="btn btn-red btn-sm" id="logoutBtn" title="Logout">⏻</button>
+    </div>
+  </div>
+</header>
+
 <main>
-<section class="dashboard"><div class="hero"><h1>Welcome <span id="hotelNameHero">Baobab</span> — Empire Control.</h1><p>Every status you tap reaches the guest's phone in under a second. Green dot = live sync active.</p><div class="status-pill"><span class="dot" id="rtDot"></span><span id="systemStatus">Connecting to live sync…</span></div></div>
-<div class="stats"><div class="stat"><b id="s_orders">0</b><small>LIVE ORDERS</small></div><div class="stat"><b id="s_active">0</b><small>IN PROGRESS</small></div><div class="stat"><b id="s_services">0</b><small>SERVICES</small></div><div class="stat"><b id="s_vendors">0</b><small>MY VENDORS</small></div><div class="stat"><b id="s_rev">Ksh 0</b><small>TODAY</small></div></div></section>
-<div class="tabs-wrap"><div class="tabs">
-<button class="tab active" onclick="switchTab('orders',this)">🔔 Orders <span id="c_orders">0</span></button>
-<button class="tab" onclick="switchTab('vendors',this)">🏪 Vendors Pool <span id="c_vendors"></span></button>
-<button class="tab" onclick="switchTab('menu',this)">🍽️ Menu</button>
-<button class="tab" onclick="switchTab('services',this)">🛎️ Services</button>
-<button class="tab" onclick="switchTab('whatsapp',this)">📱 WhatsApp</button>
-<button class="tab" onclick="switchTab('qr',this)">🔳 QRs</button>
-<button class="tab" onclick="switchTab('finance',this)">💸 Finance</button>
-</div></div>
-<section id="view-orders" class="view"></section>
-<section id="view-vendors" class="view hidden"></section>
-<section id="view-menu" class="view hidden"></section>
-<section id="view-services" class="view hidden"></section>
-<section id="view-whatsapp" class="view hidden"></section>
-<section id="view-qr" class="view hidden"></section>
-<section id="view-finance" class="view hidden"></section>
+  <!-- HERO + STATS -->
+  <section class="dashboard">
+    <div class="hero">
+      <h1><span id="hotelNameHero">Hotel</span> — <span data-i18n="control_center">Control Center</span></h1>
+      <p data-i18n="hero_desc">Every status tap reaches the guest's phone in under a second. Live sync keeps your floor team and guests in step.</p>
+      <div class="status-pill off" id="syncPill"><span class="dot off" id="rtDot"></span><span id="systemStatus" data-i18n="connecting">Connecting to live sync…</span></div>
+    </div>
+
+    <div class="stats" id="statsGrid">
+      <div class="stat highlight"><b id="s_live">0</b><small data-i18n="stat_live">LIVE ORDERS</small></div>
+      <div class="stat"><b id="s_active">0</b><small data-i18n="stat_active">IN PROGRESS</small></div>
+      <div class="stat"><b id="s_today_rev">Ksh 0</b><small data-i18n="stat_today">TODAY</small></div>
+      <div class="stat"><b id="s_week_rev">Ksh 0</b><small data-i18n="stat_week">7-DAY REVENUE</small></div>
+      <div class="stat"><b id="s_aov">Ksh 0</b><small data-i18n="stat_aov">AVG ORDER</small></div>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs" id="tabsBar">
+      <button class="tab active" data-tab="orders"><span>🔔</span><span data-i18n="tab_orders">Orders</span><span class="badge-count" id="c_orders">0</span></button>
+      <button class="tab" data-tab="vendors"><span>🏪</span><span data-i18n="tab_vendors">Vendors</span><span class="badge-count" id="c_vendors">0</span></button>
+      <button class="tab" data-tab="menu"><span>🍽️</span><span data-i18n="tab_menu">Menu</span></button>
+      <button class="tab" data-tab="services"><span>🛎️</span><span data-i18n="tab_services">Services</span></button>
+      <button class="tab" data-tab="whatsapp"><span>📱</span><span data-i18n="tab_whatsapp">WhatsApp</span></button>
+      <button class="tab" data-tab="qr"><span>🔳</span><span data-i18n="tab_qr">QRs</span></button>
+      <button class="tab" data-tab="finance"><span>💸</span><span data-i18n="tab_finance">Finance</span></button>
+      <button class="tab" data-tab="analytics"><span>📊</span><span data-i18n="tab_analytics">Analytics</span></button>
+    </div>
+  </div>
+
+  <section id="view-orders" class="view"></section>
+  <section id="view-vendors" class="view hidden"></section>
+  <section id="view-menu" class="view hidden"></section>
+  <section id="view-services" class="view hidden"></section>
+  <section id="view-whatsapp" class="view hidden"></section>
+  <section id="view-qr" class="view hidden"></section>
+  <section id="view-finance" class="view hidden"></section>
+  <section id="view-analytics" class="view hidden"></section>
 </main>
-<div id="toast" class="toast"></div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal" id="orderModal" role="dialog" aria-modal="true">
+  <div class="modalBox">
+    <div class="modalHead">
+      <div><h3 class="modalTitle" id="omTitle" data-i18n="order_details">Order Details</h3><div class="modalDesc" id="omSub"></div></div>
+      <button class="close" data-close="orderModal" aria-label="Close">×</button>
+    </div>
+    <div id="omBody" style="margin-top:14px"></div>
+    <div id="omActions" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+</div>
+
+<!-- LANGUAGE MODAL -->
+<div class="modal" id="langModal" role="dialog" aria-modal="true">
+  <div class="modalBox">
+    <div class="modalHead">
+      <div><h3 class="modalTitle" data-i18n="lang_title">🌐 Language</h3><div class="modalDesc" data-i18n="lang_desc">Choose your preferred language.</div></div>
+      <button class="close" data-close="langModal" aria-label="Close">×</button>
+    </div>
+    <div class="langGrid" id="langGrid"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════════ */
+const GUEST_APP_PATH = '/guest.html';   // change if guest app is elsewhere
+const POLL_MS = 20000;
+const ORDERS_LIMIT = 500;
+
+/* ═══════════════════════════════════════════════════════════════
+   AUTH GUARD
+═══════════════════════════════════════════════════════════════ */
 (function authGuard(){
   const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
   const savedHotelId = localStorage.getItem('hotel_id');
-  if (!token) { window.location.replace('/hotel-login.html'); return; }
+  if(!token){ location.replace('/hotel-login.html'); return; }
   const urlParams = new URLSearchParams(location.search);
-  if (!urlParams.get('hotel') && savedHotelId) {
+  if(!urlParams.get('hotel') && savedHotelId){
     urlParams.set('hotel', savedHotelId);
-    window.location.replace('/hotel-dashboard.html?' + urlParams.toString());
-    return;
+    location.replace('/hotel-dashboard.html?' + urlParams.toString());
   }
 })();
 
+const AUTH_TOKEN = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token') || '';
 const params = new URLSearchParams(location.search);
 const HOTEL_ID = (params.get('hotel') || localStorage.getItem('hotel_id') || 'BAOBAB').toUpperCase();
-document.getElementById('hotelSub').innerText = HOTEL_ID + ' • GM 19.1 • GUEST SYNC';
-document.getElementById('hotelNameHero').innerText = HOTEL_ID;
 
-const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
-let currentTab = 'orders';
-let rtChannel = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = v => 'Ksh ' + Number(v || 0).toLocaleString('en-KE');
 
-const GUEST_STATUSES = {
-  pending:    { label: 'Pending',    step: 1, badge: 'badge-gray'   },
-  new:        { label: 'New',        step: 1, badge: 'badge-gray'   },
-  accepted:   { label: 'Accepted',   step: 2, badge: 'badge-blue'   },
-  preparing:  { label: 'Preparing',  step: 3, badge: 'badge-yellow' },
-  on_the_way: { label: 'On the way', step: 3, badge: 'badge-purple' },
-  completed:  { label: 'Completed',  step: 4, badge: 'badge-green'  },
-  cancelled:  { label: 'Cancelled',  step: 0, badge: 'badge-red'    }
+/* ═══════════════════════════════════════════════════════════════
+   SUPABASE
+═══════════════════════════════════════════════════════════════ */
+let supa = null;
+try {
+  if(window.supabase && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined' && SUPABASE_URL && SUPABASE_KEY){
+    supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { params: { eventsPerSecond: 10 } } });
+  }
+} catch(e){ console.warn('Supabase init failed:', e); }
+
+/* ═══════════════════════════════════════════════════════════════
+   I18N
+═══════════════════════════════════════════════════════════════ */
+const I18N = {
+  en:{dir:'ltr',flag:'🇬🇧',name:'English',native:'English',
+    control_center:'Control Center',
+    hero_desc:"Every status tap reaches the guest's phone in under a second. Live sync keeps your floor team and guests in step.",
+    connecting:'Connecting to live sync…',live_sync:'Live sync active — guest updates instantly',offline_polling:'Offline — polling every 20s',
+    stat_live:'LIVE ORDERS',stat_active:'IN PROGRESS',stat_today:'TODAY',stat_week:'7-DAY REVENUE',stat_aov:'AVG ORDER',
+    tab_orders:'Orders',tab_vendors:'Vendors',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QRs',tab_finance:'Finance',tab_analytics:'Analytics',
+    order_details:'Order Details',lang_title:'🌐 Language',lang_desc:'Choose your preferred language.',
+    room:'Room',guest:'Guest',search_ph:'Search room, guest, ref…',
+    f_all:'All',f_new:'New',f_active:'Active',f_done:'Done',f_cancelled:'Cancelled',
+    accept_all:'⚡ Accept All New',export_csv:'📥 Export CSV',
+    no_active:'No active orders',no_active_sub:'New orders will appear here instantly.',
+    no_hist:'No past orders yet.',
+    accept:'Accept',preparing:'Preparing',on_way:'On the way',complete:'Complete',cancel:'Cancel',
+    closed:'CLOSED',new_order:'NEW ORDER',whatsapp_guest:'WhatsApp Guest',forward_vendor:'Forward to Vendor',
+    copy:'Copy Details',close:'Close',status:'Status',created:'Created',updated:'Updated',
+    from:'From',service:'Service',amount:'Amount',category:'Category',phone:'Phone',notes:'Notes',
+    empty_vendors:'No approved vendors yet.',empty_menu:'No menu items yet.',empty_services:'No services yet.',
+    add_to_hotel:'➕ Add',remove:'Remove',added:'ADDED',available:'AVAILABLE',
+    menu_title:'🍽️ Menu Builder',menu_sub:'These items appear under "Food & Room Service" on the guest phone.',
+    menu_name:'Item name',menu_price:'Price',menu_cat:'Category',menu_add:'Add Menu Item',
+    services_title:'🛎️ My Hotel Services',services_sub:'active services visible on guest phone',
+    wa_title:'📱 WhatsApp Departments',wa_sub:"Guests tap these buttons in the Help tab.",
+    save:'💾 Save',qr_title:'🔳 QR Generator',qr_sub:'Each QR deep-links the guest to their room.',
+    qr_single:'Single Room',qr_batch:'Batch (one room per line)',qr_gen:'Generate',qr_gen_all:'Generate All',qr_print:'🖨️ Print',
+    finance_title:'💸 Finance',analytics_title:'📊 Analytics',
+    top_services:'Top Services',revenue_by_cat:'Revenue by Category',peak_hours:'Peak Hours',
+    today:'Today',week:'Week',month:'Month',all_time:'All Time',orders:'orders',avg_short:'avg',
+    no_data:'No data yet.',confirm_cancel:'Cancel this order? Guest will be notified.',
+    guest_notified:'✅ Guest notified → ',error_prefix:'Error: ',
+    toast_added:'✅ Added — guest sees it now',toast_removed:'Removed',
+    toast_saved:'✅ Saved — guest sees it instantly',toast_copied:'📋 Copied',
+    vendor_pool_title:'🏪 Vendors Marketplace',vendor_pool_sub:'Approved vendors. Adding one here makes it appear on every guest phone instantly.',
+    lang_saved:'Language updated'}},
+
+  sw:{dir:'ltr',flag:'🇰🇪',name:'Kiswahili',native:'Kiswahili',
+    control_center:'Kituo cha Udhibiti',
+    hero_desc:'Kila hali unayobofya inafika kwenye simu ya mgeni chini ya sekunde moja.',
+    connecting:'Inaunganisha…',live_sync:'Usawazishaji wa moja kwa moja',offline_polling:'Nje ya mtandao — inaangalia kila sekunde 20',
+    stat_live:'ODA HAI',stat_active:'ZINAENDELEA',stat_today:'LEO',stat_week:'MAPATO YA SIKU 7',stat_aov:'WASTANI',
+    tab_orders:'Oda',tab_vendors:'Wafanyabiashara',tab_menu:'Menyu',tab_services:'Huduma',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Fedha',tab_analytics:'Uchanganuzi',
+    order_details:'Maelezo ya Oda',lang_title:'🌐 Lugha',lang_desc:'Chagua lugha unayopendelea.',
+    room:'Chumba',guest:'Mgeni',search_ph:'Tafuta chumba, mgeni, kumbukumbu…',
+    f_all:'Zote',f_new:'Mpya',f_active:'Zinaendelea',f_done:'Zimekamilika',f_cancelled:'Zilizofutwa',
+    accept_all:'⚡ Kubali Zote Mpya',export_csv:'📥 Hamisha CSV',
+    no_active:'Hakuna oda hai',no_active_sub:'Oda mpya zitaonekana hapa papo hapo.',
+    no_hist:'Hakuna oda za nyuma.',
+    accept:'Kubali',preparing:'Inaandaliwa',on_way:'Njiani',complete:'Kamilisha',cancel:'Futa',
+    closed:'IMEFUNGWA',new_order:'ODA MPYA',whatsapp_guest:'WhatsApp Mgeni',forward_vendor:'Tuma kwa Muuzaji',
+    copy:'Nakili',close:'Funga',status:'Hali',created:'Iliundwa',updated:'Imesasishwa',
+    from:'Kutoka',service:'Huduma',amount:'Kiasi',category:'Aina',phone:'Simu',notes:'Maelezo',
+    empty_vendors:'Hakuna wauzaji walioidhinishwa.',empty_menu:'Hakuna vyakula bado.',empty_services:'Hakuna huduma bado.',
+    add_to_hotel:'➕ Ongeza',remove:'Ondoa',added:'IMEONGEZWA',available:'INAPATIKANA',
+    menu_title:'🍽️ Kujenga Menyu',menu_sub:'Vitu hivi vinaonekana kwenye "Chakula na Huduma ya Chumba".',
+    menu_name:'Jina la kitu',menu_price:'Bei',menu_cat:'Aina',menu_add:'Ongeza Kitu',
+    services_title:'🛎️ Huduma za Hoteli',services_sub:'huduma hai zinazoonekana kwa mgeni',
+    wa_title:'📱 WhatsApp ya Idara',wa_sub:'Wageni wanabofya hizi kwenye Msaada.',
+    save:'💾 Hifadhi',qr_title:'🔳 Kitengeneza QR',qr_sub:'Kila QR inampeleka mgeni chumbani kwake.',
+    qr_single:'Chumba Kimoja',qr_batch:'Kwa Wingi (chumba kwa mstari)',qr_gen:'Tengeneza',qr_gen_all:'Tengeneza Zote',qr_print:'🖨️ Chapisha',
+    finance_title:'💸 Fedha',analytics_title:'📊 Uchanganuzi',
+    top_services:'Huduma Bora',revenue_by_cat:'Mapato kwa Aina',peak_hours:'Saa za Shughuli',
+    today:'Leo',week:'Wiki',month:'Mwezi',all_time:'Zote',orders:'oda',avg_short:'wastani',
+    no_data:'Hakuna data bado.',confirm_cancel:'Futa oda hii? Mgeni atajulishwa.',
+    guest_notified:'✅ Mgeni amejulishwa → ',error_prefix:'Kosa: ',
+    toast_added:'✅ Imeongezwa',toast_removed:'Imeondolewa',
+    toast_saved:'✅ Imehifadhiwa',toast_copied:'📋 Imenakiliwa',
+    vendor_pool_title:'🏪 Soko la Wauzaji',vendor_pool_sub:'Wauzaji walioidhinishwa.',
+    lang_saved:'Lugha imebadilishwa'},
+
+  fr:{dir:'ltr',flag:'🇫🇷',name:'Français',native:'Français',
+    control_center:'Centre de Contrôle',
+    hero_desc:"Chaque changement de statut arrive sur le téléphone du client en moins d'une seconde.",
+    connecting:'Connexion…',live_sync:'Synchronisation en direct',offline_polling:'Hors ligne — actualisation toutes les 20s',
+    stat_live:'COMMANDES',stat_active:'EN COURS',stat_today:"AUJOURD'HUI",stat_week:'7 JOURS',stat_aov:'PANIER MOY.',
+    tab_orders:'Commandes',tab_vendors:'Vendeurs',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Finance',tab_analytics:'Analytique',
+    order_details:'Détails',lang_title:'🌐 Langue',lang_desc:'Choisissez votre langue.',
+    room:'Chambre',guest:'Client',search_ph:'Rechercher chambre, client, réf…',
+    f_all:'Tout',f_new:'Nouveau',f_active:'En cours',f_done:'Terminé',f_cancelled:'Annulé',
+    accept_all:'⚡ Accepter Tout',export_csv:'📥 Export CSV',
+    no_active:'Aucune commande active',no_active_sub:'Les nouvelles commandes apparaîtront ici.',
+    no_hist:'Aucun historique.',
+    accept:'Accepter',preparing:'Préparation',on_way:'En route',complete:'Terminer',cancel:'Annuler',
+    closed:'FERMÉ',new_order:'NOUVELLE',whatsapp_guest:'WhatsApp Client',forward_vendor:'Au Vendeur',
+    copy:'Copier',close:'Fermer',status:'Statut',created:'Créée',updated:'MAJ',
+    from:'De',service:'Service',amount:'Montant',category:'Catégorie',phone:'Téléphone',notes:'Notes',
+    empty_vendors:'Aucun vendeur approuvé.',empty_menu:'Aucun menu.',empty_services:'Aucun service.',
+    add_to_hotel:'➕ Ajouter',remove:'Retirer',added:'AJOUTÉ',available:'DISPONIBLE',
+    menu_title:'🍽️ Menu',menu_sub:'Ces items apparaissent sous "Nourriture & Service en Chambre".',
+    menu_name:'Nom',menu_price:'Prix',menu_cat:'Catégorie',menu_add:'Ajouter',
+    services_title:'🛎️ Services',services_sub:'services actifs visibles',
+    wa_title:'📱 WhatsApp',wa_sub:"Les clients tapent ces boutons dans Aide.",
+    save:'💾 Enregistrer',qr_title:'🔳 Générateur QR',qr_sub:'Chaque QR mène à la chambre.',
+    qr_single:'Une chambre',qr_batch:'En lot (une par ligne)',qr_gen:'Générer',qr_gen_all:'Générer Tout',qr_print:'🖨️ Imprimer',
+    finance_title:'💸 Finance',analytics_title:'📊 Analytique',
+    top_services:'Top Services',revenue_by_cat:'Revenu par Catégorie',peak_hours:'Heures de Pointe',
+    today:"Aujourd'hui",week:'Semaine',month:'Mois',all_time:'Total',orders:'commandes',avg_short:'moy',
+    no_data:'Aucune donnée.',confirm_cancel:'Annuler cette commande ? Le client sera notifié.',
+    guest_notified:'✅ Client notifié → ',error_prefix:'Erreur: ',
+    toast_added:'✅ Ajouté',toast_removed:'Retiré',
+    toast_saved:'✅ Enregistré',toast_copied:'📋 Copié',
+    vendor_pool_title:'🏪 Marché Vendeurs',vendor_pool_sub:'Vendeurs approuvés.',
+    lang_saved:'Langue mise à jour'},
+
+  ar:{dir:'rtl',flag:'🇸🇦',name:'العربية',native:'العربية',
+    control_center:'مركز التحكم',
+    hero_desc:'كل تغيير حالة يصل إلى هاتف الضيف خلال أقل من ثانية.',
+    connecting:'جارٍ الاتصال…',live_sync:'المزامنة المباشرة نشطة',offline_polling:'غير متصل — تحديث كل 20 ثانية',
+    stat_live:'الطلبات النشطة',stat_active:'قيد التنفيذ',stat_today:'اليوم',stat_week:'7 أيام',stat_aov:'المتوسط',
+    tab_orders:'الطلبات',tab_vendors:'البائعون',tab_menu:'القائمة',tab_services:'الخدمات',tab_whatsapp:'واتساب',tab_qr:'QR',tab_finance:'المالية',tab_analytics:'التحليلات',
+    order_details:'تفاصيل الطلب',lang_title:'🌐 اللغة',lang_desc:'اختر لغتك المفضلة.',
+    room:'غرفة',guest:'ضيف',search_ph:'ابحث…',
+    f_all:'الكل',f_new:'جديد',f_active:'نشط',f_done:'مكتمل',f_cancelled:'ملغى',
+    accept_all:'⚡ قبول الكل',export_csv:'📥 تصدير',
+    no_active:'لا توجد طلبات نشطة',no_active_sub:'ستظهر الطلبات الجديدة هنا.',
+    no_hist:'لا يوجد سجل.',
+    accept:'قبول',preparing:'تحضير',on_way:'في الطريق',complete:'إكمال',cancel:'إلغاء',
+    closed:'مغلق',new_order:'طلب جديد',whatsapp_guest:'واتساب الضيف',forward_vendor:'إلى البائع',
+    copy:'نسخ',close:'إغلاق',status:'الحالة',created:'أُنشئ',updated:'حُدّث',
+    from:'من',service:'الخدمة',amount:'المبلغ',category:'الفئة',phone:'الهاتف',notes:'ملاحظات',
+    empty_vendors:'لا يوجد بائعون.',empty_menu:'القائمة فارغة.',empty_services:'لا توجد خدمات.',
+    add_to_hotel:'➕ إضافة',remove:'إزالة',added:'مُضاف',available:'متاح',
+    menu_title:'🍽️ القائمة',menu_sub:'تظهر هذه العناصر تحت "الطعام وخدمة الغرف".',
+    menu_name:'الاسم',menu_price:'السعر',menu_cat:'الفئة',menu_add:'إضافة',
+    services_title:'🛎️ الخدمات',services_sub:'خدمات نشطة',
+    wa_title:'📱 أرقام واتساب',wa_sub:'يضغط الضيوف عليها في المساعدة.',
+    save:'💾 حفظ',qr_title:'🔳 مولّد QR',qr_sub:'كل QR يوصل الضيف إلى غرفته.',
+    qr_single:'غرفة واحدة',qr_batch:'دفعة (غرفة لكل سطر)',qr_gen:'توليد',qr_gen_all:'توليد الكل',qr_print:'🖨️ طباعة',
+    finance_title:'💸 المالية',analytics_title:'📊 التحليلات',
+    top_services:'أفضل الخدمات',revenue_by_cat:'الإيرادات حسب الفئة',peak_hours:'ساعات الذروة',
+    today:'اليوم',week:'الأسبوع',month:'الشهر',all_time:'الكل',orders:'طلب',avg_short:'متوسط',
+    no_data:'لا توجد بيانات.',confirm_cancel:'إلغاء هذا الطلب؟ سيتم إشعار الضيف.',
+    guest_notified:'✅ تم إشعار الضيف → ',error_prefix:'خطأ: ',
+    toast_added:'✅ تمت الإضافة',toast_removed:'تمت الإزالة',
+    toast_saved:'✅ تم الحفظ',toast_copied:'📋 تم النسخ',
+    vendor_pool_title:'🏪 سوق البائعين',vendor_pool_sub:'بائعون معتمدون.',
+    lang_saved:'تم تحديث اللغة'}
 };
-const STATUS_ALIASES = { ready: 'on_the_way', done: 'completed', ontheway: 'on_the_way' };
-function normalizeStatus(s){
-  const k = String(s || 'pending').toLowerCase().trim();
-  return STATUS_ALIASES[k] || k;
-}
-const NEXT_STATUS = {
-  pending:    ['accepted', 'cancelled'],
-  new:        ['accepted', 'cancelled'],
-  accepted:   ['preparing', 'cancelled'],
-  preparing:  ['on_the_way', 'cancelled'],
-  on_the_way: ['completed', 'cancelled'],
-  completed:  [],
-  cancelled:  []
-};
 
-function esc(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function money(v){ return 'Ksh ' + Number(v || 0).toLocaleString(); }
-function toast(m, t = 'success'){
-  const el = document.getElementById('toast');
-  el.textContent = m;
-  el.className = 'toast show ' + t;
-  setTimeout(() => el.className = 'toast', 3200);
-}
-function logout(){
-  ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
-  window.location.href = '/hotel-login.html';
-}
-function guestLink(room){ return location.origin + '/guest.html?hotel=' + encodeURIComponent(HOTEL_ID) + '&room=' + encodeURIComponent(room); }
-function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
-function orderItemsText(o){
-  if (o.service_title) return o.service_title;
-  if (Array.isArray(o.items) && o.items.length) return o.items.map(i => i.name).join(', ');
-  return '—';
-}
-function orderRef(o){ return o.reference || o.ref || ('#' + String(o.id).slice(0,6)); }
+let currentLang = params.get('lang') || localStorage.getItem('hotelhub_lang') ||
+                  (I18N[(navigator.language||'en').slice(0,2).toLowerCase()] ? (navigator.language||'en').slice(0,2).toLowerCase() : 'en');
+if(!I18N[currentLang]) currentLang = 'en';
 
-async function refreshAll(){
-  await Promise.all([loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+function t(key, vars){
+  let str = (I18N[currentLang] && I18N[currentLang][key]) ?? I18N.en[key] ?? key;
+  if(vars) Object.keys(vars).forEach(k => { str = String(str).replace(`{${k}}`, vars[k]); });
+  return str;
+}
+
+function applyI18n(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = I18N[currentLang].dir || 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  renderLangGrid();
   renderCurrentTab();
 }
-async function loadServices(){
-  const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
-  if (error) console.warn('loadServices error:', error.message);
-  SERVICES = data || [];
-  document.getElementById('s_services').innerText = SERVICES.length;
-}
-async function loadOrders(){
-  const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(100);
-  if (error) console.warn('loadOrders error:', error.message);
-  ORDERS = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
-  document.getElementById('s_orders').innerText = ORDERS.length;
-  document.getElementById('c_orders').innerText = ORDERS.length ? `(${ORDERS.length})` : '';
-  const active = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
-  document.getElementById('s_active').innerText = active;
-  const today = new Date().toISOString().slice(0, 10);
-  const rev = ORDERS.filter(o => o.created_at?.startsWith(today)).reduce((s, o) => s + orderAmount(o), 0);
-  document.getElementById('s_rev').innerText = money(rev);
-  if (currentTab === 'orders') renderOrders();
-  if (currentTab === 'finance') renderFinance();
-}
-async function loadDepts(){
-  const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
-  if (error) console.warn('loadDepts error:', error.message);
-  DEPTS = data || [];
-}
-async function loadVendorsPool(){
-  try {
-    const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
-    const headers = token ? { Authorization: 'Bearer ' + token } : {};
-    const res = await fetch(`/api/gm/vendors-pool?hotel_id=${HOTEL_ID}`, { headers });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const j = await res.json();
-    if (j.pool) { VENDORS_POOL = j.pool; MY_VENDOR_IDS = j.myVendorIds || []; }
-    else throw new Error('No pool');
-  } catch (e) {
-    try {
-      const { data } = await supa.from('vendors').select('*').eq('status', 'approved').limit(100);
-      VENDORS_POOL = data || [];
-      const { data: my } = await supa.from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
-      MY_VENDOR_IDS = (my || []).map(x => x.vendor_id).filter(Boolean);
-    } catch (e2) { VENDORS_POOL = []; MY_VENDOR_IDS = []; }
-  }
-  document.getElementById('s_vendors').innerText = MY_VENDOR_IDS.length;
-  document.getElementById('c_vendors').innerText = `(${MY_VENDOR_IDS.length}/${VENDORS_POOL.length})`;
-  if (currentTab === 'vendors') renderVendors();
+
+function renderLangGrid(){
+  const grid = $('langGrid'); if(!grid) return;
+  grid.innerHTML = Object.keys(I18N).map(code => {
+    const L = I18N[code]; const active = code === currentLang;
+    return `<button class="langCard ${active?'active':''}" data-lang="${code}">
+      <span class="flag">${L.flag}</span><b>${esc(L.native)}</b><small>${esc(L.name)}</small>
+      ${active?'<span class="check">✓</span>':''}</button>`;
+  }).join('');
+  grid.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    currentLang = b.dataset.lang;
+    localStorage.setItem('hotelhub_lang', currentLang);
+    applyI18n();
+    closeModal('langModal');
+    toast(t('lang_saved') + ' — ' + I18N[currentLang].native);
+  }));
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
+let currentTab = localStorage.getItem('hotel_last_tab') || 'orders';
+let orderFilter = 'all';
+let orderSearch = '';
+let seenOrderIds = new Set();
+let soundEnabled = localStorage.getItem('hotel_sound') !== 'off';
+let rtChannel = null;
+let pollTimer = null;
+let tickTimer = null;
+let loadingSkeleton = false;
+
+/* ═══════════════════════════════════════════════════════════════
+   STATUS MODEL
+═══════════════════════════════════════════════════════════════ */
+const GUEST_STATUSES = {
+  pending:    { label:'pending',    step:1, badge:'badge-gray'   },
+  new:        { label:'new',        step:1, badge:'badge-gray'   },
+  accepted:   { label:'accepted',   step:2, badge:'badge-blue'   },
+  preparing:  { label:'preparing',  step:3, badge:'badge-yellow' },
+  on_the_way: { label:'on_the_way', step:3, badge:'badge-purple' },
+  completed:  { label:'completed',  step:4, badge:'badge-green'  },
+  cancelled:  { label:'cancelled',  step:0, badge:'badge-red'    }
+};
+const STATUS_ALIASES = { ready:'on_the_way', done:'completed', ontheway:'on_the_way' };
+function normalizeStatus(s){ const k = String(s || 'pending').toLowerCase().trim(); return STATUS_ALIASES[k] || k; }
+const NEXT_STATUS = {
+  pending:['accepted','cancelled'], new:['accepted','cancelled'],
+  accepted:['preparing','cancelled'], preparing:['on_the_way','cancelled'],
+  on_the_way:['completed','cancelled'], completed:[], cancelled:[]
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════════ */
+let toastTimer = null;
+function toast(msg, kind = 'success'){
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = 'toast', 3400);
+}
+
+let audioCtx = null;
+function ensureAudio(){
+  if(audioCtx) return audioCtx;
+  try{ const C = window.AudioContext || window.webkitAudioContext; if(C) audioCtx = new C(); }catch(_){}
+  return audioCtx;
+}
+function beepNewOrder(){
+  if(!soundEnabled) return;
+  const ctx = ensureAudio(); if(!ctx) return;
+  if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
+  const now = ctx.currentTime;
+  [880, 1180, 1480].forEach((freq, i) => {
+    const t0 = now + i * 0.13;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; o.type = 'triangle';
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.14);
+    o.start(t0); o.stop(t0 + 0.16);
+  });
+}
+function beepConfirm(){
+  if(!soundEnabled) return;
+  const ctx = ensureAudio(); if(!ctx) return;
+  if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.frequency.value = 660; o.type = 'sine';
+  const t0 = ctx.currentTime;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+  o.start(t0); o.stop(t0 + 0.2);
+}
+
+function relativeTime(iso){
+  if(!iso) return '';
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const s = Math.floor(diff / 1000);
+  if(s < 60) return s + 's ago';
+  const m = Math.floor(s / 60);
+  if(m < 60) return m + ' min ago';
+  const h = Math.floor(m / 60);
+  if(h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function urgencyClass(iso){
+  if(!iso) return '';
+  const m = (Date.now() - new Date(iso).getTime()) / 60000;
+  if(m < 2) return 'fresh';
+  if(m < 15) return '';
+  return 'old';
+}
+
+async function api(path, opts = {}){
+  const headers = Object.assign({}, opts.headers || {});
+  if(AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+  if(opts.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  if(res.status === 401){
+    ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
+    toast('Session expired — please log in again', 'error');
+    setTimeout(() => location.replace('/hotel-login.html'), 1200);
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
+
+function guestLink(room){
+  const base = location.origin + GUEST_APP_PATH;
+  const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room) });
+  return base + '?' + q.toString();
+}
+function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
+function orderItemsText(o){
+  if(o.service_title) return o.service_title;
+  if(Array.isArray(o.items) && o.items.length) return o.items.map(i => i.name || i).join(', ');
+  if(typeof o.items === 'string'){ try { const a = JSON.parse(o.items); return a.map(i => i.name || i).join(', '); }catch(_){} }
+  return '—';
+}
+function orderRef(o){ return o.reference || o.ref || ('#' + String(o.id || '').slice(0, 6)); }
+function orderRoom(o){ return o.room_number ?? o.room ?? '—'; }
+function orderGuest(o){ return o.guest_name ?? o.guest ?? 'Guest'; }
+function orderCat(o){ return o.category ?? o.department ?? 'service'; }
+
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORY NORMALIZER
+═══════════════════════════════════════════════════════════════ */
+function normalizeCategory(raw){
+  const c = String(raw || '').toLowerCase().trim();
+  if(!c) return 'other';
+  if(c.includes('taxi')||c.includes('transport')||c.includes('transfer')||c.includes('ride')||c.includes('airport')||c.includes('shuttle')||c.includes('driver')||c.includes('car ')) return 'taxi';
+  if(c.includes('tour')||c.includes('safari')||c.includes('travel')||c.includes('excursion')||c.includes('trip')||c.includes('park')||c.includes('game drive')||c.includes('adventure')) return 'tour';
+  if(c.includes('spa')||c.includes('massage')||c.includes('wellness')||c.includes('laundry')||c.includes('gym')||c.includes('beauty')||c.includes('fitness')||c.includes('salon')||c.includes('hair')||c.includes('nail')||c.includes('sauna')||c.includes('steam')) return 'spa';
+  if(c.includes('food')||c.includes('restaurant')||c.includes('dining')||c.includes('room service')||c.includes('drink')||c.includes('bar')||c.includes('kitchen')||c.includes('menu')||c.includes('meal')||c.includes('main')||c.includes('starter')||c.includes('appetizer')||c.includes('dessert')||c.includes('snack')||c.includes('breakfast')||c.includes('lunch')||c.includes('dinner')||c.includes('beverage')||c.includes('juice')||c.includes('cocktail')||c.includes('wine')||c.includes('beer')||c.includes('tea')||c.includes('coffee')||c.includes('soda')||c.includes('water')||c.includes('pizza')||c.includes('burger')||c.includes('chicken')||c.includes('rice')||c.includes('pilau')||c.includes('nyama')||c.includes('ugali')||c.includes('soup')||c.includes('salad')||c.includes('fish')||c.includes('beef')||c.includes('vegetarian')) return 'food';
+  if(c.includes('housekeep')||c.includes('front')||c.includes('service')||c.includes('maintenance')||c.includes('maint')||c.includes('clean')||c.includes('towel')||c.includes('amenity')) return 'services';
+  return 'other';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DATA LOADERS
+═══════════════════════════════════════════════════════════════ */
+async function loadHotelMeta(){
+  try {
+    const res = await fetch(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
+    if(!res.ok) throw new Error();
+    const j = await res.json();
+    const h = j.hotel || j;
+    const name = h.name || h.hotel_name || HOTEL_ID;
+    $('hotelNameHero').textContent = name;
+    $('hotelSub').textContent = name + ' • GM OS • GUEST SYNC';
+    document.title = name + ' — GuestHub GM OS';
+  } catch(_){
+    $('hotelNameHero').textContent = HOTEL_ID;
+    $('hotelSub').textContent = HOTEL_ID + ' • GM OS • GUEST SYNC';
+  }
+}
+
+async function loadServices(){
+  if(!supa){ SERVICES = []; return; }
+  const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
+  if(error) console.warn('loadServices:', error.message);
+  SERVICES = data || [];
+}
+
+async function loadOrders(){
+  if(!supa){ ORDERS = []; return; }
+  const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(ORDERS_LIMIT);
+  if(error) console.warn('loadOrders:', error.message);
+  const incoming = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
+  // Detect new orders (only after first load)
+  const firstLoad = seenOrderIds.size === 0;
+  const brandNew = [];
+  incoming.forEach(o => {
+    if(!seenOrderIds.has(o.id)){
+      seenOrderIds.add(o.id);
+      if(!firstLoad && (o.status === 'new' || o.status === 'pending')) brandNew.push(o);
+    }
+  });
+  ORDERS = incoming;
+  if(brandNew.length && !firstLoad) onNewOrders(brandNew);
+  updateStats();
+  updateTabBadges();
+  if(currentTab === 'orders') renderOrders();
+  if(currentTab === 'finance') renderFinance();
+  if(currentTab === 'analytics') renderAnalytics();
+}
+
+async function loadDepts(){
+  if(!supa){ DEPTS = []; return; }
+  const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
+  if(error) console.warn('loadDepts:', error.message);
+  DEPTS = data || [];
+}
+
+async function loadVendorsPool(){
+  try {
+    const res = await api(`/api/gm/vendors-pool?hotel_id=${HOTEL_ID}`);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    VENDORS_POOL = j.pool || [];
+    MY_VENDOR_IDS = j.myVendorIds || [];
+  } catch (e) {
+    if(supa){
+      try {
+        const { data } = await supa.from('vendors').select('*').eq('status', 'approved').limit(200);
+        VENDORS_POOL = data || [];
+        const { data: my } = await supa.from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
+        MY_VENDOR_IDS = (my || []).map(x => x.vendor_id).filter(Boolean);
+      } catch(_){ VENDORS_POOL = []; MY_VENDOR_IDS = []; }
+    } else { VENDORS_POOL = []; MY_VENDOR_IDS = []; }
+  }
+}
+
+async function refreshAll(){
+  loadingSkeleton = true;
+  if(currentTab === 'orders') renderOrders();
+  try {
+    await Promise.all([loadHotelMeta(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+  } finally {
+    loadingSkeleton = false;
+    renderCurrentTab();
+    updateTabBadges();
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════════════════════ */
+function updateStats(){
+  const now = Date.now();
+  const day = 24 * 3600 * 1000;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const live = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
+  const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
+  const todayRev = ORDERS.filter(o => (o.created_at || '').startsWith(todayStr)).reduce((s, o) => s + orderAmount(o), 0);
+  const weekRev = ORDERS.filter(o => now - new Date(o.created_at || 0).getTime() < 7 * day).reduce((s, o) => s + orderAmount(o), 0);
+  const completedOrders = ORDERS.filter(o => o.status === 'completed');
+  const aov = completedOrders.length ? completedOrders.reduce((s, o) => s + orderAmount(o), 0) / completedOrders.length : 0;
+
+  $('s_live').textContent = live;
+  $('s_active').textContent = active;
+  $('s_today_rev').textContent = money(todayRev);
+  $('s_week_rev').textContent = money(weekRev);
+  $('s_aov').textContent = money(aov);
+}
+
+function updateTabBadges(){
+  const pending = ORDERS.filter(o => o.status === 'new' || o.status === 'pending').length;
+  const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
+  const total = pending + active;
+  const el = $('c_orders');
+  el.textContent = total;
+  el.classList.toggle('hot', pending > 0);
+  $('c_vendors').textContent = MY_VENDOR_IDS.length;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — ORDERS
+═══════════════════════════════════════════════════════════════ */
 function renderOrders(){
-  const box = document.getElementById('view-orders');
-  const q = (document.getElementById('orderSearch')?.value || '').toLowerCase();
-  const filtered = ORDERS.filter(o => `${o.room_number||''} ${o.guest_name||''} ${o.department||''} ${o.service_title||''} ${orderRef(o)}`.toLowerCase().includes(q));
-  const activeOrders = filtered.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
-  const doneOrders = filtered.filter(o => o.status === 'completed' || o.status === 'cancelled');
+  const box = $('view-orders');
+  if(loadingSkeleton && !ORDERS.length){
+    box.innerHTML = `<div class="card"><div class="card-title">${esc(t('tab_orders'))}</div></div>` +
+      Array.from({length:4}).map(() => '<div class="skel"></div>').join('');
+    return;
+  }
+  const q = orderSearch.toLowerCase();
+  const filtered = ORDERS.filter(o => {
+    const blob = `${orderRoom(o)} ${orderGuest(o)} ${orderCat(o)} ${orderItemsText(o)} ${orderRef(o)} ${o.guest_phone||''}`.toLowerCase();
+    return !q || blob.includes(q);
+  });
+  const byFilter = {
+    all: filtered,
+    new: filtered.filter(o => o.status === 'new' || o.status === 'pending'),
+    active: filtered.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)),
+    done: filtered.filter(o => o.status === 'completed'),
+    cancelled: filtered.filter(o => o.status === 'cancelled')
+  };
+  const counts = {
+    all: byFilter.all.length,
+    new: byFilter.new.length,
+    active: byFilter.active.length,
+    done: byFilter.done.length,
+    cancelled: byFilter.cancelled.length
+  };
+  const list = byFilter[orderFilter] || [];
+  const pendingNew = byFilter.new;
+
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">🔔 Live Orders — ${HOTEL_ID}</div>
-      <div class="card-sub">Tap a status button and the guest's phone updates in ~0.4s</div>
-      <input id="orderSearch" class="input" style="margin-top:10px" placeholder="Search room, guest, ref…" value="${esc(q)}" oninput="renderOrders()">
+      <div class="card-title">🔔 <span data-i18n="tab_orders">${esc(t('tab_orders'))}</span> — ${esc(HOTEL_ID)}</div>
+      <div class="card-sub">Tap a status button — the guest's phone updates in ~0.4s</div>
+      <input id="orderSearch" class="input" style="margin-top:10px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}">
+      <div class="filterRow">
+        <button class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
+        <button class="fpill ${orderFilter==='new'?'active':''}" data-f="new">🆕 ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
+        <button class="fpill ${orderFilter==='active'?'active':''}" data-f="active">⚙️ ${esc(t('f_active'))} <span class="n">(${counts.active})</span></button>
+        <button class="fpill ${orderFilter==='done'?'active':''}" data-f="done">✅ ${esc(t('f_done'))} <span class="n">(${counts.done})</span></button>
+        <button class="fpill ${orderFilter==='cancelled'?'active':''}" data-f="cancelled">✖️ ${esc(t('f_cancelled'))} <span class="n">(${counts.cancelled})</span></button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
+        ${pendingNew.length ? `<button class="btn btn-primary btn-sm" onclick="acceptAllNew()">${esc(t('accept_all'))} (${pendingNew.length})</button>` : ''}
+        <button class="btn btn-dark btn-sm" onclick="exportCSV()">${esc(t('export_csv'))}</button>
+      </div>
     </div>
-    ${activeOrders.length ? activeOrders.map(orderCard).join('') : '<div class="card">No active orders.</div>'}
-    ${doneOrders.length ? `<div class="card" style="margin-top:16px"><div class="card-title">History</div></div>${doneOrders.map(orderCard).join('')}` : ''}
+    ${list.length ? list.map(orderCard).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🔔</div><strong>${esc(t('no_active'))}</strong>${esc(t('no_active_sub'))}</div></div>`}
   `;
+  const search = $('orderSearch');
+  if(search){
+    search.addEventListener('input', e => {
+      orderSearch = e.target.value;
+      const cur = search.selectionStart;
+      renderOrders();
+      const next = $('orderSearch');
+      if(next){ next.focus(); next.setSelectionRange(cur, cur); }
+    });
+  }
+  box.querySelectorAll('[data-f]').forEach(p => p.addEventListener('click', () => {
+    orderFilter = p.dataset.f;
+    renderOrders();
+  }));
+  box.querySelectorAll('[data-order-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      if(e.target.closest('button')) return;
+      openOrderModal(row.dataset.orderId);
+    });
+  });
+  box.querySelectorAll('[data-status]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      updateStatus(btn.dataset.orderId, btn.dataset.status);
+    });
+  });
 }
+
 function orderCard(o){
   const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
   const nexts = NEXT_STATUS[o.status] || [];
   const canAdvance = nexts.filter(s => s !== 'cancelled');
-  const buttons = [
-    ...canAdvance.map(s => {
-      const isPrimary = s === 'accepted' || s === 'on_the_way' || s === 'completed';
-      const cls = isPrimary ? 'btn-primary' : 'btn-blue';
-      const label = GUEST_STATUSES[s]?.label || s;
-      return `<button class="btn ${cls} btn-sm" onclick="updateStatus('${o.id}','${s}')">${label}</button>`;
-    }),
-    ...(nexts.includes('cancelled') ? [`<button class="btn btn-red btn-sm" onclick="updateStatus('${o.id}','cancelled')">Cancel</button>`] : [])
-  ].join('');
-  const when = o.created_at ? new Date(o.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+  const isFresh = Date.now() - new Date(o.created_at || 0).getTime() < 5 * 60 * 1000;
+  const isUrgent = Date.now() - new Date(o.created_at || 0).getTime() > 15 * 60 * 1000 && o.status !== 'completed' && o.status !== 'cancelled';
+  const buttons = canAdvance.map(s => {
+    const isPrimary = s === 'accepted' || s === 'on_the_way' || s === 'completed';
+    const cls = isPrimary ? 'btn-primary' : 'btn-blue';
+    const key = s === 'preparing' ? 'preparing' : s === 'on_the_way' ? 'on_way' : s;
+    const label = t(key) || s;
+    return `<button class="btn ${cls} btn-sm" data-status="${esc(s)}" data-order-id="${esc(o.id)}">${esc(label)}</button>`;
+  }).join('');
+  const cancelBtn = nexts.includes('cancelled')
+    ? `<button class="btn btn-red btn-sm" data-status="cancelled" data-order-id="${esc(o.id)}">${esc(t('cancel'))}</button>`
+    : '';
   return `
-    <div class="row">
-      <div style="flex:1;min-width:220px">
-        <b>ROOM ${esc(o.room_number || '—')} — ${esc(o.guest_name || 'Guest')}</b>
-        <span class="badge ${st.badge}">${esc(st.label.toUpperCase())}</span>
-        <br>
+    <div class="row ${isFresh ? 'new-order' : ''} ${isUrgent ? 'priority' : ''} clickable" data-order-id="${esc(o.id)}">
+      <div class="rowMain">
+        <b>${esc(t('room'))} ${esc(orderRoom(o))} — ${esc(orderGuest(o))}</b>
+        <span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span>
+        ${isFresh ? `<span class="badge badge-green">🆕 ${esc(t('new_order'))}</span>` : ''}
         <small>${esc(orderItemsText(o))} — ${money(orderAmount(o))}</small>
         <div class="orderMeta">
           <span class="orderRef">${esc(orderRef(o))}</span>
-          <span>${esc((o.department || o.category || 'service'))}</span>
-          ${when ? `<span>${when}</span>` : ''}
+          <span>${esc(orderCat(o))}</span>
+          <span class="elapsed ${urgencyClass(o.created_at)}">⏱ <span data-tick="${esc(o.created_at)}">${relativeTime(o.created_at)}</span></span>
           ${o.guest_phone ? `<span>📱 ${esc(o.guest_phone)}</span>` : ''}
         </div>
       </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">${buttons || '<span class="badge badge-gray">CLOSED</span>'}</div>
+      <div class="rowActions">${buttons}${cancelBtn}${!buttons && !cancelBtn ? `<span class="badge badge-gray">${esc(t('closed'))}</span>` : ''}</div>
     </div>`;
 }
-async function updateStatus(id, s){
-  const clean = normalizeStatus(s);
-  if (!GUEST_STATUSES[clean]) return toast('Unknown status: ' + s, 'error');
-  const patch = { status: clean, updated_at: new Date().toISOString() };
-  const { error } = await supa.from('orders').update(patch).eq('id', id);
-  if (error) return toast('Error: ' + error.message, 'error');
-  toast(`✅ Guest notified → ${GUEST_STATUSES[clean].label}`);
-  const idx = ORDERS.findIndex(o => String(o.id) === String(id));
-  if (idx >= 0) { ORDERS[idx] = { ...ORDERS[idx], ...patch }; renderOrders(); }
-  setTimeout(loadOrders, 800);
-}
 
-/* ============================================================
-   ⭐ CATEGORY NORMALIZER — mirrors guest app so vendors land right
-   ============================================================ */
-function normalizeCategory(raw){
-  const c = String(raw || '').toLowerCase().trim();
-  if (!c) return 'other';
-  if (c.includes('taxi') || c.includes('transport') || c.includes('transfer') ||
-      c.includes('ride') || c.includes('airport') || c.includes('shuttle') ||
-      c.includes('driver') || c.includes('car ')) return 'taxi';
-  if (c.includes('tour') || c.includes('safari') || c.includes('travel') ||
-      c.includes('excursion') || c.includes('trip') || c.includes('park') ||
-      c.includes('game drive') || c.includes('adventure')) return 'tour';
-  if (c.includes('spa') || c.includes('massage') || c.includes('wellness') ||
-      c.includes('laundry') || c.includes('gym') || c.includes('beauty') ||
-      c.includes('fitness') || c.includes('salon') || c.includes('hair') ||
-      c.includes('nail') || c.includes('sauna') || c.includes('steam')) return 'spa';
-  if (c.includes('food') || c.includes('restaurant') || c.includes('dining') ||
-      c.includes('room service') || c.includes('drink') || c.includes('bar') ||
-      c.includes('kitchen') || c.includes('menu') || c.includes('meal') ||
-      c.includes('main') || c.includes('starter') || c.includes('appetizer') ||
-      c.includes('dessert') || c.includes('snack') || c.includes('breakfast') ||
-      c.includes('lunch') || c.includes('dinner') || c.includes('beverage') ||
-      c.includes('juice') || c.includes('cocktail') || c.includes('wine') ||
-      c.includes('beer') || c.includes('tea') || c.includes('coffee') ||
-      c.includes('soda') || c.includes('water') ||
-      c.includes('pizza') || c.includes('burger') || c.includes('chicken') ||
-      c.includes('rice') || c.includes('pilau') || c.includes('nyama') ||
-      c.includes('ugali') || c.includes('soup') || c.includes('salad') ||
-      c.includes('fish') || c.includes('beef') || c.includes('vegetarian')) return 'food';
-  if (c.includes('housekeep') || c.includes('front') || c.includes('service') ||
-      c.includes('maintenance') || c.includes('maint') || c.includes('clean') ||
-      c.includes('towel') || c.includes('amenity')) return 'services';
-  return 'other';
-}
-
+/* ── VENDORS ───────────────────────────────────────────── */
 function renderVendors(){
-  const box = document.getElementById('view-vendors');
+  const box = $('view-vendors');
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">🏪 Vendors Marketplace — ${HOTEL_ID}</div>
-      <p class="card-sub">Admin-approved vendors. Adding one here makes it appear on every guest's phone instantly.</p>
+      <div class="card-title">${esc(t('vendor_pool_title'))} — ${esc(HOTEL_ID)}</div>
+      <p class="card-sub">${esc(t('vendor_pool_sub'))}</p>
     </div>
-    ${VENDORS_POOL.map(v => {
+    ${VENDORS_POOL.length ? VENDORS_POOL.map(v => {
       const added = MY_VENDOR_IDS.includes(v.id);
       const cat = normalizeCategory(v.category);
       return `
         <div class="row">
-          <div style="flex:1;min-width:200px">
-            <b>${esc(v.vendor_name)} — ${esc(v.category || 'service')}</b>
-            <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? 'ADDED' : 'AVAILABLE'}</span>
-            <span class="badge badge-gray">${cat.toUpperCase()}</span>
-            <br>
+          <div class="rowMain">
+            <b>${esc(v.vendor_name || 'Vendor')} — ${esc(v.category || 'service')}</b>
+            <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? esc(t('added')) : esc(t('available'))}</span>
+            <span class="badge badge-gray">${esc(cat.toUpperCase())}</span>
             <small>${esc(v.phone || '')} • ${esc(v.location || v.city || '')} • ${money(v.price)} • ${esc((v.services || []).join(', '))}</small>
           </div>
-          <div style="display:flex;gap:6px">
+          <div class="rowActions">
             ${added
-              ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${v.id}')">Remove</button>`
-              : `<button class="btn btn-primary btn-sm" onclick="addVendor('${v.id}')">➕ Add to ${HOTEL_ID}</button>`}
+              ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${esc(v.id)}')">${esc(t('remove'))}</button>`
+              : `<button class="btn btn-primary btn-sm" onclick="addVendor('${esc(v.id)}')">${esc(t('add_to_hotel'))}</button>`}
           </div>
         </div>`;
-    }).join('') || '<div class="card">No approved vendors yet — Admin needs to approve in admin.html</div>'}`;
+    }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🏪</div><strong>${esc(t('empty_vendors'))}</strong></div></div>`}`;
 }
 
-async function addVendor(vendorId){
-  try {
-    const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
-    const res = await fetch(`/api/gm/vendors/${vendorId}/add?hotel_id=${HOTEL_ID}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }
-    });
-    const j = await res.json();
-    if (j.ok) { toast('✅ Added — Guest sees it now'); loadVendorsPool(); loadServices(); }
-    else throw new Error(j.error || 'Failed');
-  } catch (e) {
-    try {
-      const v = VENDORS_POOL.find(x => x.id === vendorId);
-      if (!v) return toast('Vendor not found', 'error');
-      const guestCategory = normalizeCategory(v.category);
-      const { error } = await supa.from('hotel_services').insert([{
-        hotel_id: HOTEL_ID,
-        title: v.vendor_name,
-        description: v.bio || `Available through GuestHub`,
-        price: v.price || 0,
-        category: guestCategory,
-        icon: guestCategory === 'food' ? '🍔'
-             : guestCategory === 'taxi' ? '🚕'
-             : guestCategory === 'tour' ? '🌍'
-             : guestCategory === 'spa'  ? '🧖'
-             : '🏪',
-        vendor_id: vendorId,
-        vendor_name: v.vendor_name,
-        vendor_phone: v.phone,
-        is_active: true
-      }]);
-      if (error) throw error;
-      toast('✅ Added (direct)'); loadVendorsPool(); loadServices();
-    } catch (e2) { toast('Error: ' + e2.message, 'error'); }
-  }
-}
-async function removeVendor(vendorId){
-  await supa.from('hotel_services').update({ is_active: false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
-  toast('Removed from hotel'); loadVendorsPool(); loadServices();
-}
-
-/* ============================================================
-   ⭐ MENU — dropdown category (fixes "Main"/"Dessert" misfiling)
-   ============================================================ */
+/* ── MENU ──────────────────────────────────────────────── */
 function renderMenu(){
-  const box = document.getElementById('view-menu');
-  const food = SERVICES.filter(s => normalizeCategory(s.category) === 'food');
+  const box = $('view-menu');
+  const food = SERVICES.filter(s => normalizeCategory(s.category) === 'food' || normalizeCategory(s.title) === 'food');
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">🍽️ Menu Builder (Food & Drinks)</div>
-      <div class="card-sub">These items appear under "Food & Room Service" on the guest phone.</div>
-      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px;margin-top:10px">
-        <input id="mName" class="input" placeholder="Pilau Beef">
-        <input id="mPrice" type="number" class="input" placeholder="650">
+      <div class="card-title">${esc(t('menu_title'))}</div>
+      <div class="card-sub">${esc(t('menu_sub'))}</div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:8px;margin-top:12px">
+        <input id="mName" class="input" placeholder="${esc(t('menu_name'))}">
+        <input id="mPrice" type="number" class="input" placeholder="${esc(t('menu_price'))}">
         <select id="mCat" class="input">
           <option value="food">Food</option>
           <option value="drinks">Drinks</option>
@@ -359,193 +960,593 @@ function renderMenu(){
           <option value="snack">Snack</option>
         </select>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addMenu()">Add Menu Item</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="addMenu()">${esc(t('menu_add'))}</button>
     </div>
-    ${food.map(i => `
+    ${food.length ? food.map(i => `
       <div class="row">
-        <span>${esc(i.title)} — ${money(i.price)}
-          <small style="color:#777">(${esc(i.category || 'food')})</small>
-        </span>
-        <button class="btn btn-red btn-sm" onclick="delMenu('${i.id}')">Delete</button>
-      </div>`).join('') || '<div class="card">No menu items yet.</div>'}
+        <div class="rowMain">
+          <b>${esc(i.title)}</b> <span class="badge badge-green">${money(i.price)}</span>
+          <small style="color:#777">${esc(i.category || 'food')}</small>
+        </div>
+        <div class="rowActions">
+          <button class="btn btn-red btn-sm" onclick="delMenu('${esc(i.id)}')">🗑</button>
+        </div>
+      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🍽️</div><strong>${esc(t('empty_menu'))}</strong></div></div>`}
   `;
 }
-async function addMenu(){
-  const name = document.getElementById('mName').value.trim();
-  const price = parseInt(document.getElementById('mPrice').value);
-  const cat = document.getElementById('mCat').value;
-  if (!name || !price) return toast('Name & price required', 'error');
-  const { error } = await supa.from('hotel_services').insert([{
-    hotel_id: HOTEL_ID,
-    title: name,
-    price: price,
-    category: normalizeCategory(cat),
-    icon: '🍔',
-    is_active: true
-  }]);
-  if (error) return toast('Error: ' + error.message, 'error');
-  toast('Added'); loadServices(); renderMenu();
-}
-async function delMenu(id){
-  const { error } = await supa.from('hotel_services').delete().eq('id', id);
-  if (error) return toast('Error: ' + error.message, 'error');
-  loadServices(); renderMenu();
-}
 
+/* ── SERVICES ──────────────────────────────────────────── */
 function renderServices(){
-  const box = document.getElementById('view-services');
+  const box = $('view-services');
+  const activeCount = SERVICES.filter(s => s.is_active).length;
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">🛎️ My Hotel Services</div>
-      <div class="card-sub">${SERVICES.filter(s => s.is_active).length} active • visible on guest phone</div>
+      <div class="card-title">${esc(t('services_title'))}</div>
+      <div class="card-sub">${activeCount} ${esc(t('services_sub'))}</div>
     </div>
-    ${SERVICES.map(s => `
+    ${SERVICES.length ? SERVICES.map(s => `
       <div class="row">
-        <span>${esc(s.icon || '🏨')} ${esc(s.title)} — ${money(s.price)}
+        <div class="rowMain">
+          <b>${esc(s.icon || '🏨')} ${esc(s.title)}</b>
+          <span class="badge ${s.is_active ? 'badge-green' : 'badge-gray'}">${money(s.price)}</span>
           <small style="color:#777">(${esc(normalizeCategory(s.category))})</small>
-          ${s.is_active ? '✅' : '❌'}
-        </span>
-        <div style="display:flex;gap:5px">
-          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${s.id}',${!s.is_active})">${s.is_active ? 'Disable' : 'Enable'}</button>
-          <button class="btn btn-red btn-sm" onclick="delService('${s.id}')">Del</button>
         </div>
-      </div>`).join('') || '<div class="card">No services yet.</div>'}
+        <div class="rowActions">
+          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? '⏸' : '▶'}</button>
+          <button class="btn btn-red btn-sm" onclick="delService('${esc(s.id)}')">🗑</button>
+        </div>
+      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🛎️</div><strong>${esc(t('empty_services'))}</strong></div></div>`}
   `;
 }
-async function toggleService(id, active){
-  await supa.from('hotel_services').update({ is_active: active }).eq('id', id);
-  loadServices();
-}
-async function delService(id){
-  await supa.from('hotel_services').delete().eq('id', id);
-  loadServices();
-}
 
+/* ── WHATSAPP ──────────────────────────────────────────── */
 function renderWhatsApp(){
-  const box = document.getElementById('view-whatsapp');
+  const box = $('view-whatsapp');
   const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">📱 WhatsApp Departments</div>
-      <div class="card-sub">Guests tap these buttons in the "Help" tab of their app.</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${esc(getVal('kitchen'))}"></div>
-        <div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(getVal('housekeeping'))}"></div>
-        <div><label>Laundry</label><input id="wa_laundry" class="input" value="${esc(getVal('laundry'))}"></div>
-        <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}"></div>
-        <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}"></div>
+      <div class="card-title">${esc(t('wa_title'))}</div>
+      <div class="card-sub">${esc(t('wa_sub'))}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+        <div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${esc(getVal('kitchen'))}" placeholder="254712345678"></div>
+        <div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(getVal('housekeeping'))}" placeholder="254712345678"></div>
+        <div><label>Laundry</label><input id="wa_laundry" class="input" value="${esc(getVal('laundry'))}" placeholder="254712345678"></div>
+        <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}" placeholder="254712345678"></div>
+        <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}" placeholder="254712345678"></div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="saveWhatsApp()">💾 SAVE</button>
+      <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="saveWhatsApp()">${esc(t('save'))}</button>
     </div>`;
 }
+
+/* ── QR ────────────────────────────────────────────────── */
+function renderQR(){
+  const box = $('view-qr');
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(t('qr_title'))}</div>
+      <div class="card-sub">${esc(t('qr_sub'))}</div>
+    </div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+        <input id="qrRoom" class="input" placeholder="${esc(t('room'))} 101">
+        <button class="btn btn-primary" onclick="genSingle()">${esc(t('qr_gen'))}</button>
+      </div>
+      <div id="singleQR" style="text-align:center;margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">${esc(t('qr_batch'))}</div>
+      <textarea id="qrBatch" class="input" rows="5" placeholder="101&#10;102&#10;103&#10;201&#10;202"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" style="flex:1" onclick="genBatch()">${esc(t('qr_gen_all'))}</button>
+        <button class="btn btn-dark" onclick="window.print()">${esc(t('qr_print'))}</button>
+      </div>
+      <div id="batchQR" style="margin-top:14px" class="qr-grid"></div>
+    </div>`;
+}
+
+/* ── FINANCE ──────────────────────────────────────────── */
+function renderFinance(){
+  const now = Date.now(); const day = 24 * 3600 * 1000;
+  const today = new Date().toISOString().slice(0, 10);
+  const week = ORDERS.filter(o => now - new Date(o.created_at||0).getTime() < 7*day);
+  const month = ORDERS.filter(o => now - new Date(o.created_at||0).getTime() < 30*day);
+  const todayOrders = ORDERS.filter(o => (o.created_at||'').startsWith(today));
+  const completedOrders = ORDERS.filter(o => o.status === 'completed');
+  const sum = arr => arr.reduce((s,o) => s + orderAmount(o), 0);
+  const aov = completedOrders.length ? sum(completedOrders) / completedOrders.length : 0;
+  const box = $('view-finance');
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(t('finance_title'))}</div>
+      <div class="card-sub">${esc(HOTEL_ID)} • Live revenue tracking</div>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(2,1fr)">
+      <div class="stat highlight"><b>${money(sum(todayOrders))}</b><small>${esc(t('today'))} · ${todayOrders.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(week))}</b><small>${esc(t('week'))} · ${week.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(month))}</b><small>${esc(t('month'))} · ${month.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(ORDERS))}</b><small>${esc(t('all_time'))} · ${ORDERS.length}</small></div>
+      <div class="stat"><b>${money(aov)}</b><small>${esc(t('stat_aov'))}</small></div>
+      <div class="stat"><b>${completedOrders.length}</b><small>COMPLETED</small></div>
+    </div>`;
+}
+
+/* ── ANALYTICS ─────────────────────────────────────────── */
+function renderAnalytics(){
+  const box = $('view-analytics');
+  const day = 24 * 3600 * 1000; const now = Date.now();
+  // 7-day revenue bars
+  const days = [];
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(now - i * day);
+    const key = d.toISOString().slice(0, 10);
+    const rev = ORDERS.filter(o => (o.created_at||'').startsWith(key)).reduce((s,o) => s + orderAmount(o), 0);
+    days.push({ key, label: d.toLocaleDateString('en', { weekday: 'short' }), rev });
+  }
+  const maxRev = Math.max(...days.map(d => d.rev), 1);
+  const barsHtml = days.map(d => {
+    const h = Math.max(4, (d.rev / maxRev) * 100);
+    return `<div style="display:flex;flex-direction:column;justify-content:flex-end;height:100%">
+      <div class="bar" style="height:${h}%">
+        <div class="barVal">${d.rev > 0 ? Math.round(d.rev/1000) + 'k' : ''}</div>
+        <div class="barLabel">${esc(d.label)}</div>
+      </div></div>`;
+  }).join('');
+
+  // Top 5 services
+  const svcCount = {};
+  ORDERS.forEach(o => { const k = orderItemsText(o); if(k && k !== '—') svcCount[k] = (svcCount[k] || 0) + 1; });
+  const top = Object.entries(svcCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const topHtml = top.length ? top.map(([name, n]) => `
+    <div class="row" style="padding:10px 13px">
+      <span style="font-size:12.5px;font-weight:800">${esc(name)}</span>
+      <span class="badge badge-green">${n}</span>
+    </div>`).join('') : `<div class="empty">${esc(t('no_data'))}</div>`;
+
+  // Revenue by category
+  const catRev = {};
+  ORDERS.forEach(o => { const c = normalizeCategory(orderCat(o)); catRev[c] = (catRev[c] || 0) + orderAmount(o); });
+  const totalCatRev = Object.values(catRev).reduce((s,v) => s+v, 0) || 1;
+  const catColors = { food:'#fbbf24', taxi:'#38bdf8', tour:'#22c55e', spa:'#a78bfa', services:'#c6ff00', other:'#666' };
+  const catHtml = Object.entries(catRev).sort((a,b) => b[1]-a[1]).map(([cat, rev]) => {
+    const pct = Math.round((rev / totalCatRev) * 100);
+    const color = catColors[cat] || '#666';
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;margin-bottom:5px">
+        <span style="text-transform:capitalize">${esc(cat)}</span>
+        <span>${money(rev)} · ${pct}%</span>
+      </div>
+      <div style="background:#1a1a1a;height:8px;border-radius:999px;overflow:hidden">
+        <div style="background:${color};height:100%;width:${pct}%;transition:width .3s"></div>
+      </div></div>`;
+  }).join('') || `<div class="empty">${esc(t('no_data'))}</div>`;
+
+  // Peak hours heatmap
+  const hours = new Array(24).fill(0);
+  ORDERS.forEach(o => { if(!o.created_at) return; const h = new Date(o.created_at).getHours(); hours[h]++; });
+  const maxH = Math.max(...hours, 1);
+  const heatHtml = hours.map((n, i) => {
+    const lvl = n === 0 ? 0 : Math.min(4, Math.ceil((n / maxH) * 4));
+    return `<div class="hm" data-lvl="${lvl}" title="${i}:00 — ${n} orders"></div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(t('analytics_title'))} — ${esc(HOTEL_ID)}</div>
+      <div class="card-sub">Last 7 days • all orders in current window</div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Revenue — Last 7 Days</div>
+      <div class="chart-wrap"><div class="chart">${barsHtml}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏆 ${esc(t('top_services'))}</div>
+      ${topHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">💰 ${esc(t('revenue_by_cat'))}</div>
+      <div style="margin-top:12px">${catHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">⏰ ${esc(t('peak_hours'))}</div>
+      <div class="heatmap">${heatHtml}</div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#555;margin-top:6px">
+        <span>00:00</span><span>12:00</span><span>23:00</span>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════════════════════════ */
+async function updateStatus(id, s){
+  const clean = normalizeStatus(s);
+  if(!GUEST_STATUSES[clean]) return toast('Unknown status: ' + s, 'error');
+  if(clean === 'cancelled'){
+    if(!confirm(t('confirm_cancel'))) return;
+  }
+  if(!supa) return toast('Supabase not configured', 'error');
+  const patch = { status: clean, updated_at: new Date().toISOString() };
+  const { error } = await supa.from('orders').update(patch).eq('id', id);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  beepConfirm();
+  toast(t('guest_notified') + (t(clean) || clean));
+  const idx = ORDERS.findIndex(o => String(o.id) === String(id));
+  if(idx >= 0){ ORDERS[idx] = { ...ORDERS[idx], ...patch, status: clean }; renderOrders(); updateStats(); updateTabBadges(); }
+  setTimeout(loadOrders, 900);
+}
+
+async function acceptAllNew(){
+  const pending = ORDERS.filter(o => o.status === 'new' || o.status === 'pending');
+  if(!pending.length) return toast('No new orders');
+  if(!confirm(`Accept all ${pending.length} new order(s)?`)) return;
+  if(!supa) return;
+  const ids = pending.map(o => o.id);
+  const { error } = await supa.from('orders').update({ status: 'accepted', updated_at: new Date().toISOString() }).in('id', ids);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  beepConfirm();
+  toast(`✅ Accepted ${pending.length} orders`);
+  loadOrders();
+}
+
+async function addVendor(vendorId){
+  try {
+    const res = await api(`/api/gm/vendors/${vendorId}/add?hotel_id=${HOTEL_ID}`, { method: 'POST' });
+    const j = await res.json();
+    if(j.ok){ toast(t('toast_added')); loadVendorsPool(); loadServices(); renderCurrentTab(); return; }
+    throw new Error(j.error || 'Failed');
+  } catch (e) {
+    const v = VENDORS_POOL.find(x => String(x.id) === String(vendorId));
+    if(!v || !supa) return toast(t('error_prefix') + e.message, 'error');
+    const guestCategory = normalizeCategory(v.category);
+    const icon = guestCategory === 'food' ? '🍔' : guestCategory === 'taxi' ? '🚕' : guestCategory === 'tour' ? '🌍' : guestCategory === 'spa' ? '🧖' : '🏪';
+    const { error } = await supa.from('hotel_services').insert([{
+      hotel_id: HOTEL_ID, title: v.vendor_name, description: v.bio || 'Available through GuestHub',
+      price: v.price || 0, category: guestCategory, icon, vendor_id: vendorId,
+      vendor_name: v.vendor_name, vendor_phone: v.phone, is_active: true
+    }]);
+    if(error) return toast(t('error_prefix') + error.message, 'error');
+    toast(t('toast_added'));
+    loadVendorsPool(); loadServices(); renderCurrentTab();
+  }
+}
+async function removeVendor(vendorId){
+  if(!supa) return;
+  const { error } = await supa.from('hotel_services').update({ is_active: false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_removed'));
+  loadVendorsPool(); loadServices(); renderCurrentTab();
+}
+
+async function addMenu(){
+  const name = $('mName').value.trim();
+  const price = parseInt($('mPrice').value);
+  const cat = $('mCat').value;
+  if(!name || !price) return toast('Name & price required', 'error');
+  if(!supa) return;
+  const { error } = await supa.from('hotel_services').insert([{
+    hotel_id: HOTEL_ID, title: name, price, category: normalizeCategory(cat), icon: '🍔', is_active: true
+  }]);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_added'));
+  await loadServices(); renderMenu();
+}
+async function delMenu(id){
+  if(!supa) return;
+  const { error } = await supa.from('hotel_services').delete().eq('id', id);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_removed'));
+  await loadServices(); renderMenu();
+}
+
+async function toggleService(id, active){
+  if(!supa) return;
+  await supa.from('hotel_services').update({ is_active: active }).eq('id', id);
+  await loadServices(); renderServices();
+}
+async function delService(id){
+  if(!supa) return;
+  await supa.from('hotel_services').delete().eq('id', id);
+  toast(t('toast_removed'));
+  await loadServices(); renderServices();
+}
+
 async function saveWhatsApp(){
-  for (const d of ['kitchen', 'housekeeping', 'laundry', 'taxi', 'frontdesk']) {
-    const num = document.getElementById('wa_' + d)?.value.trim();
-    if (num) {
+  if(!supa) return;
+  const keys = ['kitchen','housekeeping','laundry','taxi','frontdesk'];
+  for(const d of keys){
+    const num = $('wa_' + d)?.value.trim();
+    if(num){
       const { error } = await supa.from('departments').upsert({ hotel_id: HOTEL_ID, name: d, whatsapp: num }, { onConflict: 'hotel_id,name' });
-      if (error) { toast('Error: ' + error.message, 'error'); return; }
+      if(error) return toast(t('error_prefix') + error.message, 'error');
     }
   }
-  toast('✅ WhatsApp Saved — guest sees it instantly'); loadDepts();
+  toast(t('toast_saved'));
+  loadDepts();
 }
 
-function renderQR(){
-  const box = document.getElementById('view-qr');
-  box.innerHTML = `
-    <div class="card"><div class="card-title">🔳 QR Generator</div><div class="card-sub">Each QR deep-links the guest to their room.</div></div>
-    <div class="card">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <input id="qrRoom" class="input" placeholder="Room 101">
-        <button class="btn btn-primary" onclick="genSingle()">Generate</button>
-      </div>
-      <div id="singleQR" style="text-align:center;margin-top:12px"></div>
-    </div>`;
-}
 function genSingle(){
-  const room = document.getElementById('qrRoom').value.trim() || '101';
-  const link = guestLink(room);
-  const box = document.getElementById('singleQR');
-  box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div style="color:#000;font-weight:900">${HOTEL_ID} - ROOM ${room}</div></div>`;
-  setTimeout(() => { new QRCode(document.getElementById('qrSingleCanvas'), { text: link, width: 200, height: 200 }); }, 100);
+  const room = ($('qrRoom').value.trim() || '101');
+  const box = $('singleQR');
+  box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div class="qr-label">${esc(HOTEL_ID)} — ROOM ${esc(room)}</div></div>`;
+  setTimeout(() => {
+    new QRCode($('qrSingleCanvas'), { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' });
+  }, 60);
+}
+function genBatch(){
+  const raw = ($('qrBatch').value || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if(!raw.length) return toast('Enter at least one room', 'error');
+  const box = $('batchQR');
+  box.innerHTML = raw.map((room, i) => `<div class="qr-card"><div id="qrBatch-${i}"></div><div class="qr-label" style="color:#fff">ROOM ${esc(room)}</div></div>`).join('');
+  raw.forEach((room, i) => {
+    setTimeout(() => {
+      const el = $('qrBatch-' + i);
+      if(el) new QRCode(el, { text: guestLink(room), width: 160, height: 160, colorDark: '#000', colorLight: '#fff' });
+    }, 60 + i * 20);
+  });
+  toast(`Generated ${raw.length} QR codes`);
 }
 
-function renderFinance(){
-  const today = new Date().toISOString().slice(0, 10);
-  const todayOrders = ORDERS.filter(o => o.created_at?.startsWith(today));
-  const todayRev = todayOrders.reduce((s, o) => s + orderAmount(o), 0);
-  const allRev = ORDERS.reduce((s, o) => s + orderAmount(o), 0);
-  const box = document.getElementById('view-finance');
-  box.innerHTML = `
-    <div class="card"><div class="card-title">💸 Finance</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="card"><small>TODAY</small><br><b>${money(todayRev)}</b><br><small>${todayOrders.length} orders</small></div>
-      <div class="card"><small>ALL TIME</small><br><b>${money(allRev)}</b><br><small>${ORDERS.length} orders</small></div>
-    </div>`;
+function exportCSV(){
+  const rows = [['Reference','Date','Room','Guest','Phone','Service','Category','Amount','Status']];
+  ORDERS.forEach(o => rows.push([
+    orderRef(o),
+    o.created_at ? new Date(o.created_at).toISOString() : '',
+    orderRoom(o), orderGuest(o), o.guest_phone || '',
+    orderItemsText(o), orderCat(o), orderAmount(o), o.status
+  ]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `guesthub-orders-${HOTEL_ID}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 CSV exported');
 }
 
-function switchTab(name, el){
+/* ═══════════════════════════════════════════════════════════════
+   ORDER DETAIL MODAL
+═══════════════════════════════════════════════════════════════ */
+function openOrderModal(id){
+  const o = ORDERS.find(x => String(x.id) === String(id));
+  if(!o) return;
+  const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
+  $('omTitle').textContent = `${t('room')} ${orderRoom(o)} — ${orderGuest(o)}`;
+  $('omSub').textContent = orderRef(o) + ' · ' + (t(o.status) || o.status);
+  $('omBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div><label>${esc(t('service'))}</label><div style="font-weight:800">${esc(orderItemsText(o))}</div></div>
+      <div><label>${esc(t('amount'))}</label><div style="font-weight:800;color:var(--lime)">${money(orderAmount(o))}</div></div>
+      <div><label>${esc(t('category'))}</label><div style="font-weight:700">${esc(orderCat(o))}</div></div>
+      <div><label>${esc(t('status'))}</label><div><span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span></div></div>
+      <div><label>${esc(t('phone'))}</label><div style="font-weight:700">${esc(o.guest_phone || '—')}</div></div>
+      <div><label>${esc(t('created'))}</label><div style="font-weight:700;font-size:12px">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</div></div>
+    </div>
+    ${(o.details || o.notes) ? `<label>${esc(t('notes'))}</label><div style="background:#0a0a0a;border:1px solid #1e1e1e;border-radius:12px;padding:11px;font-size:12.5px;line-height:1.5">${esc(o.details || o.notes)}</div>` : ''}
+  `;
+  const actions = [];
+  if(o.guest_phone){
+    const wa = String(o.guest_phone).replace(/\D/g,'');
+    const msg = encodeURIComponent(`Hi ${orderGuest(o)}, this is ${HOTEL_ID} — regarding your order ${orderRef(o)} (${orderItemsText(o)}). `);
+    actions.push(`<a class="btn btn-green btn-sm" href="https://wa.me/${wa}?text=${msg}" target="_blank" rel="noopener">${esc(t('whatsapp_guest'))}</a>`);
+  }
+  if(o.vendor_phone){
+    const vp = String(o.vendor_phone).replace(/\D/g,'');
+    const msg = encodeURIComponent(`New order ${orderRef(o)} — Room ${orderRoom(o)}: ${orderItemsText(o)} (${money(orderAmount(o))}).`);
+    actions.push(`<a class="btn btn-purple btn-sm" href="https://wa.me/${vp}?text=${msg}" target="_blank" rel="noopener">${esc(t('forward_vendor'))}</a>`);
+  }
+  actions.push(`<button class="btn btn-dark btn-sm" onclick="copyOrder('${esc(o.id)}')">${esc(t('copy'))}</button>`);
+  actions.push(`<button class="btn btn-dark btn-sm" data-close="orderModal">${esc(t('close'))}</button>`);
+  $('omActions').innerHTML = actions.join('');
+  openModal('orderModal');
+}
+
+function copyOrder(id){
+  const o = ORDERS.find(x => String(x.id) === String(id));
+  if(!o) return;
+  const txt = `Room ${orderRoom(o)} — ${orderGuest(o)}\n${orderItemsText(o)} — ${money(orderAmount(o))}\n${orderRef(o)} · ${o.status}`;
+  navigator.clipboard.writeText(txt).then(() => toast(t('toast_copied'))).catch(() => toast('Copy failed', 'error'));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════════════════ */
+function openModal(id){ const m = $(id); if(m) m.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeModal(id){
+  const m = $(id); if(m) m.classList.remove('active');
+  if(!document.querySelector('.modal.active')) document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); }));
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active')); document.body.style.overflow = ''; }
+  // Shortcuts
+  if(e.target.matches('input, textarea')) return;
+  const map = { '1':'orders','2':'vendors','3':'menu','4':'services','5':'whatsapp','6':'qr','7':'finance','8':'analytics' };
+  if(map[e.key]) switchTab(map[e.key]);
+  if(e.key === '/'){ const s = $('orderSearch'); if(s){ e.preventDefault(); s.focus(); } }
+  if(e.key.toLowerCase() === 'r'){ refreshAll(); }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════════════════════ */
+function switchTab(name){
   currentTab = name;
+  localStorage.setItem('hotel_last_tab', name);
   document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('view-' + name).classList.remove('hidden');
-  if (el) el.classList.add('active');
+  const view = $('view-' + name);
+  const tab = document.querySelector(`.tab[data-tab="${name}"]`);
+  if(view) view.classList.remove('hidden');
+  if(tab) tab.classList.add('active');
   renderCurrentTab();
 }
+
 function renderCurrentTab(){
-  if (currentTab === 'orders') renderOrders();
-  if (currentTab === 'vendors') renderVendors();
-  if (currentTab === 'menu') renderMenu();
-  if (currentTab === 'services') renderServices();
-  if (currentTab === 'whatsapp') renderWhatsApp();
-  if (currentTab === 'qr') renderQR();
-  if (currentTab === 'finance') renderFinance();
+  if(currentTab === 'orders') renderOrders();
+  else if(currentTab === 'vendors') renderVendors();
+  else if(currentTab === 'menu') renderMenu();
+  else if(currentTab === 'services') renderServices();
+  else if(currentTab === 'whatsapp') renderWhatsApp();
+  else if(currentTab === 'qr') renderQR();
+  else if(currentTab === 'finance') renderFinance();
+  else if(currentTab === 'analytics') renderAnalytics();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+/* ═══════════════════════════════════════════════════════════════
+   NEW ORDERS ALERT
+═══════════════════════════════════════════════════════════════ */
+function onNewOrders(orders){
+  const o = orders[0];
+  const room = orderRoom(o);
+  toast(`🔔 New order — Room ${room} · ${orderItemsText(o)}`);
+  beepNewOrder();
+  if(navigator.vibrate) navigator.vibrate([120, 60, 120, 60, 120]);
+
+  // Browser notification if page hidden
+  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
+    try {
+      new Notification(`GuestHub — Room ${room}`, {
+        body: `${orderGuest(o)} — ${orderItemsText(o)} (${money(orderAmount(o))})`,
+        tag: 'guesthub-order-' + o.id,
+        icon: '/favicon.ico'
+      });
+    } catch(_){}
+  }
+  // If on orders tab, re-render to show flash
+  if(currentTab === 'orders') renderOrders();
+  updateTabBadges();
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   REALTIME
+═══════════════════════════════════════════════════════════════ */
 function setSyncDot(state){
-  const dot = document.getElementById('rtDot');
-  const txt = document.getElementById('systemStatus');
-  if (state === 'live'){ dot.className = 'dot'; txt.innerText = 'Live sync active — guest updates instantly'; }
-  else if (state === 'connecting'){ dot.className = 'dot warn'; txt.innerText = 'Connecting to live sync…'; }
-  else { dot.className = 'dot off'; txt.innerText = 'Offline — polling every 15s'; }
+  const pill = $('syncPill');
+  const dot = $('rtDot');
+  const txt = $('systemStatus');
+  pill.className = 'status-pill' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
+  dot.className = 'dot' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
+  txt.textContent = state === 'live' ? t('live_sync') : state === 'connecting' ? t('connecting') : t('offline_polling');
 }
+
 function subscribeRealtime(){
-  if (rtChannel) { try { supa.removeChannel(rtChannel); } catch(_) {} }
+  if(!supa){ setSyncDot('off'); schedulePoll(); return; }
+  if(rtChannel){ try { supa.removeChannel(rtChannel); }catch(_){} rtChannel = null; }
   setSyncDot('connecting');
   try {
     rtChannel = supa.channel('gm-' + HOTEL_ID)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, (p) => {
-        toast(`🔔 NEW — Room ${p.new?.room_number || '?'}`);
-        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-        loadOrders();
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, p => {
+        const row = p.new; if(!row) return;
+        const norm = { ...row, status: normalizeStatus(row.status) };
+        if(!seenOrderIds.has(norm.id)){
+          seenOrderIds.add(norm.id);
+          onNewOrders([norm]);
+        }
+        ORDERS.unshift(norm);
+        updateStats(); updateTabBadges();
+        if(currentTab === 'orders') renderOrders();
       })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, (p) => {
-        const idx = ORDERS.findIndex(o => String(o.id) === String(p.new.id));
-        if (idx >= 0) {
-          ORDERS[idx] = { ...ORDERS[idx], ...p.new, status: normalizeStatus(p.new.status) };
-          if (currentTab === 'orders') renderOrders();
-        } else loadOrders();
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, p => {
+        const row = p.new; if(!row) return;
+        const idx = ORDERS.findIndex(o => String(o.id) === String(row.id));
+        if(idx >= 0) ORDERS[idx] = { ...ORDERS[idx], ...row, status: normalizeStatus(row.status) };
+        else ORDERS.unshift({ ...row, status: normalizeStatus(row.status) });
+        updateStats(); updateTabBadges();
+        if(currentTab === 'orders') renderOrders();
       })
       .subscribe((status, err) => {
-        if (status === 'SUBSCRIBED') setSyncDot('live');
-        else if (['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)) {
+        if(status === 'SUBSCRIBED'){ setSyncDot('live'); stopPoll(); }
+        else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
           setSyncDot('off');
-          if (err) console.warn('Realtime error:', err);
+          if(err) console.warn('Realtime:', err);
+          schedulePoll();
         }
       });
-  } catch (e) {
-    console.warn('Realtime subscribe failed:', e.message);
-    setSyncDot('off');
+  } catch(e){
+    console.warn('Realtime failed:', e.message);
+    setSyncDot('off'); schedulePoll();
   }
 }
 
+function schedulePoll(){
+  if(pollTimer) clearTimeout(pollTimer);
+  pollTimer = setTimeout(async () => { await loadOrders(); schedulePoll(); }, POLL_MS);
+}
+function stopPoll(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; } }
+
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden){ stopPoll(); }
+  else {
+    loadOrders();
+    if(!rtChannel) subscribeRealtime();
+  }
+});
+window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
+window.addEventListener('offline', () => setSyncDot('off'));
+
+/* ═══════════════════════════════════════════════════════════════
+   TICKER — update relative times every 30s
+═══════════════════════════════════════════════════════════════ */
+function tickTimes(){
+  document.querySelectorAll('[data-tick]').forEach(el => {
+    el.textContent = relativeTime(el.dataset.tick);
+    const parent = el.parentElement;
+    if(parent) parent.className = 'elapsed ' + urgencyClass(el.dataset.tick);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER ACTIONS
+═══════════════════════════════════════════════════════════════ */
+$('refreshBtn').addEventListener('click', () => { refreshAll(); toast('Refreshed'); });
+$('guestBtn').addEventListener('click', () => window.open(guestLink('101'), '_blank'));
+$('langBtn').addEventListener('click', () => { renderLangGrid(); openModal('langModal'); });
+$('logoutBtn').addEventListener('click', () => {
+  ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
+  location.replace('/hotel-login.html');
+});
+
+/* Notification bell — toggle sound + request permission */
+const notifBtn = $('notifBtn');
+function updateNotifUI(){
+  notifBtn.classList.toggle('muted', !soundEnabled);
+  notifBtn.textContent = soundEnabled ? '🔔' : '🔕';
+  notifBtn.appendChild(Object.assign(document.createElement('span'), { className: 'dot-notif' }));
+}
+notifBtn.addEventListener('click', async () => {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('hotel_sound', soundEnabled ? 'on' : 'off');
+  updateNotifUI();
+  if(soundEnabled){
+    toast('🔔 Alerts enabled');
+    beepConfirm();
+    if('Notification' in window && Notification.permission === 'default'){
+      try { await Notification.requestPermission(); } catch(_){}
+    }
+  } else {
+    toast('🔕 Alerts muted');
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════ */
 (async function boot(){
-  const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
-  if (!token) return;
+  updateNotifUI();
+  applyI18n();
+  $('hotelSub').textContent = HOTEL_ID + ' • GM OS • GUEST SYNC';
+  // Restore last tab
+  const tab = document.querySelector(`.tab[data-tab="${currentTab}"]`);
+  if(tab) switchTab(currentTab);
+  else switchTab('orders');
   await refreshAll();
   subscribeRealtime();
-  setInterval(() => { loadOrders(); }, 15000);
-  window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) loadOrders(); });
+  schedulePoll();
+  tickTimer = setInterval(tickTimes, 30000);
 })();
 </script>
 </body>
