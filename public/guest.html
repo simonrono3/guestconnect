@@ -48,7 +48,7 @@ img{max-width:100%;display:block}
 .brandText{font-family:'Space Grotesk';font-size:14px;font-weight:800;letter-spacing:.3px}
 .brandText span{color:var(--lime)}
 .topActions{display:flex;align-items:center;gap:8px}
-.roomChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #2a2a2a;font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.roomChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #2a2a2a;font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap;max-width:170px;overflow:hidden;text-overflow:ellipsis}
 .roomChip b{color:#fff}
 .iconBtn{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:16px;transition:border-color .15s,color .15s}
 .iconBtn:hover,.iconBtn:active{border-color:var(--lime);color:var(--lime)}
@@ -69,6 +69,7 @@ img{max-width:100%;display:block}
 .verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:10.5px;font-weight:900}
 .heroMeta{display:flex;gap:6px;flex-wrap:wrap}
 .heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.08);color:#000;font-size:10.5px;font-weight:900}
+.heroMeta span#heroStay{background:rgba(0,0,0,.14);color:#000;font-weight:900}
 
 /* ---------- Panels ---------- */
 .wrap{padding:0 12px}
@@ -166,8 +167,6 @@ img{max-width:100%;display:block}
 /* ---------- Loading / Empty ---------- */
 .loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
 .spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
-.skeleton{height:132px;border-radius:16px;background:linear-gradient(90deg,#151515 0%,#1e1e1e 50%,#151515 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;border:1px solid #222}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .empty{display:none;text-align:center;padding:30px 16px;color:var(--muted-2);font-size:13px}
 .empty.show{display:block}
 .emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
@@ -233,6 +232,29 @@ img{max-width:100%;display:block}
 .toast.show{display:block;animation:toast .22s ease}
 @keyframes toast{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
+/* ---------- Language Modal ---------- */
+.langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
+.langCard:active{transform:scale(.97)}
+.langCard:hover{border-color:var(--lime)}
+.langCard.active{border-color:var(--lime);background:var(--lime-soft)}
+.langCard .flag{font-size:22px;line-height:1}
+.langCard b{font-size:13px;font-weight:800}
+.langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
+.langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900;font-size:14px}
+
+/* ---------- RTL ---------- */
+[dir="rtl"] .searchIcon{left:auto;right:15px}
+[dir="rtl"] .searchBox .input{padding-left:14px;padding-right:44px}
+[dir="rtl"] .price{right:auto;left:10px}
+[dir="rtl"] .svc b{padding-right:0;padding-left:70px}
+[dir="rtl"] .svc small{padding-right:0;padding-left:2px}
+[dir="rtl"] .progressStep{transform:scaleX(-1)}
+[dir="rtl"] .orderAmount{float:left!important}
+[dir="rtl"] .hero:before{right:auto;left:-120px}
+[dir="rtl"] .hero:after{right:auto;left:-40px}
+[dir="rtl"] .langCard .check{right:auto;left:12px}
+
 /* ---------- Responsive / A11y ---------- */
 @media(min-width:650px){
   body{max-width:780px;margin:auto}
@@ -250,7 +272,7 @@ img{max-width:100%;display:block}
 </head>
 <body>
 
-<div id="offlineBar" class="offlineBar" role="status" aria-live="polite">📶 You're offline — we'll reconnect automatically</div>
+<div id="offlineBar" class="offlineBar" role="status" aria-live="polite" data-i18n="t_offline">📶 You're offline — we'll reconnect automatically</div>
 
 <!-- ═══════ TOP BAR ═══════ -->
 <header class="topbar">
@@ -259,7 +281,8 @@ img{max-width:100%;display:block}
     <div class="brandText">GUEST<span>HUB</span></div>
   </div>
   <div class="topActions">
-    <div class="roomChip" id="roomChip">🛏️ Room <b id="topRoom">—</b></div>
+    <div class="roomChip">🛏️ <b id="topRoom">—</b></div>
+    <button class="iconBtn" id="langBtn" aria-label="Language" title="Language">🌐</button>
     <button class="iconBtn" id="bellBtn" aria-label="Notifications" title="Notifications">🔔</button>
   </div>
 </header>
@@ -267,12 +290,12 @@ img{max-width:100%;display:block}
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="heroContent">
-    <div class="eyebrow">✦ GUESTHUB OS</div>
+    <div class="eyebrow" data-i18n="welcome">✦ GUESTHUB OS</div>
     <h1 id="greeting">Welcome</h1>
     <h1><span id="hotelName">YOUR HOTEL</span></h1>
     <p id="hotelTagline">Room service • Transport • Tours • Spa • Concierge</p>
     <div class="heroBottom">
-      <div class="verified">🔒 GuestHub Verified</div>
+      <div class="verified" data-i18n="footer_secure">🔒 GuestHub Verified</div>
       <div class="heroMeta">
         <span id="heroRoom">🛏️ —</span>
         <span id="heroStay">✨ Ready</span>
@@ -282,14 +305,12 @@ img{max-width:100%;display:block}
 </section>
 
 <!-- ═══════ YOUR STAY ═══════ -->
-<section class="panel wrap-panel">
-  <div class="wrap" style="padding:0">
-    <div class="panel" style="margin-top:14px">
-      <div class="panelHead"><strong>👋 Your Stay</strong><small>SECURED</small></div>
-      <div class="panelGrid">
-        <input id="guestName" class="input" placeholder="Your name" autocomplete="name" aria-label="Your name">
-        <input id="roomNo" class="input" placeholder="Room number" inputmode="numeric" autocomplete="off" aria-label="Room number">
-      </div>
+<section class="wrap">
+  <div class="panel">
+    <div class="panelHead"><strong data-i18n="your_stay">👋 Your Stay</strong><small data-i18n="secured">SECURED</small></div>
+    <div class="panelGrid">
+      <input id="guestName" class="input" data-i18n="your_name" placeholder="Your name" autocomplete="name" aria-label="Your name">
+      <input id="roomNo" class="input" data-i18n="room_number" placeholder="Room number" inputmode="numeric" autocomplete="off" aria-label="Room number">
     </div>
   </div>
 </section>
@@ -309,12 +330,12 @@ img{max-width:100%;display:block}
 <!-- ═══════ QUICK ACTIONS ═══════ -->
 <div class="wrap">
   <div class="quickRow" id="quickRow">
-    <button class="quickAction" data-quick="food"><i>🍽️</i>Room Service</button>
-    <button class="quickAction" data-quick="taxi"><i>🚕</i>Taxi</button>
-    <button class="quickAction" data-quick="tour"><i>🦁</i>Safari</button>
-    <button class="quickAction" data-quick="spa"><i>🧖</i>Spa</button>
-    <button class="quickAction" data-quick="services"><i>🧹</i>Housekeeping</button>
-    <button class="quickAction" id="quickOrders"><i>📋</i>My Orders</button>
+    <button class="quickAction" data-quick="food"><i>🍽️</i><span data-i18n="qa_food">Room Service</span></button>
+    <button class="quickAction" data-quick="taxi"><i>🚕</i><span data-i18n="qa_taxi">Taxi</span></button>
+    <button class="quickAction" data-quick="tour"><i>🦁</i><span data-i18n="qa_tour">Safari</span></button>
+    <button class="quickAction" data-quick="spa"><i>🧖</i><span data-i18n="qa_spa">Spa</span></button>
+    <button class="quickAction" data-quick="services"><i>🧹</i><span data-i18n="qa_services">Housekeeping</span></button>
+    <button class="quickAction" id="quickOrders"><i>📋</i><span data-i18n="qa_orders">My Orders</span></button>
   </div>
 </div>
 
@@ -322,7 +343,7 @@ img{max-width:100%;display:block}
 <div class="wrap search">
   <div class="searchBox">
     <span class="searchIcon">🔎</span>
-    <input id="searchService" class="input" placeholder="Search room service, safari, taxi…" autocomplete="off" aria-label="Search services">
+    <input id="searchService" class="input" data-i18n="search_placeholder" placeholder="Search room service, safari, taxi…" autocomplete="off" aria-label="Search services">
   </div>
 </div>
 
@@ -347,13 +368,13 @@ img{max-width:100%;display:block}
       <span class="progressStep" data-step="4"></span>
     </div>
     <div class="progressLabels">
-      <span data-step="1">Sent</span>
-      <span data-step="2">Accepted</span>
-      <span data-step="3">In&nbsp;Progress</span>
-      <span data-step="4">Done</span>
+      <span data-step="1" data-i18n="step_sent">Sent</span>
+      <span data-step="2" data-i18n="step_accepted">Accepted</span>
+      <span data-step="3" data-i18n="step_progress">In Progress</span>
+      <span data-step="4" data-i18n="step_done">Done</span>
     </div>
     <div class="orderDetails">
-      <span>Room <strong id="activeRoom">—</strong></span>
+      <span><span data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
       <span><strong id="activeAmount">—</strong></span>
     </div>
     <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
@@ -364,45 +385,45 @@ img{max-width:100%;display:block}
 <div class="pills" id="pills"></div>
 
 <!-- ═══════ SERVICES ═══════ -->
-<div id="loading" class="loading"><div class="spinner"></div>Loading your hotel's services…</div>
+<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading your hotel's services…</span></div>
 <main id="serviceArea" style="display:none"></main>
 
 <div id="emptySearch" class="empty" style="margin:0 12px">
   <div class="emptyIcon">🔎</div>
-  <strong>No service found</strong><br>Try another search.
+  <strong data-i18n="empty_search">No service found</strong><br><span data-i18n="empty_search_sub">Try another search.</span>
 </div>
 
 <!-- ═══════ FOOTER ═══════ -->
 <footer class="footer">
-  🔒 <strong>GuestHub Secure</strong><br>
-  Your hotel coordinates your requested service.<br>
-  GuestHub • Hospitality made simple ✨
+  🔒 <strong data-i18n="footer_secure">GuestHub Secure</strong><br>
+  <span data-i18n="footer_line1">Your hotel coordinates your requested service.</span><br>
+  <span data-i18n="footer_line2">GuestHub • Hospitality made simple ✨</span>
 </footer>
 
 <!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
-  <button class="navBtn active" data-tab="home"><span>⌂</span>Home</button>
-  <button class="navBtn" data-tab="services"><span>◎</span>Services</button>
-  <button class="navBtn" data-tab="orders"><span>📋</span>Orders</button>
-  <button class="navBtn" data-tab="help"><span>💬</span>Help</button>
+  <button class="navBtn active" data-tab="home"><span>⌂</span><span data-i18n="nav_home">Home</span></button>
+  <button class="navBtn" data-tab="services"><span>◎</span><span data-i18n="nav_services">Services</span></button>
+  <button class="navBtn" data-tab="orders"><span>📋</span><span data-i18n="nav_orders">Orders</span></button>
+  <button class="navBtn" data-tab="help"><span>💬</span><span data-i18n="nav_help">Help</span></button>
 </nav>
 
 <!-- ═══════ ORDER MODAL ═══════ -->
 <div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 id="mTitle" class="modalTitle">Confirm Request</h3><div id="mDesc" class="modalDesc"></div></div>
+      <div><h3 id="mTitle" class="modalTitle" data-i18n="confirm_request">Confirm Request</h3><div id="mDesc" class="modalDesc"></div></div>
       <button class="close" data-close="orderModal" aria-label="Close">×</button>
     </div>
-    <label class="label" for="guestPhone">Your WhatsApp number</label>
+    <label class="label" for="guestPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
     <input id="guestPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
-    <label class="label" for="orderNote">Special instructions</label>
-    <input id="orderNote" class="input" placeholder="Time, preference, or request">
+    <label class="label" for="orderNote" data-i18n="special_instructions">Special instructions</label>
+    <input id="orderNote" class="input" data-i18n="note_placeholder" placeholder="Time, preference, or request">
     <div class="twoButtons" style="margin-top:14px">
-      <button class="btn secondary" data-close="orderModal">Cancel</button>
-      <button class="btn" id="confirmOrder">✅ Place Order</button>
+      <button class="btn secondary" data-close="orderModal" data-i18n="cancel">Cancel</button>
+      <button class="btn" id="confirmOrder" data-i18n="place_order">✅ Place Order</button>
     </div>
-    <small style="display:block;text-align:center;color:#6a6a6a;font-size:11px;margin-top:10px;line-height:1.5">Your request is sent directly to the hotel team.</small>
+    <small style="display:block;text-align:center;color:#6a6a6a;font-size:11px;margin-top:10px;line-height:1.5" data-i18n="order_note">Your request is sent directly to the hotel team.</small>
   </div>
 </div>
 
@@ -410,10 +431,10 @@ img{max-width:100%;display:block}
 <div class="modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
   <div class="modalBox success">
     <div class="successIcon">✓</div>
-    <h3 class="modalTitle" id="successTitle" style="text-align:center">Request Received!</h3>
+    <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center">Request Received!</h3>
     <p id="successText" class="modalDesc" style="text-align:center;margin-top:8px"></p>
-    <div class="reference"><small>GUESTHUB REFERENCE</small><strong id="orderRef">GH-XXXX</strong></div>
-    <button class="btn" id="successDone">Great — Track My Order</button>
+    <div class="reference"><small data-i18n="reference_label">GUESTHUB REFERENCE</small><strong id="orderRef">GH-XXXX</strong></div>
+    <button class="btn" id="successDone" data-i18n="track_order">Great — Track My Order</button>
   </div>
 </div>
 
@@ -421,7 +442,7 @@ img{max-width:100%;display:block}
 <div class="modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="ordersTitle">📋 My Orders</h3><div class="modalDesc">Track your GuestHub requests.</div></div>
+      <div><h3 class="modalTitle" id="ordersTitle" data-i18n="orders_title">📋 My Orders</h3><div class="modalDesc" data-i18n="orders_desc">Track your GuestHub requests.</div></div>
       <button class="close" data-close="ordersModal" aria-label="Close">×</button>
     </div>
     <div id="ordersList" style="margin-top:14px"></div>
@@ -432,7 +453,7 @@ img{max-width:100%;display:block}
 <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="helpTitle">💬 Talk to the Hotel</h3><div class="modalDesc">Direct WhatsApp — fastest response.</div></div>
+      <div><h3 class="modalTitle" id="helpTitle" data-i18n="help_title">💬 Talk to the Hotel</h3><div class="modalDesc" data-i18n="help_desc">Direct WhatsApp — fastest response.</div></div>
       <button class="close" data-close="helpModal" aria-label="Close">×</button>
     </div>
     <div id="helpList" style="margin-top:14px"></div>
@@ -443,7 +464,7 @@ img{max-width:100%;display:block}
 <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="infoTitle">ℹ️ How It Works</h3><div class="modalDesc">Your hotel experience in one place.</div></div>
+      <div><h3 class="modalTitle" id="infoTitle" data-i18n="info_title">ℹ️ How It Works</h3><div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div></div>
       <button class="close" data-close="infoModal" aria-label="Close">×</button>
     </div>
     <div style="margin-top:14px">
@@ -456,18 +477,25 @@ img{max-width:100%;display:block}
   </div>
 </div>
 
+<!-- ═══════ LANGUAGE MODAL ═══════ -->
+<div class="modal" id="langModal" role="dialog" aria-modal="true" aria-labelledby="langTitle">
+  <div class="modalBox">
+    <div class="modalHead">
+      <div><h3 class="modalTitle" id="langTitle">🌐 Language</h3><div class="modalDesc" id="langDesc">Choose your preferred language.</div></div>
+      <button class="close" data-close="langModal" aria-label="Close">×</button>
+    </div>
+    <div class="langGrid" id="langGrid"></div>
+  </div>
+</div>
+
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════════
-   GUESTHUB OS — GUEST DASHBOARD
-   Architecture: REST API primary, Supabase realtime secondary,
-                 polling fallback. Same contract as server.
+   CONFIG
 ═══════════════════════════════════════════════════════════════ */
-
-/* ---------- Config ---------- */
 const API_BASE         = "";
 const POLL_ACTIVE_MS   = 15000;
 const POLL_IDLE_MS     = 60000;
@@ -477,25 +505,219 @@ const SOUND_ENABLED    = true;
 const SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || "";
 const SUPA_KEY = (typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || "";
 
-/* ---------- Shortcuts ---------- */
 const $   = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? "Ksh " + n.toLocaleString("en-KE") : "Ask hotel"; };
-const prettyStatus = s => String(s || "").replace(/_/g," ").replace(/\b\w/g, c => c.toUpperCase());
 
-/* ---------- URL / Storage ---------- */
 const params    = new URLSearchParams(location.search);
 const HOTEL_ID  = (params.get("hotel") || params.get("hotel_id") || params.get("h") || localStorage.getItem("last_hotel_id") || "BAOBAB").toUpperCase();
 const ROOM_PARAM= params.get("room") || params.get("room_no") || "";
 const TABLE     = params.get("table") || "";
 
-/* ---------- State ---------- */
+/* ═══════════════════════════════════════════════════════════════
+   I18N — EN · SW · FR · AR
+═══════════════════════════════════════════════════════════════ */
+const I18N = {
+  en:{dir:"ltr",flag:"🇬🇧",name:"English",native:"English",
+    welcome:"✦ GUESTHUB OS",your_stay:"👋 Your Stay",secured:"SECURED",
+    your_name:"Your name",room_number:"Room number",
+    search_placeholder:"Search room service, safari, taxi…",loading_text:"Loading your hotel's services…",
+    qa_food:"Room Service",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Housekeeping",qa_orders:"My Orders",
+    live_updates:"Live updates active",polling_mode:"Polling every 15s",
+    step_sent:"Sent",step_accepted:"Accepted",step_progress:"In Progress",step_done:"Done",
+    status_pending:"Pending",status_new:"New",status_accepted:"Accepted",status_preparing:"Preparing",
+    status_on_the_way:"On the way",status_completed:"Completed",status_cancelled:"Cancelled",status_rejected:"Rejected",
+    eta_accepted:"Accepted — preparing shortly",eta_preparing:"Being prepared — arriving soon",eta_on_the_way:"On the way to your room now",
+    cat_food:"🍽️ Food & Room Service",cat_taxi:"🚕 Transport & Transfers",cat_tour:"🌍 Tours & Safari",
+    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",
+    cat_short_food:"Food",cat_short_taxi:"Taxi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hotel",cat_short_other:"More",cat_all:"All",
+    nav_home:"Home",nav_services:"Services",nav_orders:"Orders",nav_help:"Help",
+    confirm_request:"Confirm Request",your_whatsapp:"Your WhatsApp number",special_instructions:"Special instructions",
+    note_placeholder:"Time, preference, or request",cancel:"Cancel",place_order:"✅ Place Order",sending:"⏳ Sending…",
+    order_note:"Your request is sent directly to the hotel team.",
+    success_title:"Request Received!",reference_label:"GUESTHUB REFERENCE",track_order:"Great — Track My Order",
+    orders_title:"📋 My Orders",orders_desc:"Track your GuestHub requests.",
+    no_orders_title:"No orders yet",no_orders_desc:"Your requests will appear here.",
+    reorder:"↻ Order again",rate_prompt:"Rate:",thanks_rating:"✓ Thanks for rating",
+    help_title:"💬 Talk to the Hotel",help_desc:"Direct WhatsApp — fastest response.",whatsapp_now:"WhatsApp instantly",
+    info_title:"ℹ️ How It Works",info_desc:"Your hotel experience in one place.",
+    t_enter_name:"Please enter your name",t_enter_room:"Please enter your room number",
+    t_valid_phone:"Enter a valid Kenyan number (e.g. 0712 345 678)",
+    t_wait:"Please wait {s}s before placing another order",
+    t_offline:"📶 You're offline — we'll reconnect automatically",
+    t_service_gone:"Service no longer available",t_dept_no_wa:"This department has no WhatsApp yet",
+    t_rate_thanks:"Thanks for the feedback! ✨",t_order_fail:"Something went wrong. Please try again.",
+    t_order_failed:"Order failed",
+    hotel_fallback:"YOUR HOTEL",tagline_fallback:"Room service • Transport • Tours • Spa • Concierge",
+    no_services_title:"No services yet",no_services_body:"This hotel hasn't set up its services yet. Try again later or ask the front desk.",
+    empty_search:"No service found",empty_search_sub:"Try another search.",
+    footer_secure:"🔒 GuestHub Verified",footer_line1:"Your hotel coordinates your requested service.",footer_line2:"GuestHub • Hospitality made simple ✨",
+    stay_day:"Day {d} of {t}",stay_arriving:"Arriving in {d}d",stay_last_day:"Last day — checkout tomorrow",
+    stay_checked_out:"Thanks for staying ✨",stay_ready:"✨ Ready",stay_checkin_today:"Checking in today ✨",
+    language:"Language",lang_title:"🌐 Language",lang_desc:"Choose your preferred language.",
+    good_morning:"Good morning",good_afternoon:"Good afternoon",good_evening:"Good evening",
+    sent_to:"sent to",
+    order_sent:"sent to",
+    ask_hotel:"Ask the hotel",
+    front_desk:"Ask the front desk",
+    front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly."
+  },
+  sw:{dir:"ltr",flag:"🇰🇪",name:"Kiswahili",native:"Kiswahili",
+    welcome:"✦ GUESTHUB",your_stay:"👋 Malazi Yako",secured:"SALAMA",
+    your_name:"Jina lako",room_number:"Namba ya chumba",
+    search_placeholder:"Tafuta huduma ya chumba, safari, teksi…",loading_text:"Inapakia huduma za hoteli…",
+    qa_food:"Huduma ya Chumba",qa_taxi:"Teksi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Usafi",qa_orders:"Oda Zangu",
+    live_updates:"Sasisho za moja kwa moja",polling_mode:"Inaangalia kila sekunde 15",
+    step_sent:"Imetumwa",step_accepted:"Imepokelewa",step_progress:"Inaendelea",step_done:"Imekamilika",
+    status_pending:"Inasubiri",status_new:"Mpya",status_accepted:"Imepokelewa",status_preparing:"Inaandaliwa",
+    status_on_the_way:"Njiani",status_completed:"Imekamilika",status_cancelled:"Imefutwa",status_rejected:"Imekataliwa",
+    eta_accepted:"Imepokelewa — inaandaliwa hivi karibuni",eta_preparing:"Inaandaliwa — inafika hivi karibuni",eta_on_the_way:"Ipo njiani kuelekea chumbani kwako",
+    cat_food:"🍽️ Chakula & Huduma ya Chumba",cat_taxi:"🚕 Usafiri",cat_tour:"🌍 Safari na Ziara",
+    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",
+    cat_short_food:"Chakula",cat_short_taxi:"Teksi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hoteli",cat_short_other:"Zaidi",cat_all:"Zote",
+    nav_home:"Nyumbani",nav_services:"Huduma",nav_orders:"Oda",nav_help:"Msaada",
+    confirm_request:"Thibitisha Ombi",your_whatsapp:"Namba yako ya WhatsApp",special_instructions:"Maelezo maalum",
+    note_placeholder:"Muda, upendeleo, au ombi",cancel:"Ghairi",place_order:"✅ Tuma Ombi",sending:"⏳ Inatuma…",
+    order_note:"Ombi lako linatumwa moja kwa moja kwa timu ya hoteli.",
+    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Vizuri — Fuatilia Ombi Langu",
+    orders_title:"📋 Oda Zangu",orders_desc:"Fuatilia maombi yako ya GuestHub.",
+    no_orders_title:"Hakuna oda bado",no_orders_desc:"Maombi yako yataonekana hapa.",
+    reorder:"↻ Agiza tena",rate_prompt:"Kadiria:",thanks_rating:"✓ Asante kwa maoni",
+    help_title:"💬 Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja — jibu la haraka.",whatsapp_now:"WhatsApp papo hapo",
+    info_title:"ℹ️ Inavyofanya Kazi",info_desc:"Uzoefu wako wa hoteli mahali pamoja.",
+    t_enter_name:"Tafadhali ingiza jina lako",t_enter_room:"Tafadhali ingiza namba ya chumba",
+    t_valid_phone:"Ingiza namba sahihi ya Kenya (mf. 0712 345 678)",
+    t_wait:"Tafadhali subiri sekunde {s} kabla ya kuagiza tena",
+    t_offline:"📶 Huna mtandao — tutaunganisha tena kiotomatiki",
+    t_service_gone:"Huduma haipatikani tena",t_dept_no_wa:"Idara hii haina WhatsApp bado",
+    t_rate_thanks:"Asante kwa maoni! ✨",t_order_fail:"Kitu kilienda vibaya. Tafadhali jaribu tena.",
+    t_order_failed:"Ombi limeshindikana",
+    hotel_fallback:"HOTELI YAKO",tagline_fallback:"Huduma ya chumba • Usafiri • Safari • Spa • Concierge",
+    no_services_title:"Hakuna huduma bado",no_services_body:"Hoteli hii bado haijaweka huduma zake. Jaribu tena baadaye au uliza mapokezi.",
+    empty_search:"Hakuna huduma iliyopatikana",empty_search_sub:"Jaribu utafutaji mwingine.",
+    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma uliyoomba.",footer_line2:"GuestHub • Ukarimu rahisi ✨",
+    stay_day:"Siku {d} kati ya {t}",stay_arriving:"Kuwasili baada ya siku {d}",stay_last_day:"Siku ya mwisho — kuondoka kesho",
+    stay_checked_out:"Asante kwa kukaa ✨",stay_ready:"✨ Tayari",stay_checkin_today:"Unaingia leo ✨",
+    language:"Lugha",lang_title:"🌐 Lugha",lang_desc:"Chagua lugha unayopendelea.",
+    good_morning:"Habari ya asubuhi",good_afternoon:"Habari ya mchana",good_evening:"Habari ya jioni",
+    sent_to:"imetumwa kwa",
+    order_sent:"imetumwa kwa",
+    ask_hotel:"Uliza hoteli",
+    front_desk:"Uliza mapokezi",
+    front_desk_body:"Idara za WhatsApp hazijawekwa bado. Tafadhali piga simu mapokezi moja kwa moja."
+  },
+  fr:{dir:"ltr",flag:"🇫🇷",name:"Français",native:"Français",
+    welcome:"✦ GUESTHUB",your_stay:"👋 Votre Séjour",secured:"SÉCURISÉ",
+    your_name:"Votre nom",room_number:"Numéro de chambre",
+    search_placeholder:"Rechercher service en chambre, safari, taxi…",loading_text:"Chargement des services…",
+    qa_food:"Service en Chambre",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Ménage",qa_orders:"Mes Commandes",
+    live_updates:"Mises à jour en direct",polling_mode:"Actualisation toutes les 15s",
+    step_sent:"Envoyé",step_accepted:"Accepté",step_progress:"En Cours",step_done:"Terminé",
+    status_pending:"En attente",status_new:"Nouveau",status_accepted:"Accepté",status_preparing:"En préparation",
+    status_on_the_way:"En route",status_completed:"Terminé",status_cancelled:"Annulé",status_rejected:"Refusé",
+    eta_accepted:"Accepté — préparation imminente",eta_preparing:"En préparation — arrivée proche",eta_on_the_way:"En route vers votre chambre",
+    cat_food:"🍽️ Nourriture & Service en Chambre",cat_taxi:"🚕 Transport & Transferts",cat_tour:"🌍 Excursions & Safari",
+    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services de l'Hôtel",cat_other:"✨ Plus",
+    cat_short_food:"Nourriture",cat_short_taxi:"Taxi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hôtel",cat_short_other:"Plus",cat_all:"Tout",
+    nav_home:"Accueil",nav_services:"Services",nav_orders:"Commandes",nav_help:"Aide",
+    confirm_request:"Confirmer la Demande",your_whatsapp:"Votre numéro WhatsApp",special_instructions:"Instructions spéciales",
+    note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"✅ Passer la Commande",sending:"⏳ Envoi…",
+    order_note:"Votre demande est envoyée directement à l'équipe de l'hôtel.",
+    success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Super — Suivre Ma Commande",
+    orders_title:"📋 Mes Commandes",orders_desc:"Suivez vos demandes GuestHub.",
+    no_orders_title:"Aucune commande",no_orders_desc:"Vos demandes apparaîtront ici.",
+    reorder:"↻ Commander à nouveau",rate_prompt:"Note :",thanks_rating:"✓ Merci pour votre avis",
+    help_title:"💬 Parler à l'Hôtel",help_desc:"WhatsApp direct — réponse la plus rapide.",whatsapp_now:"WhatsApp instantané",
+    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience hôtelière en un seul endroit.",
+    t_enter_name:"Veuillez entrer votre nom",t_enter_room:"Veuillez entrer votre numéro de chambre",
+    t_valid_phone:"Entrez un numéro kenyan valide (ex. 0712 345 678)",
+    t_wait:"Veuillez patienter {s}s avant de commander à nouveau",
+    t_offline:"📶 Vous êtes hors ligne — reconnexion automatique",
+    t_service_gone:"Service plus disponible",t_dept_no_wa:"Ce département n'a pas encore WhatsApp",
+    t_rate_thanks:"Merci pour votre avis ! ✨",t_order_fail:"Une erreur est survenue. Veuillez réessayer.",
+    t_order_failed:"Commande échouée",
+    hotel_fallback:"VOTRE HÔTEL",tagline_fallback:"Service en chambre • Transport • Excursions • Spa • Concierge",
+    no_services_title:"Aucun service",no_services_body:"Cet hôtel n'a pas encore configuré ses services. Réessayez plus tard.",
+    empty_search:"Aucun service trouvé",empty_search_sub:"Essayez une autre recherche.",
+    footer_secure:"🔒 GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service demandé.",footer_line2:"GuestHub • L'hospitalité simplifiée ✨",
+    stay_day:"Jour {d} sur {t}",stay_arriving:"Arrivée dans {d}j",stay_last_day:"Dernier jour — départ demain",
+    stay_checked_out:"Merci de votre séjour ✨",stay_ready:"✨ Prêt",stay_checkin_today:"Arrivée aujourd'hui ✨",
+    language:"Langue",lang_title:"🌐 Langue",lang_desc:"Choisissez votre langue préférée.",
+    good_morning:"Bonjour",good_afternoon:"Bon après-midi",good_evening:"Bonsoir",
+    sent_to:"envoyé à",
+    order_sent:"envoyé à",
+    ask_hotel:"Demander à l'hôtel",
+    front_desk:"Demander à la réception",
+    front_desk_body:"Aucun département WhatsApp configuré. Appelez la réception directement."
+  },
+  ar:{dir:"rtl",flag:"🇸🇦",name:"العربية",native:"العربية",
+    welcome:"✦ GUESTHUB",your_stay:"👋 إقامتك",secured:"مؤمّن",
+    your_name:"اسمك",room_number:"رقم الغرفة",
+    search_placeholder:"ابحث عن خدمة الغرفة، رحلة سفاري، سيارة أجرة…",loading_text:"جارٍ تحميل خدمات الفندق…",
+    qa_food:"خدمة الغرفة",qa_taxi:"سيارة أجرة",qa_tour:"رحلة سفاري",qa_spa:"سبا",qa_services:"التدبير المنزلي",qa_orders:"طلباتي",
+    live_updates:"تحديثات مباشرة",polling_mode:"تحديث كل 15 ثانية",
+    step_sent:"تم الإرسال",step_accepted:"تم القبول",step_progress:"قيد التنفيذ",step_done:"مكتمل",
+    status_pending:"قيد الانتظار",status_new:"جديد",status_accepted:"مقبول",status_preparing:"قيد التحضير",
+    status_on_the_way:"في الطريق",status_completed:"مكتمل",status_cancelled:"ملغى",status_rejected:"مرفوض",
+    eta_accepted:"تم القبول — سيتم التحضير قريباً",eta_preparing:"قيد التحضير — الوصول قريباً",eta_on_the_way:"في الطريق إلى غرفتك",
+    cat_food:"🍽️ الطعام وخدمة الغرف",cat_taxi:"🚕 النقل",cat_tour:"🌍 الجولات والسفاري",
+    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",
+    cat_short_food:"طعام",cat_short_taxi:"تاكسي",cat_short_tour:"سفاري",cat_short_spa:"سبا",cat_short_services:"فندق",cat_short_other:"المزيد",cat_all:"الكل",
+    nav_home:"الرئيسية",nav_services:"الخدمات",nav_orders:"الطلبات",nav_help:"مساعدة",
+    confirm_request:"تأكيد الطلب",your_whatsapp:"رقم واتساب",special_instructions:"تعليمات خاصة",
+    note_placeholder:"الوقت أو التفضيل أو الطلب",cancel:"إلغاء",place_order:"✅ إرسال الطلب",sending:"⏳ جاري الإرسال…",
+    order_note:"يُرسل طلبك مباشرة إلى فريق الفندق.",
+    success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"رائع — تتبع طلبي",
+    orders_title:"📋 طلباتي",orders_desc:"تابع طلباتك.",
+    no_orders_title:"لا توجد طلبات بعد",no_orders_desc:"ستظهر طلباتك هنا.",
+    reorder:"↻ اطلب مرة أخرى",rate_prompt:"التقييم:",thanks_rating:"✓ شكراً على تقييمك",
+    help_title:"💬 التحدث مع الفندق",help_desc:"واتساب مباشر — أسرع استجابة.",whatsapp_now:"واتساب فوري",
+    info_title:"ℹ️ كيف يعمل",info_desc:"تجربة فندقك في مكان واحد.",
+    t_enter_name:"يرجى إدخال اسمك",t_enter_room:"يرجى إدخال رقم غرفتك",
+    t_valid_phone:"أدخل رقماً كينياً صحيحاً (مثال 0712 345 678)",
+    t_wait:"يرجى الانتظار {s} ثانية قبل الطلب مرة أخرى",
+    t_offline:"📶 أنت غير متصل — سنعيد الاتصال تلقائياً",
+    t_service_gone:"الخدمة لم تعد متاحة",t_dept_no_wa:"هذا القسم ليس لديه واتساب بعد",
+    t_rate_thanks:"شكراً على ملاحظاتك! ✨",t_order_fail:"حدث خطأ. حاول مرة أخرى.",
+    t_order_failed:"فشل الطلب",
+    hotel_fallback:"فندقك",tagline_fallback:"خدمة الغرف • النقل • الجولات • السبا • الكونسيرج",
+    no_services_title:"لا توجد خدمات بعد",no_services_body:"لم يقم هذا الفندق بإعداد خدماته بعد.",
+    empty_search:"لم يتم العثور على خدمة",empty_search_sub:"جرب بحثاً آخر.",
+    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة المطلوبة.",footer_line2:"GuestHub • الضيافة ببساطة ✨",
+    stay_day:"اليوم {d} من {t}",stay_arriving:"الوصول خلال {d} أيام",stay_last_day:"اليوم الأخير — المغادرة غداً",
+    stay_checked_out:"شكراً لإقامتك ✨",stay_ready:"✨ جاهز",stay_checkin_today:"تسجيل الوصول اليوم ✨",
+    language:"اللغة",lang_title:"🌐 اللغة",lang_desc:"اختر لغتك المفضلة.",
+    good_morning:"صباح الخير",good_afternoon:"مساء الخير",good_evening:"مساء الخير",
+    sent_to:"أُرسل إلى",
+    order_sent:"أُرسل إلى",
+    ask_hotel:"اسأل الفندق",
+    front_desk:"اسأل مكتب الاستقبال",
+    front_desk_body:"لم يتم إعداد أقسام واتساب بعد. يرجى الاتصال بالاستقبال مباشرة."
+  }
+};
+
+let currentLang = (new URLSearchParams(location.search).get("lang")) ||
+                  localStorage.getItem("guesthub_lang") ||
+                  (I18N[(navigator.language||"en").slice(0,2).toLowerCase()] ? (navigator.language||"en").slice(0,2).toLowerCase() : "en");
+if(!I18N[currentLang]) currentLang = "en";
+
+function t(key, vars){
+  let str = (I18N[currentLang] && I18N[currentLang][key]) ?? I18N.en[key] ?? key;
+  if(vars) Object.keys(vars).forEach(k => { str = String(str).replace(`{${k}}`, vars[k]); });
+  return str;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
 let HOTEL = null, SERVICES = [], DEPARTMENTS = [], selected = null, lastFocused = null;
 let pollTimer = null, resubTimer = null, refreshing = false, audioCtx = null;
 let supa = null, realtimeChannel = null, realtimeOK = false;
 let activeCategory = "all";
 
-/* ---------- Modal helpers ---------- */
+/* ═══════════════════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════════════════ */
 function openModal(id){
   const m = $(id); if(!m) return;
   lastFocused = document.activeElement;
@@ -522,7 +744,9 @@ document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e =
 document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeAllModals(); });
 
-/* ---------- Toast ---------- */
+/* ═══════════════════════════════════════════════════════════════
+   TOAST + SOUND
+═══════════════════════════════════════════════════════════════ */
 let toastTimer = null;
 function toast(msg){
   const el = $("toast");
@@ -532,7 +756,6 @@ function toast(msg){
   toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
 }
 
-/* ---------- Sound ---------- */
 function ensureAudio(){
   if(audioCtx) return audioCtx;
   try { const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return null; audioCtx = new Ctx(); } catch(_) { audioCtx = null; }
@@ -543,14 +766,14 @@ function beep(times = 2, freq = 880){
   const ctx = ensureAudio(); if(!ctx) return;
   if(ctx.state === "suspended") ctx.resume().catch(()=>{});
   for(let i = 0; i < times; i++){
-    const t = ctx.currentTime + i * 0.19;
+    const t0 = ctx.currentTime + i * 0.19;
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.connect(g); g.connect(ctx.destination);
     o.frequency.value = freq; o.type = "sine";
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.16, t + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
-    o.start(t); o.stop(t + 0.2);
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.16, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
+    o.start(t0); o.stop(t0 + 0.2);
   }
 }
 
@@ -560,20 +783,16 @@ function beep(times = 2, freq = 880){
 function normalizeCategory(value){
   const c = String(value || "").toLowerCase().trim();
   if(!c) return "other";
-
   if(c.includes("taxi") || c.includes("transport") || c.includes("transfer") ||
      c.includes("ride") || c.includes("airport") || c.includes("shuttle") ||
      c.includes("driver") || c.includes("car")) return "taxi";
-
   if(c.includes("tour") || c.includes("safari") || c.includes("travel") ||
      c.includes("excursion") || c.includes("trip") || c.includes("park") ||
      c.includes("game drive") || c.includes("adventure")) return "tour";
-
   if(c.includes("spa") || c.includes("massage") || c.includes("wellness") ||
      c.includes("laundry") || c.includes("gym") || c.includes("beauty") ||
      c.includes("fitness") || c.includes("salon") || c.includes("hair") ||
      c.includes("nail") || c.includes("sauna") || c.includes("steam")) return "spa";
-
   if(c.includes("food") || c.includes("restaurant") || c.includes("dining") ||
      c.includes("room service") || c.includes("drink") || c.includes("bar") ||
      c.includes("kitchen") || c.includes("menu") || c.includes("meal") ||
@@ -587,36 +806,143 @@ function normalizeCategory(value){
      c.includes("nyama") || c.includes("ugali") || c.includes("soup") ||
      c.includes("salad") || c.includes("fish") || c.includes("beef") ||
      c.includes("vegetarian")) return "food";
-
   if(c.includes("housekeep") || c.includes("front") || c.includes("service") ||
      c.includes("maintenance") || c.includes("maint") || c.includes("clean") ||
      c.includes("towel") || c.includes("amenity")) return "services";
-
   return "other";
 }
 
 const CATEGORY_META = {
-  food:     { title:"🍽️ Food & Room Service",   short:"Food",     order:1 },
-  taxi:     { title:"🚕 Transport & Transfers",  short:"Taxi",     order:2 },
-  tour:     { title:"🌍 Tours & Safari",         short:"Safari",   order:3 },
-  spa:      { title:"🧖 Spa & Wellness",         short:"Spa",      order:4 },
-  services: { title:"🏪 Hotel Services",         short:"Hotel",    order:5 },
-  other:    { title:"✨ More",                   short:"More",     order:6 }
+  food:     { titleKey:"cat_food",     shortKey:"cat_short_food",     order:1 },
+  taxi:     { titleKey:"cat_taxi",     shortKey:"cat_short_taxi",     order:2 },
+  tour:     { titleKey:"cat_tour",     shortKey:"cat_short_tour",     order:3 },
+  spa:      { titleKey:"cat_spa",      shortKey:"cat_short_spa",      order:4 },
+  services: { titleKey:"cat_services", shortKey:"cat_short_services", order:5 },
+  other:    { titleKey:"cat_other",    shortKey:"cat_short_other",    order:6 }
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   GREETING / STAY INFO
+   GREETING / STAY CHIPS
 ═══════════════════════════════════════════════════════════════ */
 function setGreeting(){
   const h = new Date().getHours();
   const name = $("guestName").value.trim();
-  const hi = h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Good evening";
-  $("greeting").textContent = name ? `${hi}, ${name.split(" ")[0]} ✨` : `${hi} 👋`;
+  const key = h < 12 ? "good_morning" : h < 17 ? "good_afternoon" : "good_evening";
+  $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]} ✨` : `${t(key)} 👋`;
 }
 function updateStayChips(){
   const room = $("roomNo").value.trim();
   $("topRoom").textContent = room || "—";
-  $("heroRoom").textContent = room ? `🛏️ Room ${room}` : "🛏️ —";
+  const roomLabel = t("room_number");
+  $("heroRoom").textContent = room ? `🛏️ ${roomLabel} ${room}` : `🛏️ —`;
+  updateHeroStay();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   STAY DATES
+═══════════════════════════════════════════════════════════════ */
+let STAY = { checkin:null, checkout:null };
+let midnightTimer = null;
+
+function parseDate(v){ if(!v) return null; const d = new Date(v); return isNaN(d.getTime()) ? null : d; }
+function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+
+function initStay(){
+  const p = new URLSearchParams(location.search);
+  const ciStr = p.get("checkin")  || localStorage.getItem(`stay_checkin_${HOTEL_ID}`);
+  const coStr = p.get("checkout") || localStorage.getItem(`stay_checkout_${HOTEL_ID}`);
+  if(ciStr){ STAY.checkin  = parseDate(ciStr); if(STAY.checkin)  localStorage.setItem(`stay_checkin_${HOTEL_ID}`,  ciStr); }
+  if(coStr){ STAY.checkout = parseDate(coStr); if(STAY.checkout) localStorage.setItem(`stay_checkout_${HOTEL_ID}`, coStr); }
+  scheduleMidnightRefresh();
+}
+
+function setStayFromHotel(hotel){
+  if(!hotel) return;
+  if(!STAY.checkin){
+    const ci = hotel.checkin || hotel.check_in || hotel.checkin_date || hotel.arrival;
+    if(ci){ STAY.checkin = parseDate(ci); if(STAY.checkin) localStorage.setItem(`stay_checkin_${HOTEL_ID}`, ci); }
+  }
+  if(!STAY.checkout){
+    const co = hotel.checkout || hotel.check_out || hotel.checkout_date || hotel.departure;
+    if(co){ STAY.checkout = parseDate(co); if(STAY.checkout) localStorage.setItem(`stay_checkout_${HOTEL_ID}`, co); }
+  }
+  updateHeroStay();
+}
+
+function stayInfo(){
+  if(!STAY.checkin || !STAY.checkout) return null;
+  const MS = 86400000;
+  const ci = startOfDay(STAY.checkin), co = startOfDay(STAY.checkout), today = startOfDay(new Date());
+  const total = Math.max(1, Math.round((co - ci) / MS));
+  const day   = Math.floor((today - ci) / MS) + 1;
+  return { day, total, ci, co, today };
+}
+
+function updateHeroStay(){
+  const el = $("heroStay"); if(!el) return;
+  const info = stayInfo();
+  if(!info){ el.textContent = t("stay_ready"); return; }
+  const { day, total, ci, co, today } = info;
+  if(today < ci){ el.textContent = t("stay_arriving", { d: Math.round((ci - today) / 86400000) }); return; }
+  if(today >= co){ el.textContent = t("stay_checked_out"); return; }
+  if(day === 1 && total > 1){ el.textContent = t("stay_checkin_today"); return; }
+  if(day === total){ el.textContent = t("stay_last_day"); return; }
+  el.textContent = t("stay_day", { d: day, t: total });
+}
+
+function scheduleMidnightRefresh(){
+  if(midnightTimer) clearTimeout(midnightTimer);
+  const now = new Date();
+  const next = new Date(now); next.setHours(24,0,5,0);
+  midnightTimer = setTimeout(() => { updateHeroStay(); scheduleMidnightRefresh(); }, next - now);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   I18N APPLY
+═══════════════════════════════════════════════════════════════ */
+function applyI18n(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir  = I18N[currentLang].dir || "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if(el.tagName === "INPUT" || el.tagName === "TEXTAREA") el.placeholder = t(key);
+    else el.textContent = t(key);
+  });
+  setGreeting();
+  updateStayChips();
+  renderPills();
+  renderAll();
+  renderHelp();
+  const banner = $("activeOrder");
+  if(banner && banner.classList.contains("show") && banner._lastOrder) renderActiveOrder(banner._lastOrder);
+  const lt = $("langTitle"); if(lt) lt.textContent = t("lang_title");
+  const ld = $("langDesc");  if(ld) ld.textContent = t("lang_desc");
+  renderLangGrid();
+  setLiveIndicator(realtimeOK, realtimeOK ? t("live_updates") : t("polling_mode"));
+}
+
+function setLanguage(code){
+  if(!I18N[code]) return;
+  currentLang = code;
+  localStorage.setItem("guesthub_lang", code);
+  applyI18n();
+  closeModal("langModal");
+  toast(I18N[code].flag + "  " + I18N[code].native);
+}
+
+function renderLangGrid(){
+  const grid = $("langGrid"); if(!grid) return;
+  grid.innerHTML = Object.keys(I18N).map(code => {
+    const L = I18N[code];
+    const active = code === currentLang;
+    return `<button class="langCard ${active?"active":""}" data-lang="${code}">
+      <span class="flag">${L.flag}</span>
+      <b>${esc(L.native)}</b>
+      <small>${esc(L.name)}</small>
+      ${active?'<span class="check">✓</span>':''}
+    </button>`;
+  }).join("");
+  grid.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => setLanguage(b.dataset.lang)));
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -633,8 +959,8 @@ function saveGuestInfo(){
 function validGuest(){
   const name = $("guestName").value.trim();
   const room = $("roomNo").value.trim();
-  if(!name){ toast("Please enter your name"); $("guestName").focus(); return false; }
-  if(!room){ toast("Please enter your room number"); $("roomNo").focus(); return false; }
+  if(!name){ toast(t("t_enter_name")); $("guestName").focus(); return false; }
+  if(!room){ toast(t("t_enter_room")); $("roomNo").focus(); return false; }
   return true;
 }
 function normalizePhone(raw){
@@ -647,7 +973,6 @@ function normalizePhone(raw){
 }
 function validKenyanPhone(p){ return /^254(7|1)\d{8}$/.test(p); }
 
-/* ---------- Rate limit ---------- */
 function rateLimitKey(){ const room = $("roomNo").value.trim() || "_"; return `last_order_at_${HOTEL_ID}_${room}`; }
 function checkRateLimit(){
   const key = rateLimitKey();
@@ -655,7 +980,7 @@ function checkRateLimit(){
   const elapsed = Date.now() - last;
   if(last && elapsed < ORDER_COOLDOWN_MS){
     const wait = Math.ceil((ORDER_COOLDOWN_MS - elapsed) / 1000);
-    toast(`Please wait ${wait}s before placing another order`);
+    toast(t("t_wait", { s: wait }));
     return false;
   }
   return true;
@@ -674,7 +999,7 @@ function initSupabase(){
 function setLiveIndicator(on, title){
   const dot = $("liveDot"); if(!dot) return;
   dot.classList.toggle("on", !!on);
-  dot.title = title || (on ? "Live updates active" : "Polling every 15s");
+  dot.title = title || (on ? t("live_updates") : t("polling_mode"));
 }
 function unsubscribeRealtime(){
   if(realtimeChannel && supa){ try { supa.removeChannel(realtimeChannel); } catch(_){} }
@@ -690,21 +1015,22 @@ function subscribeRealtime(){
       .on("postgres_changes", { event:"*", schema:"public", table:"orders", filter:`hotel_id=eq.${HOTEL_ID}` }, payload => {
         const row = payload.new || payload.old;
         if(!row) return;
-        if(String(row.room_number) !== room) return;
+        const rn = row.room_number ?? row.room;
+        if(String(rn) !== room) return;
         if(payload.eventType === "INSERT" || payload.eventType === "UPDATE") handleRealtimeOrder(row);
       })
       .subscribe((status, err) => {
         if(status === "SUBSCRIBED"){
-          realtimeOK = true; stopPolling(); setLiveIndicator(true, "Live updates active"); loadActiveOrder();
+          realtimeOK = true; stopPolling(); setLiveIndicator(true, t("live_updates")); loadActiveOrder();
         } else if(["CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(status)){
-          realtimeOK = false; setLiveIndicator(false, "Polling every 15s");
+          realtimeOK = false; setLiveIndicator(false, t("polling_mode"));
           if(err) console.warn("[GuestHub] Realtime channel issue:", err);
           schedulePoll();
         }
       });
   } catch(e){
     console.warn("[GuestHub] Realtime subscribe failed:", e);
-    realtimeOK = false; setLiveIndicator(false); schedulePoll();
+    realtimeOK = false; setLiveIndicator(false, t("polling_mode")); schedulePoll();
   }
 }
 function handleRealtimeOrder(row){
@@ -714,7 +1040,7 @@ function handleRealtimeOrder(row){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STATUS CHANGE NOTIFICATIONS
+   STATUS CHANGES
 ═══════════════════════════════════════════════════════════════ */
 function seenStatusKey(order){ return `seen_status_${HOTEL_ID}_${order.reference || order.id}`; }
 function detectStatusChange(order){
@@ -730,8 +1056,8 @@ function notifyStatusChange(order, from, to){
   void banner.offsetWidth;
   banner.classList.add("flash");
   setTimeout(() => banner.classList.remove("flash"), 3400);
-  const label = prettyStatus(to);
-  const service = order.service_title || "Your request";
+  const label = t("status_" + to) || to;
+  const service = order.service_title || "—";
   toast(`${service} — ${label}`);
   if(navigator.vibrate){
     if(to === "completed") navigator.vibrate([80, 60, 80, 60, 160]);
@@ -744,29 +1070,36 @@ function notifyStatusChange(order, from, to){
    BOOT
 ═══════════════════════════════════════════════════════════════ */
 async function init(){
-  /* Restore guest info */
   $("guestName").value = localStorage.getItem("guest_name") || "";
   $("guestPhone").value = localStorage.getItem("guest_phone") || "";
   $("roomNo").value = ROOM_PARAM || localStorage.getItem("guest_room") || "";
 
+  initStay();
+
   setGreeting();
   updateStayChips();
+  applyI18n();
   updateOffline();
   window.addEventListener("offline", updateOffline);
   window.addEventListener("online", () => { updateOffline(); loadActiveOrder(); if(supa) subscribeRealtime(); });
 
-  /* Hotel */
   try {
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
     if(r.ok){
       const j = await r.json();
       HOTEL = j.hotel || j;
-      $("hotelName").innerText = (HOTEL.name || HOTEL.hotel_name || HOTEL_ID).toUpperCase();
-      if(HOTEL.tagline) $("hotelTagline").innerText = HOTEL.tagline;
-    } else { $("hotelName").innerText = HOTEL_ID; }
-  } catch { $("hotelName").innerText = HOTEL_ID; }
+      $("hotelName").innerText = (HOTEL.name || HOTEL.hotel_name || t("hotel_fallback")).toUpperCase();
+      $("hotelTagline").innerText = HOTEL.tagline || t("tagline_fallback");
+      setStayFromHotel(HOTEL);
+    } else {
+      $("hotelName").innerText = HOTEL_ID;
+      $("hotelTagline").innerText = t("tagline_fallback");
+    }
+  } catch {
+    $("hotelName").innerText = HOTEL_ID;
+    $("hotelTagline").innerText = t("tagline_fallback");
+  }
 
-  /* Services */
   try {
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
     const j = await r.json();
@@ -785,62 +1118,66 @@ async function init(){
   supa = initSupabase();
   if(supa) subscribeRealtime(); else schedulePoll();
 
-  /* Config promo (optional) */
   if(HOTEL && HOTEL.promo_text){
     $("promoTitle").textContent = "🎉 " + (HOTEL.promo_title || "Special offer");
     $("promoText").textContent  = HOTEL.promo_text;
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   OFFLINE
-═══════════════════════════════════════════════════════════════ */
 function updateOffline(){
   const bar = $("offlineBar");
   if(!navigator.onLine) bar.classList.add("show"); else bar.classList.remove("show");
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   RENDER
+   RENDER SERVICES
 ═══════════════════════════════════════════════════════════════ */
 function renderAll(){
   const area = $("serviceArea");
+  if(!area) return;
   if(!SERVICES.length){
-    area.innerHTML = `<div class="section"><h3>No services yet</h3><p style="color:#a8a8a8;font-size:13px;line-height:1.5;margin:0">This hotel hasn't set up its services yet. Try again later or ask the front desk.</p></div>`;
+    area.innerHTML = `<div class="section"><h3>${esc(t("no_services_title"))}</h3><p style="color:#a8a8a8;font-size:13px;line-height:1.5;margin:0">${esc(t("no_services_body"))}</p></div>`;
     return;
   }
   const groups = {};
   SERVICES.forEach(s => { const cat = s.category || "other"; (groups[cat] = groups[cat] || []).push(s); });
   const orderedCats = Object.keys(CATEGORY_META).filter(c => groups[c] && groups[c].length).sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
   let html = "";
-  orderedCats.forEach(cat => { html += sectionBlock(CATEGORY_META[cat].title, groups[cat], cat); });
+  orderedCats.forEach(cat => { html += sectionBlock(t(CATEGORY_META[cat].titleKey), groups[cat], cat); });
   area.innerHTML = html;
   document.querySelectorAll(".svc").forEach(el => el.addEventListener("click", () => openOrder(el.dataset.id)));
+  applyCategoryFilter();
   applySearch();
 }
 function sectionBlock(title, items, cat){
-  return `<section class="section" data-cat="${esc(cat)}"><h3>${title} <span class="count">${items.length}</span></h3><div class="grid2">${items.map(serviceCardHTML).join("")}</div></section>`;
+  return `<section class="section" data-cat="${esc(cat)}"><h3>${esc(title)} <span class="count">${items.length}</span></h3><div class="grid2">${items.map(serviceCardHTML).join("")}</div></section>`;
 }
 function serviceCardHTML(s){
   const vendorLine = s.vendor_name ? `<span class="svcVendor">• ${esc(s.vendor_name)}</span>` : "";
   const desc = s.description ? esc(s.description) : "";
   const searchBlob = ((s.title||"") + " " + (s.description||"") + " " + (s.category||"") + " " + (s.vendor_name||"")).toLowerCase();
-  return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}"><div class="price">${s.price > 0 ? money(s.price) : "Ask"}</div><i>${esc(s.icon || "🍽️")}</i><b>${esc(s.title || "Service")}</b><small>${desc}${vendorLine}</small></button>`;
+  const priceTxt = s.price > 0 ? money(s.price) : t("ask_hotel");
+  return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}"><div class="price">${esc(priceTxt)}</div><i>${esc(s.icon || "🍽️")}</i><b>${esc(s.title || "Service")}</b><small>${desc}${vendorLine}</small></button>`;
 }
 
-/* ---------- Category pills ---------- */
+/* ═══════════════════════════════════════════════════════════════
+   PILLS
+═══════════════════════════════════════════════════════════════ */
 function renderPills(){
-  const pills = $("pills");
+  const pills = $("pills"); if(!pills) return;
   const present = new Set(SERVICES.map(s => s.category));
   const ordered = Object.keys(CATEGORY_META).filter(c => present.has(c)).sort((a,b)=>CATEGORY_META[a].order-CATEGORY_META[b].order);
-  let html = `<button class="pill active" data-cat="all">All</button>`;
-  ordered.forEach(c => { html += `<button class="pill" data-cat="${esc(c)}">${esc(CATEGORY_META[c].short)}</button>`; });
+  let html = `<button class="pill ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}</button>`;
+  ordered.forEach(c => {
+    html += `<button class="pill ${activeCategory === c ? "active" : ""}" data-cat="${esc(c)}">${esc(t(CATEGORY_META[c].shortKey))}</button>`;
+  });
   pills.innerHTML = html;
   pills.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
     pills.querySelectorAll(".pill").forEach(x => x.classList.remove("active"));
     p.classList.add("active");
     activeCategory = p.dataset.cat;
     applyCategoryFilter();
+    applySearch();
   }));
 }
 function applyCategoryFilter(){
@@ -848,10 +1185,11 @@ function applyCategoryFilter(){
     const match = activeCategory === "all" || sec.dataset.cat === activeCategory;
     sec.classList.toggle("hidden", !match);
   });
-  applySearch();
 }
 
-/* ---------- Search ---------- */
+/* ═══════════════════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════════════════ */
 function applySearch(){
   const q = $("searchService").value.trim().toLowerCase();
   const cards = document.querySelectorAll(".svc");
@@ -878,7 +1216,7 @@ function openOrder(id){
   if(!validGuest()) return;
   selected = SERVICES.find(s => String(s.id) === String(id));
   if(!selected) return;
-  $("mTitle").innerText = selected.title || "Confirm Request";
+  $("mTitle").innerText = selected.title || t("confirm_request");
   const bits = [];
   if(selected.description) bits.push(selected.description);
   if(selected.price > 0)   bits.push(money(selected.price));
@@ -898,7 +1236,7 @@ $("confirmOrder").addEventListener("click", async () => {
   const rawPhone = $("guestPhone").value.trim();
   const finalPhone = normalizePhone(rawPhone);
   if(!validKenyanPhone(finalPhone)){
-    toast("Enter a valid Kenyan number (e.g. 0712 345 678)");
+    toast(t("t_valid_phone"));
     $("guestPhone").focus();
     return;
   }
@@ -906,7 +1244,7 @@ $("confirmOrder").addEventListener("click", async () => {
   const btn = $("confirmOrder");
   btn.disabled = true;
   const originalText = btn.innerText;
-  btn.innerText = "⏳ Sending…";
+  btn.innerText = t("sending");
 
   try {
     const room = $("roomNo").value.trim();
@@ -929,17 +1267,18 @@ $("confirmOrder").addEventListener("click", async () => {
     });
     if(r.status === 429){
       const j = await r.json().catch(() => ({}));
-      toast(j.error || "Please wait a moment before ordering again");
+      toast(j.error || t("t_wait", { s: 30 }));
       return;
     }
     const j = await r.json();
-    if(!j.ok) throw new Error(j.error || "Order failed");
+    if(!j.ok) throw new Error(j.error || t("t_order_failed"));
 
     saveGuestInfo();
     markRateLimit();
 
     $("orderRef").innerText = (j.order && j.order.reference) || "—";
-    $("successText").innerText = `${selected.title} sent to ${HOTEL?.name || HOTEL_ID} for Room ${room}. You'll hear back shortly.`;
+    const hotelName = HOTEL?.name || HOTEL_ID;
+    $("successText").innerText = `${selected.title} ${t("sent_to")} ${hotelName} · ${t("room_number")} ${room}`;
     closeModal("orderModal");
     openModal("successModal");
 
@@ -952,17 +1291,17 @@ $("confirmOrder").addEventListener("click", async () => {
     }
     loadActiveOrder();
   } catch (e) {
-    toast(e.message || "Something went wrong. Please try again.");
+    toast(e.message || t("t_order_fail"));
   } finally {
     btn.disabled = false;
-    btn.innerText = originalText;
+    btn.innerText = t("place_order");
   }
 });
 
 $("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
 
 /* ═══════════════════════════════════════════════════════════════
-   ACTIVE ORDER RENDERING
+   ACTIVE ORDER
 ═══════════════════════════════════════════════════════════════ */
 const STATUS_STEPS = { pending:1, new:1, accepted:2, preparing:3, on_the_way:3, ontheway:3, completed:4, cancelled:0, rejected:0 };
 
@@ -997,19 +1336,19 @@ async function loadActiveOrder(manual = false){
 
 function renderActiveOrder(order){
   const banner = $("activeOrder");
+  banner._lastOrder = order;
   const status = String(order.status || "pending").toLowerCase().replace(/\s+/g,"_");
   const step = STATUS_STEPS[status] ?? 1;
 
-  $("activeService").innerText = order.service_title || "Your request";
+  $("activeService").innerText = order.service_title || "—";
   $("activeReference").innerText = order.reference || "GH-XXXX";
   $("activeRoom").innerText = order.room_number || order.room || "—";
   $("activeAmount").innerText = order.amount > 0 ? money(order.amount) : "—";
 
   const statusEl = $("activeStatus");
   statusEl.className = "status " + status;
-  statusEl.innerText = status === "on_the_way" ? "On the way" : prettyStatus(status);
+  statusEl.innerText = t("status_" + status) || status.replace(/_/g," ");
 
-  /* Progress steps */
   document.querySelectorAll("#progress .progressStep").forEach(el => {
     const s = Number(el.dataset.step);
     el.classList.remove("active","cancelled");
@@ -1024,15 +1363,11 @@ function renderActiveOrder(order){
     document.querySelectorAll("#progress .progressStep").forEach(el => el.classList.add("cancelled"));
   }
 
-  /* ETA */
   const eta = $("orderEta");
   const etaText = $("orderEtaText");
-  if(status === "accepted" || status === "preparing"){
+  if(status === "accepted" || status === "preparing" || status === "on_the_way"){
     eta.style.display = "flex";
-    etaText.textContent = status === "preparing" ? "Being prepared — arriving soon" : "Accepted — preparing shortly";
-  } else if(status === "on_the_way"){
-    eta.style.display = "flex";
-    etaText.textContent = "On the way to your room now";
+    etaText.textContent = t("eta_" + status);
   } else {
     eta.style.display = "none";
   }
@@ -1056,7 +1391,7 @@ document.addEventListener("visibilitychange", () => {
   if(document.hidden){ stopPolling(); }
   else {
     loadActiveOrder();
-    if(realtimeOK) setLiveIndicator(true, "Live updates active");
+    if(realtimeOK) setLiveIndicator(true, t("live_updates"));
     else if(supa) subscribeRealtime();
     else schedulePoll();
   }
@@ -1069,15 +1404,15 @@ $("refreshActive").addEventListener("click", () => loadActiveOrder(true));
 ═══════════════════════════════════════════════════════════════ */
 async function viewOrders(){
   const room = $("roomNo").value.trim();
-  if(!room){ toast("Enter your room number first"); $("roomNo").focus(); return; }
+  if(!room){ toast(t("t_enter_room")); $("roomNo").focus(); return; }
   openModal("ordersModal");
-  $("ordersList").innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div>Loading…</div>';
+  $("ordersList").innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
   try {
     const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(room)}`);
     const j = await r.json();
     const orders = j.orders || [];
     if(!orders.length){
-      $("ordersList").innerHTML = '<div style="text-align:center;padding:30px 16px;color:#a8a8a8"><div style="font-size:34px;margin-bottom:8px">📋</div><strong style="color:#fff;font-size:13px">No orders yet</strong><div style="font-size:12px;margin-top:6px">Your requests will appear here.</div></div>';
+      $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#a8a8a8"><div style="font-size:34px;margin-bottom:8px">📋</div><strong style="color:#fff;font-size:13px">${esc(t("no_orders_title"))}</strong><div style="font-size:12px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
       return;
     }
     $("ordersList").innerHTML = orders.map(o => {
@@ -1089,10 +1424,10 @@ async function viewOrders(){
       return `
         <div class="orderItem">
           <strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong>
-          <small>Room ${esc(o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
-          <div class="status ${esc(status)}" style="margin-top:8px">${esc(status.replace(/_/g," ").toUpperCase())}</div>
-          ${canRate ? `<div class="rateRow">Rate: <button data-rate="5">⭐</button><button data-rate="4">👍</button><button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
-          ${canReorder ? `<button class="reorderBtn" data-reorder="${esc(o.service_title)}">↻ Order again</button>` : ""}
+          <small>${esc(t("room_number"))} ${esc(o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
+          <div class="status ${esc(status)}" style="margin-top:8px">${esc((t("status_" + status) || status.replace(/_/g," ")).toUpperCase())}</div>
+          ${canRate ? `<div class="rateRow">${esc(t("rate_prompt"))} <button data-rate="5">⭐</button><button data-rate="4">👍</button><button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
+          ${canReorder ? `<button class="reorderBtn" data-reorder="${esc(o.service_title)}">${esc(t("reorder"))}</button>` : ""}
         </div>`;
     }).join("");
 
@@ -1100,42 +1435,42 @@ async function viewOrders(){
       btn.addEventListener("click", () => {
         const title = btn.dataset.reorder;
         const svc = SERVICES.find(s => String(s.title) === String(title));
-        if(!svc){ toast("Service no longer available"); return; }
+        if(!svc){ toast(t("t_service_gone")); return; }
         closeAllModals();
         setTimeout(() => openOrder(svc.id), 200);
       });
     });
     $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
       btn.addEventListener("click", () => {
-        toast("Thanks for the feedback! ✨");
-        btn.parentElement.innerHTML = '<span style="color:var(--lime)">✓ Thanks for rating</span>';
+        toast(t("t_rate_thanks"));
+        btn.parentElement.innerHTML = `<span style="color:var(--lime)">${esc(t("thanks_rating"))}</span>`;
       });
     });
   } catch (e) {
-    $("ordersList").innerHTML = '<div style="color:#ef4444;text-align:center;padding:20px;font-size:13px">Could not load orders. Please try again.</div>';
+    $("ordersList").innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px;font-size:13px">${esc(t("t_order_fail"))}</div>`;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HELP / WHATSAPP
+   HELP
 ═══════════════════════════════════════════════════════════════ */
 function renderHelp(){
   const list = $("helpList"); if(!list) return;
   if(!DEPARTMENTS.length){
-    list.innerHTML = '<div class="orderItem"><strong>Ask the front desk</strong><small>No WhatsApp departments are set up yet. Please call reception directly.</small></div>';
+    list.innerHTML = `<div class="orderItem"><strong>${esc(t("front_desk"))}</strong><small>${esc(t("front_desk_body"))}</small></div>`;
     return;
   }
   list.innerHTML = DEPARTMENTS.map(d => {
     const name = String(d.name || "").trim();
     const display = name.charAt(0).toUpperCase() + name.slice(1);
-    return `<button class="help-btn" data-dept="${esc(name)}" style="width:100%;margin-bottom:8px"><span>💬</span><b>${esc(display)}</b><small>WhatsApp instantly</small></button>`;
+    return `<button class="help-btn" data-dept="${esc(name)}" style="width:100%;margin-bottom:8px"><span>💬</span><b>${esc(display)}</b><small>${esc(t("whatsapp_now"))}</small></button>`;
   }).join("");
   list.querySelectorAll(".help-btn").forEach(el => el.addEventListener("click", () => whatsapp(el.dataset.dept)));
 }
 function whatsapp(dept){
   const room = $("roomNo").value.trim() || "—";
   const d = DEPARTMENTS.find(x => String(x.name).toLowerCase() === String(dept).toLowerCase());
-  if(!d || !d.whatsapp){ toast("This department has no WhatsApp yet"); return; }
+  if(!d || !d.whatsapp){ toast(t("t_dept_no_wa")); return; }
   const phone = String(d.whatsapp).replace(/\D/g, "");
   const msg = encodeURIComponent(`Hi, I'm a GuestHub guest in Room ${room}. I need ${dept} assistance.`);
   window.open("https://wa.me/" + phone + "?text=" + msg, "_blank");
@@ -1156,7 +1491,7 @@ document.querySelectorAll("[data-quick]").forEach(btn => {
 });
 $("quickOrders").addEventListener("click", viewOrders);
 
-/* Promo close */
+/* Promo */
 $("promoClose").addEventListener("click", () => {
   $("promoBanner").style.display = "none";
   localStorage.setItem(`promo_closed_${HOTEL_ID}`, "1");
@@ -1164,6 +1499,9 @@ $("promoClose").addEventListener("click", () => {
 
 /* Bell → help */
 $("bellBtn").addEventListener("click", () => openModal("helpModal"));
+
+/* Language */
+$("langBtn").addEventListener("click", () => { renderLangGrid(); openModal("langModal"); });
 
 /* Bottom nav */
 document.querySelectorAll(".navBtn").forEach(btn => {
