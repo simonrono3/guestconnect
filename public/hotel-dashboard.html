@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" onerror="console.warn('QRCode lib failed to load')"></script>
 <script src="/config.js" onerror="console.warn('config.js missing')"></script>
 <style>
 :root{
@@ -30,6 +30,14 @@ body{margin:0;background:
 button{font:inherit;cursor:pointer;border:0}
 input,select,textarea{font:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+/* ⚠️ CRITICAL — this was missing, breaks ALL view switching */
+.hidden{display:none!important}
+
+/* ── DIAGNOSTIC OVERLAY ─────────────── */
+#bootError{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#7f1d1d,#b91c1c);color:#fff;padding:12px 14px;font-size:12px;font-weight:800;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#bootError.show{display:block}
+#bootError button{background:#000;color:#fff;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:900;margin-left:8px}
 
 /* ── HEADER ───────────────────────────── */
 .header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(198,255,0,.35);padding:11px 14px}
@@ -85,14 +93,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .stat small{color:var(--muted-2);font-size:9.5px;font-weight:900;letter-spacing:.6px;margin-top:5px;display:block}
 .stat.highlight{border-color:var(--lime-line);background:linear-gradient(135deg,rgba(198,255,0,.06),rgba(255,255,255,.01))}
 .stat.highlight b{color:var(--lime)}
-.stat .trend{position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;color:var(--green)}
-.stat .trend.down{color:var(--red)}
 
 /* ── TABS ─────────────────────────────── */
 .tabs-wrap{position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}
-.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+.tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:9px 14px;font-size:11px;font-weight:900;cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:6px}
+.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:9px 14px;font-size:11px;font-weight:900;cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:6px;touch-action:manipulation;-webkit-user-select:none;user-select:none;pointer-events:auto}
 .tab:hover{border-color:#3a3a3a}
 .tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
 .tab .badge-count{background:#202020;color:#fff;font-size:9.5px;font-weight:900;padding:1px 6px;border-radius:999px;min-width:18px;text-align:center}
@@ -113,9 +119,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
 
 /* ── FILTER PILLS ─────────────────────── */
-.filterRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none}
+.filterRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .filterRow::-webkit-scrollbar{display:none}
-.fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center;touch-action:manipulation;cursor:pointer}
 .fpill.active{background:var(--lime);border-color:var(--lime);color:#000}
 .fpill:hover:not(.active){border-color:#3a3a3a}
 .fpill .n{font-size:10px;opacity:.7}
@@ -201,7 +207,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 
 /* ── LANG MODAL GRID ──────────────────── */
 .langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
+.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative;cursor:pointer;touch-action:manipulation}
 .langCard:hover{border-color:var(--lime)}
 .langCard.active{border-color:var(--lime);background:var(--lime-soft)}
 .langCard .flag{font-size:22px;line-height:1}
@@ -229,6 +235,12 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 </head>
 <body>
 
+<!-- BOOT ERROR BANNER -->
+<div id="bootError" role="alert">
+  <span id="bootErrorMsg">⚠️ Something went wrong loading the dashboard.</span>
+  <button type="button" onclick="document.getElementById('bootError').classList.remove('show')">Dismiss</button>
+</div>
+
 <header class="header">
   <div class="header-inner">
     <div class="brand">
@@ -239,17 +251,16 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
       </div>
     </div>
     <div class="headActions">
-      <button class="iconBtn" id="notifBtn" title="Notifications" aria-label="Toggle notifications">🔔<span class="dot-notif"></span></button>
-      <button class="iconBtn" id="langBtn" title="Language" aria-label="Language">🌐</button>
-      <button class="iconBtn" id="refreshBtn" title="Refresh (R)" aria-label="Refresh">🔄</button>
-      <button class="btn btn-gold btn-sm" id="guestBtn" title="Open guest view">👁️ <span class="label">Guest</span></button>
-      <button class="btn btn-red btn-sm" id="logoutBtn" title="Logout">⏻</button>
+      <button type="button" class="iconBtn" id="notifBtn" title="Notifications" aria-label="Toggle notifications">🔔</button>
+      <button type="button" class="iconBtn" id="langBtn" title="Language" aria-label="Language">🌐</button>
+      <button type="button" class="iconBtn" id="refreshBtn" title="Refresh" aria-label="Refresh">🔄</button>
+      <button type="button" class="btn btn-gold btn-sm" id="guestBtn" title="Open guest view">👁️ <span class="label">Guest</span></button>
+      <button type="button" class="btn btn-red btn-sm" id="logoutBtn" title="Logout">⏻</button>
     </div>
   </div>
 </header>
 
 <main>
-  <!-- HERO + STATS -->
   <section class="dashboard">
     <div class="hero">
       <h1><span id="hotelNameHero">Hotel</span> — <span data-i18n="control_center">Control Center</span></h1>
@@ -266,17 +277,16 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
     </div>
   </section>
 
-  <!-- TABS -->
   <div class="tabs-wrap">
-    <div class="tabs" id="tabsBar">
-      <button class="tab active" data-tab="orders"><span>🔔</span><span data-i18n="tab_orders">Orders</span><span class="badge-count" id="c_orders">0</span></button>
-      <button class="tab" data-tab="vendors"><span>🏪</span><span data-i18n="tab_vendors">Vendors</span><span class="badge-count" id="c_vendors">0</span></button>
-      <button class="tab" data-tab="menu"><span>🍽️</span><span data-i18n="tab_menu">Menu</span></button>
-      <button class="tab" data-tab="services"><span>🛎️</span><span data-i18n="tab_services">Services</span></button>
-      <button class="tab" data-tab="whatsapp"><span>📱</span><span data-i18n="tab_whatsapp">WhatsApp</span></button>
-      <button class="tab" data-tab="qr"><span>🔳</span><span data-i18n="tab_qr">QRs</span></button>
-      <button class="tab" data-tab="finance"><span>💸</span><span data-i18n="tab_finance">Finance</span></button>
-      <button class="tab" data-tab="analytics"><span>📊</span><span data-i18n="tab_analytics">Analytics</span></button>
+    <div class="tabs" id="tabsBar" role="tablist">
+      <button type="button" class="tab active" data-tab="orders"><span>🔔</span><span data-i18n="tab_orders">Orders</span><span class="badge-count" id="c_orders">0</span></button>
+      <button type="button" class="tab" data-tab="vendors"><span>🏪</span><span data-i18n="tab_vendors">Vendors</span><span class="badge-count" id="c_vendors">0</span></button>
+      <button type="button" class="tab" data-tab="menu"><span>🍽️</span><span data-i18n="tab_menu">Menu</span></button>
+      <button type="button" class="tab" data-tab="services"><span>🛎️</span><span data-i18n="tab_services">Services</span></button>
+      <button type="button" class="tab" data-tab="whatsapp"><span>📱</span><span data-i18n="tab_whatsapp">WhatsApp</span></button>
+      <button type="button" class="tab" data-tab="qr"><span>🔳</span><span data-i18n="tab_qr">QRs</span></button>
+      <button type="button" class="tab" data-tab="finance"><span>💸</span><span data-i18n="tab_finance">Finance</span></button>
+      <button type="button" class="tab" data-tab="analytics"><span>📊</span><span data-i18n="tab_analytics">Analytics</span></button>
     </div>
   </div>
 
@@ -290,24 +300,22 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
   <section id="view-analytics" class="view hidden"></section>
 </main>
 
-<!-- ORDER DETAIL MODAL -->
 <div class="modal" id="orderModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="omTitle" data-i18n="order_details">Order Details</h3><div class="modalDesc" id="omSub"></div></div>
-      <button class="close" data-close="orderModal" aria-label="Close">×</button>
+      <button type="button" class="close" data-close="orderModal" aria-label="Close">×</button>
     </div>
     <div id="omBody" style="margin-top:14px"></div>
     <div id="omActions" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"></div>
   </div>
 </div>
 
-<!-- LANGUAGE MODAL -->
 <div class="modal" id="langModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" data-i18n="lang_title">🌐 Language</h3><div class="modalDesc" data-i18n="lang_desc">Choose your preferred language.</div></div>
-      <button class="close" data-close="langModal" aria-label="Close">×</button>
+      <button type="button" class="close" data-close="langModal" aria-label="Close">×</button>
     </div>
     <div class="langGrid" id="langGrid"></div>
   </div>
@@ -319,9 +327,26 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════════
+   BOOT ERROR CATCHER — shows errors visibly instead of silently failing
+═══════════════════════════════════════════════════════════════ */
+function showBootError(msg){
+  try {
+    const el = document.getElementById('bootError');
+    const msgEl = document.getElementById('bootErrorMsg');
+    if(el && msgEl){
+      msgEl.textContent = '⚠️ ' + msg;
+      el.classList.add('show');
+    }
+    console.error('[GuestHub GM]', msg);
+  } catch(_) {}
+}
+window.addEventListener('error', e => showBootError((e.message || 'JS error') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '')));
+window.addEventListener('unhandledrejection', e => showBootError('Promise rejected: ' + (e.reason?.message || e.reason)));
+
+/* ═══════════════════════════════════════════════════════════════
    CONFIG
 ═══════════════════════════════════════════════════════════════ */
-const GUEST_APP_PATH = '/guest.html';   // change if guest app is elsewhere
+const GUEST_APP_PATH = '/guest.html';
 const POLL_MS = 20000;
 const ORDERS_LIMIT = 500;
 
@@ -329,14 +354,16 @@ const ORDERS_LIMIT = 500;
    AUTH GUARD
 ═══════════════════════════════════════════════════════════════ */
 (function authGuard(){
-  const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
-  const savedHotelId = localStorage.getItem('hotel_id');
-  if(!token){ location.replace('/hotel-login.html'); return; }
-  const urlParams = new URLSearchParams(location.search);
-  if(!urlParams.get('hotel') && savedHotelId){
-    urlParams.set('hotel', savedHotelId);
-    location.replace('/hotel-dashboard.html?' + urlParams.toString());
-  }
+  try {
+    const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
+    const savedHotelId = localStorage.getItem('hotel_id');
+    if(!token){ location.replace('/hotel-login.html'); return; }
+    const urlParams = new URLSearchParams(location.search);
+    if(!urlParams.get('hotel') && savedHotelId){
+      urlParams.set('hotel', savedHotelId);
+      location.replace('/hotel-dashboard.html?' + urlParams.toString());
+    }
+  } catch(e){ showBootError('Auth guard: ' + e.message); }
 })();
 
 const AUTH_TOKEN = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token') || '';
@@ -352,10 +379,15 @@ const money = v => 'Ksh ' + Number(v || 0).toLocaleString('en-KE');
 ═══════════════════════════════════════════════════════════════ */
 let supa = null;
 try {
-  if(window.supabase && typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined' && SUPABASE_URL && SUPABASE_KEY){
-    supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { realtime: { params: { eventsPerSecond: 10 } } });
+  const u = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || '';
+  const k = (typeof SUPABASE_KEY !== 'undefined' && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || '';
+  if(window.supabase && u && k){
+    supa = window.supabase.createClient(u, k, { realtime: { params: { eventsPerSecond: 10 } } });
+    console.log('[GuestHub GM] Supabase client ready');
+  } else {
+    console.warn('[GuestHub GM] Supabase not configured — running in offline mode');
   }
-} catch(e){ console.warn('Supabase init failed:', e); }
+} catch(e){ console.warn('[GuestHub GM] Supabase init failed:', e); }
 
 /* ═══════════════════════════════════════════════════════════════
    I18N
@@ -393,7 +425,7 @@ const I18N = {
     toast_added:'✅ Added — guest sees it now',toast_removed:'Removed',
     toast_saved:'✅ Saved — guest sees it instantly',toast_copied:'📋 Copied',
     vendor_pool_title:'🏪 Vendors Marketplace',vendor_pool_sub:'Approved vendors. Adding one here makes it appear on every guest phone instantly.',
-    lang_saved:'Language updated'}},
+    lang_saved:'Language updated'},
 
   sw:{dir:'ltr',flag:'🇰🇪',name:'Kiswahili',native:'Kiswahili',
     control_center:'Kituo cha Udhibiti',
@@ -508,32 +540,6 @@ function t(key, vars){
   return str;
 }
 
-function applyI18n(){
-  document.documentElement.lang = currentLang;
-  document.documentElement.dir = I18N[currentLang].dir || 'ltr';
-  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
-  renderLangGrid();
-  renderCurrentTab();
-}
-
-function renderLangGrid(){
-  const grid = $('langGrid'); if(!grid) return;
-  grid.innerHTML = Object.keys(I18N).map(code => {
-    const L = I18N[code]; const active = code === currentLang;
-    return `<button class="langCard ${active?'active':''}" data-lang="${code}">
-      <span class="flag">${L.flag}</span><b>${esc(L.native)}</b><small>${esc(L.name)}</small>
-      ${active?'<span class="check">✓</span>':''}</button>`;
-  }).join('');
-  grid.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
-    currentLang = b.dataset.lang;
-    localStorage.setItem('hotelhub_lang', currentLang);
-    applyI18n();
-    closeModal('langModal');
-    toast(t('lang_saved') + ' — ' + I18N[currentLang].native);
-  }));
-}
-
 /* ═══════════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════════ */
@@ -547,6 +553,7 @@ let rtChannel = null;
 let pollTimer = null;
 let tickTimer = null;
 let loadingSkeleton = false;
+let bootComplete = false;
 
 /* ═══════════════════════════════════════════════════════════════
    STATUS MODEL
@@ -701,39 +708,47 @@ async function loadHotelMeta(){
 
 async function loadServices(){
   if(!supa){ SERVICES = []; return; }
-  const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
-  if(error) console.warn('loadServices:', error.message);
-  SERVICES = data || [];
+  try {
+    const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false });
+    if(error) console.warn('loadServices:', error.message);
+    SERVICES = data || [];
+  } catch(e){ console.warn('loadServices exception:', e.message); SERVICES = []; }
 }
 
 async function loadOrders(){
   if(!supa){ ORDERS = []; return; }
-  const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(ORDERS_LIMIT);
-  if(error) console.warn('loadOrders:', error.message);
-  const incoming = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
-  // Detect new orders (only after first load)
-  const firstLoad = seenOrderIds.size === 0;
-  const brandNew = [];
-  incoming.forEach(o => {
-    if(!seenOrderIds.has(o.id)){
-      seenOrderIds.add(o.id);
-      if(!firstLoad && (o.status === 'new' || o.status === 'pending')) brandNew.push(o);
-    }
-  });
-  ORDERS = incoming;
-  if(brandNew.length && !firstLoad) onNewOrders(brandNew);
+  try {
+    const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending: false }).limit(ORDERS_LIMIT);
+    if(error) console.warn('loadOrders:', error.message);
+    const incoming = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
+    const firstLoad = seenOrderIds.size === 0;
+    const brandNew = [];
+    incoming.forEach(o => {
+      if(!seenOrderIds.has(o.id)){
+        seenOrderIds.add(o.id);
+        if(!firstLoad && (o.status === 'new' || o.status === 'pending')) brandNew.push(o);
+      }
+    });
+    ORDERS = incoming;
+    if(brandNew.length && !firstLoad) onNewOrders(brandNew);
+  } catch(e){
+    console.warn('loadOrders exception:', e.message);
+    ORDERS = [];
+  }
   updateStats();
   updateTabBadges();
   if(currentTab === 'orders') renderOrders();
-  if(currentTab === 'finance') renderFinance();
-  if(currentTab === 'analytics') renderAnalytics();
+  else if(currentTab === 'finance') renderFinance();
+  else if(currentTab === 'analytics') renderAnalytics();
 }
 
 async function loadDepts(){
   if(!supa){ DEPTS = []; return; }
-  const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
-  if(error) console.warn('loadDepts:', error.message);
-  DEPTS = data || [];
+  try {
+    const { data, error } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
+    if(error) console.warn('loadDepts:', error.message);
+    DEPTS = data || [];
+  } catch(e){ DEPTS = []; }
 }
 
 async function loadVendorsPool(){
@@ -760,6 +775,8 @@ async function refreshAll(){
   if(currentTab === 'orders') renderOrders();
   try {
     await Promise.all([loadHotelMeta(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+  } catch(e){
+    console.warn('refreshAll partial failure:', e.message);
   } finally {
     loadingSkeleton = false;
     renderCurrentTab();
@@ -793,9 +810,8 @@ function updateTabBadges(){
   const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
   const total = pending + active;
   const el = $('c_orders');
-  el.textContent = total;
-  el.classList.toggle('hot', pending > 0);
-  $('c_vendors').textContent = MY_VENDOR_IDS.length;
+  if(el){ el.textContent = total; el.classList.toggle('hot', pending > 0); }
+  const cv = $('c_vendors'); if(cv) cv.textContent = MY_VENDOR_IDS.length;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -803,6 +819,7 @@ function updateTabBadges(){
 ═══════════════════════════════════════════════════════════════ */
 function renderOrders(){
   const box = $('view-orders');
+  if(!box) return;
   if(loadingSkeleton && !ORDERS.length){
     box.innerHTML = `<div class="card"><div class="card-title">${esc(t('tab_orders'))}</div></div>` +
       Array.from({length:4}).map(() => '<div class="skel"></div>').join('');
@@ -821,34 +838,32 @@ function renderOrders(){
     cancelled: filtered.filter(o => o.status === 'cancelled')
   };
   const counts = {
-    all: byFilter.all.length,
-    new: byFilter.new.length,
-    active: byFilter.active.length,
-    done: byFilter.done.length,
-    cancelled: byFilter.cancelled.length
+    all: byFilter.all.length, new: byFilter.new.length, active: byFilter.active.length,
+    done: byFilter.done.length, cancelled: byFilter.cancelled.length
   };
   const list = byFilter[orderFilter] || [];
   const pendingNew = byFilter.new;
 
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">🔔 <span data-i18n="tab_orders">${esc(t('tab_orders'))}</span> — ${esc(HOTEL_ID)}</div>
+      <div class="card-title">🔔 ${esc(t('tab_orders'))} — ${esc(HOTEL_ID)}</div>
       <div class="card-sub">Tap a status button — the guest's phone updates in ~0.4s</div>
       <input id="orderSearch" class="input" style="margin-top:10px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}">
       <div class="filterRow">
-        <button class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
-        <button class="fpill ${orderFilter==='new'?'active':''}" data-f="new">🆕 ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
-        <button class="fpill ${orderFilter==='active'?'active':''}" data-f="active">⚙️ ${esc(t('f_active'))} <span class="n">(${counts.active})</span></button>
-        <button class="fpill ${orderFilter==='done'?'active':''}" data-f="done">✅ ${esc(t('f_done'))} <span class="n">(${counts.done})</span></button>
-        <button class="fpill ${orderFilter==='cancelled'?'active':''}" data-f="cancelled">✖️ ${esc(t('f_cancelled'))} <span class="n">(${counts.cancelled})</span></button>
+        <button type="button" class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
+        <button type="button" class="fpill ${orderFilter==='new'?'active':''}" data-f="new">🆕 ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
+        <button type="button" class="fpill ${orderFilter==='active'?'active':''}" data-f="active">⚙️ ${esc(t('f_active'))} <span class="n">(${counts.active})</span></button>
+        <button type="button" class="fpill ${orderFilter==='done'?'active':''}" data-f="done">✅ ${esc(t('f_done'))} <span class="n">(${counts.done})</span></button>
+        <button type="button" class="fpill ${orderFilter==='cancelled'?'active':''}" data-f="cancelled">✖️ ${esc(t('f_cancelled'))} <span class="n">(${counts.cancelled})</span></button>
       </div>
       <div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">
-        ${pendingNew.length ? `<button class="btn btn-primary btn-sm" onclick="acceptAllNew()">${esc(t('accept_all'))} (${pendingNew.length})</button>` : ''}
-        <button class="btn btn-dark btn-sm" onclick="exportCSV()">${esc(t('export_csv'))}</button>
+        ${pendingNew.length ? `<button type="button" class="btn btn-primary btn-sm" onclick="acceptAllNew()">${esc(t('accept_all'))} (${pendingNew.length})</button>` : ''}
+        <button type="button" class="btn btn-dark btn-sm" onclick="exportCSV()">${esc(t('export_csv'))}</button>
       </div>
     </div>
     ${list.length ? list.map(orderCard).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🔔</div><strong>${esc(t('no_active'))}</strong>${esc(t('no_active_sub'))}</div></div>`}
   `;
+
   const search = $('orderSearch');
   if(search){
     search.addEventListener('input', e => {
@@ -888,10 +903,10 @@ function orderCard(o){
     const cls = isPrimary ? 'btn-primary' : 'btn-blue';
     const key = s === 'preparing' ? 'preparing' : s === 'on_the_way' ? 'on_way' : s;
     const label = t(key) || s;
-    return `<button class="btn ${cls} btn-sm" data-status="${esc(s)}" data-order-id="${esc(o.id)}">${esc(label)}</button>`;
+    return `<button type="button" class="btn ${cls} btn-sm" data-status="${esc(s)}" data-order-id="${esc(o.id)}">${esc(label)}</button>`;
   }).join('');
   const cancelBtn = nexts.includes('cancelled')
-    ? `<button class="btn btn-red btn-sm" data-status="cancelled" data-order-id="${esc(o.id)}">${esc(t('cancel'))}</button>`
+    ? `<button type="button" class="btn btn-red btn-sm" data-status="cancelled" data-order-id="${esc(o.id)}">${esc(t('cancel'))}</button>`
     : '';
   return `
     <div class="row ${isFresh ? 'new-order' : ''} ${isUrgent ? 'priority' : ''} clickable" data-order-id="${esc(o.id)}">
@@ -913,7 +928,7 @@ function orderCard(o){
 
 /* ── VENDORS ───────────────────────────────────────────── */
 function renderVendors(){
-  const box = $('view-vendors');
+  const box = $('view-vendors'); if(!box) return;
   box.innerHTML = `
     <div class="card">
       <div class="card-title">${esc(t('vendor_pool_title'))} — ${esc(HOTEL_ID)}</div>
@@ -932,8 +947,8 @@ function renderVendors(){
           </div>
           <div class="rowActions">
             ${added
-              ? `<button class="btn btn-red btn-sm" onclick="removeVendor('${esc(v.id)}')">${esc(t('remove'))}</button>`
-              : `<button class="btn btn-primary btn-sm" onclick="addVendor('${esc(v.id)}')">${esc(t('add_to_hotel'))}</button>`}
+              ? `<button type="button" class="btn btn-red btn-sm" onclick="removeVendor('${esc(v.id)}')">${esc(t('remove'))}</button>`
+              : `<button type="button" class="btn btn-primary btn-sm" onclick="addVendor('${esc(v.id)}')">${esc(t('add_to_hotel'))}</button>`}
           </div>
         </div>`;
     }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🏪</div><strong>${esc(t('empty_vendors'))}</strong></div></div>`}`;
@@ -941,7 +956,7 @@ function renderVendors(){
 
 /* ── MENU ──────────────────────────────────────────────── */
 function renderMenu(){
-  const box = $('view-menu');
+  const box = $('view-menu'); if(!box) return;
   const food = SERVICES.filter(s => normalizeCategory(s.category) === 'food' || normalizeCategory(s.title) === 'food');
   box.innerHTML = `
     <div class="card">
@@ -960,7 +975,7 @@ function renderMenu(){
           <option value="snack">Snack</option>
         </select>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="addMenu()">${esc(t('menu_add'))}</button>
+      <button type="button" class="btn btn-primary" style="width:100%;margin-top:10px" onclick="addMenu()">${esc(t('menu_add'))}</button>
     </div>
     ${food.length ? food.map(i => `
       <div class="row">
@@ -969,7 +984,7 @@ function renderMenu(){
           <small style="color:#777">${esc(i.category || 'food')}</small>
         </div>
         <div class="rowActions">
-          <button class="btn btn-red btn-sm" onclick="delMenu('${esc(i.id)}')">🗑</button>
+          <button type="button" class="btn btn-red btn-sm" onclick="delMenu('${esc(i.id)}')">🗑</button>
         </div>
       </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🍽️</div><strong>${esc(t('empty_menu'))}</strong></div></div>`}
   `;
@@ -977,7 +992,7 @@ function renderMenu(){
 
 /* ── SERVICES ──────────────────────────────────────────── */
 function renderServices(){
-  const box = $('view-services');
+  const box = $('view-services'); if(!box) return;
   const activeCount = SERVICES.filter(s => s.is_active).length;
   box.innerHTML = `
     <div class="card">
@@ -992,8 +1007,8 @@ function renderServices(){
           <small style="color:#777">(${esc(normalizeCategory(s.category))})</small>
         </div>
         <div class="rowActions">
-          <button class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? '⏸' : '▶'}</button>
-          <button class="btn btn-red btn-sm" onclick="delService('${esc(s.id)}')">🗑</button>
+          <button type="button" class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? '⏸' : '▶'}</button>
+          <button type="button" class="btn btn-red btn-sm" onclick="delService('${esc(s.id)}')">🗑</button>
         </div>
       </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🛎️</div><strong>${esc(t('empty_services'))}</strong></div></div>`}
   `;
@@ -1001,7 +1016,7 @@ function renderServices(){
 
 /* ── WHATSAPP ──────────────────────────────────────────── */
 function renderWhatsApp(){
-  const box = $('view-whatsapp');
+  const box = $('view-whatsapp'); if(!box) return;
   const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
   box.innerHTML = `
     <div class="card">
@@ -1014,13 +1029,13 @@ function renderWhatsApp(){
         <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}" placeholder="254712345678"></div>
         <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}" placeholder="254712345678"></div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="saveWhatsApp()">${esc(t('save'))}</button>
+      <button type="button" class="btn btn-primary" style="width:100%;margin-top:14px" onclick="saveWhatsApp()">${esc(t('save'))}</button>
     </div>`;
 }
 
 /* ── QR ────────────────────────────────────────────────── */
 function renderQR(){
-  const box = $('view-qr');
+  const box = $('view-qr'); if(!box) return;
   box.innerHTML = `
     <div class="card">
       <div class="card-title">${esc(t('qr_title'))}</div>
@@ -1029,7 +1044,7 @@ function renderQR(){
     <div class="card">
       <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
         <input id="qrRoom" class="input" placeholder="${esc(t('room'))} 101">
-        <button class="btn btn-primary" onclick="genSingle()">${esc(t('qr_gen'))}</button>
+        <button type="button" class="btn btn-primary" onclick="genSingle()">${esc(t('qr_gen'))}</button>
       </div>
       <div id="singleQR" style="text-align:center;margin-top:14px"></div>
     </div>
@@ -1037,8 +1052,8 @@ function renderQR(){
       <div class="card-title">${esc(t('qr_batch'))}</div>
       <textarea id="qrBatch" class="input" rows="5" placeholder="101&#10;102&#10;103&#10;201&#10;202"></textarea>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn btn-primary" style="flex:1" onclick="genBatch()">${esc(t('qr_gen_all'))}</button>
-        <button class="btn btn-dark" onclick="window.print()">${esc(t('qr_print'))}</button>
+        <button type="button" class="btn btn-primary" style="flex:1" onclick="genBatch()">${esc(t('qr_gen_all'))}</button>
+        <button type="button" class="btn btn-dark" onclick="window.print()">${esc(t('qr_print'))}</button>
       </div>
       <div id="batchQR" style="margin-top:14px" class="qr-grid"></div>
     </div>`;
@@ -1046,6 +1061,7 @@ function renderQR(){
 
 /* ── FINANCE ──────────────────────────────────────────── */
 function renderFinance(){
+  const box = $('view-finance'); if(!box) return;
   const now = Date.now(); const day = 24 * 3600 * 1000;
   const today = new Date().toISOString().slice(0, 10);
   const week = ORDERS.filter(o => now - new Date(o.created_at||0).getTime() < 7*day);
@@ -1054,7 +1070,6 @@ function renderFinance(){
   const completedOrders = ORDERS.filter(o => o.status === 'completed');
   const sum = arr => arr.reduce((s,o) => s + orderAmount(o), 0);
   const aov = completedOrders.length ? sum(completedOrders) / completedOrders.length : 0;
-  const box = $('view-finance');
   box.innerHTML = `
     <div class="card">
       <div class="card-title">${esc(t('finance_title'))}</div>
@@ -1072,9 +1087,8 @@ function renderFinance(){
 
 /* ── ANALYTICS ─────────────────────────────────────────── */
 function renderAnalytics(){
-  const box = $('view-analytics');
+  const box = $('view-analytics'); if(!box) return;
   const day = 24 * 3600 * 1000; const now = Date.now();
-  // 7-day revenue bars
   const days = [];
   for(let i = 6; i >= 0; i--){
     const d = new Date(now - i * day);
@@ -1092,7 +1106,6 @@ function renderAnalytics(){
       </div></div>`;
   }).join('');
 
-  // Top 5 services
   const svcCount = {};
   ORDERS.forEach(o => { const k = orderItemsText(o); if(k && k !== '—') svcCount[k] = (svcCount[k] || 0) + 1; });
   const top = Object.entries(svcCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
@@ -1102,7 +1115,6 @@ function renderAnalytics(){
       <span class="badge badge-green">${n}</span>
     </div>`).join('') : `<div class="empty">${esc(t('no_data'))}</div>`;
 
-  // Revenue by category
   const catRev = {};
   ORDERS.forEach(o => { const c = normalizeCategory(orderCat(o)); catRev[c] = (catRev[c] || 0) + orderAmount(o); });
   const totalCatRev = Object.values(catRev).reduce((s,v) => s+v, 0) || 1;
@@ -1120,7 +1132,6 @@ function renderAnalytics(){
       </div></div>`;
   }).join('') || `<div class="empty">${esc(t('no_data'))}</div>`;
 
-  // Peak hours heatmap
   const hours = new Array(24).fill(0);
   ORDERS.forEach(o => { if(!o.created_at) return; const h = new Date(o.created_at).getHours(); hours[h]++; });
   const maxH = Math.max(...hours, 1);
@@ -1161,9 +1172,7 @@ function renderAnalytics(){
 async function updateStatus(id, s){
   const clean = normalizeStatus(s);
   if(!GUEST_STATUSES[clean]) return toast('Unknown status: ' + s, 'error');
-  if(clean === 'cancelled'){
-    if(!confirm(t('confirm_cancel'))) return;
-  }
+  if(clean === 'cancelled'){ if(!confirm(t('confirm_cancel'))) return; }
   if(!supa) return toast('Supabase not configured', 'error');
   const patch = { status: clean, updated_at: new Date().toISOString() };
   const { error } = await supa.from('orders').update(patch).eq('id', id);
@@ -1265,14 +1274,17 @@ async function saveWhatsApp(){
 }
 
 function genSingle(){
+  if(typeof QRCode === 'undefined') return toast('QR library not loaded', 'error');
   const room = ($('qrRoom').value.trim() || '101');
   const box = $('singleQR');
   box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div class="qr-label">${esc(HOTEL_ID)} — ROOM ${esc(room)}</div></div>`;
   setTimeout(() => {
-    new QRCode($('qrSingleCanvas'), { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' });
+    try { new QRCode($('qrSingleCanvas'), { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
+    catch(e){ toast('QR generation failed: ' + e.message, 'error'); }
   }, 60);
 }
 function genBatch(){
+  if(typeof QRCode === 'undefined') return toast('QR library not loaded', 'error');
   const raw = ($('qrBatch').value || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
   if(!raw.length) return toast('Enter at least one room', 'error');
   const box = $('batchQR');
@@ -1280,7 +1292,7 @@ function genBatch(){
   raw.forEach((room, i) => {
     setTimeout(() => {
       const el = $('qrBatch-' + i);
-      if(el) new QRCode(el, { text: guestLink(room), width: 160, height: 160, colorDark: '#000', colorLight: '#fff' });
+      if(el) try { new QRCode(el, { text: guestLink(room), width: 160, height: 160, colorDark: '#000', colorLight: '#fff' }); } catch(_){}
     }, 60 + i * 20);
   });
   toast(`Generated ${raw.length} QR codes`);
@@ -1336,8 +1348,8 @@ function openOrderModal(id){
     const msg = encodeURIComponent(`New order ${orderRef(o)} — Room ${orderRoom(o)}: ${orderItemsText(o)} (${money(orderAmount(o))}).`);
     actions.push(`<a class="btn btn-purple btn-sm" href="https://wa.me/${vp}?text=${msg}" target="_blank" rel="noopener">${esc(t('forward_vendor'))}</a>`);
   }
-  actions.push(`<button class="btn btn-dark btn-sm" onclick="copyOrder('${esc(o.id)}')">${esc(t('copy'))}</button>`);
-  actions.push(`<button class="btn btn-dark btn-sm" data-close="orderModal">${esc(t('close'))}</button>`);
+  actions.push(`<button type="button" class="btn btn-dark btn-sm" onclick="copyOrder('${esc(o.id)}')">${esc(t('copy'))}</button>`);
+  actions.push(`<button type="button" class="btn btn-dark btn-sm" data-close="orderModal">${esc(t('close'))}</button>`);
   $('omActions').innerHTML = actions.join('');
   openModal('orderModal');
 }
@@ -1352,7 +1364,7 @@ function copyOrder(id){
 /* ═══════════════════════════════════════════════════════════════
    MODAL HELPERS
 ═══════════════════════════════════════════════════════════════ */
-function openModal(id){ const m = $(id); if(m) m.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function openModal(id){ const m = $(id); if(m){ m.classList.add('active'); document.body.style.overflow = 'hidden'; } }
 function closeModal(id){
   const m = $(id); if(m) m.classList.remove('active');
   if(!document.querySelector('.modal.active')) document.body.style.overflow = '';
@@ -1361,8 +1373,7 @@ document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e =
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active')); document.body.style.overflow = ''; }
-  // Shortcuts
-  if(e.target.matches('input, textarea')) return;
+  if(e.target.matches('input, textarea, select')) return;
   const map = { '1':'orders','2':'vendors','3':'menu','4':'services','5':'whatsapp','6':'qr','7':'finance','8':'analytics' };
   if(map[e.key]) switchTab(map[e.key]);
   if(e.key === '/'){ const s = $('orderSearch'); if(s){ e.preventDefault(); s.focus(); } }
@@ -1370,31 +1381,55 @@ document.addEventListener('keydown', e => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   TABS
+   TABS — switchTab + delegation
 ═══════════════════════════════════════════════════════════════ */
 function switchTab(name){
-  currentTab = name;
-  localStorage.setItem('hotel_last_tab', name);
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  const view = $('view-' + name);
-  const tab = document.querySelector(`.tab[data-tab="${name}"]`);
-  if(view) view.classList.remove('hidden');
-  if(tab) tab.classList.add('active');
-  renderCurrentTab();
+  try {
+    console.log('[GuestHub GM] Switching to tab:', name);
+    currentTab = name;
+    localStorage.setItem('hotel_last_tab', name);
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const view = $('view-' + name);
+    const tab = document.querySelector(`.tab[data-tab="${name}"]`);
+    if(view) view.classList.remove('hidden');
+    if(tab) tab.classList.add('active');
+    renderCurrentTab();
+  } catch(e){
+    showBootError('switchTab(' + name + '): ' + e.message);
+  }
 }
 
 function renderCurrentTab(){
-  if(currentTab === 'orders') renderOrders();
-  else if(currentTab === 'vendors') renderVendors();
-  else if(currentTab === 'menu') renderMenu();
-  else if(currentTab === 'services') renderServices();
-  else if(currentTab === 'whatsapp') renderWhatsApp();
-  else if(currentTab === 'qr') renderQR();
-  else if(currentTab === 'finance') renderFinance();
-  else if(currentTab === 'analytics') renderAnalytics();
+  try {
+    if(currentTab === 'orders') renderOrders();
+    else if(currentTab === 'vendors') renderVendors();
+    else if(currentTab === 'menu') renderMenu();
+    else if(currentTab === 'services') renderServices();
+    else if(currentTab === 'whatsapp') renderWhatsApp();
+    else if(currentTab === 'qr') renderQR();
+    else if(currentTab === 'finance') renderFinance();
+    else if(currentTab === 'analytics') renderAnalytics();
+    else renderOrders();
+  } catch(e){
+    showBootError('renderCurrentTab(' + currentTab + '): ' + e.message);
+  }
 }
-document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+/* Event delegation on the tabs container — survives re-renders */
+(function wireTabs(){
+  const bar = document.getElementById('tabsBar');
+  if(!bar){ showBootError('tabsBar missing'); return; }
+  bar.addEventListener('click', e => {
+    const btn = e.target.closest('.tab');
+    if(!btn) return;
+    e.preventDefault();
+    const name = btn.dataset.tab;
+    if(!name){ showBootError('tab missing data-tab'); return; }
+    switchTab(name);
+  });
+  console.log('[GuestHub GM] Tab listeners wired (delegation)');
+})();
 
 /* ═══════════════════════════════════════════════════════════════
    NEW ORDERS ALERT
@@ -1405,18 +1440,9 @@ function onNewOrders(orders){
   toast(`🔔 New order — Room ${room} · ${orderItemsText(o)}`);
   beepNewOrder();
   if(navigator.vibrate) navigator.vibrate([120, 60, 120, 60, 120]);
-
-  // Browser notification if page hidden
   if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
-    try {
-      new Notification(`GuestHub — Room ${room}`, {
-        body: `${orderGuest(o)} — ${orderItemsText(o)} (${money(orderAmount(o))})`,
-        tag: 'guesthub-order-' + o.id,
-        icon: '/favicon.ico'
-      });
-    } catch(_){}
+    try { new Notification(`GuestHub — Room ${room}`, { body: `${orderGuest(o)} — ${orderItemsText(o)} (${money(orderAmount(o))})`, tag: 'guesthub-order-' + o.id }); } catch(_){}
   }
-  // If on orders tab, re-render to show flash
   if(currentTab === 'orders') renderOrders();
   updateTabBadges();
 }
@@ -1428,9 +1454,10 @@ function setSyncDot(state){
   const pill = $('syncPill');
   const dot = $('rtDot');
   const txt = $('systemStatus');
+  if(!pill) return;
   pill.className = 'status-pill' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
-  dot.className = 'dot' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
-  txt.textContent = state === 'live' ? t('live_sync') : state === 'connecting' ? t('connecting') : t('offline_polling');
+  if(dot) dot.className = 'dot' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
+  if(txt) txt.textContent = state === 'live' ? t('live_sync') : state === 'connecting' ? t('connecting') : t('offline_polling');
 }
 
 function subscribeRealtime(){
@@ -1442,10 +1469,7 @@ function subscribeRealtime(){
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders', filter: `hotel_id=eq.${HOTEL_ID}` }, p => {
         const row = p.new; if(!row) return;
         const norm = { ...row, status: normalizeStatus(row.status) };
-        if(!seenOrderIds.has(norm.id)){
-          seenOrderIds.add(norm.id);
-          onNewOrders([norm]);
-        }
+        if(!seenOrderIds.has(norm.id)){ seenOrderIds.add(norm.id); onNewOrders([norm]); }
         ORDERS.unshift(norm);
         updateStats(); updateTabBadges();
         if(currentTab === 'orders') renderOrders();
@@ -1480,16 +1504,13 @@ function stopPoll(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; }
 
 document.addEventListener('visibilitychange', () => {
   if(document.hidden){ stopPoll(); }
-  else {
-    loadOrders();
-    if(!rtChannel) subscribeRealtime();
-  }
+  else { loadOrders(); if(!rtChannel) subscribeRealtime(); }
 });
 window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
 window.addEventListener('offline', () => setSyncDot('off'));
 
 /* ═══════════════════════════════════════════════════════════════
-   TICKER — update relative times every 30s
+   TICKER
 ═══════════════════════════════════════════════════════════════ */
 function tickTimes(){
   document.querySelectorAll('[data-tick]').forEach(el => {
@@ -1510,12 +1531,12 @@ $('logoutBtn').addEventListener('click', () => {
   location.replace('/hotel-login.html');
 });
 
-/* Notification bell — toggle sound + request permission */
 const notifBtn = $('notifBtn');
 function updateNotifUI(){
   notifBtn.classList.toggle('muted', !soundEnabled);
   notifBtn.textContent = soundEnabled ? '🔔' : '🔕';
-  notifBtn.appendChild(Object.assign(document.createElement('span'), { className: 'dot-notif' }));
+  const dot = document.createElement('span'); dot.className = 'dot-notif';
+  notifBtn.appendChild(dot);
 }
 notifBtn.addEventListener('click', async () => {
   soundEnabled = !soundEnabled;
@@ -1527,27 +1548,90 @@ notifBtn.addEventListener('click', async () => {
     if('Notification' in window && Notification.permission === 'default'){
       try { await Notification.requestPermission(); } catch(_){}
     }
-  } else {
-    toast('🔕 Alerts muted');
-  }
+  } else { toast('🔕 Alerts muted'); }
 });
+
+/* ═══════════════════════════════════════════════════════════════
+   I18N APPLY + LANG GRID
+═══════════════════════════════════════════════════════════════ */
+function applyI18n(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = I18N[currentLang].dir || 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  renderLangGrid();
+}
+
+function renderLangGrid(){
+  const grid = $('langGrid'); if(!grid) return;
+  grid.innerHTML = Object.keys(I18N).map(code => {
+    const L = I18N[code]; const active = code === currentLang;
+    return `<button type="button" class="langCard ${active?'active':''}" data-lang="${code}">
+      <span class="flag">${L.flag}</span><b>${esc(L.native)}</b><small>${esc(L.name)}</small>
+      ${active?'<span class="check">✓</span>':''}</button>`;
+  }).join('');
+  grid.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    currentLang = b.dataset.lang;
+    localStorage.setItem('hotelhub_lang', currentLang);
+    applyI18n();
+    closeModal('langModal');
+    toast(t('lang_saved') + ' — ' + I18N[currentLang].native);
+  }));
+}
 
 /* ═══════════════════════════════════════════════════════════════
    BOOT
 ═══════════════════════════════════════════════════════════════ */
 (async function boot(){
-  updateNotifUI();
-  applyI18n();
-  $('hotelSub').textContent = HOTEL_ID + ' • GM OS • GUEST SYNC';
-  // Restore last tab
-  const tab = document.querySelector(`.tab[data-tab="${currentTab}"]`);
-  if(tab) switchTab(currentTab);
-  else switchTab('orders');
-  await refreshAll();
-  subscribeRealtime();
-  schedulePoll();
-  tickTimer = setInterval(tickTimes, 30000);
+  try {
+    console.log('[GuestHub GM] Booting…', { HOTEL_ID, hasSupa: !!supa, hasToken: !!AUTH_TOKEN });
+
+    updateNotifUI();
+    applyI18n();
+    $('hotelSub').textContent = HOTEL_ID + ' • GM OS • GUEST SYNC';
+
+    /* Switch to restored tab (defaults to orders) */
+    const wanted = document.querySelector(`.tab[data-tab="${currentTab}"]`) ? currentTab : 'orders';
+    switchTab(wanted);
+
+    /* Initial render so user sees something immediately */
+    renderCurrentTab();
+
+    await refreshAll();
+    subscribeRealtime();
+    schedulePoll();
+    tickTimer = setInterval(tickTimes, 30000);
+
+    bootComplete = true;
+    console.log('[GuestHub GM] Boot complete');
+  } catch(e){
+    showBootError('Boot failed: ' + e.message);
+    /* Still try to render something */
+    try { switchTab('orders'); } catch(_){}
+  }
 })();
+
+/* Failsafe: if boot didn't complete in 4s, show hint */
+setTimeout(() => {
+  if(!bootComplete){
+    showBootError('Dashboard did not finish loading. Check console for errors, or tap Refresh.');
+  }
+}, 4000);
+
+/* Expose critical functions globally for inline onclick handlers */
+window.acceptAllNew = acceptAllNew;
+window.exportCSV = exportCSV;
+window.addVendor = addVendor;
+window.removeVendor = removeVendor;
+window.addMenu = addMenu;
+window.delMenu = delMenu;
+window.toggleService = toggleService;
+window.delService = delService;
+window.saveWhatsApp = saveWhatsApp;
+window.genSingle = genSingle;
+window.genBatch = genBatch;
+window.copyOrder = copyOrder;
+window.updateStatus = updateStatus;
 </script>
 </body>
 </html>
