@@ -13,195 +13,358 @@
 <script src="config.js" onerror="console.warn('config.js not found — realtime disabled')"></script>
 <style>
 :root{
-  --lime:#c6ff00;--gold:#fbbf24;--blue:#38bdf8;--green:#22c55e;--red:#ef4444;--purple:#a78bfa;
-  --bg:#060606;--card:#121212;--border:#252525;--muted:#a8a8a8;--muted2:#8a8a8a;color-scheme:dark;
+  --lime:#c6ff00;--lime-soft:rgba(198,255,0,.12);--lime-line:rgba(198,255,0,.28);
+  --gold:#fbbf24;--blue:#38bdf8;--green:#22c55e;--red:#ef4444;--purple:#a78bfa;
+  --bg:#060606;--surface:#0d0d0d;--card:#121212;--card-2:#171717;
+  --border:#232323;--border-2:#2f2f2f;
+  --muted:#a8a8a8;--muted-2:#7a7a7a;--muted-3:#5a5a5a;
+  --radius:20px;--radius-sm:14px;--radius-lg:26px;
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+  color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 32%),var(--bg);color:#fff;font-family:Inter,Arial,sans-serif;font-size:14px;line-height:1.45;padding-bottom:90px}
-button{font:inherit;cursor:pointer}
-input{font:inherit}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:
+  radial-gradient(circle at 50% -10%,rgba(198,255,0,.10),transparent 34%),
+  radial-gradient(circle at 100% 100%,rgba(56,189,248,.05),transparent 30%),
+  var(--bg);
+  color:#fff;font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.5;
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button{font:inherit;cursor:pointer;border:0}
+input,textarea{font:inherit}
 button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+img{max-width:100%;display:block}
+
+/* ---------- Offline ---------- */
 .offlineBar{position:fixed;top:0;left:0;right:0;z-index:1500;background:linear-gradient(90deg,#b91c1c,#ef4444);color:#fff;text-align:center;padding:9px 12px;font-size:12px;font-weight:800;letter-spacing:.3px;transform:translateY(-120%);transition:transform .3s ease;box-shadow:0 4px 20px rgba(239,68,68,.35)}
 .offlineBar.show{transform:translateY(0)}
-.hero{position:relative;overflow:hidden;padding:24px 16px 22px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:0 0 28px 28px}
-.hero:before{content:"";position:absolute;width:220px;height:220px;right:-110px;bottom:-110px;border:1px solid rgba(0,0,0,.15);border-radius:50%}
+
+/* ---------- Top Bar ---------- */
+.topbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:rgba(6,6,6,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brandMark{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,var(--lime),#a3d100);color:#000;font-family:'Space Grotesk';font-weight:800;font-size:17px;box-shadow:0 6px 22px rgba(198,255,0,.18)}
+.brandText{font-family:'Space Grotesk';font-size:14px;font-weight:800;letter-spacing:.3px}
+.brandText span{color:var(--lime)}
+.topActions{display:flex;align-items:center;gap:8px}
+.roomChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #2a2a2a;font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.roomChip b{color:#fff}
+.iconBtn{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:16px;transition:border-color .15s,color .15s}
+.iconBtn:hover,.iconBtn:active{border-color:var(--lime);color:var(--lime)}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;padding:22px 16px 26px;background:
+  radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
+  linear-gradient(135deg,#c6ff00 0%,#e6ff66 45%,#fbbf24 100%);
+  color:#000;border-radius:0 0 32px 32px}
+.hero:before{content:"";position:absolute;width:240px;height:240px;right:-120px;bottom:-130px;border:1px solid rgba(0,0,0,.14);border-radius:50%}
+.hero:after{content:"";position:absolute;width:140px;height:140px;right:-40px;bottom:-70px;border:1px solid rgba(0,0,0,.10);border-radius:50%}
 .heroContent{position:relative;z-index:2}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);padding:6px 11px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.6px;margin-bottom:12px}
-.hero h1{margin:0;font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,8vw,40px);line-height:.96;letter-spacing:-1.2px;font-weight:800}
-.hero h1 span{display:block}
-.hero p{margin:10px 0 0;max-width:340px;font-size:13px;font-weight:700;opacity:.75;line-height:1.4}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);padding:6px 11px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.7px;margin-bottom:12px}
+.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(26px,7.5vw,36px);line-height:1;letter-spacing:-1.1px;font-weight:800}
+.hero h1 span{display:block;color:rgba(0,0,0,.65);font-size:.55em;letter-spacing:-.4px;margin-top:4px;font-weight:800}
+.hero p{margin:10px 0 0;max-width:340px;font-size:12.5px;font-weight:700;opacity:.78;line-height:1.45}
 .heroBottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
-.verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:11px;font-weight:900}
-.wifi{font-size:11px;font-weight:800;opacity:.75}
-.panel{margin:14px 12px 0;padding:15px;border:1px solid var(--border);background:linear-gradient(145deg,#151515,#0f0f0f);border-radius:20px}
+.verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:10.5px;font-weight:900}
+.heroMeta{display:flex;gap:6px;flex-wrap:wrap}
+.heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.08);color:#000;font-size:10.5px;font-weight:900}
+
+/* ---------- Panels ---------- */
+.wrap{padding:0 12px}
+.panel{margin-top:14px;padding:15px;border:1px solid var(--border);background:linear-gradient(145deg,#151515,#0f0f0f);border-radius:var(--radius)}
 .panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.panelHead strong{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800}
-.panelHead small{color:var(--muted2);font-size:10px;font-weight:800;letter-spacing:.6px}
+.panelHead strong{font-family:'Space Grotesk';font-size:13.5px;font-weight:800}
+.panelHead small{color:var(--muted-3);font-size:9.5px;font-weight:800;letter-spacing:.7px}
 .panelGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.input{width:100%;padding:13px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s}
+.input{width:100%;padding:13px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s,background .18s}
 .input::placeholder{color:#6a6a6a;font-weight:500}
-.input:focus{outline:none;border-color:var(--lime)}
-.search{padding:12px 12px 0}
+.input:focus{outline:none;border-color:var(--lime);background:#0d0d0d}
+
+/* ---------- Promo ---------- */
+.promo{margin-top:14px;padding:14px 15px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.06));border:1px solid var(--lime-line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.promo b{font-family:'Space Grotesk';font-size:13px;display:block}
+.promo small{color:var(--muted);font-size:11px;display:block;margin-top:3px;line-height:1.4}
+.promoTag{padding:5px 10px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.4px;flex-shrink:0}
+.promoClose{background:transparent;color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
+
+/* ---------- Quick Actions ---------- */
+.quickRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+@media(min-width:650px){.quickRow{grid-template-columns:repeat(6,1fr)}}
+.quickAction{min-height:82px;padding:10px 6px;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:800;transition:transform .15s,border-color .15s;text-align:center;line-height:1.15}
+.quickAction i{font-style:normal;font-size:22px;line-height:1}
+.quickAction:active{transform:scale(.96);border-color:var(--lime)}
+.quickAction:hover{border-color:#3a3a3a}
+
+/* ---------- Search ---------- */
+.search{margin-top:14px}
 .searchBox{position:relative}
-.searchIcon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:15px;opacity:.7}
-.searchBox .input{padding-left:42px}
-.activeOrder{display:none;margin:14px 12px 0;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));border:1px solid rgba(198,255,0,.28);border-radius:20px;transition:border-color .3s}
+.searchIcon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:15px;opacity:.65}
+.searchBox .input{padding-left:44px}
+
+/* ---------- Category Pills ---------- */
+.pills{display:flex;gap:7px;overflow-x:auto;padding:12px 12px 2px;scrollbar-width:none;-ms-overflow-style:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:8px 13px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11.5px;font-weight:800;white-space:nowrap;transition:all .15s}
+.pill.active{background:var(--lime);border-color:var(--lime);color:#000}
+
+/* ---------- Active Order ---------- */
+.activeOrder{display:none;margin-top:14px;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(255,255,255,.015));border:1px solid var(--lime-line);border-radius:var(--radius);transition:border-color .3s}
 .activeOrder.show{display:block}
 .activeOrder.flash{animation:bannerFlash 1s ease 3;border-color:var(--lime)}
-@keyframes bannerFlash{0%,100%{box-shadow:0 0 0 0 rgba(198,255,0,.55)}50%{box-shadow:0 0 0 10px rgba(198,255,0,0)}}
+@keyframes bannerFlash{0%,100%{box-shadow:0 0 0 0 rgba(198,255,0,.55)}50%{box-shadow:0 0 0 12px rgba(198,255,0,0)}}
 .orderTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.orderService{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:14px}
-.orderRef{color:var(--muted2);font-size:10px;margin-top:3px;letter-spacing:.4px;font-weight:700}
+.orderService{font-family:'Space Grotesk';font-weight:800;font-size:14.5px}
+.orderRef{color:var(--muted-3);font-size:10px;margin-top:3px;letter-spacing:.5px;font-weight:800}
 .orderActions{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .liveDot{width:8px;height:8px;border-radius:50%;background:#3a3a3a;flex-shrink:0;transition:background .3s}
 .liveDot.on{background:var(--green);animation:pulseDot 2s infinite}
 @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.refreshBtn{width:32px;height:32px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#9a9a9a;font-size:15px;line-height:1;display:grid;place-items:center;transition:color .18s,border-color .18s}
+.refreshBtn{width:34px;height:34px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#9a9a9a;font-size:15px;line-height:1;display:grid;place-items:center;transition:color .18s,border-color .18s}
 .refreshBtn:hover{color:var(--lime);border-color:var(--lime)}
 .refreshBtn.spinning{animation:spin .8s linear infinite;color:var(--lime)}
+@keyframes spin{to{transform:rotate(360deg)}}
 .status{display:inline-block;height:max-content;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.4px;background:#202020;color:var(--muted);white-space:nowrap}
 .status.pending,.status.new{color:var(--blue);background:rgba(56,189,248,.12)}
-.status.accepted{color:var(--lime);background:rgba(198,255,0,.1)}
+.status.accepted{color:var(--lime);background:var(--lime-soft)}
 .status.preparing{color:var(--gold);background:rgba(251,191,36,.12)}
 .status.on_the_way,.status.ontheway{color:var(--purple);background:rgba(167,139,250,.12)}
 .status.completed{color:var(--green);background:rgba(34,197,94,.12)}
-.status.cancelled{color:var(--red);background:rgba(239,68,68,.12)}
-.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:14px}
-.progressStep{height:5px;border-radius:999px;background:#2a2a2a;transition:background .3s}
+.status.cancelled,.status.rejected{color:var(--red);background:rgba(239,68,68,.12)}
+.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:16px}
+.progressStep{height:5px;border-radius:999px;background:#2a2a2a;transition:background .35s}
 .progressStep.active{background:var(--lime)}
 .progressStep.cancelled{background:var(--red)}
-.progressLabels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
-.progressLabels span{font-size:9.5px;font-weight:700;color:var(--muted2);text-align:center;line-height:1.2}
-.orderDetails{display:flex;justify-content:space-between;gap:10px;margin-top:12px;color:var(--muted2);font-size:11px;font-weight:700}
+.progressLabels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+.progressLabels span{font-size:9.5px;font-weight:800;color:var(--muted-3);text-align:center;line-height:1.2;letter-spacing:.2px}
+.progressLabels span.active{color:var(--lime)}
+.orderDetails{display:flex;justify-content:space-between;gap:10px;margin-top:13px;color:var(--muted-3);font-size:11.5px;font-weight:700}
 .orderDetails strong{color:#fff;font-weight:800}
-.section{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:15px}
+.orderEta{margin-top:10px;padding:9px 12px;background:rgba(198,255,0,.06);border:1px dashed var(--lime-line);border-radius:12px;font-size:11.5px;color:var(--lime);font-weight:800;display:flex;align-items:center;gap:7px}
+
+/* ---------- Sections ---------- */
+.section{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
 .section.hidden{display:none}
-.section h3{margin:0 0 12px;font-family:'Space Grotesk',sans-serif;color:var(--lime);font-size:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.section h3{margin:0 0 12px;font-family:'Space Grotesk';color:var(--lime);font-size:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .count{background:#202020;color:var(--muted);font-size:11px;font-weight:900;padding:3px 9px;border-radius:999px;min-width:24px;text-align:center}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;color:#fff;transition:transform .15s,border-color .15s;min-height:120px}
-.svc:hover{border-color:#444;transform:translateY(-2px)}
-.svc:active{transform:scale(.97);border-color:var(--lime)}
-.svc i{font-style:normal;font-size:22px;display:block;margin-bottom:7px}
+@media(min-width:650px){.grid2{grid-template-columns:repeat(3,1fr)}}
+
+/* ---------- Service Card ---------- */
+.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;color:#fff;transition:transform .15s,border-color .15s,box-shadow .15s;min-height:132px;display:flex;flex-direction:column;overflow:hidden}
+.svc:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(198,255,0,.06),transparent 50%);opacity:0;transition:opacity .2s;pointer-events:none}
+.svc:hover{border-color:#3a3a3a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.svc:hover:before{opacity:1}
+.svc:active{transform:scale(.98);border-color:var(--lime)}
+.svc i{font-style:normal;font-size:24px;display:block;margin-bottom:8px;line-height:1}
 .svc b{font-size:13px;display:block;line-height:1.25;padding-right:70px;font-weight:800}
-.svc small{color:var(--muted2);font-size:11px;display:block;margin-top:5px;line-height:1.35;padding-right:4px}
+.svc small{color:var(--muted-2);font-size:11px;display:block;margin-top:6px;line-height:1.4;padding-right:2px;flex:1}
 .svc.hidden-card{display:none}
-.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.loading{text-align:center;padding:40px 16px;color:var(--muted2);font-size:13px}
+.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:4px 9px;border-radius:999px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svcVendor{display:inline-block;margin-top:8px;font-size:10px;color:var(--muted-3);font-weight:700}
+
+/* ---------- Loading / Empty ---------- */
+.loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
 .spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.empty{display:none;text-align:center;padding:30px 16px;color:var(--muted2);font-size:13px}
+.skeleton{height:132px;border-radius:16px;background:linear-gradient(90deg,#151515 0%,#1e1e1e 50%,#151515 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;border:1px solid #222}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.empty{display:none;text-align:center;padding:30px 16px;color:var(--muted-2);font-size:13px}
 .empty.show{display:block}
-.emptyIcon{font-size:34px;margin-bottom:8px}
+.emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
+
+/* ---------- Help ---------- */
 .help-section{border-color:rgba(251,191,36,.28)}
 .help-section h3{color:var(--gold)}
 .help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.help-btn{background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:13px;color:#fff;text-align:left;transition:border-color .15s,transform .15s}
+.help-btn{background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s}
 .help-btn:active{transform:scale(.97);border-color:var(--gold)}
-.help-btn span{display:block;font-size:21px;margin-bottom:6px}
+.help-btn span{display:block;font-size:22px;margin-bottom:6px;line-height:1}
 .help-btn b{display:block;font-size:12px;font-weight:800}
-.help-btn small{display:block;color:var(--muted2);font-size:10.5px;margin-top:3px}
-.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.96);backdrop-filter:blur(18px);border-top:1px solid #242424}
-.navBtn{border:0;background:transparent;color:#7a7a7a;min-height:54px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px}
-.navBtn span{display:block;font-size:19px;margin-bottom:2px}
+.help-btn small{display:block;color:var(--muted-3);font-size:10.5px;margin-top:3px}
+
+/* ---------- Bottom Nav ---------- */
+.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #242424}
+.navBtn{border:0;background:transparent;color:#7a7a7a;min-height:54px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.navBtn span{font-size:19px;line-height:1}
 .navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
-.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.88);backdrop-filter:blur(12px)}
+
+/* ---------- Modal ---------- */
+.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .modal.active{display:grid}
-.modalBox{width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:24px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:0 20px 60px rgba(0,0,0,.5);animation:up .2s ease}
-@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.modalBox{width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:26px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 .modalHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.modalTitle{margin:0;font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:900}
-.modalDesc{margin-top:6px;color:var(--muted2);font-size:12px;line-height:1.5}
-.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1}
+.modalTitle{margin:0;font-family:'Space Grotesk';font-size:20px;font-weight:900;letter-spacing:-.3px}
+.modalDesc{margin-top:6px;color:var(--muted-2);font-size:12px;line-height:1.5}
+.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1;transition:border-color .15s}
 .close:hover{border-color:#555}
-.label{display:block;color:var(--muted2);font-size:10px;font-weight:800;margin-top:14px;letter-spacing:.8px;text-transform:uppercase}
-.btn{width:100%;margin-top:12px;padding:15px;border:0;border-radius:13px;background:var(--lime);color:#000;font-size:14px;font-weight:900;transition:opacity .15s,transform .15s}
+.label{display:block;color:var(--muted-2);font-size:10px;font-weight:800;margin-top:14px;letter-spacing:.8px;text-transform:uppercase}
+.btn{width:100%;margin-top:12px;padding:15px;border:0;border-radius:13px;background:var(--lime);color:#000;font-size:14px;font-weight:900;transition:opacity .15s,transform .15s;letter-spacing:.2px}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.6;cursor:wait}
 .btn.secondary{background:#202020;border:1px solid #333;color:#fff}
 .twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* ---------- Success ---------- */
 .success{text-align:center;padding:6px}
-.successIcon{width:72px;height:72px;display:grid;place-items:center;margin:0 auto 14px;border-radius:50%;background:rgba(198,255,0,.1);font-size:36px;color:var(--lime)}
-.reference{margin:16px 0;padding:14px;background:#0a0a0a;border:1px dashed #3c3c3c;border-radius:14px}
-.reference small{display:block;color:var(--muted2);font-size:10px;letter-spacing:.8px;font-weight:800}
-.reference strong{display:block;color:var(--lime);font-family:'Space Grotesk',sans-serif;font-size:17px;margin-top:5px;letter-spacing:1px}
+.successIcon{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 16px;border-radius:50%;background:var(--lime-soft);font-size:38px;color:var(--lime);animation:pop .4s cubic-bezier(.3,1.5,.5,1)}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.reference{margin:18px 0;padding:15px;background:#0a0a0a;border:1px dashed #3c3c3c;border-radius:14px}
+.reference small{display:block;color:var(--muted-3);font-size:10px;letter-spacing:.9px;font-weight:800}
+.reference strong{display:block;color:var(--lime);font-family:'Space Grotesk';font-size:18px;margin-top:5px;letter-spacing:1.2px}
+
+/* ---------- Order History ---------- */
 .orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:13px;margin-bottom:8px}
 .orderItem strong{font-size:13px;display:block;font-weight:800}
-.orderItem small{color:var(--muted2);font-size:11px;display:block;margin-top:4px;line-height:1.45}
+.orderItem small{color:var(--muted-2);font-size:11px;display:block;margin-top:4px;line-height:1.45}
 .orderAmount{color:var(--lime)!important;font-weight:900}
-.reorderBtn{margin-top:10px;padding:9px 14px;background:transparent;color:var(--lime);border:1px solid rgba(198,255,0,.35);border-radius:10px;font-size:11.5px;font-weight:800;transition:background .15s}
-.reorderBtn:hover{background:rgba(198,255,0,.08)}
-.footer{text-align:center;color:#6a6a6a;padding:24px 20px 100px;font-size:11px;line-height:1.7}
+.reorderBtn{margin-top:10px;padding:9px 14px;background:transparent;color:var(--lime);border:1px solid var(--lime-line);border-radius:10px;font-size:11.5px;font-weight:800;transition:background .15s}
+.reorderBtn:hover{background:var(--lime-soft)}
+.rateRow{margin-top:10px;display:flex;gap:6px;align-items:center;color:var(--muted-2);font-size:11px;font-weight:700}
+.rateRow button{background:transparent;border:1px solid #2a2a2a;border-radius:8px;padding:4px 7px;font-size:14px;transition:border-color .15s,transform .15s}
+.rateRow button:hover{border-color:var(--lime);transform:scale(1.1)}
+
+/* ---------- Footer ---------- */
+.footer{text-align:center;color:var(--muted-3);padding:26px 20px 110px;font-size:11px;line-height:1.8}
 .footer strong{color:var(--muted)}
-.toast{position:fixed;left:12px;right:12px;bottom:80px;z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.5);font-size:13px;font-weight:700;text-align:center}
-.toast.show{display:block;animation:toast .2s ease}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13px;font-weight:700;text-align:center}
+.toast.show{display:block;animation:toast .22s ease}
 @keyframes toast{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media(min-width:650px){body{max-width:760px;margin:auto}.bottomNav{max-width:760px;left:50%;transform:translateX(-50%)}.modal{place-items:center}.grid2{grid-template-columns:repeat(3,1fr)}.hero{border-radius:0 0 32px 32px}}
+
+/* ---------- Responsive / A11y ---------- */
+@media(min-width:650px){
+  body{max-width:780px;margin:auto}
+  .bottomNav{max-width:780px;left:50%;transform:translateX(-50%)}
+  .modal{place-items:center}
+  .hero{border-radius:0 0 36px 36px}
+}
 @media(max-width:380px){.panelGrid{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.activeOrder.flash{animation:none!important;border-color:var(--lime)}.liveDot.on{animation:none!important;box-shadow:0 0 0 3px rgba(34,197,94,.35)}}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .activeOrder.flash{animation:none!important;border-color:var(--lime)}
+  .liveDot.on{animation:none!important;box-shadow:0 0 0 3px rgba(34,197,94,.35)}
+}
 </style>
 </head>
 <body>
 
 <div id="offlineBar" class="offlineBar" role="status" aria-live="polite">📶 You're offline — we'll reconnect automatically</div>
 
+<!-- ═══════ TOP BAR ═══════ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brandMark">G</div>
+    <div class="brandText">GUEST<span>HUB</span></div>
+  </div>
+  <div class="topActions">
+    <div class="roomChip" id="roomChip">🛏️ Room <b id="topRoom">—</b></div>
+    <button class="iconBtn" id="bellBtn" aria-label="Notifications" title="Notifications">🔔</button>
+  </div>
+</header>
+
+<!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="heroContent">
-    <div class="eyebrow">✦ GUESTHUB</div>
-    <h1>WELCOME TO<br><span id="hotelName">YOUR HOTEL</span></h1>
+    <div class="eyebrow">✦ GUESTHUB OS</div>
+    <h1 id="greeting">Welcome</h1>
+    <h1><span id="hotelName">YOUR HOTEL</span></h1>
     <p id="hotelTagline">Room service • Transport • Tours • Spa • Concierge</p>
     <div class="heroBottom">
       <div class="verified">🔒 GuestHub Verified</div>
-      <div class="wifi">📶 Guest Network</div>
+      <div class="heroMeta">
+        <span id="heroRoom">🛏️ —</span>
+        <span id="heroStay">✨ Ready</span>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="panel" aria-label="Your stay">
-  <div class="panelHead"><strong>👋 Your Stay</strong><small>SECURED</small></div>
-  <div class="panelGrid">
-    <input id="guestName" class="input" placeholder="Your name" autocomplete="name" aria-label="Your name">
-    <input id="roomNo" class="input" placeholder="Room number" inputmode="numeric" autocomplete="off" aria-label="Room number">
+<!-- ═══════ YOUR STAY ═══════ -->
+<section class="panel wrap-panel">
+  <div class="wrap" style="padding:0">
+    <div class="panel" style="margin-top:14px">
+      <div class="panelHead"><strong>👋 Your Stay</strong><small>SECURED</small></div>
+      <div class="panelGrid">
+        <input id="guestName" class="input" placeholder="Your name" autocomplete="name" aria-label="Your name">
+        <input id="roomNo" class="input" placeholder="Room number" inputmode="numeric" autocomplete="off" aria-label="Room number">
+      </div>
+    </div>
   </div>
 </section>
 
-<div class="search">
+<!-- ═══════ PROMO ═══════ -->
+<div class="wrap">
+  <div class="promo" id="promoBanner">
+    <div>
+      <b id="promoTitle">🎉 Welcome to GuestHub</b>
+      <small id="promoText">Order anything from your room — we'll handle the rest.</small>
+    </div>
+    <span class="promoTag">LIVE</span>
+    <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
+  </div>
+</div>
+
+<!-- ═══════ QUICK ACTIONS ═══════ -->
+<div class="wrap">
+  <div class="quickRow" id="quickRow">
+    <button class="quickAction" data-quick="food"><i>🍽️</i>Room Service</button>
+    <button class="quickAction" data-quick="taxi"><i>🚕</i>Taxi</button>
+    <button class="quickAction" data-quick="tour"><i>🦁</i>Safari</button>
+    <button class="quickAction" data-quick="spa"><i>🧖</i>Spa</button>
+    <button class="quickAction" data-quick="services"><i>🧹</i>Housekeeping</button>
+    <button class="quickAction" id="quickOrders"><i>📋</i>My Orders</button>
+  </div>
+</div>
+
+<!-- ═══════ SEARCH ═══════ -->
+<div class="wrap search">
   <div class="searchBox">
     <span class="searchIcon">🔎</span>
     <input id="searchService" class="input" placeholder="Search room service, safari, taxi…" autocomplete="off" aria-label="Search services">
   </div>
 </div>
 
-<section class="activeOrder" id="activeOrder" aria-live="polite" aria-label="Active request">
-  <div class="orderTop">
-    <div>
-      <div class="orderService" id="activeService">Your active request</div>
-      <div class="orderRef" id="activeReference">GH-000000</div>
+<!-- ═══════ ACTIVE ORDER ═══════ -->
+<div class="wrap">
+  <section class="activeOrder" id="activeOrder" aria-live="polite" aria-label="Active request">
+    <div class="orderTop">
+      <div>
+        <div class="orderService" id="activeService">Your active request</div>
+        <div class="orderRef" id="activeReference">GH-000000</div>
+      </div>
+      <div class="orderActions">
+        <span class="liveDot" id="liveDot" title="Connecting…" aria-label="Live update status"></span>
+        <button class="refreshBtn" id="refreshActive" aria-label="Refresh order status">⟳</button>
+        <span class="status pending" id="activeStatus">Pending</span>
+      </div>
     </div>
-    <div class="orderActions">
-      <span class="liveDot" id="liveDot" title="Connecting…" aria-label="Live update status"></span>
-      <button class="refreshBtn" id="refreshActive" aria-label="Refresh order status">⟳</button>
-      <span class="status pending" id="activeStatus">Pending</span>
+    <div class="progress" id="progress">
+      <span class="progressStep active" data-step="1"></span>
+      <span class="progressStep" data-step="2"></span>
+      <span class="progressStep" data-step="3"></span>
+      <span class="progressStep" data-step="4"></span>
     </div>
-  </div>
-  <div class="progress" id="progress">
-    <span class="progressStep active" data-step="1"></span>
-    <span class="progressStep" data-step="2"></span>
-    <span class="progressStep" data-step="3"></span>
-    <span class="progressStep" data-step="4"></span>
-  </div>
-  <div class="progressLabels" aria-hidden="true">
-    <span>Sent</span><span>Accepted</span><span>In&nbsp;Progress</span><span>Done</span>
-  </div>
-  <div class="orderDetails">
-    <span>Room <strong id="activeRoom">—</strong></span>
-    <span><strong id="activeAmount">—</strong></span>
-  </div>
-</section>
+    <div class="progressLabels">
+      <span data-step="1">Sent</span>
+      <span data-step="2">Accepted</span>
+      <span data-step="3">In&nbsp;Progress</span>
+      <span data-step="4">Done</span>
+    </div>
+    <div class="orderDetails">
+      <span>Room <strong id="activeRoom">—</strong></span>
+      <span><strong id="activeAmount">—</strong></span>
+    </div>
+    <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
+  </section>
+</div>
 
+<!-- ═══════ CATEGORY PILLS ═══════ -->
+<div class="pills" id="pills"></div>
+
+<!-- ═══════ SERVICES ═══════ -->
 <div id="loading" class="loading"><div class="spinner"></div>Loading your hotel's services…</div>
-
 <main id="serviceArea" style="display:none"></main>
 
 <div id="emptySearch" class="empty" style="margin:0 12px">
@@ -209,19 +372,22 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
   <strong>No service found</strong><br>Try another search.
 </div>
 
+<!-- ═══════ FOOTER ═══════ -->
 <footer class="footer">
   🔒 <strong>GuestHub Secure</strong><br>
   Your hotel coordinates your requested service.<br>
   GuestHub • Hospitality made simple ✨
 </footer>
 
+<!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
   <button class="navBtn active" data-tab="home"><span>⌂</span>Home</button>
+  <button class="navBtn" data-tab="services"><span>◎</span>Services</button>
   <button class="navBtn" data-tab="orders"><span>📋</span>Orders</button>
   <button class="navBtn" data-tab="help"><span>💬</span>Help</button>
-  <button class="navBtn" data-tab="info"><span>ℹ️</span>Info</button>
 </nav>
 
+<!-- ═══════ ORDER MODAL ═══════ -->
 <div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modalBox">
     <div class="modalHead">
@@ -232,7 +398,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
     <input id="guestPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
     <label class="label" for="orderNote">Special instructions</label>
     <input id="orderNote" class="input" placeholder="Time, preference, or request">
-    <div class="twoButtons" style="margin-top:12px">
+    <div class="twoButtons" style="margin-top:14px">
       <button class="btn secondary" data-close="orderModal">Cancel</button>
       <button class="btn" id="confirmOrder">✅ Place Order</button>
     </div>
@@ -240,6 +406,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
   </div>
 </div>
 
+<!-- ═══════ SUCCESS MODAL ═══════ -->
 <div class="modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
   <div class="modalBox success">
     <div class="successIcon">✓</div>
@@ -250,6 +417,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
   </div>
 </div>
 
+<!-- ═══════ ORDERS MODAL ═══════ -->
 <div class="modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
   <div class="modalBox">
     <div class="modalHead">
@@ -260,6 +428,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
   </div>
 </div>
 
+<!-- ═══════ HELP MODAL ═══════ -->
 <div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
   <div class="modalBox">
     <div class="modalHead">
@@ -270,6 +439,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
   </div>
 </div>
 
+<!-- ═══════ INFO MODAL ═══════ -->
 <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
   <div class="modalBox">
     <div class="modalHead">
@@ -291,29 +461,41 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-o
 <script>
 "use strict";
 
-const API_BASE = "";
+/* ═══════════════════════════════════════════════════════════════
+   GUESTHUB OS — GUEST DASHBOARD
+   Architecture: REST API primary, Supabase realtime secondary,
+                 polling fallback. Same contract as server.
+═══════════════════════════════════════════════════════════════ */
+
+/* ---------- Config ---------- */
+const API_BASE         = "";
 const POLL_ACTIVE_MS   = 15000;
 const POLL_IDLE_MS     = 60000;
 const ORDER_COOLDOWN_MS = 30000;
-const SOUND_ENABLED = true;
+const SOUND_ENABLED    = true;
 
 const SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || "";
 const SUPA_KEY = (typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || "";
 
-const $ = id => document.getElementById(id);
+/* ---------- Shortcuts ---------- */
+const $   = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? "Ksh " + n.toLocaleString("en-KE") : "Ask hotel"; };
 const prettyStatus = s => String(s || "").replace(/_/g," ").replace(/\b\w/g, c => c.toUpperCase());
 
-const params = new URLSearchParams(location.search);
-const HOTEL_ID = (params.get("hotel") || params.get("hotel_id") || params.get("h") || localStorage.getItem("last_hotel_id") || "BAOBAB").toUpperCase();
-const ROOM_PARAM = params.get("room") || params.get("room_no") || "";
-const TABLE = params.get("table") || "";
+/* ---------- URL / Storage ---------- */
+const params    = new URLSearchParams(location.search);
+const HOTEL_ID  = (params.get("hotel") || params.get("hotel_id") || params.get("h") || localStorage.getItem("last_hotel_id") || "BAOBAB").toUpperCase();
+const ROOM_PARAM= params.get("room") || params.get("room_no") || "";
+const TABLE     = params.get("table") || "";
 
+/* ---------- State ---------- */
 let HOTEL = null, SERVICES = [], DEPARTMENTS = [], selected = null, lastFocused = null;
 let pollTimer = null, resubTimer = null, refreshing = false, audioCtx = null;
 let supa = null, realtimeChannel = null, realtimeOK = false;
+let activeCategory = "all";
 
+/* ---------- Modal helpers ---------- */
 function openModal(id){
   const m = $(id); if(!m) return;
   lastFocused = document.activeElement;
@@ -340,6 +522,7 @@ document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e =
 document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeAllModals(); });
 
+/* ---------- Toast ---------- */
 let toastTimer = null;
 function toast(msg){
   const el = $("toast");
@@ -349,6 +532,7 @@ function toast(msg){
   toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
 }
 
+/* ---------- Sound ---------- */
 function ensureAudio(){
   if(audioCtx) return audioCtx;
   try { const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return null; audioCtx = new Ctx(); } catch(_) { audioCtx = null; }
@@ -370,34 +554,26 @@ function beep(times = 2, freq = 880){
   }
 }
 
-/* =========================================================
-   ⭐ UPDATED CATEGORY NORMALIZER
-   ---------------------------------------------------------
-   Wider net catches free-text menu categories a GM might type
-   ("Main", "Dessert", "Juice", "Pilau", etc.) so they land
-   under Food & Room Service instead of "More".
-========================================================= */
+/* ═══════════════════════════════════════════════════════════════
+   CATEGORY NORMALIZATION
+═══════════════════════════════════════════════════════════════ */
 function normalizeCategory(value){
   const c = String(value || "").toLowerCase().trim();
   if(!c) return "other";
 
-  /* Transport / Taxi */
   if(c.includes("taxi") || c.includes("transport") || c.includes("transfer") ||
      c.includes("ride") || c.includes("airport") || c.includes("shuttle") ||
-     c.includes("driver") || c.includes("car ")) return "taxi";
+     c.includes("driver") || c.includes("car")) return "taxi";
 
-  /* Tours / Safari */
   if(c.includes("tour") || c.includes("safari") || c.includes("travel") ||
      c.includes("excursion") || c.includes("trip") || c.includes("park") ||
      c.includes("game drive") || c.includes("adventure")) return "tour";
 
-  /* Spa / Wellness */
   if(c.includes("spa") || c.includes("massage") || c.includes("wellness") ||
      c.includes("laundry") || c.includes("gym") || c.includes("beauty") ||
      c.includes("fitness") || c.includes("salon") || c.includes("hair") ||
      c.includes("nail") || c.includes("sauna") || c.includes("steam")) return "spa";
 
-  /* Food / Drinks — WIDE net catches menu sub-categories */
   if(c.includes("food") || c.includes("restaurant") || c.includes("dining") ||
      c.includes("room service") || c.includes("drink") || c.includes("bar") ||
      c.includes("kitchen") || c.includes("menu") || c.includes("meal") ||
@@ -406,13 +582,12 @@ function normalizeCategory(value){
      c.includes("lunch") || c.includes("dinner") || c.includes("beverage") ||
      c.includes("juice") || c.includes("cocktail") || c.includes("wine") ||
      c.includes("beer") || c.includes("tea") || c.includes("coffee") ||
-     c.includes("soda") || c.includes("water") ||
-     c.includes("pizza") || c.includes("burger") || c.includes("chicken") ||
-     c.includes("rice") || c.includes("pilau") || c.includes("nyama") ||
-     c.includes("ugali") || c.includes("soup") || c.includes("salad") ||
-     c.includes("fish") || c.includes("beef") || c.includes("vegetarian")) return "food";
+     c.includes("soda") || c.includes("pizza") || c.includes("burger") ||
+     c.includes("chicken") || c.includes("rice") || c.includes("pilau") ||
+     c.includes("nyama") || c.includes("ugali") || c.includes("soup") ||
+     c.includes("salad") || c.includes("fish") || c.includes("beef") ||
+     c.includes("vegetarian")) return "food";
 
-  /* Housekeeping / Hotel Services */
   if(c.includes("housekeep") || c.includes("front") || c.includes("service") ||
      c.includes("maintenance") || c.includes("maint") || c.includes("clean") ||
      c.includes("towel") || c.includes("amenity")) return "services";
@@ -421,20 +596,38 @@ function normalizeCategory(value){
 }
 
 const CATEGORY_META = {
-  food:     { title:"🍽️ Food & Room Service",   order:1 },
-  taxi:     { title:"🚕 Transport & Transfers", order:2 },
-  tour:     { title:"🌍 Tours & Safari",        order:3 },
-  spa:      { title:"🧖 Spa & Wellness",        order:4 },
-  services: { title:"🏪 Hotel Services",        order:5 },
-  other:    { title:"✨ More",                  order:6 }
+  food:     { title:"🍽️ Food & Room Service",   short:"Food",     order:1 },
+  taxi:     { title:"🚕 Transport & Transfers",  short:"Taxi",     order:2 },
+  tour:     { title:"🌍 Tours & Safari",         short:"Safari",   order:3 },
+  spa:      { title:"🧖 Spa & Wellness",         short:"Spa",      order:4 },
+  services: { title:"🏪 Hotel Services",         short:"Hotel",    order:5 },
+  other:    { title:"✨ More",                   short:"More",     order:6 }
 };
 
+/* ═══════════════════════════════════════════════════════════════
+   GREETING / STAY INFO
+═══════════════════════════════════════════════════════════════ */
+function setGreeting(){
+  const h = new Date().getHours();
+  const name = $("guestName").value.trim();
+  const hi = h < 5 ? "Good evening" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Good evening";
+  $("greeting").textContent = name ? `${hi}, ${name.split(" ")[0]} ✨` : `${hi} 👋`;
+}
+function updateStayChips(){
+  const room = $("roomNo").value.trim();
+  $("topRoom").textContent = room || "—";
+  $("heroRoom").textContent = room ? `🛏️ Room ${room}` : "🛏️ —";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GUEST INFO / VALIDATION
+═══════════════════════════════════════════════════════════════ */
 function saveGuestInfo(){
   const name = $("guestName").value.trim();
   const room = $("roomNo").value.trim();
   const phone = $("guestPhone") ? $("guestPhone").value.trim() : "";
-  if(name) localStorage.setItem("guest_name", name);
-  if(room) localStorage.setItem("guest_room", room);
+  if(name)  localStorage.setItem("guest_name", name);
+  if(room)  localStorage.setItem("guest_room", room);
   if(phone) localStorage.setItem("guest_phone", phone);
 }
 function validGuest(){
@@ -448,12 +641,13 @@ function normalizePhone(raw){
   const digits = String(raw || "").replace(/\D/g, "");
   if(!digits) return "";
   if(digits.startsWith("254")) return digits;
-  if(digits.startsWith("0")) return "254" + digits.slice(1);
-  if(digits.length === 9) return "254" + digits;
+  if(digits.startsWith("0"))   return "254" + digits.slice(1);
+  if(digits.length === 9)      return "254" + digits;
   return digits;
 }
 function validKenyanPhone(p){ return /^254(7|1)\d{8}$/.test(p); }
 
+/* ---------- Rate limit ---------- */
 function rateLimitKey(){ const room = $("roomNo").value.trim() || "_"; return `last_order_at_${HOTEL_ID}_${room}`; }
 function checkRateLimit(){
   const key = rateLimitKey();
@@ -468,6 +662,9 @@ function checkRateLimit(){
 }
 function markRateLimit(){ localStorage.setItem(rateLimitKey(), String(Date.now())); }
 
+/* ═══════════════════════════════════════════════════════════════
+   SUPABASE REALTIME
+═══════════════════════════════════════════════════════════════ */
 function initSupabase(){
   if(!window.supabase){ console.info("[GuestHub] Supabase SDK not loaded — polling only"); return null; }
   if(!SUPA_URL || !SUPA_KEY){ console.info("[GuestHub] Supabase credentials missing — polling only"); return null; }
@@ -516,6 +713,9 @@ function handleRealtimeOrder(row){
   if($("ordersModal").classList.contains("active")) viewOrders();
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   STATUS CHANGE NOTIFICATIONS
+═══════════════════════════════════════════════════════════════ */
 function seenStatusKey(order){ return `seen_status_${HOTEL_ID}_${order.reference || order.id}`; }
 function detectStatusChange(order){
   const key = seenStatusKey(order);
@@ -540,13 +740,22 @@ function notifyStatusChange(order, from, to){
   if(to === "on_the_way" || to === "completed") beep(2);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════ */
 async function init(){
+  /* Restore guest info */
   $("guestName").value = localStorage.getItem("guest_name") || "";
   $("guestPhone").value = localStorage.getItem("guest_phone") || "";
   $("roomNo").value = ROOM_PARAM || localStorage.getItem("guest_room") || "";
+
+  setGreeting();
+  updateStayChips();
   updateOffline();
   window.addEventListener("offline", updateOffline);
   window.addEventListener("online", () => { updateOffline(); loadActiveOrder(); if(supa) subscribeRealtime(); });
+
+  /* Hotel */
   try {
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
     if(r.ok){
@@ -556,24 +765,44 @@ async function init(){
       if(HOTEL.tagline) $("hotelTagline").innerText = HOTEL.tagline;
     } else { $("hotelName").innerText = HOTEL_ID; }
   } catch { $("hotelName").innerText = HOTEL_ID; }
+
+  /* Services */
   try {
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
     const j = await r.json();
     SERVICES = (j.services || []).map(s => ({ ...s, category: normalizeCategory(s.category || s.type || s.title) }));
     DEPARTMENTS = j.departments || [];
   } catch (e) { console.warn("services load failed", e); SERVICES = []; }
+
   $("loading").style.display = "none";
   $("serviceArea").style.display = "block";
+
   renderAll();
+  renderPills();
   renderHelp();
   await loadActiveOrder();
+
   supa = initSupabase();
   if(supa) subscribeRealtime(); else schedulePoll();
+
+  /* Config promo (optional) */
+  if(HOTEL && HOTEL.promo_text){
+    $("promoTitle").textContent = "🎉 " + (HOTEL.promo_title || "Special offer");
+    $("promoText").textContent  = HOTEL.promo_text;
+  }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   OFFLINE
+═══════════════════════════════════════════════════════════════ */
 function updateOffline(){
   const bar = $("offlineBar");
   if(!navigator.onLine) bar.classList.add("show"); else bar.classList.remove("show");
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════════ */
 function renderAll(){
   const area = $("serviceArea");
   if(!SERVICES.length){
@@ -593,22 +822,58 @@ function sectionBlock(title, items, cat){
   return `<section class="section" data-cat="${esc(cat)}"><h3>${title} <span class="count">${items.length}</span></h3><div class="grid2">${items.map(serviceCardHTML).join("")}</div></section>`;
 }
 function serviceCardHTML(s){
-  const vendorLine = s.vendor_name ? ` • ${esc(s.vendor_name)}` : "";
+  const vendorLine = s.vendor_name ? `<span class="svcVendor">• ${esc(s.vendor_name)}</span>` : "";
   const desc = s.description ? esc(s.description) : "";
   const searchBlob = ((s.title||"") + " " + (s.description||"") + " " + (s.category||"") + " " + (s.vendor_name||"")).toLowerCase();
   return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}"><div class="price">${s.price > 0 ? money(s.price) : "Ask"}</div><i>${esc(s.icon || "🍽️")}</i><b>${esc(s.title || "Service")}</b><small>${desc}${vendorLine}</small></button>`;
 }
+
+/* ---------- Category pills ---------- */
+function renderPills(){
+  const pills = $("pills");
+  const present = new Set(SERVICES.map(s => s.category));
+  const ordered = Object.keys(CATEGORY_META).filter(c => present.has(c)).sort((a,b)=>CATEGORY_META[a].order-CATEGORY_META[b].order);
+  let html = `<button class="pill active" data-cat="all">All</button>`;
+  ordered.forEach(c => { html += `<button class="pill" data-cat="${esc(c)}">${esc(CATEGORY_META[c].short)}</button>`; });
+  pills.innerHTML = html;
+  pills.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
+    pills.querySelectorAll(".pill").forEach(x => x.classList.remove("active"));
+    p.classList.add("active");
+    activeCategory = p.dataset.cat;
+    applyCategoryFilter();
+  }));
+}
+function applyCategoryFilter(){
+  document.querySelectorAll("#serviceArea .section").forEach(sec => {
+    const match = activeCategory === "all" || sec.dataset.cat === activeCategory;
+    sec.classList.toggle("hidden", !match);
+  });
+  applySearch();
+}
+
+/* ---------- Search ---------- */
 function applySearch(){
   const q = $("searchService").value.trim().toLowerCase();
   const cards = document.querySelectorAll(".svc");
   const sections = document.querySelectorAll("#serviceArea .section");
   let totalVisible = 0;
-  cards.forEach(card => { const match = !q || (card.dataset.search || "").includes(q); card.classList.toggle("hidden-card", !match); if(match) totalVisible++; });
-  sections.forEach(sec => { const visible = sec.querySelectorAll(".svc:not(.hidden-card)").length; sec.classList.toggle("hidden", visible === 0); });
+  cards.forEach(card => {
+    const match = !q || (card.dataset.search || "").includes(q);
+    card.classList.toggle("hidden-card", !match);
+    if(match) totalVisible++;
+  });
+  sections.forEach(sec => {
+    const visible = sec.querySelectorAll(".svc:not(.hidden-card)").length;
+    const catOK = activeCategory === "all" || sec.dataset.cat === activeCategory;
+    sec.classList.toggle("hidden", visible === 0 || !catOK);
+  });
   $("emptySearch").classList.toggle("show", !!q && totalVisible === 0);
 }
 $("searchService").addEventListener("input", applySearch);
 
+/* ═══════════════════════════════════════════════════════════════
+   ORDER FLOW
+═══════════════════════════════════════════════════════════════ */
 function openOrder(id){
   if(!validGuest()) return;
   selected = SERVICES.find(s => String(s.id) === String(id));
@@ -616,7 +881,7 @@ function openOrder(id){
   $("mTitle").innerText = selected.title || "Confirm Request";
   const bits = [];
   if(selected.description) bits.push(selected.description);
-  if(selected.price > 0) bits.push(money(selected.price));
+  if(selected.price > 0)   bits.push(money(selected.price));
   if(selected.vendor_name) bits.push(selected.vendor_name);
   $("mDesc").innerText = bits.join(" • ");
   $("guestPhone").value = localStorage.getItem("guest_phone") || "";
@@ -629,6 +894,7 @@ $("confirmOrder").addEventListener("click", async () => {
   if(!validGuest()) return;
   if(!checkRateLimit()) return;
   ensureAudio();
+
   const rawPhone = $("guestPhone").value.trim();
   const finalPhone = normalizePhone(rawPhone);
   if(!validKenyanPhone(finalPhone)){
@@ -636,22 +902,31 @@ $("confirmOrder").addEventListener("click", async () => {
     $("guestPhone").focus();
     return;
   }
+
   const btn = $("confirmOrder");
   btn.disabled = true;
   const originalText = btn.innerText;
   btn.innerText = "⏳ Sending…";
+
   try {
     const room = $("roomNo").value.trim();
     const payload = {
-      hotel_id: HOTEL_ID, room_number: room,
-      guest_name: $("guestName").value.trim(), guest_phone: finalPhone,
-      service_id: selected.id, service_title: selected.title,
+      hotel_id: HOTEL_ID,
+      room_number: room,
+      guest_name: $("guestName").value.trim(),
+      guest_phone: finalPhone,
+      service_id: selected.id,
+      service_title: selected.title,
       category: selected.category,
       details: $("orderNote").value.trim() || selected.description || "",
       amount: Number(selected.price) || 0,
       department: selected.category
     };
-    const r = await fetch(`${API_BASE}/api/orders`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const r = await fetch(`${API_BASE}/api/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
     if(r.status === 429){
       const j = await r.json().catch(() => ({}));
       toast(j.error || "Please wait a moment before ordering again");
@@ -659,14 +934,18 @@ $("confirmOrder").addEventListener("click", async () => {
     }
     const j = await r.json();
     if(!j.ok) throw new Error(j.error || "Order failed");
+
     saveGuestInfo();
     markRateLimit();
+
     $("orderRef").innerText = (j.order && j.order.reference) || "—";
     $("successText").innerText = `${selected.title} sent to ${HOTEL?.name || HOTEL_ID} for Room ${room}. You'll hear back shortly.`;
     closeModal("orderModal");
     openModal("successModal");
+
     if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
     beep(1, 660);
+
     if(j.order){
       const key = seenStatusKey(j.order);
       localStorage.setItem(key, String(j.order.status || "pending").toLowerCase().replace(/\s+/g,"_"));
@@ -682,13 +961,18 @@ $("confirmOrder").addEventListener("click", async () => {
 
 $("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
 
-const STATUS_STEPS = { pending:1, new:1, accepted:2, preparing:3, on_the_way:3, ontheway:3, completed:4, cancelled:0 };
+/* ═══════════════════════════════════════════════════════════════
+   ACTIVE ORDER RENDERING
+═══════════════════════════════════════════════════════════════ */
+const STATUS_STEPS = { pending:1, new:1, accepted:2, preparing:3, on_the_way:3, ontheway:3, completed:4, cancelled:0, rejected:0 };
+
 function pickActiveOrder(orders){
   if(!orders || !orders.length) return null;
   const sorted = [...orders].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  const live = sorted.find(o => { const s = String(o.status || "").toLowerCase(); return s !== "completed" && s !== "cancelled"; });
-  return live || sorted[0];
+  const live = sorted.find(o => { const s = String(o.status || "").toLowerCase(); return s !== "completed" && s !== "cancelled" && s !== "rejected"; });
+  return live || null;
 }
+
 async function loadActiveOrder(manual = false){
   if(refreshing) return;
   refreshing = true;
@@ -710,28 +994,55 @@ async function loadActiveOrder(manual = false){
     if(btn && manual){ setTimeout(() => btn.classList.remove("spinning"), 400); }
   }
 }
+
 function renderActiveOrder(order){
   const banner = $("activeOrder");
   const status = String(order.status || "pending").toLowerCase().replace(/\s+/g,"_");
   const step = STATUS_STEPS[status] ?? 1;
+
   $("activeService").innerText = order.service_title || "Your request";
   $("activeReference").innerText = order.reference || "GH-XXXX";
-  $("activeRoom").innerText = order.room_number || "—";
+  $("activeRoom").innerText = order.room_number || order.room || "—";
   $("activeAmount").innerText = order.amount > 0 ? money(order.amount) : "—";
+
   const statusEl = $("activeStatus");
   statusEl.className = "status " + status;
   statusEl.innerText = status === "on_the_way" ? "On the way" : prettyStatus(status);
+
+  /* Progress steps */
   document.querySelectorAll("#progress .progressStep").forEach(el => {
     const s = Number(el.dataset.step);
     el.classList.remove("active","cancelled");
-    if(status === "cancelled") return;
+    if(status === "cancelled" || status === "rejected") return;
     if(s <= step) el.classList.add("active");
   });
-  if(status === "cancelled"){
+  document.querySelectorAll(".progressLabels span").forEach(el => {
+    const s = Number(el.dataset.step);
+    el.classList.toggle("active", step >= s && status !== "cancelled" && status !== "rejected");
+  });
+  if(status === "cancelled" || status === "rejected"){
     document.querySelectorAll("#progress .progressStep").forEach(el => el.classList.add("cancelled"));
   }
+
+  /* ETA */
+  const eta = $("orderEta");
+  const etaText = $("orderEtaText");
+  if(status === "accepted" || status === "preparing"){
+    eta.style.display = "flex";
+    etaText.textContent = status === "preparing" ? "Being prepared — arriving soon" : "Accepted — preparing shortly";
+  } else if(status === "on_the_way"){
+    eta.style.display = "flex";
+    etaText.textContent = "On the way to your room now";
+  } else {
+    eta.style.display = "none";
+  }
+
   banner.classList.add("show");
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   POLLING
+═══════════════════════════════════════════════════════════════ */
 function schedulePoll(){
   if(pollTimer) clearTimeout(pollTimer);
   if(realtimeOK) return;
@@ -740,6 +1051,7 @@ function schedulePoll(){
   pollTimer = setTimeout(async () => { await loadActiveOrder(); schedulePoll(); }, interval);
 }
 function stopPolling(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; } }
+
 document.addEventListener("visibilitychange", () => {
   if(document.hidden){ stopPolling(); }
   else {
@@ -749,8 +1061,12 @@ document.addEventListener("visibilitychange", () => {
     else schedulePoll();
   }
 });
+
 $("refreshActive").addEventListener("click", () => loadActiveOrder(true));
 
+/* ═══════════════════════════════════════════════════════════════
+   ORDER HISTORY
+═══════════════════════════════════════════════════════════════ */
 async function viewOrders(){
   const room = $("roomNo").value.trim();
   if(!room){ toast("Enter your room number first"); $("roomNo").focus(); return; }
@@ -761,16 +1077,25 @@ async function viewOrders(){
     const j = await r.json();
     const orders = j.orders || [];
     if(!orders.length){
-      $("ordersList").innerHTML = '<div style="text-align:center;padding:30px 16px;color:#a8a8a8"><div style="font-size:32px;margin-bottom:8px">📋</div><strong style="color:#fff;font-size:13px">No orders yet</strong><div style="font-size:12px;margin-top:6px">Your requests will appear here.</div></div>';
+      $("ordersList").innerHTML = '<div style="text-align:center;padding:30px 16px;color:#a8a8a8"><div style="font-size:34px;margin-bottom:8px">📋</div><strong style="color:#fff;font-size:13px">No orders yet</strong><div style="font-size:12px;margin-top:6px">Your requests will appear here.</div></div>';
       return;
     }
     $("ordersList").innerHTML = orders.map(o => {
       const status = String(o.status || "pending").toLowerCase().replace(/\s+/g,"_");
       const when = o.created_at ? new Date(o.created_at).toLocaleString() : "";
       const amount = o.amount > 0 ? money(o.amount) : "";
-      const canReorder = (status === "completed" || status === "cancelled") && SERVICES.some(s => String(s.title) === String(o.service_title));
-      return `<div class="orderItem"><strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong><small>Room ${esc(o.room_number || "—")}${when ? " • " + esc(when) : ""}</small><div class="status ${esc(status)}" style="margin-top:8px">${esc(status.replace(/_/g," ").toUpperCase())}</div>${canReorder ? `<button class="reorderBtn" data-reorder="${esc(o.service_title)}">↻ Order again</button>` : ""}</div>`;
+      const canReorder = (status === "completed" || status === "cancelled" || status === "rejected") && SERVICES.some(s => String(s.title) === String(o.service_title));
+      const canRate = status === "completed";
+      return `
+        <div class="orderItem">
+          <strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong>
+          <small>Room ${esc(o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
+          <div class="status ${esc(status)}" style="margin-top:8px">${esc(status.replace(/_/g," ").toUpperCase())}</div>
+          ${canRate ? `<div class="rateRow">Rate: <button data-rate="5">⭐</button><button data-rate="4">👍</button><button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
+          ${canReorder ? `<button class="reorderBtn" data-reorder="${esc(o.service_title)}">↻ Order again</button>` : ""}
+        </div>`;
     }).join("");
+
     $("ordersList").querySelectorAll("[data-reorder]").forEach(btn => {
       btn.addEventListener("click", () => {
         const title = btn.dataset.reorder;
@@ -780,11 +1105,20 @@ async function viewOrders(){
         setTimeout(() => openOrder(svc.id), 200);
       });
     });
+    $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        toast("Thanks for the feedback! ✨");
+        btn.parentElement.innerHTML = '<span style="color:var(--lime)">✓ Thanks for rating</span>';
+      });
+    });
   } catch (e) {
     $("ordersList").innerHTML = '<div style="color:#ef4444;text-align:center;padding:20px;font-size:13px">Could not load orders. Please try again.</div>';
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   HELP / WHATSAPP
+═══════════════════════════════════════════════════════════════ */
 function renderHelp(){
   const list = $("helpList"); if(!list) return;
   if(!DEPARTMENTS.length){
@@ -807,28 +1141,58 @@ function whatsapp(dept){
   window.open("https://wa.me/" + phone + "?text=" + msg, "_blank");
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   UI EVENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* Quick actions */
+document.querySelectorAll("[data-quick]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const cat = btn.dataset.quick;
+    const pill = document.querySelector(`.pill[data-cat="${cat}"]`);
+    if(pill) pill.click();
+    document.querySelector("#serviceArea")?.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+});
+$("quickOrders").addEventListener("click", viewOrders);
+
+/* Promo close */
+$("promoClose").addEventListener("click", () => {
+  $("promoBanner").style.display = "none";
+  localStorage.setItem(`promo_closed_${HOTEL_ID}`, "1");
+});
+
+/* Bell → help */
+$("bellBtn").addEventListener("click", () => openModal("helpModal"));
+
+/* Bottom nav */
 document.querySelectorAll(".navBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
     document.querySelectorAll(".navBtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     if(tab === "home"){ closeAllModals(); window.scrollTo({top:0, behavior:"smooth"}); }
+    if(tab === "services"){ closeAllModals(); document.querySelector("#serviceArea")?.scrollIntoView({behavior:"smooth", block:"start"}); }
     if(tab === "orders") viewOrders();
-    if(tab === "help") openModal("helpModal");
-    if(tab === "info") openModal("infoModal");
+    if(tab === "help")   openModal("helpModal");
   });
 });
 
-$("guestName").addEventListener("input", saveGuestInfo);
+/* Guest info save */
+$("guestName").addEventListener("input", () => { saveGuestInfo(); setGreeting(); });
 $("roomNo").addEventListener("input", () => {
   saveGuestInfo();
+  updateStayChips();
   clearTimeout(resubTimer);
   resubTimer = setTimeout(() => { if(supa) subscribeRealtime(); loadActiveOrder(); }, 700);
 });
+$("guestPhone").addEventListener("input", saveGuestInfo);
 
+/* Cleanup */
 window.addEventListener("beforeunload", unsubscribeRealtime);
 window.addEventListener("pagehide", unsubscribeRealtime);
 
+/* Boot */
 init();
 </script>
 </body>
