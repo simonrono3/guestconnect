@@ -1,133 +1,1187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GuestHub Vendor OS 12.0 — Live Jobs</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070707">
+<title>GuestHub Vendor OS</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/config.js"></script>
 <style>
-:root{--lime:#c6ff00;--gold:#fbbf24;--bg:#070707;--card:#121212;--card2:#0b0b0b;--border:#242424;--muted:#888;--ok:#22c55e;--danger:#ef4444;--blue:#38bdf8}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px}
-header{position:sticky;top:0;z-index:100;background:rgba(7,7,7,.94);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
-.brand{font-family:Space Grotesk;font-weight:800;font-size:17px}.brand span{color:var(--lime)}.vendor-mini{text-align:right;font-size:10px;color:var(--muted)}
-.wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:22px;padding:20px}
-.btn{padding:11px 14px;border:0;border-radius:11px;font-weight:800;font-size:12px;cursor:pointer}.btn-a{background:var(--lime);color:#000}.btn-g{background:var(--gold);color:#000}.btn-d{background:#202020;color:#fff;border:1px solid #333}.btn-red{background:#3a1111;color:#ff7777;border:1px solid #572020}.btn-blue{background:#082c3d;color:#38bdf8;border:1px solid #10465c}.btn-full{width:100%}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:0 14px}.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 8px;text-align:center}.stat b{display:block;font-family:Space Grotesk;font-size:20px}.stat small{color:var(--muted);font-size:8px;font-weight:800}
-.tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:var(--bg)}.tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:11px;cursor:pointer}.tab.active{background:var(--lime);color:#000}
-.view{padding:0 14px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:11px}
-.job{border-left:4px solid var(--lime)}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;background:#242424}.badge-new{background:#263500;color:var(--lime)}.badge-active{background:#082c3d;color:var(--blue)}
-.input{width:100%;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;padding:12px;outline:none}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(100px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:800;font-size:11px;z-index:999;transition:.25s}.toast.show{transform:translateX(-50%) translateY(0)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}.modal.show{display:flex}.modal-box{width:100%;max-width:600px;background:#111;border:1px solid #333;border-radius:22px 22px 0 0;padding:20px}
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}}
+  :root{
+    --lime:#c6ff00; --gold:#fbbf24; --bg:#070707; --card:#121212;
+    --card2:#0b0b0b; --border:#242424; --muted:#888;
+    --ok:#22c55e; --danger:#ef4444; --blue:#38bdf8;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px;-webkit-font-smoothing:antialiased}
+  button,input,textarea,select{font-family:inherit}
+  button{cursor:pointer}
+
+  header{position:sticky;top:0;z-index:100;background:rgba(7,7,7,.94);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .brand{font-family:Space Grotesk;font-weight:800;font-size:17px}
+  .brand span{color:var(--lime)}
+  .vendor-mini{text-align:right;font-size:10px;color:var(--muted)}
+  .vendor-mini b{color:#fff;font-weight:800;display:block;font-size:12px}
+
+  .container{max-width:900px;margin:auto}
+
+  .wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:22px;padding:20px;box-shadow:0 15px 40px rgba(198,255,0,.08)}
+  .wallet-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .wallet small{font-weight:800}
+  .wallet h1{margin:5px 0 3px;font-family:Space Grotesk;font-size:26px;line-height:1.1;word-break:break-all}
+  .wallet-sub{font-size:11px;opacity:.75}
+  .wallet-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+  .btn{padding:11px 14px;border:0;border-radius:11px;font-weight:800;font-size:12px;transition:.15s}
+  .btn:active{transform:scale(.97)}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn-a{background:var(--lime);color:#000}
+  .btn-g{background:var(--gold);color:#000}
+  .btn-d{background:#202020;color:#fff;border:1px solid #333}
+  .btn-red{background:#3a1111;color:#ff7777;border:1px solid #572020}
+  .btn-blue{background:#082c3d;color:#38bdf8;border:1px solid #10465c}
+  .btn-black{background:#000;color:#fff}
+  .btn-full{width:100%}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:0 14px}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 8px;text-align:center}
+  .stat b{display:block;font-family:Space Grotesk;font-size:20px}
+  .stat small{color:var(--muted);font-size:8px;font-weight:800}
+
+  .availability{margin:12px 14px;padding:13px;background:var(--card);border:1px solid var(--border);border-radius:15px;display:flex;justify-content:space-between;align-items:center}
+  .availability-left b{font-size:13px}
+  .availability-left small{display:block;color:var(--muted);margin-top:3px;font-size:10px}
+
+  .toggle{width:50px;height:28px;background:#333;border-radius:999px;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
+  .toggle::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}
+  .toggle.on{background:var(--ok)}
+  .toggle.on::after{left:25px}
+  .toggle.busy{opacity:.5;pointer-events:none}
+
+  .tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:var(--bg)}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:11px}
+  .tab.active{background:var(--lime);color:#000}
+
+  .view{padding:0 14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:11px}
+  .card-title{font-family:Space Grotesk;font-size:17px;margin-bottom:5px}
+  .muted{color:var(--muted)}
+  .small{font-size:10px}
+
+  .job{border-left:4px solid var(--lime)}
+  .job-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .job-title{font-family:Space Grotesk;font-size:15px}
+  .job-ref{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.06em}
+
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;background:#242424}
+  .badge-new{background:#263500;color:var(--lime)}
+  .badge-active{background:#082c3d;color:var(--blue)}
+  .badge-done{background:#0a2a14;color:var(--ok)}
+  .badge-danger{background:#3a0b0b;color:#ff6666}
+
+  .job-meta{margin-top:8px;line-height:1.75;font-size:11px;color:var(--muted)}
+  .job-meta strong{color:#fff}
+  .job-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+
+  .service{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border);border-radius:13px}
+  .service-name{font-weight:800;font-size:12px}
+  .service-price{color:var(--lime);font-weight:900;font-size:12px}
+
+  .hotel-row{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:7px}
+  .hotel-name{font-weight:800;font-size:12px}
+  .hotel-status{font-size:9px;font-weight:900;padding:3px 8px;border-radius:999px}
+  .hotel-status.on{background:rgba(34,197,94,.15);color:var(--ok);border:1px solid rgba(34,197,94,.3)}
+
+  .profile-row{padding:12px 0;border-bottom:1px solid var(--border)}
+  .profile-row:last-child{border-bottom:0}
+  .profile-label{color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.08em}
+  .profile-value{margin-top:4px;font-size:12px;font-weight:700;word-break:break-word}
+
+  .empty{text-align:center;padding:35px 15px;color:var(--muted)}
+  .empty b{color:#fff;display:block;margin-bottom:6px;font-size:13px}
+  .loader{text-align:center;padding:35px;color:var(--muted)}
+
+  .input{width:100%;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;padding:12px;outline:none;font-size:13px}
+  .input:focus{border-color:var(--lime)}
+  .form-group{margin-bottom:10px}
+  .form-group label{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.08em;display:block;margin-bottom:5px}
+
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(100px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:800;font-size:11px;z-index:999;transition:.25s;box-shadow:0 10px 40px #000;max-width:90vw;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.err{background:#3a1111;color:#ffb4b4;border:1px solid #572020}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}
+  .modal.show{display:flex}
+  .modal-box{width:100%;max-width:600px;background:#111;border:1px solid #333;border-radius:22px 22px 0 0;padding:20px;max-height:92vh;overflow:auto}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:10px}
+
+  .chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+  .chk{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--card2);border:1px solid var(--border);border-radius:11px;font-size:11px;font-weight:600;cursor:pointer}
+  .chk input{accent-color:var(--lime);margin:0}
+
+  .paychip{padding:8px 12px;border-radius:999px;background:#0A0A0A;border:1px solid #2A2A2A;font-size:11px;font-weight:800;color:#fff;transition:.15s}
+  .paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
+
+  .ussd{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.65;white-space:pre-line}
+
+  @media(min-width:700px){.modal{align-items:center}.modal-box{border-radius:22px}}
+  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.chk-grid{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
 <body>
-<header><div class="brand">GuestHub <span>Vendor OS 12.0</span></div><div class="vendor-mini"><div id="vendorName">Loading...</div><div id="vendorCity">—</div></div></header>
-<main style="max-width:900px;margin:auto">
-<section class="wallet"><div style="display:flex;justify-content:space-between"><div><small>WALLET • <span id="walletStatus">LIVE</span></small><h1 id="walletBalance" style="margin:5px 0 3px;font-family:Space Grotesk;font-size:34px">Ksh 0</h1><div style="font-size:11px;opacity:.75">Earnings from GM hotels</div></div><div style="font-size:30px">💳</div></div><div style="display:flex;gap:8px;margin-top:16px"><button class="btn" style="background:#000;color:#fff" onclick="toast('M-Pesa auto soon')">Withdraw</button><button class="btn btn-d" onclick="refreshDashboard()">🔄 Refresh</button></div></section>
-<section class="stats"><div class="stat"><b id="statHotels">0</b><small>HOTELS</small></div><div class="stat"><b id="statNew">0</b><small>NEW</small></div><div class="stat"><b id="statActive">0</b><small>ACTIVE</small></div><div class="stat"><b id="statCompleted">0</b><small>DONE</small></div></section>
-<nav class="tabs">
-<button class="tab active" onclick="showTab('new',this)">🔔 New Jobs</button>
-<button class="tab" onclick="showTab('active',this)">📅 Active</button>
-<button class="tab" onclick="showTab('hotels',this)">🏨 My Hotels</button>
-<button class="tab" onclick="showTab('profile',this)">👤 Profile</button>
-</nav>
-<section id="view-new" class="view"><div id="newJobs">Loading...</div></section>
-<section id="view-active" class="view" style="display:none"><div id="activeJobs"></div></section>
-<section id="view-hotels" class="view" style="display:none"><div id="hotelsContent"></div></section>
-<section id="view-profile" class="view" style="display:none"><div id="profileContent"></div></section>
-</main>
-<div id="toast" class="toast">Done</div>
-<script>
-const supa=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentVendor=null, allOrders=[];
-function money(v){return 'Ksh '+Number(v||0).toLocaleString()}
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function toastM(m){const el=document.getElementById('toast');el.innerText=m;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800)}
-function getToken(){return localStorage.getItem('vendor_token')||''}
 
-async function init(){
- const token=getToken();
- if(!token){ location.href='/vendor-login.html'; return; }
- try{
-  const r=await fetch('/api/vendor/me',{headers:{Authorization:'Bearer '+token}});
-  const j=await r.json();
-  if(!j.ok || !j.vendor) throw new Error('Auth fail');
-  currentVendor=j.vendor;
- }catch{
-  // fallback email
-  const email=localStorage.getItem('vendor_email');
-  if(!email){ location.href='/vendor-login.html'; return; }
-  const {data}=await supa.schema('guesthub_os').from('vendors').select('*').eq('email',email.toLowerCase()).maybeSingle();
-  if(!data) return location.href='/vendor-login.html';
-  currentVendor=data;
- }
- document.getElementById('vendorName').innerText=currentVendor.vendor_name;
- document.getElementById('vendorCity').innerText=(currentVendor.city||'')+' • '+currentVendor.status;
- document.getElementById('walletBalance').innerText=money(currentVendor.wallet||0);
- document.getElementById('walletStatus').innerText=currentVendor.status?.toUpperCase();
- loadOrders(); loadMyHotels(); renderProfile();
-}
-
-async function loadOrders(){
- // Vendor sees orders where vendor_id = his id OR hotel_id where his service is active
- try{
-  const token=getToken();
-  const r=await fetch('/api/vendor/orders',{headers:{Authorization:'Bearer '+token}});
-  const j=await r.json();
-  allOrders=j.orders||[];
- }catch{
-  const {data}=await supa.schema('guesthub_os').from('orders').select('*').order('created_at',{ascending:false}).limit(100);
-  allOrders=data||[];
- }
- // Filter: orders that match my vendor_id OR my hotels
- const myVendorId=currentVendor.id;
- const filtered=allOrders.filter(o=> String(o.vendor_id||'')===String(myVendorId) || (o.department==='services' && String(o.hotel_id).toUpperCase()!=='') );
- const newJobs=filtered.filter(o=>['pending','new'].includes(String(o.status).toLowerCase()));
- const active=filtered.filter(o=>['accepted','in_progress','ready'].includes(String(o.status).toLowerCase()));
- const done=filtered.filter(o=>['completed','done'].includes(String(o.status).toLowerCase()));
- document.getElementById('statNew').innerText=newJobs.length;
- document.getElementById('statActive').innerText=active.length;
- document.getElementById('statCompleted').innerText=done.length;
- renderNew(newJobs); renderActive(active);
-}
-
-function renderNew(orders){
- const box=document.getElementById('newJobs');
- if(!orders.length) { box.innerHTML=`<div class="card" style="text-align:center;padding:30px;color:#888">No new jobs — GM anapo-add hotel yako, orders za guest zitaingia hapa live<br><small>Keep checking guest.html</small></div>`; return; }
- box.innerHTML=orders.map(o=>`
-  <div class="card job">
-   <div style="display:flex;justify-content:space-between"><b>${esc(o.guest_name||'Guest')} — Room ${esc(o.room_number||o.room)}</b><span class="badge badge-new">${esc(o.status)}</span></div>
-   <div style="font-size:11px;color:#888;margin-top:6px">🏨 ${esc(o.hotel_id)} • ${(o.items||[]).map(i=>i.name).join(', ')} • ${money(o.total)}</div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px"><button class="btn btn-a" onclick="updateOrder('${o.id}','accepted')">✅ Accept</button><button class="btn btn-blue" onclick="updateOrder('${o.id}','completed')">✓ Complete</button></div>
+<header>
+  <div class="brand">GuestHub <span>Vendor OS</span></div>
+  <div class="vendor-mini">
+    <b id="vendorName">Loading…</b>
+    <div id="vendorCity">—</div>
   </div>
- `).join('');
-}
-function renderActive(orders){
- const box=document.getElementById('activeJobs');
- if(!orders.length) { box.innerHTML=`<div class="card" style="text-align:center;padding:30px;color:#888">No active</div>`; return; }
- box.innerHTML=orders.map(o=>`<div class="card job"><div style="display:flex;justify-content:space-between"><b>${esc(o.guest_name)} — ${esc(o.room_number)}</b><span class="badge badge-active">${esc(o.status)}</span></div><div style="font-size:11px;color:#888">${money(o.total)} • ${(o.items||[]).map(i=>i.name).join(', ')}</div><button class="btn btn-a" style="width:100%;margin-top:10px" onclick="updateOrder('${o.id}','completed')">✓ Mark Completed</button></div>`).join('');
-}
+</header>
 
-async function loadMyHotels(){
- const {data}=await supa.schema('guesthub_os').from('hotel_services').select('hotel_id').eq('vendor_id',currentVendor.id).eq('is_active',true);
- const hotels=[...new Set((data||[]).map(d=>d.hotel_id))];
- document.getElementById('statHotels').innerText=hotels.length;
- document.getElementById('hotelsContent').innerHTML=`<div class="card"><b>🏨 My Hotels — ${hotels.length} active</b><br><small style="color:#888">GM ali-ku-add kwa hizi hotels, guests wanaona services zako</small></div>`+hotels.map(h=>`<div class="card">${esc(h)} <span class="badge badge-new">LIVE</span></div>`).join('')||'<div class="card">No hotels yet — GM needs to add you in hotel-dashboard → Vendors Pool</div>';
-}
+<main class="container">
 
-async function updateOrder(id,status){
- await supa.schema('guesthub_os').from('orders').update({status}).eq('id',id);
- toastM('Status → '+status); loadOrders();
-}
-function renderProfile(){
- document.getElementById('profileContent').innerHTML=`<div class="card"><b>${esc(currentVendor.vendor_name)}</b><br><small>${esc(currentVendor.email)} • ${esc(currentVendor.phone)}</small><br><br>Price: ${money(currentVendor.price)}<br>Location: ${esc(currentVendor.location)}<br>Status: ${esc(currentVendor.status)}</div><div class="card"><button class="btn btn-red btn-full" onclick="localStorage.clear(); location.href='/vendor-login.html'">Logout</button></div>`;
-}
-function showTab(name,el){ document.querySelectorAll('[id^="view-"]').forEach(s=>s.style.display='none'); document.getElementById('view-'+name).style.display='block'; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active'); }
-function refreshDashboard(){ loadOrders(); loadMyHotels(); toastM('Refreshed'); }
-init();
+  <!-- PAYMENT CARD -->
+  <section class="wallet" id="paymentCard">
+    <div class="wallet-top">
+      <div style="min-width:0;flex:1">
+        <small>💳 DIRECT PAYMENT • <span id="walletStatus">—</span></small>
+        <h1 id="paymentHeadline">Set up your Paybill</h1>
+        <div class="wallet-sub" id="paymentSub">Guests pay you directly</div>
+      </div>
+      <div style="font-size:30px">💳</div>
+    </div>
+
+    <div id="paymentUSSD" class="ussd" style="margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.22);color:#000"></div>
+
+    <div class="wallet-actions">
+      <button class="btn btn-black" onclick="openPaymentModal()">✏️ Change payment setup</button>
+      <button class="btn btn-d" onclick="refreshDashboard()">🔄 Refresh</button>
+      <button class="btn btn-d" onclick="logoutVendor()">🚪 Logout</button>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat"><b id="statServices">0</b><small>SERVICES</small></div>
+    <div class="stat"><b id="statNew">0</b><small>NEW JOBS</small></div>
+    <div class="stat"><b id="statActive">0</b><small>ACTIVE</small></div>
+    <div class="stat"><b id="statCompleted">0</b><small>COMPLETED</small></div>
+  </section>
+
+  <section class="availability">
+    <div class="availability-left">
+      <b id="availabilityTitle">🟢 Available for jobs</b>
+      <small id="availabilityText">Hotels can see your services</small>
+    </div>
+    <div id="availabilityToggle" class="toggle on" role="switch" aria-checked="true" tabindex="0"
+         onclick="toggleAvailability()"
+         onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleAvailability()}"></div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="new"      onclick="showTab('new',this)">🔔 New Jobs</button>
+    <button class="tab"        data-tab="active"   onclick="showTab('active',this)">📅 Active</button>
+    <button class="tab"        data-tab="services" onclick="showTab('services',this)">🛠️ Services</button>
+    <button class="tab"        data-tab="hotels"   onclick="showTab('hotels',this)">🏨 Hotels</button>
+    <button class="tab"        data-tab="earnings" onclick="showTab('earnings',this)">💰 Earnings</button>
+    <button class="tab"        data-tab="profile"  onclick="showTab('profile',this)">👤 Profile</button>
+  </nav>
+
+  <section id="view-new"      class="view"><div id="newJobs"><div class="loader">Loading new jobs…</div></div></section>
+  <section id="view-active"   class="view" style="display:none"><div id="activeJobs"><div class="loader">Loading…</div></div></section>
+  <section id="view-services" class="view" style="display:none"><div id="servicesContent"><div class="loader">Loading…</div></div></section>
+  <section id="view-hotels"   class="view" style="display:none"><div id="hotelsContent"><div class="loader">Loading…</div></div></section>
+  <section id="view-earnings" class="view" style="display:none"><div id="earningsContent"><div class="loader">Loading…</div></div></section>
+  <section id="view-profile"  class="view" style="display:none"><div id="profileContent"><div class="loader">Loading…</div></div></section>
+
+</main>
+
+<!-- PAYMENT SETUP MODAL -->
+<div id="paymentModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <b style="font-family:Space Grotesk;font-size:18px">💳 Payment setup</b>
+      <button class="btn btn-d" onclick="closePaymentModal()">✕</button>
+    </div>
+
+    <p class="small muted" style="margin:0 0 12px 0;line-height:1.6">
+      Guest pays you <b style="color:#fff">direct</b>. We just show them your
+      Paybill / Till / number at checkout.
+    </p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" role="radiogroup">
+      <button type="button" class="paychip" data-channel="paybill">🏢 Paybill</button>
+      <button type="button" class="paychip" data-channel="till">🛒 Till</button>
+      <button type="button" class="paychip" data-channel="send_money">📱 Send Money</button>
+    </div>
+
+    <div id="pm-paybill" class="form-group">
+      <label>PAYBILL NUMBER</label>
+      <input id="pm_paybill_number" class="input" inputmode="numeric" maxlength="10" placeholder="400200">
+      <label style="margin-top:8px">ACCOUNT NUMBER / NAME</label>
+      <input id="pm_paybill_account" class="input" maxlength="40" placeholder="DIANI001">
+    </div>
+
+    <div id="pm-till" class="form-group" style="display:none">
+      <label>TILL NUMBER (BUY GOODS)</label>
+      <input id="pm_till_number" class="input" inputmode="numeric" maxlength="10" placeholder="5123456">
+    </div>
+
+    <div id="pm-send_money" class="form-group" style="display:none">
+      <label>M-PESA PHONE</label>
+      <input id="pm_phone" class="input" type="tel" inputmode="tel" placeholder="254712345678">
+    </div>
+
+    <div class="form-group">
+      <label>BUSINESS / ACCOUNT HOLDER NAME</label>
+      <input id="pm_name" class="input" maxlength="100" placeholder="As registered with Safaricom">
+    </div>
+
+    <button class="btn btn-a btn-full" id="btnPaymentSave" onclick="savePaymentSetup()">Save</button>
+  </div>
+</div>
+
+<!-- SERVICES EDIT MODAL -->
+<div id="servicesModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <b style="font-family:Space Grotesk;font-size:18px">🛠️ Edit Services</b>
+      <button class="btn btn-d" onclick="closeServicesModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label>BASE PRICE (KSH)</label>
+      <input id="editPrice" class="input" type="number" min="0" step="50">
+    </div>
+    <div class="form-group">
+      <label>BIO (max 300)</label>
+      <textarea id="editBio" class="input" rows="3" maxlength="300"></textarea>
+    </div>
+    <div class="form-group">
+      <label>SELECT YOUR SERVICES</label>
+      <div id="serviceCheckboxes" class="chk-grid"></div>
+    </div>
+    <button class="btn btn-a btn-full" id="btnServicesSubmit" onclick="saveServices()">Save Changes</button>
+  </div>
+</div>
+
+<div id="toast" class="toast">Done</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const API = '/api';
+  const TOKEN_KEY = 'vendor_token';
+  const $ = id => document.getElementById(id);
+
+  // ---------- Services catalogue (same as signup) ----------
+  const SERVICES = {
+    g1: { label: 'transport', items: [
+      { id:'airport_taxi', t:'Airport Taxi' },
+      { id:'sgr_taxi',     t:'SGR Transfer' },
+      { id:'town_taxi',    t:'Town Taxi' },
+      { id:'car_hire',     t:'Car Hire + Driver' },
+      { id:'wasini_boat',  t:'Wasini Boat Taxi' },
+      { id:'boda_tuktuk',  t:'Boda / TukTuk' }
+    ]},
+    g2: { label: 'tours', items: [
+      { id:'wasini_dolphin', t:'Wasini Dolphin Tour' },
+      { id:'shimba_hills',   t:'Shimba Hills Safari' },
+      { id:'mara_safari',    t:'Maasai Mara Safari' },
+      { id:'sgr_experience', t:'SGR Experience Tour' },
+      { id:'beach_safari',   t:'Beach & Snorkeling' },
+      { id:'city_tour',      t:'Mombasa City Tour' }
+    ]},
+    g3: { label: 'wellness', items: [
+      { id:'massage',      t:'In-Room Massage' },
+      { id:'spa_nails',    t:'Spa / Nails / Hair' },
+      { id:'laundry',      t:'Express Laundry' },
+      { id:'private_chef', t:'Private Chef' }
+    ]},
+    g4: { label: 'media', items: [
+      { id:'photography', t:'Photography' },
+      { id:'drone',       t:'Drone + Videography' },
+      { id:'shopping',    t:'Curio Shop' },
+      { id:'concierge',   t:'Concierge / Errands' }
+    ]}
+  };
+  const SERVICE_LABELS = Object.fromEntries(
+    Object.values(SERVICES).flatMap(g => g.items).map(s => [s.id, s.t])
+  );
+
+  const STATUS = {
+    NEW:       ['pending', 'new'],
+    ACTIVE:    ['accepted', 'preparing', 'on_the_way'],
+    DONE:      ['completed'],
+    CANCELLED: ['cancelled']
+  };
+  const statusIn = (s, list) => list.includes(String(s || '').toLowerCase());
+
+  // ---------- State ----------
+  let currentVendor = null;
+  let allOrders = [];
+  let myHotels = [];
+  let myHotelsMeta = [];
+  let busy = false;
+  let editChannel = 'paybill';
+
+  // ---------- Helpers ----------
+  const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
+
+  const escapeHtml = v => String(v ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+
+  function toast(msg, isErr = false) {
+    const el = $('toast');
+    el.textContent = msg;
+    el.className = 'toast' + (isErr ? ' err' : '');
+    void el.offsetWidth;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 3000);
+  }
+
+  function statusBadge(status) {
+    const s = String(status || '').toLowerCase();
+    if (s === 'pending' || s === 'new')    return '<span class="badge badge-new">NEW</span>';
+    if (s === 'accepted' || s === 'preparing' || s === 'on_the_way')
+      return '<span class="badge badge-active">' + s.replace('_',' ').toUpperCase() + '</span>';
+    if (s === 'completed')  return '<span class="badge badge-done">COMPLETED</span>';
+    if (s === 'cancelled')  return '<span class="badge badge-danger">CANCELLED</span>';
+    return '<span class="badge">' + escapeHtml(status || 'UNKNOWN') + '</span>';
+  }
+
+  const fmtDate = iso => {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleString('en-KE', { hour12: false }); }
+    catch { return ''; }
+  };
+
+  // ---------- API client ----------
+  const getToken = () => localStorage.getItem(TOKEN_KEY);
+
+  async function api(path, opts = {}) {
+    const token = getToken();
+    const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+    if (token) headers.Authorization = 'Bearer ' + token;
+
+    const res = await fetch(API + path, { ...opts, headers });
+    const json = await res.json().catch(() => ({}));
+
+    if (res.status === 401) {
+      logoutVendor(true);
+      throw new Error('Session expired — please log in again');
+    }
+    if (!res.ok || json.ok === false) {
+      throw new Error(json.error || ('Request failed (' + res.status + ')'));
+    }
+    return json;
+  }
+
+  // ============================================================
+  // AUTH GATE
+  // ============================================================
+  function renderLoginRequired() {
+    $('vendorName').textContent = 'Not logged in';
+    $('vendorCity').textContent = 'Please log in';
+    $('newJobs').innerHTML = `
+      <div class="card empty">
+        <div style="font-size:38px">🔐</div>
+        <b>Vendor login required</b>
+        <p class="small">Please log in to access your GuestHub Vendor OS.</p>
+        <button class="btn btn-a" onclick="location.href='/vendor-login.html'">Go to Vendor Login</button>
+      </div>
+    `;
+    ['statServices','statNew','statActive','statCompleted'].forEach(id => $(id).textContent = '0');
+    $('paymentHeadline').textContent = 'Not logged in';
+    $('paymentSub').textContent = 'Log in to see your payment setup';
+    $('paymentUSSD').textContent = '';
+    $('availabilityToggle').classList.add('busy');
+  }
+
+  function logoutVendor(silent = false) {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('vendor_email');
+    localStorage.removeItem('vendor_id');
+    if (silent) {
+      toast('Session expired', true);
+      setTimeout(() => location.href = '/vendor-login.html', 900);
+    } else {
+      location.href = '/vendor-login.html';
+    }
+  }
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  async function init() {
+    if (!getToken()) return renderLoginRequired();
+
+    try {
+      const me = await api('/vendor/me');
+      currentVendor = me.vendor;
+
+      renderVendorHeader();
+      renderPaymentCard();
+      renderAvailability();
+      renderServices();
+      renderProfile();
+
+      await Promise.all([loadMyHotels(), loadOrders()]);
+    } catch (err) {
+      console.error(err);
+      showFatal(err.message || 'Unable to load dashboard.');
+    }
+  }
+
+  async function refreshDashboard() {
+    if (!getToken()) return renderLoginRequired();
+    toast('Refreshing…');
+    try {
+      const me = await api('/vendor/me');
+      currentVendor = me.vendor;
+      renderVendorHeader();
+      renderPaymentCard();
+      renderAvailability();
+      renderServices();
+      renderProfile();
+      await Promise.all([loadMyHotels(), loadOrders()]);
+      toast('Dashboard updated');
+    } catch (err) {
+      toast(err.message || 'Refresh failed', true);
+    }
+  }
+
+  // ============================================================
+  // HEADER
+  // ============================================================
+  function renderVendorHeader() {
+    const v = currentVendor || {};
+    $('vendorName').textContent = v.vendor_name || v.full_name || 'Vendor';
+    $('vendorCity').textContent = v.city || v.hub_location || 'Kenya';
+  }
+
+  // ============================================================
+  // PAYMENT CARD
+  // ============================================================
+  function paymentCopy(v) {
+    const ch = String(v.payment_channel || 'send_money').toLowerCase();
+    if (ch === 'paybill' && v.paybill_number) {
+      return {
+        headline: `Paybill ${v.paybill_number}`,
+        sub: `Account: ${v.paybill_account || '—'}`,
+        ussd:
+`Dial *334#
+→ Lipa na M-Pesa
+→ Pay Bill
+→ Business No: ${v.paybill_number}
+→ Account: ${v.paybill_account || '—'}
+→ Amount: (as shown)`
+      };
+    }
+    if (ch === 'till' && v.till_number) {
+      return {
+        headline: `Till ${v.till_number}`,
+        sub: 'Buy Goods — no account needed',
+        ussd:
+`Dial *334#
+→ Lipa na M-Pesa
+→ Buy Goods & Services
+→ Till No: ${v.till_number}
+→ Amount: (as shown)`
+      };
+    }
+    if (v.mpesa) {
+      return {
+        headline: v.mpesa,
+        sub: 'Send Money (Safaricom)',
+        ussd:
+`M-Pesa App or *334#
+→ Send Money
+→ ${v.mpesa}
+→ Amount: (as shown)`
+      };
+    }
+    return {
+      headline: 'Set up your Paybill',
+      sub: "Guests can't pay you yet",
+      ussd: '⚠️ No payment method configured. Click "Change payment setup" to add your Paybill, Till, or phone number.'
+    };
+  }
+
+  function renderPaymentCard() {
+    const v = currentVendor || {};
+    const c = paymentCopy(v);
+    $('paymentHeadline').textContent = c.headline;
+    $('paymentSub').textContent      = c.sub;
+    $('paymentUSSD').textContent     = c.ussd;
+    $('walletStatus').textContent    = String(v.status || 'pending').toUpperCase();
+  }
+
+  // ============================================================
+  // PAYMENT MODAL
+  // ============================================================
+  function openPaymentModal() {
+    if (!currentVendor) return;
+    const v = currentVendor;
+    const ch = String(v.payment_channel || 'paybill').toLowerCase();
+    applyPaymentModalChannel(ch);
+
+    $('pm_paybill_number').value  = v.paybill_number  || '';
+    $('pm_paybill_account').value = v.paybill_account || '';
+    $('pm_till_number').value     = v.till_number     || '';
+    $('pm_phone').value           = v.mpesa           || v.phone || '';
+    $('pm_name').value            = v.mpesa_name      || v.vendor_name || v.full_name || '';
+
+    $('paymentModal').classList.add('show');
+  }
+
+  function closePaymentModal() {
+    $('paymentModal').classList.remove('show');
+  }
+
+  function applyPaymentModalChannel(ch) {
+    editChannel = ch;
+    document.querySelectorAll('#paymentModal .paychip').forEach(c => {
+      const on = c.dataset.channel === ch;
+      c.classList.toggle('on', on);
+      c.setAttribute('aria-checked', String(on));
+    });
+    $('pm-paybill').style.display    = (ch === 'paybill')    ? '' : 'none';
+    $('pm-till').style.display       = (ch === 'till')       ? '' : 'none';
+    $('pm-send_money').style.display = (ch === 'send_money') ? '' : 'none';
+  }
+
+  async function savePaymentSetup() {
+    const btn = $('btnPaymentSave');
+    const channel = editChannel;
+
+    const body = { channel };
+    if (channel === 'paybill') {
+      body.paybill_number  = $('pm_paybill_number').value;
+      body.paybill_account = $('pm_paybill_account').value;
+    } else if (channel === 'till') {
+      body.till_number = $('pm_till_number').value;
+    } else {
+      body.mpesa = $('pm_phone').value;
+    }
+    body.mpesa_name = $('pm_name').value;
+
+    btn.disabled = true; btn.textContent = 'Saving…';
+
+    try {
+      const res = await api('/vendor/payment', {
+        method: 'PATCH',
+        body: JSON.stringify(body)
+      });
+      currentVendor = res.vendor;
+      renderPaymentCard();
+      closePaymentModal();
+      toast('✅ Payment setup updated');
+    } catch (err) {
+      toast(err.message || 'Could not save payment setup', true);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save';
+    }
+  }
+
+  // ============================================================
+  // AVAILABILITY
+  // ============================================================
+  function renderAvailability() {
+    const v = currentVendor || {};
+    const available = v.is_available !== false;
+    const t = $('availabilityToggle');
+    t.classList.toggle('on', available);
+    t.setAttribute('aria-checked', String(available));
+    $('availabilityTitle').textContent = available ? '🟢 Available for jobs' : '🔴 Offline';
+    $('availabilityText').textContent  = available
+      ? 'Hotels can see your services'
+      : 'You are currently hidden from hotels';
+  }
+
+  async function toggleAvailability() {
+    if (!currentVendor || busy) return;
+    const t = $('availabilityToggle');
+    const next = !t.classList.contains('on');
+
+    // Optimistic
+    t.classList.toggle('on', next);
+    t.setAttribute('aria-checked', String(next));
+    $('availabilityTitle').textContent = next ? '🟢 Available for jobs' : '🔴 Offline';
+    $('availabilityText').textContent  = next
+      ? 'Hotels can see your services'
+      : 'You are currently hidden from hotels';
+    t.classList.add('busy');
+
+    try {
+      const res = await api('/vendor/availability', {
+        method: 'PATCH',
+        body: JSON.stringify({ available: next })
+      });
+      currentVendor.is_available = res.available;
+      if (res.warning) console.warn(res.warning);
+      toast(next ? '🟢 You are now available' : '🔴 You are now offline');
+    } catch (err) {
+      // Revert
+      renderAvailability();
+      toast(err.message || 'Could not save availability', true);
+    } finally {
+      t.classList.remove('busy');
+    }
+  }
+
+  // ============================================================
+  // HOTELS
+  // ============================================================
+  async function loadMyHotels() {
+    try {
+      const [linked, all] = await Promise.all([
+        api('/vendor/hotels'),
+        fetch(API + '/data').then(r => r.json()).catch(() => ({ hotels: [] }))
+      ]);
+      myHotels = (linked.hotels || []).map(h => String(h.hotel_id).toUpperCase());
+      myHotelsMeta = (all.hotels || []).filter(h =>
+        myHotels.includes(String(h.hotel_id || '').toUpperCase())
+      );
+      renderHotels();
+    } catch (err) {
+      console.warn('Hotels load failed:', err);
+    }
+  }
+
+  function renderHotels() {
+    const box = $('hotelsContent');
+    if (!myHotels.length) {
+      box.innerHTML = `
+        <div class="card empty">
+          <div style="font-size:34px">🏨</div>
+          <b>No hotels linked</b>
+          <p class="small">Once admin approves your account, the hotels you chose at signup will appear here.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const rows = myHotels.map(hid => {
+      const meta = myHotelsMeta.find(h =>
+        String(h.hotel_id || '').toUpperCase() === hid
+      );
+      const name = meta ? (meta.hotel_name || meta.name || hid) : hid;
+      const city = meta ? (meta.location || meta.city || '') : '';
+      return `
+        <div class="hotel-row">
+          <div>
+            <div class="hotel-name">${escapeHtml(name)}</div>
+            <div class="small muted">${escapeHtml(city || hid)}</div>
+          </div>
+          <span class="hotel-status on">● LIVE</span>
+        </div>
+      `;
+    }).join('');
+
+    box.innerHTML = `
+      <div class="card">
+        <div class="card-title">🏨 Hotels you serve</div>
+        <div class="small muted">Guests in these hotels can book you directly.</div>
+      </div>
+      ${rows}
+    `;
+  }
+
+  // ============================================================
+  // ORDERS
+  // ============================================================
+  async function loadOrders() {
+    if (!currentVendor) return;
+    const box = $('newJobs');
+    box.innerHTML = '<div class="loader">Loading new jobs…</div>';
+
+    try {
+      const res = await api('/vendor/orders');
+      allOrders = Array.isArray(res.orders) ? res.orders : [];
+      classifyAndRender();
+    } catch (err) {
+      box.innerHTML = `
+        <div class="card empty">
+          <b>Unable to load jobs</b>
+          <p class="small">${escapeHtml(err.message)}</p>
+          <button class="btn btn-a" onclick="refreshDashboard()">Try Again</button>
+        </div>
+      `;
+    }
+  }
+
+  function classifyAndRender() {
+    const vId = String(currentVendor.id || '');
+    const vEmail = String(currentVendor.email || '').toLowerCase();
+
+    const mine = o => {
+      if (o.vendor_id && String(o.vendor_id) === vId) return true;
+      if (o.vendor_email && String(o.vendor_email).toLowerCase() === vEmail) return true;
+      return false;
+    };
+
+    const newJobs    = allOrders.filter(o => !o.vendor_id && statusIn(o.status, STATUS.NEW));
+    const activeJobs = allOrders.filter(o => mine(o) && statusIn(o.status, STATUS.ACTIVE));
+    const completed  = allOrders.filter(o => mine(o) && statusIn(o.status, STATUS.DONE));
+
+    $('statNew').textContent       = newJobs.length;
+    $('statActive').textContent    = activeJobs.length;
+    $('statCompleted').textContent = completed.length;
+
+    renderNewJobs(newJobs);
+    renderActiveJobs(activeJobs);
+    renderEarnings(allOrders.filter(mine), completed);
+  }
+
+  function renderNewJobs(orders) {
+    const box = $('newJobs');
+    if (!orders.length) {
+      box.innerHTML = `
+        <div class="card empty">
+          <div style="font-size:40px">🔔</div>
+          <b>No new jobs right now</b>
+          <p class="small">Keep your availability ON. New hotel guest requests will appear here.</p>
+        </div>
+      `;
+      return;
+    }
+
+    box.innerHTML = orders.map(order => {
+      const service = order.service_title || 'Guest Service';
+      return `
+        <div class="card job">
+          <div class="job-top">
+            <div>
+              <div class="job-title">${escapeHtml(service)}</div>
+              <div class="job-ref">${escapeHtml(order.reference || '')}</div>
+              <small class="muted">${escapeHtml(order.hotel_id || 'Partner Hotel')}</small>
+            </div>
+            ${statusBadge(order.status)}
+          </div>
+
+          <div class="job-meta">
+            🏨 Hotel: <strong>${escapeHtml(order.hotel_id || '—')}</strong><br>
+            🚪 Room: <strong>${escapeHtml(order.room_number || '—')}</strong><br>
+            👤 Guest: <strong>${escapeHtml(order.guest_name || 'Guest')}</strong><br>
+            📞 Phone: <strong>${escapeHtml(order.guest_phone || '—')}</strong><br>
+            💰 Job value: <strong style="color:var(--lime)">${money(order.amount)}</strong>
+            ${order.details ? '<br>📝 ' + escapeHtml(order.details) : ''}
+          </div>
+
+          <div class="job-actions">
+            <button class="btn btn-a" onclick="acceptOrder('${escapeHtml(order.id)}')">✅ Accept</button>
+            <button class="btn btn-red" onclick="cancelOrder('${escapeHtml(order.id)}','decline')">✕ Decline</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderActiveJobs(orders) {
+    const box = $('activeJobs');
+    if (!orders.length) {
+      box.innerHTML = `
+        <div class="card empty">
+          <div style="font-size:38px">📅</div>
+          <b>No active jobs</b>
+          <p class="small">Accepted jobs will appear here.</p>
+        </div>
+      `;
+      return;
+    }
+
+    box.innerHTML = orders.map(order => {
+      const service = order.service_title || 'Guest Service';
+      const status = String(order.status || '').toLowerCase();
+      const canStart = status === 'accepted' || status === 'preparing';
+      const canFinish = status !== 'completed';
+
+      return `
+        <div class="card job">
+          <div class="job-top">
+            <div>
+              <div class="job-title">${escapeHtml(service)}</div>
+              <div class="job-ref">${escapeHtml(order.reference || '')}</div>
+              <small class="muted">${escapeHtml(order.hotel_id || 'Hotel')}</small>
+            </div>
+            ${statusBadge(order.status)}
+          </div>
+
+          <div class="job-meta">
+            🚪 Room: <strong>${escapeHtml(order.room_number || '—')}</strong><br>
+            👤 Guest: <strong>${escapeHtml(order.guest_name || 'Guest')}</strong><br>
+            📞 Phone: <strong>${escapeHtml(order.guest_phone || '—')}</strong><br>
+            💰 Value: <strong style="color:var(--lime)">${money(order.amount)}</strong><br>
+            🕐 Accepted: ${escapeHtml(fmtDate(order.accepted_at || order.updated_at))}
+          </div>
+
+          <div class="job-actions">
+            ${canStart
+              ? `<button class="btn btn-blue" onclick="updateOrderStatus('${escapeHtml(order.id)}','on_the_way')">▶ On the way</button>`
+              : `<button class="btn btn-d" disabled>▶ In progress</button>`
+            }
+            ${canFinish
+              ? `<button class="btn btn-a" onclick="updateOrderStatus('${escapeHtml(order.id)}','completed')">✓ Complete</button>`
+              : `<button class="btn btn-d" disabled>✓ Done</button>`
+            }
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // ============================================================
+  // ORDER ACTIONS
+  // ============================================================
+  async function acceptOrder(id) {
+    if (busy) return;
+    if (!confirm('Accept this guest job?')) return;
+    busy = true;
+
+    try {
+      await api('/vendor/orders/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'accepted' })
+      });
+      toast('✅ Job accepted');
+      await loadOrders();
+      showTab('active', document.querySelector('.tab[data-tab="active"]'));
+    } catch (err) {
+      toast(err.message || 'Could not accept job', true);
+      await loadOrders();
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function updateOrderStatus(id, status) {
+    if (busy) return;
+
+    const label = status === 'completed' ? 'Mark this job as completed?'
+                : status === 'on_the_way' ? 'Mark as on the way?'
+                : 'Update status?';
+    if (!confirm(label)) return;
+
+    busy = true;
+    try {
+      await api('/vendor/orders/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
+      toast(status === 'completed' ? '🎉 Job completed' : '▶ Status updated');
+      await loadOrders();
+    } catch (err) {
+      toast(err.message || 'Could not update job', true);
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function cancelOrder(id, kind) {
+    const reason = kind === 'decline'
+      ? prompt('Optional: why are you declining?')
+      : prompt('Optional: reason for cancelling?');
+    if (reason === null) return;
+    if (!confirm('This will cancel the job. Continue?')) return;
+
+    busy = true;
+    try {
+      await api('/vendor/orders/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'cancelled' })
+      });
+      toast('Job cancelled');
+      await loadOrders();
+    } catch (err) {
+      toast(err.message || 'Could not cancel job', true);
+    } finally {
+      busy = false;
+    }
+  }
+
+  // ============================================================
+  // SERVICES
+  // ============================================================
+  function renderServices() {
+    const v = currentVendor || {};
+    const services = Array.isArray(v.services) ? v.services : [];
+    $('statServices').textContent = services.length;
+
+    let html = `
+      <div class="card">
+        <div class="card-title">🛠️ My Services</div>
+        <div class="small muted">These services decide which guest requests reach you.</div>
+      </div>
+    `;
+
+    if (!services.length) {
+      html += `
+        <div class="card empty">
+          <div style="font-size:34px">🛠️</div>
+          <b>No services added</b>
+          <p class="small">Add services so hotels can route guest requests to you.</p>
+          <button class="btn btn-a" onclick="openServicesModal()">Add Services</button>
+        </div>
+      `;
+    } else {
+      services.forEach(id => {
+        const label = SERVICE_LABELS[id] ||
+          String(id).replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+        html += `
+          <div class="service">
+            <div>
+              <div class="service-name">${escapeHtml(label)}</div>
+              <small class="muted">Active service</small>
+            </div>
+            <div class="service-price">${money(v.price || 0)}</div>
+          </div>
+        `;
+      });
+      html += `
+        <button class="btn btn-d btn-full" style="margin-top:5px" onclick="openServicesModal()">
+          ✏️ Edit Services
+        </button>
+      `;
+    }
+
+    $('servicesContent').innerHTML = html;
+  }
+
+  function openServicesModal() {
+    if (!currentVendor) return;
+    const v = currentVendor;
+
+    $('editPrice').value = Number(v.price || 0);
+    $('editBio').value   = v.bio || '';
+
+    const current = Array.isArray(v.services) ? v.services : [];
+    const grid = $('serviceCheckboxes');
+    grid.innerHTML = Object.values(SERVICES).flatMap(g => g.items).map(s => `
+      <label class="chk">
+        <input type="checkbox" value="${s.id}" ${current.includes(s.id) ? 'checked' : ''}>
+        <span>${escapeHtml(s.t)}</span>
+      </label>
+    `).join('');
+
+    $('servicesModal').classList.add('show');
+  }
+
+  function closeServicesModal() {
+    $('servicesModal').classList.remove('show');
+  }
+
+  async function saveServices() {
+    const btn = $('btnServicesSubmit');
+    const selected = [...document.querySelectorAll('#serviceCheckboxes input:checked')]
+      .map(i => i.value);
+    const price = Number($('editPrice').value || 0);
+    const bio   = $('editBio').value.trim();
+
+    if (selected.length === 0) return toast('Select at least one service', true);
+    if (price <= 0)            return toast('Price must be greater than 0', true);
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      const res = await api('/vendor/services', {
+        method: 'PATCH',
+        body: JSON.stringify({ services: selected, price, bio })
+      });
+      currentVendor = res.vendor;
+      renderServices();
+      renderProfile();
+      closeServicesModal();
+      toast('✅ Services updated');
+    } catch (err) {
+      toast(err.message || 'Save failed', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+    }
+  }
+
+  // ============================================================
+  // EARNINGS
+  // ============================================================
+  function renderEarnings(myOrders, completed) {
+    const total = completed.reduce((s, o) => s + Number(o.amount || 0), 0);
+    const commission = Math.floor(total * 0.15);
+    const v = currentVendor || {};
+
+    const payLabel = (() => {
+      const ch = String(v.payment_channel || '').toLowerCase();
+      if (ch === 'paybill') return `Paybill ${v.paybill_number || '—'} · Account ${v.paybill_account || '—'}`;
+      if (ch === 'till')    return `Till ${v.till_number || '—'}`;
+      if (v.mpesa)          return `Send Money · ${v.mpesa}`;
+      return 'Not set up';
+    })();
+
+    $('earningsContent').innerHTML = `
+      <div class="card">
+        <div class="card-title">💰 Earnings Overview</div>
+        <div class="profile-row">
+          <div class="profile-label">Payment method</div>
+          <div class="profile-value">${escapeHtml(payLabel)}</div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">Gross from completed jobs</div>
+          <div class="profile-value">${money(total)}</div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">Hotel commission you owe (15%)</div>
+          <div class="profile-value" style="color:var(--gold)">${money(commission)}</div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">Your net (85%)</div>
+          <div class="profile-value" style="color:var(--lime)">${money(total - commission)}</div>
+        </div>
+        <div class="profile-row">
+          <div class="profile-label">Completed jobs</div>
+          <div class="profile-value">${completed.length}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧾 Recent completed jobs</div>
+        ${completed.length
+          ? completed.slice(0, 20).map(o => `
+              <div class="service">
+                <div>
+                  <div class="service-name">${escapeHtml(o.service_title || 'Service')}</div>
+                  <small class="muted">Room ${escapeHtml(o.room_number || '—')} • ${escapeHtml(fmtDate(o.completed_at || o.updated_at))}</small>
+                </div>
+                <div class="service-price">${money(o.amount)}</div>
+              </div>
+            `).join('')
+          : `<div class="empty">No completed jobs yet.</div>`
+        }
+      </div>
+
+      <div class="card">
+        <div class="card-title">📤 Monthly settlement to hotel</div>
+        <p class="small muted" style="margin:0 0 10px 0;line-height:1.6">
+          Guest paid you the full amount. You owe <b style="color:#fff">${money(commission)}</b>
+          in 15% hotel commission for this month. Send it to the hotel's Paybill before month-end.
+        </p>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // PROFILE
+  // ============================================================
+  function renderProfile() {
+    const v = currentVendor || {};
+    $('profileContent').innerHTML = `
+      <div class="card">
+        <div class="card-title">👤 Vendor Profile</div>
+
+        <div class="profile-row">
+          <div class="profile-label">Vendor Name</div>
+          <div class="profile-value">${escapeHtml(v.vendor_name || v.full_name || '—')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Email</div>
+          <div class="profile-value">${escapeHtml(v.email || '—')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Phone</div>
+          <div class="profile-value">${escapeHtml(v.phone || '—')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Hub Location</div>
+          <div class="profile-value">${escapeHtml(v.hub_location || v.city || '—')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Category</div>
+          <div class="profile-value">${escapeHtml(v.category || '—')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Status</div>
+          <div class="profile-value">${statusBadge(v.status || 'pending')}</div>
+        </div>
+
+        <div class="profile-row">
+          <div class="profile-label">Bio</div>
+          <div class="profile-value">${escapeHtml(v.bio || 'No bio provided')}</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <button class="btn btn-d btn-full" onclick="openServicesModal()">✏️ Edit Services &amp; Bio</button>
+        <button class="btn btn-a btn-full" style="margin-top:8px" onclick="openPaymentModal()">💳 Edit Payment Setup</button>
+        <button class="btn btn-red btn-full" style="margin-top:8px" onclick="logoutVendor()">🚪 Logout</button>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // TABS
+  // ============================================================
+  function showTab(name, element) {
+    document.querySelectorAll('[id^="view-"]').forEach(s => s.style.display = 'none');
+    const target = document.getElementById('view-' + name);
+    if (target) target.style.display = 'block';
+
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (element) element.classList.add('active');
+  }
+
+  // ============================================================
+  // FATAL
+  // ============================================================
+  function showFatal(message) {
+    $('vendorName').textContent = 'Error';
+    $('vendorCity').textContent = 'GuestHub';
+    $('newJobs').innerHTML = `
+      <div class="card empty">
+        <div style="font-size:40px">⚠️</div>
+        <b>${escapeHtml(message)}</b>
+        <br><br>
+        <button class="btn btn-a" onclick="location.reload()">Try Again</button>
+        <button class="btn btn-d" style="margin-left:6px" onclick="logoutVendor()">Logout</button>
+      </div>
+    `;
+  }
+
+  // ============================================================
+  // EXPOSE
+  // ============================================================
+  Object.assign(window, {
+    showTab, refreshDashboard, logoutVendor,
+    toggleAvailability,
+    openPaymentModal, closePaymentModal, savePaymentSetup,
+    acceptOrder, updateOrderStatus, cancelOrder,
+    openServicesModal, closeServicesModal, saveServices
+  });
+
+  // Wire payment modal chips
+  document.addEventListener('click', e => {
+    const chip = e.target.closest('#paymentModal .paychip');
+    if (chip) applyPaymentModalChannel(chip.dataset.channel);
+  });
+
+  // ============================================================
+  // BOOT
+  // ============================================================
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
+
 </body>
 </html>
