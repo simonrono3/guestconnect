@@ -10,159 +10,49 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root{
-    --lime:#C6FF00;
-    --gold:#FFC61A;
-    --bg:#060709;
-    --card:#121318;
-    --line:rgba(255,255,255,.08);
-    --muted:#8B95A5;
+    --lime:#C6FF00; --gold:#FFC61A; --bg:#060709; --card:#121318;
+    --line:rgba(255,255,255,.08); --muted:#8B95A5;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
     font-family:Inter,system-ui,-apple-system,sans-serif;
-    background:var(--bg);color:#fff;
-    padding-bottom:48px;
+    background:var(--bg);color:#fff;padding-bottom:48px;
     -webkit-font-smoothing:antialiased;
   }
   .font-boss{font-family:Anton,sans-serif;letter-spacing:.01em}
-
-  .glass{
-    background:rgba(18,19,24,.85);
-    backdrop-filter:blur(20px);
-    border:1px solid var(--line);
-    border-radius:16px;
-  }
-
-  .input{
-    width:100%;
-    background:#0A0A0A;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;
-    padding:13px 14px;
-    color:#fff;font-size:13px;
-    outline:none;
-    transition:border-color .2s,box-shadow .2s;
-    font-family:inherit;
-  }
-  .input:focus{
-    border-color:var(--lime);
-    box-shadow:0 0 0 3px rgba(198,255,0,.14);
-  }
+  .glass{background:rgba(18,19,24,.85);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:16px}
+  .input{width:100%;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
+  .input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,255,0,.14)}
   .input::placeholder{color:#5b6473}
-
-  .label{
-    font-size:10px;font-weight:800;letter-spacing:.12em;
-    text-transform:uppercase;color:var(--muted);
-    margin-top:14px;display:block;
-  }
+  .label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:14px;display:block}
   .label:first-child{margin-top:0}
-
-  /* ---------- Service option cards (FIXED) ---------- */
-  .opt{
-    position:relative;
-    border:1px solid #2A2A2A;
-    background:#0A0A0A;
-    border-radius:14px;
-    padding:11px 12px;
-    cursor:pointer;
-    transition:border-color .15s,background .15s,transform .1s;
-    user-select:none;
-  }
+  .opt{position:relative;border:1px solid #2A2A2A;background:#0A0A0A;border-radius:14px;padding:11px 12px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;user-select:none}
   .opt:hover{border-color:#3a3a3a}
   .opt:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
   .opt:active{transform:scale(.98)}
-  .opt.on{
-    border-color:var(--lime);
-    background:rgba(198,255,0,.10);
-  }
+  .opt.on{border-color:var(--lime);background:rgba(198,255,0,.10)}
   .opt b{font-size:12px;font-weight:700;display:block;padding-right:22px}
   .opt small{font-size:10px;color:#888;display:block;margin-top:2px}
-
-  .opt .check{
-    position:absolute;top:8px;right:8px;
-    width:18px;height:18px;border-radius:50%;
-    border:1px solid #444;
-    display:grid;place-items:center;
-    font-size:10px;font-weight:900;
-    color:transparent;
-    transition:background .15s,color .15s,border-color .15s;
-  }
-  .opt.on .check{
-    background:var(--lime);
-    border-color:var(--lime);
-    color:#000;
-  }
-
-  /* ---------- Payout chips ---------- */
-  .paychip{
-    padding:8px 12px;border-radius:999px;
-    background:#0A0A0A;border:1px solid #2A2A2A;
-    font-size:11px;font-weight:800;cursor:pointer;
-    color:#fff;font-family:inherit;
-    transition:background .15s,color .15s,border-color .15s;
-  }
+  .opt .check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:1px solid #444;display:grid;place-items:center;font-size:10px;font-weight:900;color:transparent;transition:background .15s,color .15s,border-color .15s}
+  .opt.on .check{background:var(--lime);border-color:var(--lime);color:#000}
+  .paychip{padding:8px 12px;border-radius:999px;background:#0A0A0A;border:1px solid #2A2A2A;font-size:11px;font-weight:800;cursor:pointer;color:#fff;font-family:inherit;transition:background .15s,color .15s,border-color .15s}
   .paychip:hover{border-color:#3a3a3a}
   .paychip:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
   .paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
-
-  /* ---------- Progress ---------- */
   .prog{height:5px;background:#1A1A1A;border-radius:999px;overflow:hidden;margin:14px 0}
   .prog i{display:block;height:100%;background:var(--lime);width:0;transition:width .35s ease}
-
-  /* ---------- Notice (class-driven) ---------- */
-  .notice{
-    display:none;
-    margin:12px 0;padding:12px 14px;border-radius:12px;
-    font-size:12.5px;line-height:1.5;
-    border:1px solid transparent;
-  }
-  .notice.success{
-    display:block;
-    background:rgba(198,255,0,.10);
-    border-color:rgba(198,255,0,.35);
-    color:#E8FFB0;
-  }
-  .notice.error{
-    display:block;
-    background:rgba(255,90,95,.10);
-    border-color:rgba(255,90,95,.35);
-    color:#FFD0D0;
-  }
-
-  /* ---------- Preview row ---------- */
-  .pv-row{
-    display:flex;gap:12px;padding:10px 12px;
-    border-radius:12px;background:#0A0A0A;
-    border:1px solid var(--line);
-  }
-  .pv-ico{
-    width:38px;height:38px;border-radius:10px;
-    background:#1A1C1F;display:grid;place-items:center;
-    font-size:14px;flex-shrink:0;
-  }
-  .pv-add{
-    font-size:10px;font-weight:800;
-    background:#fff;color:#000;
-    padding:4px 9px;border-radius:999px;
-    height:fit-content;align-self:center;
-    flex-shrink:0;
-  }
-
-  /* ---------- Badge ---------- */
-  .badge{
-    padding:4px 10px;border-radius:999px;
-    font-size:9.5px;font-weight:800;letter-spacing:.06em;
-    background:rgba(255,255,255,.08);
-    border:1px solid var(--line);
-    color:#fff;
-  }
+  .notice{display:none;margin:12px 0;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.5;border:1px solid transparent}
+  .notice.success{display:block;background:rgba(198,255,0,.10);border-color:rgba(198,255,0,.35);color:#E8FFB0}
+  .notice.error{display:block;background:rgba(255,90,95,.10);border-color:rgba(255,90,95,.35);color:#FFD0D0}
+  .pv-row{display:flex;gap:12px;padding:10px 12px;border-radius:12px;background:#0A0A0A;border:1px solid var(--line)}
+  .pv-ico{width:38px;height:38px;border-radius:10px;background:#1A1C1F;display:grid;place-items:center;font-size:14px;flex-shrink:0}
+  .pv-add{font-size:10px;font-weight:800;background:#fff;color:#000;padding:4px 9px;border-radius:999px;height:fit-content;align-self:center;flex-shrink:0}
+  .badge{padding:4px 10px;border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:.06em;background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}
   .badge.ok{background:var(--lime);color:#000;border-color:var(--lime)}
   .badge.warn{background:rgba(255,198,26,.15);color:var(--gold);border-color:rgba(255,198,26,.3)}
-
-  @media (prefers-reduced-motion: reduce){
-    *{transition:none !important;animation:none !important}
-  }
+  .ussd{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;white-space:pre-line}
+  @media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
 <body>
@@ -172,7 +62,6 @@
   <!-- ===================== LEFT: FORM ===================== -->
   <div class="px-5 sm:px-6 md:px-10 lg:px-14 py-7">
 
-    <!-- Top bar -->
     <div class="flex justify-between items-center mb-6 gap-3 flex-wrap">
       <div class="flex items-center gap-3 flex-wrap">
         <div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div>
@@ -182,7 +71,6 @@
       <a href="/" class="text-[11px] font-bold bg-white/10 hover:bg-white/15 px-4 py-2 rounded-full border border-white/10 no-underline text-white">← Home</a>
     </div>
 
-    <!-- Route banner -->
     <div class="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-[#C6FF00] border border-[#C6FF00]/30 rounded-full px-4 py-2 mb-4">
       <span class="w-2 h-2 rounded-full bg-[#C6FF00] animate-pulse"></span>
       DIANI → WASINI → SGR MOMBASA → WORLD
@@ -192,8 +80,9 @@
       Earn with<br><span class="text-[#FFC61A]">GuestHub World</span>
     </h1>
     <p class="text-[12.5px] text-white/55 mt-3 max-w-[600px] leading-relaxed">
-      Global vendors · Diani hub · Wasini boat · SGR transfer · Hotels bring clients to <strong class="text-white">you</strong>.
-      You keep <strong class="text-[#C6FF00]">85%</strong>, hotel keeps 15% via M-Pesa Till <strong class="text-white">123456</strong>.
+      Global vendors · Diani hub · Wasini boat · SGR transfer.
+      Guests pay <strong class="text-white">direct to your M-Pesa</strong> —
+      you keep <strong class="text-[#C6FF00]">100%</strong>, settle 15% hotel commission monthly.
     </p>
 
     <div class="prog" aria-hidden="true"><i id="pbar"></i></div>
@@ -293,11 +182,11 @@
         </div>
       </div>
 
-      <!-- ========== HOTEL SELECTION ========== -->
+      <!-- ========== HOTELS ========== -->
       <div class="glass p-5 mt-4">
         <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">🏨 Hotels you want to serve *</h2>
         <p class="text-[11px] text-white/50 mt-2 leading-relaxed">
-          Your services appear instantly in these hotels' guest dashboards after admin approval.
+          Your services appear in these hotels' guest dashboards after approval.
           <strong class="text-white">Room 101 at Baobab</strong> will see you.
         </p>
 
@@ -372,41 +261,78 @@
                   placeholder="e.g. 5 yrs Diani–Wasini expert. SGR transfers. English / Swahili."></textarea>
       </div>
 
-      <!-- ========== WHAT HAPPENS NEXT (replaces misleading KYC) ========== -->
+      <!-- ========== DIRECT PAYMENT ========== -->
       <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-white m-0">🪪 What happens after you submit</h2>
-        <ol class="mt-3 space-y-2 text-[11.5px] text-white/70 leading-relaxed pl-5 list-decimal">
-          <li>Our admin reviews your application (usually within 24 hours).</li>
-          <li>You'll be asked to upload <strong class="text-white">ID, selfie, and vehicle photo</strong> to unlock the Verified badge.</li>
-          <li>Once approved, you log in at <a href="/vendor-login.html" class="text-[#C6FF00] underline">/vendor-login.html</a> and go live.</li>
-          <li>Guests at your chosen hotels can book you immediately.</li>
-        </ol>
-      </div>
+        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">💳 How guests pay you — direct</h2>
+        <p class="text-[11.5px] text-white/55 mt-2 leading-relaxed">
+          No wallet. No waiting. Guest pays <strong class="text-white">straight to your M-Pesa</strong>.
+          You receive 100%. Settle the 15% hotel commission on your monthly statement.
+        </p>
 
-      <!-- ========== PAYOUT ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">💸 Payout — Lipa na M-Pesa World</h2>
-
-        <div class="flex gap-2 flex-wrap mt-3" role="radiogroup" aria-label="Payout method">
-          <button type="button" class="paychip on" data-val="mpesa"   role="radio" aria-checked="true">💚 M-PESA</button>
-          <button type="button" class="paychip"    data-val="airtel"  role="radio" aria-checked="false">📱 Airtel Money</button>
-          <button type="button" class="paychip"    data-val="paypal"  role="radio" aria-checked="false">💙 PayPal</button>
-          <button type="button" class="paychip"    data-val="bank"    role="radio" aria-checked="false">🏦 Bank</button>
+        <!-- Channel picker -->
+        <div class="flex gap-2 flex-wrap mt-3" role="radiogroup" aria-label="Payment channel">
+          <button type="button" class="paychip on" data-channel="paybill"
+                  role="radio" aria-checked="true">🏢 Paybill</button>
+          <button type="button" class="paychip" data-channel="till"
+                  role="radio" aria-checked="false">🛒 Till (Buy Goods)</button>
+          <button type="button" class="paychip" data-channel="send_money"
+                  role="radio" aria-checked="false">📱 Send Money</button>
         </div>
-        <input type="hidden" id="payout_method" name="payout_method" value="mpesa">
+        <input type="hidden" id="payment_channel" name="payment_channel" value="paybill">
 
-        <label class="label" for="mpesa">M-Pesa number (or Till) *</label>
-        <input id="mpesa" name="mpesa" class="input" type="tel" inputmode="tel" required
-               placeholder="0722 000 000 or Till 123456">
+        <!-- Paybill fields -->
+        <div id="pay-paybill" class="mt-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="label" for="paybill_number">Paybill number *</label>
+              <input id="paybill_number" class="input" inputmode="numeric" maxlength="10"
+                     placeholder="e.g. 400200 or 247247">
+            </div>
+            <div>
+              <label class="label" for="paybill_account">Account number / name *</label>
+              <input id="paybill_account" class="input" maxlength="40"
+                     placeholder="e.g. DIANI001 or your phone">
+            </div>
+          </div>
+        </div>
 
-        <label class="label" for="mpesa_name">M-Pesa name (as per ID)</label>
-        <input id="mpesa_name" name="mpesa_name" class="input" autocomplete="name"
-               placeholder="Full legal name">
+        <!-- Till fields -->
+        <div id="pay-till" class="mt-3" style="display:none">
+          <label class="label" for="till_number">Till number (Buy Goods) *</label>
+          <input id="till_number" class="input" inputmode="numeric" maxlength="10"
+                 placeholder="e.g. 5123456">
+        </div>
+
+        <!-- Send Money fields -->
+        <div id="pay-send_money" class="mt-3" style="display:none">
+          <label class="label" for="send_money_phone">M-Pesa phone *</label>
+          <input id="send_money_phone" class="input" type="tel" inputmode="tel"
+                 placeholder="0712 345 678">
+        </div>
+
+        <label class="label" for="mpesa_name">Business / account holder name</label>
+        <input id="mpesa_name" class="input" autocomplete="name" maxlength="100"
+               placeholder="As registered with Safaricom">
+
+        <!-- Live preview -->
+        <div class="mt-4 p-4 rounded-xl bg-[#0A0A0A] border border-[#C6FF00]/25">
+          <div class="text-[10px] font-bold tracking-widest text-[#C6FF00] mb-2">
+            👀 WHAT THE GUEST SEES AT CHECKOUT
+          </div>
+          <div id="guestPayPreview" class="text-[12.5px] leading-relaxed text-white/85 ussd"></div>
+        </div>
+
+        <div class="mt-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-white/65 leading-relaxed">
+          <strong class="text-white">About the 15% hotel cut:</strong> you keep 100% of what the guest
+          sends you. At month-end you forward 15% of completed orders to the hotel's Paybill — GuestHub
+          shows you a monthly statement so it's one transfer, not many.
+        </div>
 
         <label class="flex items-start gap-2 mt-4 cursor-pointer">
           <input id="terms" name="terms" type="checkbox" required class="mt-0.5 w-4 h-4 accent-[#C6FF00]">
           <span class="text-[11.5px] text-white/75 leading-relaxed">
-            I agree to respond in under 15 minutes, be polite, and pay the 15% hotel commission via M-Pesa Till 123456 — Diani to SGR.
+            I confirm the Paybill / Till / Phone above belongs to me or my business, and I will settle
+            the 15% hotel commission monthly.
           </span>
         </label>
 
@@ -415,14 +341,14 @@
           🚀 Submit — get reviewed in 24h
         </button>
         <p class="text-[10px] text-center text-white/30 mt-2 m-0">
-          No card required · Approval usually within 24h · Scale from Diani → Wasini → SGR → World
+          No card required · Approval usually within 24h · Direct-to-M-Pesa
         </p>
       </div>
 
     </form>
   </div>
 
-  <!-- ===================== RIGHT: LIVE PREVIEW ===================== -->
+  <!-- ===================== RIGHT: PREVIEW ===================== -->
   <aside class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8">
     <div class="sticky top-8">
 
@@ -444,18 +370,17 @@
         <b class="text-[#C6FF00]">The magic:</b><br>
         Vendor picks <b class="text-white">Baobab + Wasini</b> → a guest scanning the QR at Baobab Room 101
         sees the <b class="text-white">Wasini Dolphin Tour</b> instantly.<br><br>
-        Guest taps <b>+ Add</b> → your WhatsApp gets:
-        <b class="text-white">James — Room 101 — Wasini Tour — KSh 6,500</b>
+        Guest taps <b>+ Add</b> → pays you directly via M-Pesa → you get a WhatsApp ping.
       </div>
 
       <div class="mt-4 grid grid-cols-2 gap-2">
         <div class="glass p-3 text-center">
-          <div class="font-boss text-[18px] text-[#C6FF00]">85%</div>
-          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">YOU KEEP</div>
+          <div class="font-boss text-[18px] text-[#C6FF00]">100%</div>
+          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">DIRECT TO YOU</div>
         </div>
         <div class="glass p-3 text-center">
           <div class="font-boss text-[18px] text-white">15%</div>
-          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">HOTEL (Till 123456)</div>
+          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">MONTHLY TO HOTEL</div>
         </div>
       </div>
 
@@ -475,7 +400,7 @@
   const API = '/api';
   const $  = id => document.getElementById(id);
 
-  // ---------- Service catalogue ----------
+  // ---------- Services catalogue (matches dashboard) ----------
   const SERVICES = {
     g1: {
       label: 'transport',
@@ -523,12 +448,10 @@
   const serviceById  = id => ALL_SERVICES.find(s => s.id === id);
   const groupOf      = id => Object.keys(SERVICES).find(k => SERVICES[k].items.some(s => s.id === id));
 
-  // ---------- State ----------
   let selected = [];
   let approvedHotels = [];
 
-  // ---------- Helpers ----------
-  const escape = s => String(s).replace(/[&<>"']/g, c => ({
+  const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   })[c]);
 
@@ -548,7 +471,7 @@
   }
 
   // ============================================================
-  // SERVICE CARDS (accessible)
+  // SERVICE CARDS
   // ============================================================
   function renderCategories() {
     Object.entries(SERVICES).forEach(([groupId, group]) => {
@@ -625,7 +548,7 @@
     if (!approvedHotels.length) {
       const msg = document.createElement('div');
       msg.className = 'text-white/45 col-span-full py-4 text-center text-[11px] leading-relaxed';
-      msg.textContent = 'No approved hotels yet. Choose "Serve ALL" below — you will be linked to every hotel as they come online.';
+      msg.textContent = 'No approved hotels yet. Choose "Serve ALL" below — you will be linked as they come online.';
       list.appendChild(msg);
       return;
     }
@@ -640,7 +563,6 @@
       cb.value = hotelId;
       cb.className = 'hotel-cb accent-[#C6FF00]';
       cb.addEventListener('change', () => {
-        // If user picks a specific hotel, uncheck ALL
         if (cb.checked) $('hotelAll').checked = false;
         updatePreview();
         updateProgress();
@@ -660,7 +582,7 @@
   }
 
   // ============================================================
-  // LIVE PREVIEW
+  // PREVIEW
   // ============================================================
   function updatePreview() {
     const wrap = $('guestPreview');
@@ -728,6 +650,13 @@
   // PROGRESS
   // ============================================================
   function updateProgress() {
+    const ch = currentChannel();
+    const payOk = (ch === 'paybill'
+        ? /^\d{4,10}$/.test(($('paybill_number').value||'').replace(/\D/g,'')) && !!$('paybill_account').value.trim()
+      : ch === 'till'
+        ? /^\d{4,10}$/.test(($('till_number').value||'').replace(/\D/g,''))
+        : cleanPhone($('send_money_phone').value).length >= 10);
+
     const checks = [
       $('full_name').value.trim().length >= 2,
       $('phone').value.trim().length >= 7,
@@ -736,7 +665,7 @@
       $('password').value.length >= 8,
       $('vehicle').value !== '',
       Number($('price').value) > 0,
-      $('mpesa').value.replace(/\D/g,'').length >= 7,
+      payOk,
       selected.length > 0,
       getSelectedHotels().length > 0,
       $('terms').checked
@@ -747,25 +676,116 @@
   }
 
   // ============================================================
-  // PAYOUT CHIPS
+  // PAYMENT CHANNEL
   // ============================================================
-  function wirePayoutChips() {
-    const chips = document.querySelectorAll('.paychip');
-    chips.forEach(chip => {
-      chip.addEventListener('click', () => {
-        chips.forEach(c => {
-          c.classList.remove('on');
-          c.setAttribute('aria-checked', 'false');
-        });
-        chip.classList.add('on');
-        chip.setAttribute('aria-checked', 'true');
-        $('payout_method').value = chip.dataset.val;
+  function currentChannel() {
+    return $('payment_channel').value || 'paybill';
+  }
+
+  function updatePaymentPreview() {
+    const ch = currentChannel();
+    const box = $('guestPayPreview');
+    if (!box) return;
+
+    const price = Number($('price')?.value || 0);
+    const priceStr = `KSh ${price.toLocaleString()}`;
+    const bizName = ($('mpesa_name')?.value || '').trim() || ($('full_name')?.value || '').trim() || 'your business';
+
+    let body = '';
+    if (ch === 'paybill') {
+      const num = ($('paybill_number')?.value || '').replace(/\D/g,'') || '400200';
+      const acc = ($('paybill_account')?.value || '').trim() || 'DIANI001';
+      body =
+`${priceStr}
+
+Dial *334#
+→ Lipa na M-Pesa
+→ Pay Bill
+→ Business No: ${num}
+→ Account: ${acc}
+→ Amount: ${price}
+
+Name: ${bizName}`;
+    } else if (ch === 'till') {
+      const num = ($('till_number')?.value || '').replace(/\D/g,'') || '5123456';
+      body =
+`${priceStr}
+
+Dial *334#
+→ Lipa na M-Pesa
+→ Buy Goods & Services
+→ Till No: ${num}
+→ Amount: ${price}
+
+Name: ${bizName}`;
+    } else {
+      const ph = ($('send_money_phone')?.value || '').trim() || '0712 345 678';
+      body =
+`${priceStr}
+
+M-Pesa App or *334#
+→ Send Money
+→ ${ph}
+→ Amount: ${price}
+
+Name: ${bizName}`;
+    }
+
+    box.textContent = body;
+  }
+
+  function wirePaymentChannel() {
+    const chips = document.querySelectorAll('.paychip[data-channel]');
+    const panels = {
+      paybill: $('pay-paybill'),
+      till: $('pay-till'),
+      send_money: $('pay-send_money')
+    };
+
+    function apply(ch) {
+      $('payment_channel').value = ch;
+      chips.forEach(c => {
+        const on = c.dataset.channel === ch;
+        c.classList.toggle('on', on);
+        c.setAttribute('aria-checked', String(on));
       });
+      Object.entries(panels).forEach(([k, el]) => {
+        if (el) el.style.display = (k === ch) ? '' : 'none';
+      });
+      // Clear hidden channel fields so we don't submit stale data
+      if (ch !== 'paybill')    { $('paybill_number').value = ''; $('paybill_account').value = ''; }
+      if (ch !== 'till')       { $('till_number').value = ''; }
+      // For send_money, prefill phone from the contact phone if empty
+      if (ch === 'send_money' && !$('send_money_phone').value && $('phone').value) {
+        $('send_money_phone').value = $('phone').value;
+      }
+      updatePaymentPreview();
+      updateProgress();
+    }
+
+    chips.forEach(c => c.addEventListener('click', () => apply(c.dataset.channel)));
+    apply('paybill');
+
+    ['paybill_number','paybill_account','till_number','send_money_phone','mpesa_name','price']
+      .forEach(id => {
+        const el = $(id);
+        if (el) el.addEventListener('input', () => { updatePaymentPreview(); updateProgress(); });
+      });
+
+    // Keep send_money in sync with contact phone if user hasn't touched it
+    $('phone').addEventListener('input', () => {
+      if (currentChannel() === 'send_money' && !$('send_money_phone').dataset.touched) {
+        $('send_money_phone').value = $('phone').value;
+        updatePaymentPreview();
+      }
+    });
+    $('send_money_phone').addEventListener('input', () => {
+      $('send_money_phone').dataset.touched = '1';
     });
   }
 
   // ============================================================
-  // HEALTH CHECK (retries for cold starts)
+  // HEALTH
   // ============================================================
   async function checkHealth(attempt = 1) {
     const badge = $('apiBadge');
@@ -797,46 +817,54 @@
 
     const btn = $('btn');
     const hotels = getSelectedHotels();
-
-    // ---- Validate client-side (mirror server rules) ----
-    if (!$('full_name').value.trim() || $('full_name').value.trim().length < 2)
-      return fail('Please enter your full or business name.');
-
-    if (!$('phone').value.trim() || cleanPhone($('phone').value).length < 7)
-      return fail('Enter a valid phone number.');
-
-    if (!$('id_number').value.trim())
-      return fail('ID / Passport number is required.');
-
-    if (!isValidEmail($('email').value))
-      return fail('Enter a valid email address.');
-
-    if ($('password').value.length < 8)
-      return fail('Password must be at least 8 characters.');
-
-    if (!$('vehicle').value)
-      return fail('Please choose your vehicle or equipment.');
-
-    if (!(Number($('price').value) > 0))
-      return fail('Base price must be greater than 0.');
-
-    if (!$('mpesa').value.trim() || cleanPhone($('mpesa').value).length < 7)
-      return fail('Enter your M-Pesa number.');
-
-    if (selected.length === 0)
-      return fail('Select at least one service.');
-
-    if (hotels.length === 0)
-      return fail('Choose at least one hotel — or tick "Serve ALL approved hotels".');
-
-    if (!$('terms').checked)
-      return fail('Please accept the terms to continue.');
+    const channel = currentChannel();
 
     function fail(msg) {
       showNotice(msg, 'error');
       btn.disabled = false;
       btn.textContent = '🚀 Submit — get reviewed in 24h';
     }
+
+    if (!$('full_name').value.trim() || $('full_name').value.trim().length < 2)
+      return fail('Please enter your full or business name.');
+    if (!$('phone').value.trim() || cleanPhone($('phone').value).length < 7)
+      return fail('Enter a valid phone number.');
+    if (!$('id_number').value.trim())
+      return fail('ID / Passport number is required.');
+    if (!isValidEmail($('email').value))
+      return fail('Enter a valid email address.');
+    if ($('password').value.length < 8)
+      return fail('Password must be at least 8 characters.');
+    if (!$('vehicle').value)
+      return fail('Please choose your vehicle or equipment.');
+    if (!(Number($('price').value) > 0))
+      return fail('Base price must be greater than 0.');
+
+    // ---- Payment validation ----
+    const payment = { payment_channel: channel };
+    if (channel === 'paybill') {
+      const num = ($('paybill_number').value || '').replace(/\D/g,'');
+      const acc = ($('paybill_account').value || '').trim();
+      if (!/^\d{4,10}$/.test(num)) return fail('Paybill number must be 4–10 digits.');
+      if (!acc) return fail('Enter the Paybill account number/name guests should use.');
+      payment.paybill_number = num;
+      payment.paybill_account = acc;
+    } else if (channel === 'till') {
+      const till = ($('till_number').value || '').replace(/\D/g,'');
+      if (!/^\d{4,10}$/.test(till)) return fail('Till number must be 4–10 digits.');
+      payment.till_number = till;
+    } else {
+      const ph = cleanPhone($('send_money_phone').value);
+      if (ph.length < 10) return fail('Enter a valid M-Pesa phone for Send Money.');
+      payment.mpesa = ph;
+    }
+
+    if (selected.length === 0)
+      return fail('Select at least one service.');
+    if (hotels.length === 0)
+      return fail('Choose at least one hotel — or tick "Serve ALL approved hotels".');
+    if (!$('terms').checked)
+      return fail('Please accept the terms to continue.');
 
     // ---- Send ----
     btn.disabled = true;
@@ -864,11 +892,11 @@
       price:        Number($('price').value) || 0,
       bio:          $('bio').value.trim() +
                     ` | Hub: ${$('location_hub').value} | Radius: ${$('radius').value}`,
-      mpesa:        cleanPhone($('mpesa').value),
-      mpesa_name:   $('mpesa_name').value.trim(),
-      payout_method:$('payout_method').value,
+      mpesa_name:   ($('mpesa_name').value || '').trim(),
+      payout_method: channel,
       hotel_ids:    hotels,
-      hotels:       hotels
+      hotels:       hotels,
+      ...payment
     };
 
     try {
@@ -888,6 +916,7 @@
       showNotice(
         `✅ Welcome, ${payload.full_name}! Your application is pending admin approval. ` +
         `${linked} hotel${linked === 1 ? '' : 's'} linked. ` +
+        `Payment: ${channel.replace('_',' ').toUpperCase()}. ` +
         `You'll be able to log in at /vendor-login.html once approved.`,
         'success'
       );
@@ -896,7 +925,7 @@
 
       setTimeout(() => {
         window.location.href = '/vendor-login.html';
-      }, 2600);
+      }, 2800);
 
     } catch (err) {
       showNotice('Submission failed: ' + (err.message || 'Unknown error'), 'error');
@@ -914,22 +943,21 @@
 
   function init() {
     renderCategories();
-    wirePayoutChips();
+    wirePaymentChannel();
     loadHotels();
     checkHealth();
 
-    // Live preview inputs
-    const previewInputs = ['full_name', 'location_hub', 'price'];
     const debouncedPreview = debounce(updatePreview, 90);
     const debouncedProgress = debounce(updateProgress, 90);
 
-    previewInputs.forEach(id => $(id).addEventListener('input', debouncedPreview));
+    ['full_name', 'location_hub', 'price'].forEach(id =>
+      $(id).addEventListener('input', debouncedPreview));
+
     document.querySelectorAll('#f input, #f select, #f textarea').forEach(el => {
       el.addEventListener('input', debouncedProgress);
       el.addEventListener('change', debouncedProgress);
     });
 
-    // Hotel "ALL" exclusivity
     $('hotelAll').addEventListener('change', e => {
       if (e.target.checked) {
         document.querySelectorAll('.hotel-cb:checked').forEach(cb => { cb.checked = false; });
@@ -938,17 +966,15 @@
       updateProgress();
     });
 
-    // Bio counter
     const bio = $('bio');
     bio.addEventListener('input', () => {
       $('bioCount').textContent = bio.value.length + ' / 120';
     });
 
-    // Form submit
     $('f').addEventListener('submit', handleSubmit);
 
-    // First paint
     updatePreview();
+    updatePaymentPreview();
     updateProgress();
   }
 
