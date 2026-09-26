@@ -1,101 +1,965 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vendor Signup V34.1 — Full Flow OS</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Become a GuestHub Vendor — Diani · Wasini · SGR · World</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="/config.js"></script>
 <style>
-:root{--lime:#C6FF00;--gold:#FFC61A;--bg:#060709}
-body{font-family:Inter,sans-serif;background:var(--bg);color:#fff}
-.font-boss{font-family:Anton,sans-serif}
-.glass{background:rgba(18,19,24,.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
-.input{width:100%;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:13px;outline:none}
-.input:focus{border-color:var(--lime)}
-.opt{border:1px solid #2A2A2A;background:#0A0A0A;border-radius:14px;padding:11px 12px;cursor:pointer;position:relative}
-.opt.on{border-color:var(--lime);background:rgba(198,255,0,.12)}
-.paychip{padding:8px 12px;border-radius:999px;background:#0A0A0A;border:1px solid #2A2A2A;font-size:11px;font-weight:800;cursor:pointer}
-.paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
-.notice{display:none;margin:12px 0;padding:12px;border-radius:12px;font-size:12px}.notice.success{display:block;background:rgba(198,255,0,.12);border:1px solid rgba(198,255,0,.3);color:#E8FFB0}.notice.error{display:block;background:rgba(255,90,95,.1);border:1px solid rgba(255,90,95,.3);color:#FFD0D0}
+  :root{
+    --lime:#C6FF00;
+    --gold:#FFC61A;
+    --bg:#060709;
+    --card:#121318;
+    --line:rgba(255,255,255,.08);
+    --muted:#8B95A5;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:Inter,system-ui,-apple-system,sans-serif;
+    background:var(--bg);color:#fff;
+    padding-bottom:48px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .font-boss{font-family:Anton,sans-serif;letter-spacing:.01em}
+
+  .glass{
+    background:rgba(18,19,24,.85);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--line);
+    border-radius:16px;
+  }
+
+  .input{
+    width:100%;
+    background:#0A0A0A;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    padding:13px 14px;
+    color:#fff;font-size:13px;
+    outline:none;
+    transition:border-color .2s,box-shadow .2s;
+    font-family:inherit;
+  }
+  .input:focus{
+    border-color:var(--lime);
+    box-shadow:0 0 0 3px rgba(198,255,0,.14);
+  }
+  .input::placeholder{color:#5b6473}
+
+  .label{
+    font-size:10px;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);
+    margin-top:14px;display:block;
+  }
+  .label:first-child{margin-top:0}
+
+  /* ---------- Service option cards (FIXED) ---------- */
+  .opt{
+    position:relative;
+    border:1px solid #2A2A2A;
+    background:#0A0A0A;
+    border-radius:14px;
+    padding:11px 12px;
+    cursor:pointer;
+    transition:border-color .15s,background .15s,transform .1s;
+    user-select:none;
+  }
+  .opt:hover{border-color:#3a3a3a}
+  .opt:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+  .opt:active{transform:scale(.98)}
+  .opt.on{
+    border-color:var(--lime);
+    background:rgba(198,255,0,.10);
+  }
+  .opt b{font-size:12px;font-weight:700;display:block;padding-right:22px}
+  .opt small{font-size:10px;color:#888;display:block;margin-top:2px}
+
+  .opt .check{
+    position:absolute;top:8px;right:8px;
+    width:18px;height:18px;border-radius:50%;
+    border:1px solid #444;
+    display:grid;place-items:center;
+    font-size:10px;font-weight:900;
+    color:transparent;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .opt.on .check{
+    background:var(--lime);
+    border-color:var(--lime);
+    color:#000;
+  }
+
+  /* ---------- Payout chips ---------- */
+  .paychip{
+    padding:8px 12px;border-radius:999px;
+    background:#0A0A0A;border:1px solid #2A2A2A;
+    font-size:11px;font-weight:800;cursor:pointer;
+    color:#fff;font-family:inherit;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .paychip:hover{border-color:#3a3a3a}
+  .paychip:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+  .paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
+
+  /* ---------- Progress ---------- */
+  .prog{height:5px;background:#1A1A1A;border-radius:999px;overflow:hidden;margin:14px 0}
+  .prog i{display:block;height:100%;background:var(--lime);width:0;transition:width .35s ease}
+
+  /* ---------- Notice (class-driven) ---------- */
+  .notice{
+    display:none;
+    margin:12px 0;padding:12px 14px;border-radius:12px;
+    font-size:12.5px;line-height:1.5;
+    border:1px solid transparent;
+  }
+  .notice.success{
+    display:block;
+    background:rgba(198,255,0,.10);
+    border-color:rgba(198,255,0,.35);
+    color:#E8FFB0;
+  }
+  .notice.error{
+    display:block;
+    background:rgba(255,90,95,.10);
+    border-color:rgba(255,90,95,.35);
+    color:#FFD0D0;
+  }
+
+  /* ---------- Preview row ---------- */
+  .pv-row{
+    display:flex;gap:12px;padding:10px 12px;
+    border-radius:12px;background:#0A0A0A;
+    border:1px solid var(--line);
+  }
+  .pv-ico{
+    width:38px;height:38px;border-radius:10px;
+    background:#1A1C1F;display:grid;place-items:center;
+    font-size:14px;flex-shrink:0;
+  }
+  .pv-add{
+    font-size:10px;font-weight:800;
+    background:#fff;color:#000;
+    padding:4px 9px;border-radius:999px;
+    height:fit-content;align-self:center;
+    flex-shrink:0;
+  }
+
+  /* ---------- Badge ---------- */
+  .badge{
+    padding:4px 10px;border-radius:999px;
+    font-size:9.5px;font-weight:800;letter-spacing:.06em;
+    background:rgba(255,255,255,.08);
+    border:1px solid var(--line);
+    color:#fff;
+  }
+  .badge.ok{background:var(--lime);color:#000;border-color:var(--lime)}
+  .badge.warn{background:rgba(255,198,26,.15);color:var(--gold);border-color:rgba(255,198,26,.3)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important}
+  }
 </style>
 </head>
 <body>
+
 <div class="min-h-screen lg:grid lg:grid-cols-[1.15fr_0.85fr]">
-<div class="px-6 md:px-10 py-7">
-  <div class="flex justify-between items-center mb-6"><div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div><a href="/" class="text-[11px] font-bold bg-white/10 px-4 py-2 rounded-full">← Home</a></div>
-  <h1 class="font-boss text-[38px] leading-[0.9] uppercase">EARN WITH<br><span class="text-[#FFC61A]">GUESTHUB V34.1</span></h1>
-  <p class="text-[12px] text-white/50 mt-2">Full Flow: You Signup → Admin Approves → GM Adds to Hotel → Guest Sees You Live</p>
-  <div id="notice" class="notice"></div>
-  <form id="f" class="max-w-[680px] mt-4">
-    <div class="glass rounded-2xl p-5">
-      <h3 class="font-boss text-[14px] text-[#C6FF00]">👤 BASIC INFO</h3>
-      <label class="text-[10px] font-bold text-white/50">Full Name *</label><input id="full_name" class="input" required placeholder="Kenyon / Diani Taxi">
-      <div class="grid grid-cols-2 gap-3 mt-2">
-        <div><label class="text-[10px] font-bold text-white/50">Phone *</label><input id="phone" class="input" required placeholder="0700..."></div>
-        <div><label class="text-[10px] font-bold text-white/50">ID *</label><input id="id_number" class="input" required placeholder="12345678"></div>
+
+  <!-- ===================== LEFT: FORM ===================== -->
+  <div class="px-5 sm:px-6 md:px-10 lg:px-14 py-7">
+
+    <!-- Top bar -->
+    <div class="flex justify-between items-center mb-6 gap-3 flex-wrap">
+      <div class="flex items-center gap-3 flex-wrap">
+        <div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div>
+        <span class="text-[10px] tracking-widest text-white/40 font-bold">VENDOR ONBOARDING</span>
+        <span id="apiBadge" class="badge">CONNECTING…</span>
       </div>
-      <div class="grid grid-cols-2 gap-3 mt-2">
-        <div><label class="text-[10px] font-bold text-white/50">Email *</label><input id="email" type="email" class="input" required placeholder="you@gmail.com"></div>
-        <div><label class="text-[10px] font-bold text-white/50">Password 8+ *</label><input id="password" type="password" class="input" required value="12345678"></div>
+      <a href="/" class="text-[11px] font-bold bg-white/10 hover:bg-white/15 px-4 py-2 rounded-full border border-white/10 no-underline text-white">← Home</a>
+    </div>
+
+    <!-- Route banner -->
+    <div class="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-[#C6FF00] border border-[#C6FF00]/30 rounded-full px-4 py-2 mb-4">
+      <span class="w-2 h-2 rounded-full bg-[#C6FF00] animate-pulse"></span>
+      DIANI → WASINI → SGR MOMBASA → WORLD
+    </div>
+
+    <h1 class="font-boss text-[34px] sm:text-[42px] md:text-[48px] leading-[0.92] uppercase m-0">
+      Earn with<br><span class="text-[#FFC61A]">GuestHub World</span>
+    </h1>
+    <p class="text-[12.5px] text-white/55 mt-3 max-w-[600px] leading-relaxed">
+      Global vendors · Diani hub · Wasini boat · SGR transfer · Hotels bring clients to <strong class="text-white">you</strong>.
+      You keep <strong class="text-[#C6FF00]">85%</strong>, hotel keeps 15% via M-Pesa Till <strong class="text-white">123456</strong>.
+    </p>
+
+    <div class="prog" aria-hidden="true"><i id="pbar"></i></div>
+    <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+    <form id="f" novalidate class="max-w-[680px]">
+
+      <!-- ========== BASIC INFO ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">👤 Basic info — Diani hub</h2>
+
+        <label class="label" for="full_name">Full name / Business name *</label>
+        <input id="full_name" name="full_name" class="input" required autocomplete="name"
+               placeholder="Kevin Kipchumba / Diani Taxi John">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+          <div>
+            <label class="label" for="phone">Phone / WhatsApp *</label>
+            <input id="phone" name="phone" class="input" type="tel" inputmode="tel"
+                   autocomplete="tel" required placeholder="0722 000 000">
+          </div>
+          <div>
+            <label class="label" for="id_number">ID / Passport no. *</label>
+            <input id="id_number" name="id_number" class="input" required
+                   inputmode="numeric" autocomplete="off" placeholder="12345678">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+          <div>
+            <label class="label" for="email">Email (login) *</label>
+            <input id="email" name="email" type="email" class="input" required
+                   autocomplete="email" inputmode="email" placeholder="you@gmail.com">
+          </div>
+          <div>
+            <label class="label" for="password">Password (min 8) *</label>
+            <input id="password" name="password" type="password" class="input" required
+                   autocomplete="new-password" minlength="8" placeholder="Choose a strong password">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+          <div>
+            <label class="label" for="country">Country</label>
+            <select id="country" name="country" class="input" autocomplete="country-name">
+              <option value="Kenya" selected>🇰🇪 Kenya</option>
+              <option value="Tanzania">🇹🇿 Tanzania</option>
+              <option value="Uganda">🇺🇬 Uganda</option>
+              <option value="UAE">🇦🇪 UAE — Dubai</option>
+              <option value="USA">🇺🇸 USA</option>
+              <option value="UK">🇬🇧 UK</option>
+              <option value="Other">🌍 Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="city">Base city</label>
+            <select id="city" name="city" class="input" autocomplete="address-level2">
+              <option>Diani</option>
+              <option>Wasini Island</option>
+              <option>Shimoni — Wasini Jetty</option>
+              <option>SGR Mombasa Terminus</option>
+              <option>SGR Mariakani</option>
+              <option>Mombasa Town</option>
+              <option>Watamu</option>
+              <option>Ukunda Airstrip</option>
+              <option>Moi Airport</option>
+              <option>Nairobi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+          <div>
+            <label class="label" for="location_hub">Your hub location *</label>
+            <select id="location_hub" name="location_hub" class="input" required>
+              <option value="Diani Beach" selected>Diani Beach (Main hub)</option>
+              <option value="Wasini Island">Wasini Island — Dolphin hub</option>
+              <option value="Shimoni Jetty">Shimoni Jetty — Wasini boats</option>
+              <option value="SGR Mombasa Terminus">SGR Mombasa Terminus (Miritini)</option>
+              <option value="SGR Mariakani">SGR Mariakani Station</option>
+              <option value="Moi Airport">Moi Airport Mombasa</option>
+              <option value="Ukunda Airstrip">Ukunda Airstrip</option>
+              <option value="Watamu / Malindi">Watamu / Malindi</option>
+              <option value="Mombasa Town">Mombasa Town / Nyali</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="radius">Service radius</label>
+            <select id="radius" name="radius" class="input">
+              <option>5km — Diani only</option>
+              <option selected>15km — Diani + Wasini + Ukunda</option>
+              <option>40km — Up to SGR Mombasa</option>
+              <option>100km — Whole South Coast</option>
+              <option>Countrywide — Kenya</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="grid grid-cols-2 gap-3 mt-2">
-        <div><label class="text-[10px] font-bold text-white/50">City</label><select id="city" class="input"><option>Diani</option><option>Wasini</option><option>Mombasa</option><option>Nairobi</option></select></div>
-        <div><label class="text-[10px] font-bold text-white/50">Hub Location *</label><select id="location_hub" class="input"><option>Diani Beach</option><option>Wasini Island</option><option>SGR Mombasa</option><option>Moi Airport</option></select></div>
+
+      <!-- ========== HOTEL SELECTION ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">🏨 Hotels you want to serve *</h2>
+        <p class="text-[11px] text-white/50 mt-2 leading-relaxed">
+          Your services appear instantly in these hotels' guest dashboards after admin approval.
+          <strong class="text-white">Room 101 at Baobab</strong> will see you.
+        </p>
+
+        <div id="hotelList"
+             class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[200px] overflow-auto p-3 rounded-xl bg-[#0A0A0A] border border-white/10 text-[11.5px]"
+             role="group" aria-label="Hotels">
+          <div class="text-white/40 col-span-full py-3 text-center">Loading hotels…</div>
+        </div>
+
+        <label class="flex items-center gap-2 mt-3 cursor-pointer text-[11.5px] font-bold text-[#C6FF00]">
+          <input type="checkbox" id="hotelAll" value="ALL">
+          <span>Serve ALL approved hotels — scale to 1,000</span>
+        </label>
+
+        <p id="hotelHint" class="mt-2 text-[10.5px] text-[#C6FF00]">✓ Will appear live in the hotels you select.</p>
       </div>
-    </div>
 
-    <div class="glass rounded-2xl p-5 mt-4">
-      <h3 class="font-boss text-[14px] text-[#FFC61A]">🏨 CHOOSE HOTELS</h3>
-      <div id="hotelList" class="mt-3 grid grid-cols-2 gap-2 max-h-[160px] overflow-auto p-3 rounded-xl bg-[#0A0A0A] border border-white/10 text-[11px]">Loading...</div>
-    </div>
+      <!-- ========== SERVICES ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🚕 1. Transport &amp; taxi</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g1" role="group" aria-label="Transport services"></div>
+      </div>
 
-    <div class="glass rounded-2xl p-5 mt-4"><h3 class="font-boss text-[14px] text-[#C6FF00]">🚕 SERVICES — SELECT AT LEAST 1</h3>
-      <div class="grid grid-cols-2 gap-2 mt-3" id="servicesBox"></div>
-      <div class="mt-3"><label class="text-[10px] font-bold text-white/50">Your Price (Guest sees)</label><input id="price" type="number" class="input" value="2500"></div>
-    </div>
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🌍 2. Tours — Wasini + safari</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g2" role="group" aria-label="Tour services"></div>
+      </div>
 
-    <div class="glass rounded-2xl p-5 mt-4">
-      <h3 class="font-boss text-[14px]">💸 PAYOUT</h3>
-      <div class="flex gap-2 mt-2"><div class="paychip on" data-val="mpesa">M-PESA</div><div class="paychip" data-val="bank">Bank</div></div>
-      <input type="hidden" id="payout_method" value="mpesa">
-      <label class="text-[10px] font-bold text-white/50 mt-2 block">M-Pesa Number *</label><input id="mpesa" class="input" required placeholder="0700...">
-      <label class="text-[10px] flex gap-2 mt-3"><input id="terms" type="checkbox" required><span>Agree 15% via Till 123456</span></label>
-      <button class="w-full h-[54px] rounded-full bg-[#C6FF00] text-black font-black text-[15px] mt-4" type="submit" id="btn">🚀 Submit — Pending GM Approval</button>
-    </div>
-  </form>
-</div>
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🧖 3. Wellness &amp; hotel services</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g3" role="group" aria-label="Wellness services"></div>
+      </div>
 
-<div class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8">
-  <div class="sticky top-8">
-    <div class="text-[11px] font-bold tracking-widest text-white/40">LIVE PREVIEW — GUEST ROOM 101 SEES</div>
-    <div id="guestPreview" class="mt-4 space-y-2 bg-[#121318] border border-white/10 rounded-[20px] p-5 min-h-[200px]"></div>
-    <a href="/guest.html?hotel=BAOBAB&room=101" class="mt-4 block text-center h-10 rounded-full bg-white text-black font-bold text-[12px] leading-10">→ View Guest App</a>
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">📸 4. Media &amp; concierge</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g4" role="group" aria-label="Media services"></div>
+      </div>
+
+      <!-- ========== SERVICE DETAILS ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] m-0">
+          ⚙️ Service details
+          <span id="selCount" class="text-white/40 text-[11px] font-normal">0 selected</span>
+        </h2>
+
+        <label class="label" for="vehicle">Vehicle / equipment *</label>
+        <select id="vehicle" name="vehicle" class="input" required>
+          <option value="">— Select —</option>
+          <option>Sedan — Premio / Axio</option>
+          <option>SUV — Prado / TX / Landcruiser</option>
+          <option>Van — Alphard / Hiace (7–14 seater)</option>
+          <option>Boat — Wasini Dolphin Dhow</option>
+          <option>SGR Transfer Van</option>
+          <option>Safari Landcruiser (open roof)</option>
+          <option>Boda / TukTuk</option>
+          <option>Massage bed + oils</option>
+          <option>Camera kit + drone</option>
+        </select>
+
+        <label class="label" for="plate">Number plate / license</label>
+        <input id="plate" name="plate" class="input" placeholder="KDA 123A — or boat license no.">
+
+        <label class="label" for="price">Your base price (guest sees) *</label>
+        <input id="price" name="price" type="number" inputmode="numeric" min="0" step="50"
+               class="input" value="2500" required>
+
+        <label class="label" for="bio">
+          Bio — Diani style
+          <span id="bioCount" class="text-white/35 font-normal normal-case tracking-normal ml-1">0 / 120</span>
+        </label>
+        <textarea id="bio" name="bio" maxlength="120" rows="3" class="input"
+                  placeholder="e.g. 5 yrs Diani–Wasini expert. SGR transfers. English / Swahili."></textarea>
+      </div>
+
+      <!-- ========== WHAT HAPPENS NEXT (replaces misleading KYC) ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-white m-0">🪪 What happens after you submit</h2>
+        <ol class="mt-3 space-y-2 text-[11.5px] text-white/70 leading-relaxed pl-5 list-decimal">
+          <li>Our admin reviews your application (usually within 24 hours).</li>
+          <li>You'll be asked to upload <strong class="text-white">ID, selfie, and vehicle photo</strong> to unlock the Verified badge.</li>
+          <li>Once approved, you log in at <a href="/vendor-login.html" class="text-[#C6FF00] underline">/vendor-login.html</a> and go live.</li>
+          <li>Guests at your chosen hotels can book you immediately.</li>
+        </ol>
+      </div>
+
+      <!-- ========== PAYOUT ========== -->
+      <div class="glass p-5 mt-4">
+        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">💸 Payout — Lipa na M-Pesa World</h2>
+
+        <div class="flex gap-2 flex-wrap mt-3" role="radiogroup" aria-label="Payout method">
+          <button type="button" class="paychip on" data-val="mpesa"   role="radio" aria-checked="true">💚 M-PESA</button>
+          <button type="button" class="paychip"    data-val="airtel"  role="radio" aria-checked="false">📱 Airtel Money</button>
+          <button type="button" class="paychip"    data-val="paypal"  role="radio" aria-checked="false">💙 PayPal</button>
+          <button type="button" class="paychip"    data-val="bank"    role="radio" aria-checked="false">🏦 Bank</button>
+        </div>
+        <input type="hidden" id="payout_method" name="payout_method" value="mpesa">
+
+        <label class="label" for="mpesa">M-Pesa number (or Till) *</label>
+        <input id="mpesa" name="mpesa" class="input" type="tel" inputmode="tel" required
+               placeholder="0722 000 000 or Till 123456">
+
+        <label class="label" for="mpesa_name">M-Pesa name (as per ID)</label>
+        <input id="mpesa_name" name="mpesa_name" class="input" autocomplete="name"
+               placeholder="Full legal name">
+
+        <label class="flex items-start gap-2 mt-4 cursor-pointer">
+          <input id="terms" name="terms" type="checkbox" required class="mt-0.5 w-4 h-4 accent-[#C6FF00]">
+          <span class="text-[11.5px] text-white/75 leading-relaxed">
+            I agree to respond in under 15 minutes, be polite, and pay the 15% hotel commission via M-Pesa Till 123456 — Diani to SGR.
+          </span>
+        </label>
+
+        <button class="w-full h-[54px] rounded-full bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] text-black font-black text-[15px] mt-4 cursor-pointer border-0 hover:brightness-105 active:scale-[.99] transition disabled:opacity-60 disabled:cursor-wait"
+                type="submit" id="btn">
+          🚀 Submit — get reviewed in 24h
+        </button>
+        <p class="text-[10px] text-center text-white/30 mt-2 m-0">
+          No card required · Approval usually within 24h · Scale from Diani → Wasini → SGR → World
+        </p>
+      </div>
+
+    </form>
   </div>
-</div>
+
+  <!-- ===================== RIGHT: LIVE PREVIEW ===================== -->
+  <aside class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8">
+    <div class="sticky top-8">
+
+      <div class="flex justify-between items-center mb-4">
+        <span class="text-[11px] font-bold tracking-widest text-white/40">GUEST VIEW — LIVE PREVIEW</span>
+        <span class="text-[10px] px-2.5 py-1 rounded-full bg-[#C6FF00] text-black font-bold">● LIVE</span>
+      </div>
+
+      <div class="bg-[#121318] border border-white/10 rounded-[20px] p-5">
+        <div class="text-[10px] font-bold tracking-widest text-white/40">GUEST IN ROOM 101 AT BAOBAB SEES THIS</div>
+        <div id="guestPreview" class="mt-4 space-y-2" aria-live="polite">
+          <div class="text-center py-10 text-[12px] text-white/30">
+            Select services on the left — they appear here instantly.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 rounded-xl bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[11.5px] leading-relaxed">
+        <b class="text-[#C6FF00]">The magic:</b><br>
+        Vendor picks <b class="text-white">Baobab + Wasini</b> → a guest scanning the QR at Baobab Room 101
+        sees the <b class="text-white">Wasini Dolphin Tour</b> instantly.<br><br>
+        Guest taps <b>+ Add</b> → your WhatsApp gets:
+        <b class="text-white">James — Room 101 — Wasini Tour — KSh 6,500</b>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-2">
+        <div class="glass p-3 text-center">
+          <div class="font-boss text-[18px] text-[#C6FF00]">85%</div>
+          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">YOU KEEP</div>
+        </div>
+        <div class="glass p-3 text-center">
+          <div class="font-boss text-[18px] text-white">15%</div>
+          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">HOTEL (Till 123456)</div>
+        </div>
+      </div>
+
+      <a href="/guest.html?hotel=BAOBAB&room=101"
+         class="mt-4 block text-center h-10 rounded-full bg-white text-black font-bold text-[12px] leading-10 no-underline hover:bg-white/90">
+        → View real guest app
+      </a>
+    </div>
+  </aside>
+
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const SERVICES=[{id:'airport_taxi',t:'Airport Taxi'},{id:'sgr_taxi',t:'SGR Transfer'},{id:'wasini_dolphin',t:'Wasini Dolphin Tour'},{id:'massage',t:'Massage'},{id:'photography',t:'Photography'},{id:'laundry',t:'Laundry'},{id:'private_chef',t:'Private Chef'},{id:'car_hire',t:'Car Hire'}];
-let sel=[];
-function renderServices(){const box=$('servicesBox');SERVICES.forEach(s=>{const div=document.createElement('div');div.className='opt';div.innerHTML=`<b>${s.t}</b>`;div.onclick=()=>{if(sel.includes(s.id)){sel=sel.filter(x=>x!==s.id);div.classList.remove('on')}else{sel.push(s.id);div.classList.add('on')}updatePreview()};box.appendChild(div);})}
-function updatePreview(){const name=$('full_name').value||'Your Business';const hub=$('location_hub').value;const price=$('price').value;let html=`<div class="text-[10px] text-[#C6FF00] font-bold">${name.toUpperCase()} • ${hub}</div>`;if(!sel.length)html+='<div class="text-[11px] text-white/30 py-6 text-center">Select services</div>';else sel.forEach(id=>{const f=SERVICES.find(x=>x.id===id);html+=`<div class="flex gap-3 p-3 rounded-xl bg-[#0A0A0A] border border-white/10 mt-2"><div class="w-10 h-10 rounded-xl bg-[#1A1C1F] grid place-items-center">✨</div><div><div class="font-bold text-[12px]">${f.t}</div><div class="text-[11px] font-black text-[#C6FF00]">KSh ${price}</div></div></div>`});$('guestPreview').innerHTML=html;}
-async function loadHotels(){try{const r=await fetch('/api/data');const j=await r.json();const hotels=j.hotels||[];$('hotelList').innerHTML=hotels.slice(0,20).map(h=>`<label class="flex items-center gap-2"><input type="checkbox" value="${h.hotel_id||h.id}" ${h.hotel_id==='BAOBAB'?'checked':''}> ${h.hotel_name||h.name}</label>`).join('')+`<label class="flex gap-2 font-bold text-[#C6FF00]"><input type="checkbox" value="ALL" checked> ALL Hotels (Recommended)</label>`}catch{$('hotelList').innerHTML=`<label><input type="checkbox" value="BAOBAB" checked> Baobab</label><label><input type="checkbox" value="ALL" checked> ALL</label>`}document.querySelectorAll('#hotelList input').forEach(i=>i.addEventListener('change',updatePreview))}
-renderServices();loadHotels();['full_name','location_hub','price'].forEach(id=>$(id).addEventListener('input',updatePreview));
-document.querySelectorAll('.paychip').forEach(c=>c.addEventListener('click',function(){document.querySelectorAll('.paychip').forEach(x=>x.classList.remove('on'));this.classList.add('on');$('payout_method').value=this.dataset.val}));
-$('f').addEventListener('submit',async(e)=>{
- e.preventDefault();const btn=$('btn');const notice=$('notice');btn.disabled=true;btn.textContent='⏳ Creating...';
- try{
-  if(sel.length===0)throw new Error('Select at least 1 service');
-  if(!$('terms').checked)throw new Error('Agree terms');
-  const hotels=[...document.querySelectorAll('#hotelList input:checked')].map(i=>i.value);if(!hotels.length)throw new Error('Choose hotel');
-  const payload={full_name:$('full_name').value.trim(),vendor_name:$('full_name').value.trim(),email:$('email').value.toLowerCase().trim(),password:$('password').value,phone:$('phone').value.replace(/\D/g,''),id_number:$('id_number').value,city:$('city').value,location:$('location_hub').value,location_hub:$('location_hub').value,hotel_ids:hotels,hotels,category:sel[0],services:sel,price:Number($('price').value||2500),bio:'Hub:'+$('location_hub').value,mpesa:$('mpesa').value.replace(/\D/g,''),payout_method:$('payout_method').value};
-  const r=await fetch('/api/vendors/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await r.json();if(!r.ok)throw new Error(j.error);
-  notice.className='notice success';notice.style.display='block';notice.textContent=`✅ SUCCESS ${payload.full_name}! Pending GM approval. Now go login.`;
-  btn.textContent='✅ Redirecting to Login...';setTimeout(()=>location.href='/vendor-login.html',2000);
- }catch(err){notice.className='notice error';notice.style.display='block';notice.textContent='Failed: '+err.message;btn.disabled=false;btn.textContent='🚀 Submit — Pending GM Approval';}
-});
+(() => {
+  'use strict';
+
+  const API = '/api';
+  const $  = id => document.getElementById(id);
+
+  // ---------- Service catalogue ----------
+  const SERVICES = {
+    g1: {
+      label: 'transport',
+      items: [
+        { id:'airport_taxi',  t:'Airport Taxi',        d:'Moi / Ukunda / JKIA' },
+        { id:'sgr_taxi',      t:'SGR Transfer',        d:'Miritini → Diani' },
+        { id:'town_taxi',     t:'Town Taxi',           d:'Diani / Ukunda' },
+        { id:'car_hire',      t:'Car Hire + Driver',   d:'Daily KSh 5–15k' },
+        { id:'wasini_boat',   t:'Wasini Boat Taxi',    d:'Shimoni → Wasini' },
+        { id:'boda_tuktuk',   t:'Boda / TukTuk',       d:'Quick errands' }
+      ]
+    },
+    g2: {
+      label: 'tours',
+      items: [
+        { id:'wasini_dolphin', t:'Wasini Dolphin Tour',  d:'Full day + lunch' },
+        { id:'shimba_hills',   t:'Shimba Hills Safari',  d:'Half day' },
+        { id:'mara_safari',    t:'Maasai Mara Safari',   d:'2–3 days' },
+        { id:'sgr_experience', t:'SGR Experience Tour',  d:'Mombasa SGR' },
+        { id:'beach_safari',   t:'Beach & Snorkeling',   d:'Diani / Wasini' },
+        { id:'city_tour',      t:'Mombasa City Tour',    d:'Fort Jesus' }
+      ]
+    },
+    g3: {
+      label: 'wellness',
+      items: [
+        { id:'massage',       t:'In-Room Massage',   d:'Swedish, Deep tissue' },
+        { id:'spa_nails',     t:'Spa / Nails / Hair',d:'In-room beauty' },
+        { id:'laundry',       t:'Express Laundry',   d:'2 hr return' },
+        { id:'private_chef',  t:'Private Chef',      d:'Swahili Pilau' }
+      ]
+    },
+    g4: {
+      label: 'media',
+      items: [
+        { id:'photography', t:'Photography',         d:'Diani shots' },
+        { id:'drone',       t:'Drone + Videography', d:'Hotel & beach' },
+        { id:'shopping',    t:'Curio Shop',          d:'Maasai market' },
+        { id:'concierge',   t:'Concierge / Errands', d:'Anything' }
+      ]
+    }
+  };
+
+  const ALL_SERVICES = Object.values(SERVICES).flatMap(g => g.items);
+  const serviceById  = id => ALL_SERVICES.find(s => s.id === id);
+  const groupOf      = id => Object.keys(SERVICES).find(k => SERVICES[k].items.some(s => s.id === id));
+
+  // ---------- State ----------
+  let selected = [];
+  let approvedHotels = [];
+
+  // ---------- Helpers ----------
+  const escape = s => String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+
+  const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
+  const cleanPhone   = v => String(v || '').replace(/\D/g, '');
+
+  function showNotice(msg, type = 'success') {
+    const n = $('notice');
+    n.className = 'notice ' + (type === 'error' ? 'error' : 'success');
+    n.textContent = msg;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function clearNotice() {
+    const n = $('notice');
+    n.className = 'notice';
+    n.textContent = '';
+  }
+
+  // ============================================================
+  // SERVICE CARDS (accessible)
+  // ============================================================
+  function renderCategories() {
+    Object.entries(SERVICES).forEach(([groupId, group]) => {
+      const box = $(groupId);
+      if (!box) return;
+      box.replaceChildren();
+
+      group.items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'opt';
+        card.setAttribute('role', 'checkbox');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-checked', 'false');
+        card.dataset.serviceId = item.id;
+
+        const check = document.createElement('div');
+        check.className = 'check';
+        check.setAttribute('aria-hidden', 'true');
+        check.textContent = '✓';
+
+        const title = document.createElement('b');
+        title.textContent = item.t;
+
+        const desc = document.createElement('small');
+        desc.textContent = item.d;
+
+        card.append(check, title, desc);
+
+        const activate = () => toggleService(item.id, card);
+        card.addEventListener('click', activate);
+        card.addEventListener('keydown', e => {
+          if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); activate(); }
+        });
+
+        box.appendChild(card);
+      });
+    });
+  }
+
+  function toggleService(id, card) {
+    const idx = selected.indexOf(id);
+    if (idx >= 0) {
+      selected.splice(idx, 1);
+      card.classList.remove('on');
+      card.setAttribute('aria-checked', 'false');
+    } else {
+      selected.push(id);
+      card.classList.add('on');
+      card.setAttribute('aria-checked', 'true');
+    }
+    $('selCount').textContent = selected.length + ' selected';
+    updatePreview();
+    updateProgress();
+  }
+
+  // ============================================================
+  // HOTELS
+  // ============================================================
+  async function loadHotels() {
+    try {
+      const res = await fetch(`${API}/data`, { cache: 'no-store' });
+      const json = await res.json();
+      approvedHotels = Array.isArray(json.hotels) ? json.hotels : [];
+    } catch {
+      approvedHotels = [];
+    }
+    renderHotels();
+  }
+
+  function renderHotels() {
+    const list = $('hotelList');
+    list.replaceChildren();
+
+    if (!approvedHotels.length) {
+      const msg = document.createElement('div');
+      msg.className = 'text-white/45 col-span-full py-4 text-center text-[11px] leading-relaxed';
+      msg.textContent = 'No approved hotels yet. Choose "Serve ALL" below — you will be linked to every hotel as they come online.';
+      list.appendChild(msg);
+      return;
+    }
+
+    approvedHotels.slice(0, 40).forEach(h => {
+      const hotelId = h.hotel_id || h.id;
+      const label = document.createElement('label');
+      label.className = 'flex items-center gap-2 cursor-pointer py-1';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = hotelId;
+      cb.className = 'hotel-cb accent-[#C6FF00]';
+      cb.addEventListener('change', () => {
+        // If user picks a specific hotel, uncheck ALL
+        if (cb.checked) $('hotelAll').checked = false;
+        updatePreview();
+        updateProgress();
+      });
+
+      const name = document.createElement('span');
+      name.textContent = h.hotel_name || h.name || hotelId;
+
+      label.append(cb, name);
+      list.appendChild(label);
+    });
+  }
+
+  function getSelectedHotels() {
+    if ($('hotelAll').checked) return ['ALL'];
+    return [...document.querySelectorAll('.hotel-cb:checked')].map(i => i.value);
+  }
+
+  // ============================================================
+  // LIVE PREVIEW
+  // ============================================================
+  function updatePreview() {
+    const wrap = $('guestPreview');
+    wrap.replaceChildren();
+
+    const vendor = ($('full_name').value || 'Your business').trim();
+    const hub    = $('location_hub').value || 'Diani';
+    const price  = Number($('price').value || 0);
+    const hotels = getSelectedHotels();
+    const hotelLabel = hotels.includes('ALL')
+      ? 'ALL HOTELS'
+      : (hotels.length ? hotels.join(' · ') : 'NO HOTELS SELECTED');
+
+    if (selected.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'text-[11px] text-white/30 text-center py-6';
+      empty.textContent = 'Select services — they appear here like the guest app.';
+      wrap.appendChild(empty);
+      return;
+    }
+
+    const header = document.createElement('div');
+    header.className = 'text-[10px] text-[#C6FF00] font-bold mb-2';
+    header.textContent = `${vendor.toUpperCase()} • ${hub.toUpperCase()} • LIVE IN ${hotelLabel}`;
+    wrap.appendChild(header);
+
+    selected.forEach(id => {
+      const svc = serviceById(id);
+      if (!svc) return;
+
+      const row = document.createElement('div');
+      row.className = 'pv-row';
+
+      const ico = document.createElement('div');
+      ico.className = 'pv-ico';
+      ico.textContent = '✨';
+
+      const mid = document.createElement('div');
+      mid.className = 'flex-1 min-w-0';
+
+      const title = document.createElement('div');
+      title.className = 'font-bold text-[12px]';
+      title.textContent = svc.t;
+
+      const sub = document.createElement('div');
+      sub.className = 'text-[10px] text-white/45 mt-0.5';
+      sub.textContent = `${svc.d} • ${hub}`;
+
+      const pr = document.createElement('div');
+      pr.className = 'text-[11px] font-black text-[#C6FF00] mt-1';
+      pr.textContent = `KSh ${price.toLocaleString()}`;
+
+      mid.append(title, sub, pr);
+
+      const add = document.createElement('div');
+      add.className = 'pv-add';
+      add.textContent = '+ Add';
+
+      row.append(ico, mid, add);
+      wrap.appendChild(row);
+    });
+  }
+
+  // ============================================================
+  // PROGRESS
+  // ============================================================
+  function updateProgress() {
+    const checks = [
+      $('full_name').value.trim().length >= 2,
+      $('phone').value.trim().length >= 7,
+      $('id_number').value.trim().length >= 4,
+      isValidEmail($('email').value),
+      $('password').value.length >= 8,
+      $('vehicle').value !== '',
+      Number($('price').value) > 0,
+      $('mpesa').value.replace(/\D/g,'').length >= 7,
+      selected.length > 0,
+      getSelectedHotels().length > 0,
+      $('terms').checked
+    ];
+    const done  = checks.filter(Boolean).length;
+    const total = checks.length;
+    $('pbar').style.width = Math.round((done / total) * 100) + '%';
+  }
+
+  // ============================================================
+  // PAYOUT CHIPS
+  // ============================================================
+  function wirePayoutChips() {
+    const chips = document.querySelectorAll('.paychip');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => {
+          c.classList.remove('on');
+          c.setAttribute('aria-checked', 'false');
+        });
+        chip.classList.add('on');
+        chip.setAttribute('aria-checked', 'true');
+        $('payout_method').value = chip.dataset.val;
+      });
+    });
+  }
+
+  // ============================================================
+  // HEALTH CHECK (retries for cold starts)
+  // ============================================================
+  async function checkHealth(attempt = 1) {
+    const badge = $('apiBadge');
+    try {
+      const res = await fetch(`${API}/health`, { cache: 'no-store' });
+      if (!res.ok) throw new Error('bad status');
+      const json = await res.json();
+      const os = json.os || 'GuestHub';
+      badge.textContent = `${os} • LIVE`;
+      badge.className = 'badge ok';
+    } catch {
+      if (attempt < 6) {
+        badge.textContent = `WAKING… (${attempt})`;
+        badge.className = 'badge warn';
+        setTimeout(() => checkHealth(attempt + 1), 1200 * attempt);
+      } else {
+        badge.textContent = 'OFFLINE';
+        badge.className = 'badge warn';
+      }
+    }
+  }
+
+  // ============================================================
+  // SUBMIT
+  // ============================================================
+  async function handleSubmit(e) {
+    e.preventDefault();
+    clearNotice();
+
+    const btn = $('btn');
+    const hotels = getSelectedHotels();
+
+    // ---- Validate client-side (mirror server rules) ----
+    if (!$('full_name').value.trim() || $('full_name').value.trim().length < 2)
+      return fail('Please enter your full or business name.');
+
+    if (!$('phone').value.trim() || cleanPhone($('phone').value).length < 7)
+      return fail('Enter a valid phone number.');
+
+    if (!$('id_number').value.trim())
+      return fail('ID / Passport number is required.');
+
+    if (!isValidEmail($('email').value))
+      return fail('Enter a valid email address.');
+
+    if ($('password').value.length < 8)
+      return fail('Password must be at least 8 characters.');
+
+    if (!$('vehicle').value)
+      return fail('Please choose your vehicle or equipment.');
+
+    if (!(Number($('price').value) > 0))
+      return fail('Base price must be greater than 0.');
+
+    if (!$('mpesa').value.trim() || cleanPhone($('mpesa').value).length < 7)
+      return fail('Enter your M-Pesa number.');
+
+    if (selected.length === 0)
+      return fail('Select at least one service.');
+
+    if (hotels.length === 0)
+      return fail('Choose at least one hotel — or tick "Serve ALL approved hotels".');
+
+    if (!$('terms').checked)
+      return fail('Please accept the terms to continue.');
+
+    function fail(msg) {
+      showNotice(msg, 'error');
+      btn.disabled = false;
+      btn.textContent = '🚀 Submit — get reviewed in 24h';
+    }
+
+    // ---- Send ----
+    btn.disabled = true;
+    btn.textContent = '⏳ Creating account…';
+
+    const firstService = selected[0];
+    const category = SERVICES[groupOf(firstService)]?.label || 'services';
+
+    const payload = {
+      full_name:    $('full_name').value.trim(),
+      vendor_name:  $('full_name').value.trim(),
+      email:        $('email').value.trim().toLowerCase(),
+      password:     $('password').value,
+      phone:        cleanPhone($('phone').value),
+      id_number:    $('id_number').value.trim(),
+      country:      $('country').value,
+      city:         $('city').value,
+      location:     $('location_hub').value,
+      location_hub: $('location_hub').value,
+      radius:       $('radius').value,
+      vehicle:      $('vehicle').value,
+      plate:        $('plate').value.trim(),
+      category:     category,
+      services:     selected.slice(),
+      price:        Number($('price').value) || 0,
+      bio:          $('bio').value.trim() +
+                    ` | Hub: ${$('location_hub').value} | Radius: ${$('radius').value}`,
+      mpesa:        cleanPhone($('mpesa').value),
+      mpesa_name:   $('mpesa_name').value.trim(),
+      payout_method:$('payout_method').value,
+      hotel_ids:    hotels,
+      hotels:       hotels
+    };
+
+    try {
+      const res = await fetch(`${API}/vendors/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const json = await res.json().catch(() => ({}));
+
+      if (!res.ok || json.ok === false) {
+        throw new Error(json.error || `Signup failed (${res.status})`);
+      }
+
+      const linked = json.hotels_linked ?? hotels.length;
+      showNotice(
+        `✅ Welcome, ${payload.full_name}! Your application is pending admin approval. ` +
+        `${linked} hotel${linked === 1 ? '' : 's'} linked. ` +
+        `You'll be able to log in at /vendor-login.html once approved.`,
+        'success'
+      );
+
+      btn.textContent = '✅ Submitted — redirecting to login…';
+
+      setTimeout(() => {
+        window.location.href = '/vendor-login.html';
+      }, 2600);
+
+    } catch (err) {
+      showNotice('Submission failed: ' + (err.message || 'Unknown error'), 'error');
+      btn.disabled = false;
+      btn.textContent = '🚀 Submit — get reviewed in 24h';
+    }
+  }
+
+  // ============================================================
+  // BOOT
+  // ============================================================
+  function debounce(fn, ms = 120) {
+    let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  }
+
+  function init() {
+    renderCategories();
+    wirePayoutChips();
+    loadHotels();
+    checkHealth();
+
+    // Live preview inputs
+    const previewInputs = ['full_name', 'location_hub', 'price'];
+    const debouncedPreview = debounce(updatePreview, 90);
+    const debouncedProgress = debounce(updateProgress, 90);
+
+    previewInputs.forEach(id => $(id).addEventListener('input', debouncedPreview));
+    document.querySelectorAll('#f input, #f select, #f textarea').forEach(el => {
+      el.addEventListener('input', debouncedProgress);
+      el.addEventListener('change', debouncedProgress);
+    });
+
+    // Hotel "ALL" exclusivity
+    $('hotelAll').addEventListener('change', e => {
+      if (e.target.checked) {
+        document.querySelectorAll('.hotel-cb:checked').forEach(cb => { cb.checked = false; });
+      }
+      updatePreview();
+      updateProgress();
+    });
+
+    // Bio counter
+    const bio = $('bio');
+    bio.addEventListener('input', () => {
+      $('bioCount').textContent = bio.value.length + ' / 120';
+    });
+
+    // Form submit
+    $('f').addEventListener('submit', handleSubmit);
+
+    // First paint
+    updatePreview();
+    updateProgress();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
 </script>
+
 </body>
 </html>
