@@ -4,17 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070707">
-<meta name="description" content="GuestHub — your hotel, room service, tours, transport and concierge in one place.">
-<title>GuestHub — Your Hotel SuperApp</title>
+<meta name="description" content="GuestHub — scan, order and enjoy. Room service, restaurant menu, tours, transport and concierge in one place.">
+<title>GuestHub — Scan · Order · Enjoy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js" onerror="console.warn('config.js not found — realtime disabled')"></script>
 <style>
 :root{
   --lime:#c6ff00;--lime-soft:rgba(198,255,0,.12);--lime-line:rgba(198,255,0,.28);
-  --gold:#fbbf24;--blue:#38bdf8;--green:#22c55e;--red:#ef4444;--purple:#a78bfa;
+  --gold:#fbbf24;--gold-soft:rgba(251,191,36,.12);--gold-line:rgba(251,191,36,.32);
+  --blue:#38bdf8;--green:#22c55e;--red:#ef4444;--purple:#a78bfa;
   --bg:#060606;--surface:#0d0d0d;--card:#121212;--card-2:#171717;
   --border:#232323;--border-2:#2f2f2f;
   --muted:#a8a8a8;--muted-2:#7a7a7a;--muted-3:#5a5a5a;
@@ -29,87 +30,97 @@ body{margin:0;min-height:100vh;background:
   radial-gradient(circle at 100% 100%,rgba(56,189,248,.05),transparent 30%),
   var(--bg);
   color:#fff;font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.5;
-  padding-bottom:calc(96px + env(safe-area-inset-bottom));
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-}
-button{font:inherit;cursor:pointer;border:0}
-input,textarea{font:inherit}
-button:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+  padding-bottom:calc(104px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+body.tableMode{background:
+  radial-gradient(circle at 50% -10%,rgba(251,191,36,.12),transparent 34%),
+  radial-gradient(circle at 100% 100%,rgba(198,255,0,.05),transparent 30%),
+  var(--bg);}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 img{max-width:100%;display:block}
 
-/* ---------- Offline ---------- */
+/* Offline */
 .offlineBar{position:fixed;top:0;left:0;right:0;z-index:1500;background:linear-gradient(90deg,#b91c1c,#ef4444);color:#fff;text-align:center;padding:9px 12px;font-size:12px;font-weight:800;letter-spacing:.3px;transform:translateY(-120%);transition:transform .3s ease;box-shadow:0 4px 20px rgba(239,68,68,.35)}
 .offlineBar.show{transform:translateY(0)}
 
-/* ---------- Top Bar ---------- */
+/* Top Bar */
 .topbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:rgba(6,6,6,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
-.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;user-select:none}
 .brandMark{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,var(--lime),#a3d100);color:#000;font-family:'Space Grotesk';font-weight:800;font-size:17px;box-shadow:0 6px 22px rgba(198,255,0,.18)}
 .brandText{font-family:'Space Grotesk';font-size:14px;font-weight:800;letter-spacing:.3px}
 .brandText span{color:var(--lime)}
 .topActions{display:flex;align-items:center;gap:8px}
-.roomChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #2a2a2a;font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap;max-width:170px;overflow:hidden;text-overflow:ellipsis}
-.roomChip b{color:#fff}
+.ctxChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid var(--lime-line);font-size:11px;font-weight:900;color:var(--lime);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.ctxChip.table{border-color:var(--gold-line);color:var(--gold)}
 .iconBtn{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:16px;transition:border-color .15s,color .15s}
 .iconBtn:hover,.iconBtn:active{border-color:var(--lime);color:var(--lime)}
 
-/* ---------- Hero ---------- */
+/* Hero */
 .hero{position:relative;overflow:hidden;padding:22px 16px 26px;background:
   radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
   linear-gradient(135deg,#c6ff00 0%,#e6ff66 45%,#fbbf24 100%);
   color:#000;border-radius:0 0 32px 32px}
+body.tableMode .hero{background:
+  radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
+  linear-gradient(135deg,#fbbf24 0%,#fcd34d 45%,#c6ff00 100%)}
 .hero:before{content:"";position:absolute;width:240px;height:240px;right:-120px;bottom:-130px;border:1px solid rgba(0,0,0,.14);border-radius:50%}
 .hero:after{content:"";position:absolute;width:140px;height:140px;right:-40px;bottom:-70px;border:1px solid rgba(0,0,0,.10);border-radius:50%}
 .heroContent{position:relative;z-index:2}
 .eyebrow{display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);padding:6px 11px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.7px;margin-bottom:12px}
-.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(26px,7.5vw,36px);line-height:1;letter-spacing:-1.1px;font-weight:800}
-.hero h1 span{display:block;color:rgba(0,0,0,.65);font-size:.55em;letter-spacing:-.4px;margin-top:4px;font-weight:800}
-.hero p{margin:10px 0 0;max-width:340px;font-size:12.5px;font-weight:700;opacity:.78;line-height:1.45}
+body.tableMode .eyebrow{color:var(--gold)}
+.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(25px,7vw,35px);line-height:1.02;letter-spacing:-1.1px;font-weight:800}
+.hero h1 span{display:block;color:rgba(0,0,0,.62);font-size:.55em;letter-spacing:-.4px;margin-top:5px;font-weight:800}
+.hero p{margin:10px 0 0;max-width:360px;font-size:12.5px;font-weight:700;opacity:.78;line-height:1.45}
 .heroBottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
 .verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:10.5px;font-weight:900}
 .heroMeta{display:flex;gap:6px;flex-wrap:wrap}
-.heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.08);color:#000;font-size:10.5px;font-weight:900}
-.heroMeta span#heroStay{background:rgba(0,0,0,.14);color:#000;font-weight:900}
+.heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.09);color:#000;font-size:10.5px;font-weight:900}
+.heroMeta span#heroStay{background:rgba(0,0,0,.15)}
 
-/* ---------- Panels ---------- */
+/* Context panel */
+.ctxPanel{margin-top:14px;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));border:1px solid var(--lime-line)}
+body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(255,255,255,.015));border-color:var(--gold-line)}
+.ctxIcon{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:#0b0b0b;border:1px solid #2a2a2a;font-size:21px}
+.ctxPanel b{display:block;font-family:'Space Grotesk';font-size:14.5px;font-weight:800}
+.ctxPanel small{display:block;color:var(--muted-2);font-size:11px;margin-top:2px;font-weight:600}
+.ctxChange{margin-left:auto;padding:8px 13px;border-radius:10px;background:#1b1b1b;border:1px solid #303030;color:#fff;font-size:11.5px;font-weight:800;flex-shrink:0}
+
+/* Panels */
 .wrap{padding:0 12px}
-.panel{margin-top:14px;padding:15px;border:1px solid var(--border);background:linear-gradient(145deg,#151515,#0f0f0f);border-radius:var(--radius)}
-.panelHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.panelHead strong{font-family:'Space Grotesk';font-size:13.5px;font-weight:800}
-.panelHead small{color:var(--muted-3);font-size:9.5px;font-weight:800;letter-spacing:.7px}
-.panelGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .input{width:100%;padding:13px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s,background .18s}
 .input::placeholder{color:#6a6a6a;font-weight:500}
 .input:focus{outline:none;border-color:var(--lime);background:#0d0d0d}
 
-/* ---------- Promo ---------- */
+/* Promo */
 .promo{margin-top:14px;padding:14px 15px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.06));border:1px solid var(--lime-line);display:flex;justify-content:space-between;align-items:center;gap:12px}
 .promo b{font-family:'Space Grotesk';font-size:13px;display:block}
 .promo small{color:var(--muted);font-size:11px;display:block;margin-top:3px;line-height:1.4}
 .promoTag{padding:5px 10px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.4px;flex-shrink:0}
-.promoClose{background:transparent;color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
+.promoClose{color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
 
-/* ---------- Quick Actions ---------- */
-.quickRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
-@media(min-width:650px){.quickRow{grid-template-columns:repeat(6,1fr)}}
-.quickAction{min-height:82px;padding:10px 6px;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:800;transition:transform .15s,border-color .15s;text-align:center;line-height:1.15}
+/* Quick Actions */
+.quickRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+@media(min-width:520px){.quickRow{grid-template-columns:repeat(6,1fr)}}
+.quickAction{min-height:84px;padding:10px 6px;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:800;transition:transform .15s,border-color .15s;text-align:center;line-height:1.15}
 .quickAction i{font-style:normal;font-size:22px;line-height:1}
 .quickAction:active{transform:scale(.96);border-color:var(--lime)}
 .quickAction:hover{border-color:#3a3a3a}
 
-/* ---------- Search ---------- */
+/* Search */
 .search{margin-top:14px}
 .searchBox{position:relative}
 .searchIcon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:15px;opacity:.65}
 .searchBox .input{padding-left:44px}
 
-/* ---------- Category Pills ---------- */
-.pills{display:flex;gap:7px;overflow-x:auto;padding:12px 12px 2px;scrollbar-width:none;-ms-overflow-style:none}
+/* Pills */
+.pills{display:flex;gap:7px;overflow-x:auto;padding:14px 12px 2px;scrollbar-width:none;-ms-overflow-style:none}
 .pills::-webkit-scrollbar{display:none}
 .pill{padding:8px 13px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11.5px;font-weight:800;white-space:nowrap;transition:all .15s}
 .pill.active{background:var(--lime);border-color:var(--lime);color:#000}
 
-/* ---------- Active Order ---------- */
+/* Active Order */
 .activeOrder{display:none;margin-top:14px;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(255,255,255,.015));border:1px solid var(--lime-line);border-radius:var(--radius);transition:border-color .3s}
 .activeOrder.show{display:block}
 .activeOrder.flash{animation:bannerFlash 1s ease 3;border-color:var(--lime)}
@@ -128,7 +139,7 @@ img{max-width:100%;display:block}
 .status{display:inline-block;height:max-content;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.4px;background:#202020;color:var(--muted);white-space:nowrap}
 .status.pending,.status.new{color:var(--blue);background:rgba(56,189,248,.12)}
 .status.accepted{color:var(--lime);background:var(--lime-soft)}
-.status.preparing{color:var(--gold);background:rgba(251,191,36,.12)}
+.status.preparing{color:var(--gold);background:var(--gold-soft)}
 .status.on_the_way,.status.ontheway{color:var(--purple);background:rgba(167,139,250,.12)}
 .status.completed{color:var(--green);background:rgba(34,197,94,.12)}
 .status.cancelled,.status.rejected{color:var(--red);background:rgba(239,68,68,.12)}
@@ -143,7 +154,7 @@ img{max-width:100%;display:block}
 .orderDetails strong{color:#fff;font-weight:800}
 .orderEta{margin-top:10px;padding:9px 12px;background:rgba(198,255,0,.06);border:1px dashed var(--lime-line);border-radius:12px;font-size:11.5px;color:var(--lime);font-weight:800;display:flex;align-items:center;gap:7px}
 
-/* ---------- Sections ---------- */
+/* Sections */
 .section{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
 .section.hidden{display:none}
 .section h3{margin:0 0 12px;font-family:'Space Grotesk';color:var(--lime);font-size:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -151,60 +162,100 @@ img{max-width:100%;display:block}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(min-width:650px){.grid2{grid-template-columns:repeat(3,1fr)}}
 
-/* ---------- Service Card ---------- */
-.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;color:#fff;transition:transform .15s,border-color .15s,box-shadow .15s;min-height:132px;display:flex;flex-direction:column;overflow:hidden}
+/* Service Card */
+.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;transition:transform .15s,border-color .15s,box-shadow .15s;min-height:132px;display:flex;flex-direction:column;overflow:hidden}
 .svc:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(198,255,0,.06),transparent 50%);opacity:0;transition:opacity .2s;pointer-events:none}
 .svc:hover{border-color:#3a3a3a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .svc:hover:before{opacity:1}
 .svc:active{transform:scale(.98);border-color:var(--lime)}
 .svc i{font-style:normal;font-size:24px;display:block;margin-bottom:8px;line-height:1}
 .svc b{font-size:13px;display:block;line-height:1.25;padding-right:70px;font-weight:800}
-.svc small{color:var(--muted-2);font-size:11px;display:block;margin-top:6px;line-height:1.4;padding-right:2px;flex:1}
+.svc small{color:var(--muted-2);font-size:11px;display:block;margin-top:6px;line-height:1.4;flex:1}
 .svc.hidden-card{display:none}
 .price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:4px 9px;border-radius:999px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .svcVendor{display:inline-block;margin-top:8px;font-size:10px;color:var(--muted-3);font-weight:700}
 
-/* ---------- Loading / Empty ---------- */
+/* Menu Items */
+.menuList{display:flex;flex-direction:column;gap:10px}
+.menuItem{display:flex;gap:12px;padding:12px;border:1px solid #232323;background:linear-gradient(145deg,#141414,#0c0c0c);border-radius:16px;position:relative;transition:border-color .15s}
+.menuItem:hover{border-color:#333}
+.menuItem.hidden-card{display:none}
+.menuItem.out{opacity:.55}
+.miThumb{width:62px;height:62px;border-radius:14px;background:#1b1b1b;display:grid;place-items:center;font-size:27px;flex-shrink:0;overflow:hidden;border:1px solid #262626}
+.miThumb img{width:100%;height:100%;object-fit:cover}
+.miBody{flex:1;min-width:0}
+.miBody>b{font-size:13.5px;font-weight:800;display:block;line-height:1.25}
+.miBody small{color:var(--muted-2);font-size:11.5px;display:block;margin-top:4px;line-height:1.45}
+.miTags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.miTag{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px;background:#1e1e1e;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.miTag.veg{background:rgba(34,197,94,.14);color:#4ade80}
+.miTag.spicy{background:rgba(239,68,68,.14);color:#f87171}
+.miTag.popular{background:rgba(251,191,36,.16);color:var(--gold)}
+.miTag.new{background:rgba(56,189,248,.14);color:var(--blue)}
+.miFoot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px}
+.miPrice{font-family:'Space Grotesk';font-weight:800;font-size:14px;color:var(--lime)}
+.addBtn{padding:8px 15px;border-radius:10px;background:var(--lime);color:#000;font-weight:900;font-size:12px;transition:transform .12s}
+.addBtn:active{transform:scale(.94)}
+.addBtn:disabled{background:#242424;color:#666}
+.soldOut{position:absolute;top:12px;right:12px;font-size:9px;font-weight:900;background:#2a2a2a;color:#888;padding:3px 8px;border-radius:999px;letter-spacing:.4px}
+
+/* Cart bar */
+.cartBar{position:fixed;left:12px;right:12px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:480;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 16px;border-radius:18px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;box-shadow:0 14px 40px rgba(198,255,0,.28)}
+.cartBar.show{display:flex;animation:fadeUp .22s ease}
+@keyframes fadeUp{from{opacity:0}to{opacity:1}}
+.cartBar b{display:block;font-family:'Space Grotesk';font-size:13.5px;font-weight:900}
+.cartBar small{display:block;font-size:11px;font-weight:800;opacity:.72}
+.cartBar button{padding:11px 18px;border-radius:12px;background:#000;color:var(--lime);font-weight:900;font-size:12.5px;white-space:nowrap}
+
+/* Cart rows */
+.cartRow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #202020}
+.cartRow:last-of-type{border-bottom:0}
+.cartRow .ci{width:42px;height:42px;border-radius:12px;background:#181818;display:grid;place-items:center;font-size:19px;flex-shrink:0;overflow:hidden}
+.cartRow .ci img{width:100%;height:100%;object-fit:cover}
+.cartRow .cb{flex:1;min-width:0}
+.cartRow .cb b{font-size:12.5px;font-weight:800;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cartRow .cb small{color:var(--muted-2);font-size:11px;font-weight:700}
+.qty{display:inline-flex;align-items:center;gap:2px;background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:3px}
+.qty button{width:26px;height:26px;border-radius:8px;background:#1e1e1e;color:#fff;font-size:15px;font-weight:900;display:grid;place-items:center;line-height:1}
+.qty span{min-width:20px;text-align:center;font-weight:900;font-size:13px}
+.totals{margin-top:14px;padding:13px;border-radius:14px;background:#0b0b0b;border:1px dashed #303030}
+.totalsRow{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--muted);padding:4px 0}
+.totalsRow.grand{color:#fff;font-family:'Space Grotesk';font-size:16px;font-weight:900;padding-top:9px;margin-top:6px;border-top:1px solid #232323}
+.totalsRow.grand span:last-child{color:var(--lime)}
+
+/* Loading / Empty */
 .loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
 .spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
 .empty{display:none;text-align:center;padding:30px 16px;color:var(--muted-2);font-size:13px}
 .empty.show{display:block}
 .emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
 
-/* ---------- Help ---------- */
-.help-section{border-color:rgba(251,191,36,.28)}
-.help-section h3{color:var(--gold)}
-.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.help-btn{background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s}
-.help-btn:active{transform:scale(.97);border-color:var(--gold)}
-.help-btn span{display:block;font-size:22px;margin-bottom:6px;line-height:1}
-.help-btn b{display:block;font-size:12px;font-weight:800}
-.help-btn small{display:block;color:var(--muted-3);font-size:10.5px;margin-top:3px}
-
-/* ---------- Bottom Nav ---------- */
+/* Bottom Nav */
 .bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #242424}
-.navBtn{border:0;background:transparent;color:#7a7a7a;min-height:54px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.navBtn span{font-size:19px;line-height:1}
+.navBtn{min-height:54px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#7a7a7a;position:relative}
+.navBtn span:first-child{font-size:19px;line-height:1}
 .navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
+.navBadge{position:absolute;top:4px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;display:grid;place-items:center}
 
-/* ---------- Modal ---------- */
+/* Modal */
 .modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .modal.active{display:grid}
-.modalBox{width:100%;max-width:460px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:26px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
+.modalBox{width:100%;max-width:470px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:26px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 .modalHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
 .modalTitle{margin:0;font-family:'Space Grotesk';font-size:20px;font-weight:900;letter-spacing:-.3px}
 .modalDesc{margin-top:6px;color:var(--muted-2);font-size:12px;line-height:1.5}
-.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1;transition:border-color .15s}
+.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;font-size:20px;line-height:1;transition:border-color .15s;display:grid;place-items:center}
 .close:hover{border-color:#555}
 .label{display:block;color:var(--muted-2);font-size:10px;font-weight:800;margin-top:14px;letter-spacing:.8px;text-transform:uppercase}
-.btn{width:100%;margin-top:12px;padding:15px;border:0;border-radius:13px;background:var(--lime);color:#000;font-size:14px;font-weight:900;transition:opacity .15s,transform .15s;letter-spacing:.2px}
+.btn{width:100%;margin-top:12px;padding:15px;border-radius:13px;background:var(--lime);color:#000;font-size:14px;font-weight:900;transition:opacity .15s,transform .15s;letter-spacing:.2px}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.6;cursor:wait}
 .btn.secondary{background:#202020;border:1px solid #333;color:#fff}
-.twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn.sm{padding:11px;font-size:12.5px;margin-top:0}
+.twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 
-/* ---------- Success ---------- */
+/* Success */
 .success{text-align:center;padding:6px}
 .successIcon{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 16px;border-radius:50%;background:var(--lime-soft);font-size:38px;color:var(--lime);animation:pop .4s cubic-bezier(.3,1.5,.5,1)}
 @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
@@ -212,29 +263,35 @@ img{max-width:100%;display:block}
 .reference small{display:block;color:var(--muted-3);font-size:10px;letter-spacing:.9px;font-weight:800}
 .reference strong{display:block;color:var(--lime);font-family:'Space Grotesk';font-size:18px;margin-top:5px;letter-spacing:1.2px}
 
-/* ---------- Order History ---------- */
+/* Order History */
 .orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:13px;margin-bottom:8px}
 .orderItem strong{font-size:13px;display:block;font-weight:800}
 .orderItem small{color:var(--muted-2);font-size:11px;display:block;margin-top:4px;line-height:1.45}
 .orderAmount{color:var(--lime)!important;font-weight:900}
-.reorderBtn{margin-top:10px;padding:9px 14px;background:transparent;color:var(--lime);border:1px solid var(--lime-line);border-radius:10px;font-size:11.5px;font-weight:800;transition:background .15s}
-.reorderBtn:hover{background:var(--lime-soft)}
-.rateRow{margin-top:10px;display:flex;gap:6px;align-items:center;color:var(--muted-2);font-size:11px;font-weight:700}
-.rateRow button{background:transparent;border:1px solid #2a2a2a;border-radius:8px;padding:4px 7px;font-size:14px;transition:border-color .15s,transform .15s}
+.rateRow{margin-top:10px;display:flex;gap:6px;align-items:center;color:var(--muted-2);font-size:11px;font-weight:700;flex-wrap:wrap}
+.rateRow button{border:1px solid #2a2a2a;border-radius:8px;padding:4px 7px;font-size:14px;transition:border-color .15s,transform .15s}
 .rateRow button:hover{border-color:var(--lime);transform:scale(1.1)}
 
-/* ---------- Footer ---------- */
-.footer{text-align:center;color:var(--muted-3);padding:26px 20px 110px;font-size:11px;line-height:1.8}
+/* Help */
+.help-btn{width:100%;margin-bottom:8px;background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;align-items:center;gap:12px}
+.help-btn:active{transform:scale(.98);border-color:var(--gold)}
+.help-btn span.hi{font-size:21px;line-height:1}
+.help-btn b{display:block;font-size:12.5px;font-weight:800}
+.help-btn small{display:block;color:var(--muted-3);font-size:10.5px;margin-top:2px}
+.help-btn .arrow{margin-left:auto;color:var(--muted-3);font-size:15px}
+
+/* Footer */
+.footer{text-align:center;color:var(--muted-3);padding:26px 20px 120px;font-size:11px;line-height:1.8}
 .footer strong{color:var(--muted)}
 
-/* ---------- Toast ---------- */
-.toast{position:fixed;left:12px;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13px;font-weight:700;text-align:center}
-.toast.show{display:block;animation:toast .22s ease}
-@keyframes toast{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* Toast */
+.toast{position:fixed;left:12px;right:12px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13px;font-weight:700;text-align:center}
+.toast.show{display:block;animation:toastIn .22s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* ---------- Language Modal ---------- */
+/* Language */
 .langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
+.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
 .langCard:active{transform:scale(.97)}
 .langCard:hover{border-color:var(--lime)}
 .langCard.active{border-color:var(--lime);background:var(--lime-soft)}
@@ -243,26 +300,28 @@ img{max-width:100%;display:block}
 .langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
 .langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900;font-size:14px}
 
-/* ---------- RTL ---------- */
+/* RTL */
 [dir="rtl"] .searchIcon{left:auto;right:15px}
 [dir="rtl"] .searchBox .input{padding-left:14px;padding-right:44px}
 [dir="rtl"] .price{right:auto;left:10px}
 [dir="rtl"] .svc b{padding-right:0;padding-left:70px}
-[dir="rtl"] .svc small{padding-right:0;padding-left:2px}
 [dir="rtl"] .progressStep{transform:scaleX(-1)}
 [dir="rtl"] .orderAmount{float:left!important}
 [dir="rtl"] .hero:before{right:auto;left:-120px}
 [dir="rtl"] .hero:after{right:auto;left:-40px}
 [dir="rtl"] .langCard .check{right:auto;left:12px}
+[dir="rtl"] .ctxChange{margin-left:0;margin-right:auto}
+[dir="rtl"] .soldOut{right:auto;left:12px}
+[dir="rtl"] .help-btn .arrow{margin-left:0;margin-right:auto;transform:scaleX(-1)}
 
-/* ---------- Responsive / A11y ---------- */
+/* Responsive / A11y */
 @media(min-width:650px){
-  body{max-width:780px;margin:auto}
-  .bottomNav{max-width:780px;left:50%;transform:translateX(-50%)}
+  body{max-width:800px;margin:auto}
+  .bottomNav{max-width:800px;left:50%;transform:translateX(-50%)}
+  .cartBar{max-width:776px;left:50%;transform:translateX(-50%)}
   .modal{place-items:center}
   .hero{border-radius:0 0 36px 36px}
 }
-@media(max-width:380px){.panelGrid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
   .activeOrder.flash{animation:none!important;border-color:var(--lime)}
@@ -281,69 +340,51 @@ img{max-width:100%;display:block}
     <div class="brandText">GUEST<span>HUB</span></div>
   </div>
   <div class="topActions">
-    <div class="roomChip">🛏️ <b id="topRoom">—</b></div>
+    <div class="ctxChip" id="ctxChip">🛏️ <b>—</b></div>
     <button class="iconBtn" id="langBtn" aria-label="Language" title="Language">🌐</button>
-    <button class="iconBtn" id="bellBtn" aria-label="Notifications" title="Notifications">🔔</button>
+    <button class="iconBtn" id="bellBtn" aria-label="Contact" title="Contact">🔔</button>
   </div>
 </header>
 
 <!-- ═══════ HERO ═══════ -->
 <section class="hero">
   <div class="heroContent">
-    <div class="eyebrow" data-i18n="welcome">✦ GUESTHUB OS</div>
+    <div class="eyebrow" id="heroEyebrow">✦ GUESTHUB OS</div>
     <h1 id="greeting">Welcome</h1>
     <h1><span id="hotelName">YOUR HOTEL</span></h1>
-    <p id="hotelTagline">Room service • Transport • Tours • Spa • Concierge</p>
+    <p id="hotelTagline">Room service • Restaurant • Transport • Tours • Spa</p>
     <div class="heroBottom">
       <div class="verified" data-i18n="footer_secure">🔒 GuestHub Verified</div>
       <div class="heroMeta">
-        <span id="heroRoom">🛏️ —</span>
+        <span id="heroCtx">🛏️ —</span>
         <span id="heroStay">✨ Ready</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════ YOUR STAY ═══════ -->
-<section class="wrap">
-  <div class="panel">
-    <div class="panelHead"><strong data-i18n="your_stay">👋 Your Stay</strong><small data-i18n="secured">SECURED</small></div>
-    <div class="panelGrid">
-      <input id="guestName" class="input" data-i18n="your_name" placeholder="Your name" autocomplete="name" aria-label="Your name">
-      <input id="roomNo" class="input" data-i18n="room_number" placeholder="Room number" inputmode="numeric" autocomplete="off" aria-label="Room number">
-    </div>
-  </div>
-</section>
-
-<!-- ═══════ PROMO ═══════ -->
+<!-- ═══════ SCAN CONTEXT ═══════ -->
 <div class="wrap">
-  <div class="promo" id="promoBanner">
-    <div>
-      <b id="promoTitle">🎉 Welcome to GuestHub</b>
-      <small id="promoText">Order anything from your room — we'll handle the rest.</small>
+  <div class="ctxPanel" id="ctxPanel">
+    <div class="ctxIcon" id="ctxIcon">🛏️</div>
+    <div style="min-width:0">
+      <b id="ctxTitle">—</b>
+      <small id="ctxSub">—</small>
     </div>
-    <span class="promoTag">LIVE</span>
-    <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
+    <button class="ctxChange" id="ctxChange" data-i18n="change">Change</button>
   </div>
 </div>
 
 <!-- ═══════ QUICK ACTIONS ═══════ -->
 <div class="wrap">
-  <div class="quickRow" id="quickRow">
-    <button class="quickAction" data-quick="food"><i>🍽️</i><span data-i18n="qa_food">Room Service</span></button>
-    <button class="quickAction" data-quick="taxi"><i>🚕</i><span data-i18n="qa_taxi">Taxi</span></button>
-    <button class="quickAction" data-quick="tour"><i>🦁</i><span data-i18n="qa_tour">Safari</span></button>
-    <button class="quickAction" data-quick="spa"><i>🧖</i><span data-i18n="qa_spa">Spa</span></button>
-    <button class="quickAction" data-quick="services"><i>🧹</i><span data-i18n="qa_services">Housekeeping</span></button>
-    <button class="quickAction" id="quickOrders"><i>📋</i><span data-i18n="qa_orders">My Orders</span></button>
-  </div>
+  <div class="quickRow" id="quickRow"></div>
 </div>
 
 <!-- ═══════ SEARCH ═══════ -->
 <div class="wrap search">
   <div class="searchBox">
     <span class="searchIcon">🔎</span>
-    <input id="searchService" class="input" data-i18n="search_placeholder" placeholder="Search room service, safari, taxi…" autocomplete="off" aria-label="Search services">
+    <input id="searchService" class="input" data-i18n="search_placeholder" placeholder="Search dishes, drinks, services…" autocomplete="off" aria-label="Search">
   </div>
 </div>
 
@@ -374,41 +415,79 @@ img{max-width:100%;display:block}
       <span data-step="4" data-i18n="step_done">Done</span>
     </div>
     <div class="orderDetails">
-      <span><span data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
+      <span><span id="activeLocLabel" data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
       <span><strong id="activeAmount">—</strong></span>
     </div>
     <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
   </section>
 </div>
 
-<!-- ═══════ CATEGORY PILLS ═══════ -->
+<!-- ═══════ PILLS ═══════ -->
 <div class="pills" id="pills"></div>
 
-<!-- ═══════ SERVICES ═══════ -->
-<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading your hotel's services…</span></div>
+<!-- ═══════ CATALOG ═══════ -->
+<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading…</span></div>
 <main id="serviceArea" style="display:none"></main>
 
 <div id="emptySearch" class="empty" style="margin:0 12px">
   <div class="emptyIcon">🔎</div>
-  <strong data-i18n="empty_search">No service found</strong><br><span data-i18n="empty_search_sub">Try another search.</span>
+  <strong data-i18n="empty_search">Nothing found</strong><br><span data-i18n="empty_search_sub">Try another search.</span>
+</div>
+
+<!-- ═══════ PROMO ═══════ -->
+<div class="wrap">
+  <div class="promo" id="promoBanner">
+    <div>
+      <b id="promoTitle">🎉 Welcome to GuestHub</b>
+      <small id="promoText">Scan · Order · Enjoy — everything from one place.</small>
+    </div>
+    <span class="promoTag">LIVE</span>
+    <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
+  </div>
 </div>
 
 <!-- ═══════ FOOTER ═══════ -->
 <footer class="footer">
-  🔒 <strong data-i18n="footer_secure">GuestHub Secure</strong><br>
+  🔒 <strong data-i18n="footer_secure">GuestHub Verified</strong><br>
   <span data-i18n="footer_line1">Your hotel coordinates your requested service.</span><br>
   <span data-i18n="footer_line2">GuestHub • Hospitality made simple ✨</span>
 </footer>
 
+<!-- ═══════ CART BAR ═══════ -->
+<div class="cartBar" id="cartBar">
+  <div>
+    <b id="cartCount">0 items</b>
+    <small id="cartTotal">Ksh 0</small>
+  </div>
+  <button id="cartOpen" data-i18n="view_cart">View Cart →</button>
+</div>
+
 <!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
   <button class="navBtn active" data-tab="home"><span>⌂</span><span data-i18n="nav_home">Home</span></button>
-  <button class="navBtn" data-tab="services"><span>◎</span><span data-i18n="nav_services">Services</span></button>
-  <button class="navBtn" data-tab="orders"><span>📋</span><span data-i18n="nav_orders">Orders</span></button>
+  <button class="navBtn" data-tab="menu"><span>◎</span><span data-i18n="nav_menu">Menu</span></button>
+  <button class="navBtn" data-tab="orders"><span>📋</span><span data-i18n="nav_orders">Orders</span><span class="navBadge" id="ordersBadge" style="display:none">0</span></button>
   <button class="navBtn" data-tab="help"><span>💬</span><span data-i18n="nav_help">Help</span></button>
 </nav>
 
-<!-- ═══════ ORDER MODAL ═══════ -->
+<!-- ═══════ CONTEXT MODAL ═══════ -->
+<div class="modal" id="ctxModal" role="dialog" aria-modal="true" aria-labelledby="ctxTitleM">
+  <div class="modalBox">
+    <div class="modalHead">
+      <div><h3 class="modalTitle" id="ctxTitleM" data-i18n="ctx_title">Where are you?</h3><div class="modalDesc" data-i18n="ctx_desc">Choose your room or restaurant table.</div></div>
+      <button class="close" data-close="ctxModal" aria-label="Close">×</button>
+    </div>
+    <div class="twoButtons" style="margin-top:18px">
+      <button class="btn secondary" id="ctxPickRoom" style="margin-top:0">🛏️ <span data-i18n="scan_room">Room</span></button>
+      <button class="btn secondary" id="ctxPickTable" style="margin-top:0">🍽️ <span data-i18n="scan_table">Table</span></button>
+    </div>
+    <label class="label" id="ctxFieldLabel" data-i18n="room_number">Room number</label>
+    <input id="ctxField" class="input" placeholder="101" autocomplete="off">
+    <button class="btn" id="ctxSave" data-i18n="ctx_save">Confirm</button>
+  </div>
+</div>
+
+<!-- ═══════ SERVICE REQUEST MODAL ═══════ -->
 <div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modalBox">
     <div class="modalHead">
@@ -419,11 +498,31 @@ img{max-width:100%;display:block}
     <input id="guestPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
     <label class="label" for="orderNote" data-i18n="special_instructions">Special instructions</label>
     <input id="orderNote" class="input" data-i18n="note_placeholder" placeholder="Time, preference, or request">
-    <div class="twoButtons" style="margin-top:14px">
+    <div class="twoButtons">
       <button class="btn secondary" data-close="orderModal" data-i18n="cancel">Cancel</button>
       <button class="btn" id="confirmOrder" data-i18n="place_order">✅ Place Order</button>
     </div>
     <small style="display:block;text-align:center;color:#6a6a6a;font-size:11px;margin-top:10px;line-height:1.5" data-i18n="order_note">Your request is sent directly to the hotel team.</small>
+  </div>
+</div>
+
+<!-- ═══════ CART MODAL ═══════ -->
+<div class="modal" id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <div class="modalBox">
+    <div class="modalHead">
+      <div><h3 class="modalTitle" id="cartTitle" data-i18n="your_order">🧾 Your Order</h3><div class="modalDesc" id="cartSubtitle"></div></div>
+      <button class="close" data-close="cartModal" aria-label="Close">×</button>
+    </div>
+    <div id="cartItems" style="margin-top:8px"></div>
+    <div class="totals" id="cartTotals"></div>
+    <label class="label" for="cartNote" data-i18n="special_instructions">Special instructions</label>
+    <input id="cartNote" class="input" data-i18n="note_placeholder" placeholder="Allergies, timing, preferences…">
+    <label class="label" for="cartPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
+    <input id="cartPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
+    <div class="twoButtons">
+      <button class="btn secondary" id="cartClear" data-i18n="clear_cart">Clear</button>
+      <button class="btn" id="cartCheckout" data-i18n="checkout">✅ Send Order</button>
+    </div>
   </div>
 </div>
 
@@ -467,13 +566,7 @@ img{max-width:100%;display:block}
       <div><h3 class="modalTitle" id="infoTitle" data-i18n="info_title">ℹ️ How It Works</h3><div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div></div>
       <button class="close" data-close="infoModal" aria-label="Close">×</button>
     </div>
-    <div style="margin-top:14px">
-      <div class="orderItem"><strong>1️⃣ Choose a service</strong><small>Food, taxi, safari, spa, concierge — all in one place.</small></div>
-      <div class="orderItem"><strong>2️⃣ Confirm your room</strong><small>Enter your name, room number, and WhatsApp.</small></div>
-      <div class="orderItem"><strong>3️⃣ Hotel gets it live</strong><small>The hotel team receives your request instantly and coordinates.</small></div>
-      <div class="orderItem"><strong>4️⃣ Track it live</strong><small>Status updates appear here in real time — no need to refresh.</small></div>
-      <div class="orderItem"><strong>5️⃣ Enjoy your stay ✨</strong><small>One GuestHub experience for your entire stay.</small></div>
-    </div>
+    <div style="margin-top:14px" id="infoBody"></div>
   </div>
 </div>
 
@@ -494,211 +587,280 @@ img{max-width:100%;display:block}
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════════
-   CONFIG
+   1. CONFIG
 ═══════════════════════════════════════════════════════════════ */
-const API_BASE         = "";
-const POLL_ACTIVE_MS   = 15000;
-const POLL_IDLE_MS     = 60000;
-const ORDER_COOLDOWN_MS = 30000;
-const SOUND_ENABLED    = true;
+const API_BASE          = "";               // point at your backend
+const POLL_ACTIVE_MS    = 15000;
+const POLL_IDLE_MS      = 60000;
+const ORDER_COOLDOWN_MS = 20000;
+const SOUND_ENABLED     = true;
 
 const SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || "";
 const SUPA_KEY = (typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || "";
 
 const $   = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? "Ksh " + n.toLocaleString("en-KE") : "Ask hotel"; };
-
-const params    = new URLSearchParams(location.search);
-const HOTEL_ID  = (params.get("hotel") || params.get("hotel_id") || params.get("h") || localStorage.getItem("last_hotel_id") || "BAOBAB").toUpperCase();
-const ROOM_PARAM= params.get("room") || params.get("room_no") || "";
-const TABLE     = params.get("table") || "";
+const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? (STATE.currency || "Ksh") + " " + n.toLocaleString("en-KE") : null; };
+const priceLabel = v => money(v) || t("ask_hotel");
 
 /* ═══════════════════════════════════════════════════════════════
-   I18N — EN · SW · FR · AR
+   2. SCAN CONTEXT
+═══════════════════════════════════════════════════════════════ */
+const params = new URLSearchParams(location.search);
+
+const HOTEL_ID = (params.get("hotel") || params.get("hotel_id") || params.get("h")
+                  || localStorage.getItem("last_hotel_id") || "BAOBAB").toUpperCase();
+
+function detectContext(){
+  const modeParam  = (params.get("mode") || params.get("type") || "").toLowerCase();
+  const roomParam  = params.get("room") || params.get("room_no") || params.get("r") || "";
+  const tableParam = params.get("table") || params.get("tbl") || params.get("t") || "";
+
+  let mode  = "room";
+  let room  = roomParam;
+  let table = tableParam;
+
+  if(modeParam === "table" || modeParam === "restaurant" || modeParam === "dine") mode = "table";
+  else if(modeParam === "room") mode = "room";
+  else if(tableParam && !roomParam) mode = "table";
+  else if(roomParam && !tableParam) mode = "room";
+
+  if(!room && !table){
+    const savedMode = localStorage.getItem(`ctx_mode_${HOTEL_ID}`);
+    if(savedMode === "table"){ mode = "table"; table = localStorage.getItem(`ctx_table_${HOTEL_ID}`) || ""; }
+    else { mode = "room"; room = localStorage.getItem("guest_room") || ""; }
+  }
+  return { mode, room, table };
+}
+
+const CONTEXT = detectContext();
+
+function persistContext(){
+  localStorage.setItem(`ctx_mode_${HOTEL_ID}`, CONTEXT.mode);
+  if(CONTEXT.mode === "table") localStorage.setItem(`ctx_table_${HOTEL_ID}`, CONTEXT.table || "");
+  else if(CONTEXT.room) localStorage.setItem("guest_room", CONTEXT.room);
+}
+function ctxLabel(){
+  return CONTEXT.mode === "table"
+    ? `${t("scan_table")} ${CONTEXT.table || "—"}`
+    : `${t("scan_room")} ${CONTEXT.room || "—"}`;
+}
+function ctxNumber(){ return CONTEXT.mode === "table" ? CONTEXT.table : CONTEXT.room; }
+
+/* ═══════════════════════════════════════════════════════════════
+   3. I18N — EN · SW · FR · AR
 ═══════════════════════════════════════════════════════════════ */
 const I18N = {
   en:{dir:"ltr",flag:"🇬🇧",name:"English",native:"English",
-    welcome:"✦ GUESTHUB OS",your_stay:"👋 Your Stay",secured:"SECURED",
-    your_name:"Your name",room_number:"Room number",
-    search_placeholder:"Search room service, safari, taxi…",loading_text:"Loading your hotel's services…",
-    qa_food:"Room Service",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Housekeeping",qa_orders:"My Orders",
+    welcome:"✦ GUESTHUB OS",secured:"SECURED",
+    room_number:"Room",table_number:"Table",
+    search_placeholder:"Search dishes, drinks, services…",loading_text:"Loading your hotel's menu & services…",
+    scan_room:"Room",scan_table:"Table",change:"Change",
+    ctx_title:"Where are you?",ctx_desc:"Choose your room or restaurant table.",ctx_save:"Confirm",
+    ctx_room_sub:"Room service & all hotel services",
+    ctx_table_sub:"Dine in — order straight to your table",
+    qa_menu:"Menu",qa_food:"Room Service",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",
+    qa_services:"Housekeeping",qa_orders:"My Orders",qa_waiter:"Call Waiter",qa_water:"Water",
+    qa_bill:"Request Bill",qa_help:"Help",qa_concierge:"Concierge",
     live_updates:"Live updates active",polling_mode:"Polling every 15s",
     step_sent:"Sent",step_accepted:"Accepted",step_progress:"In Progress",step_done:"Done",
     status_pending:"Pending",status_new:"New",status_accepted:"Accepted",status_preparing:"Preparing",
     status_on_the_way:"On the way",status_completed:"Completed",status_cancelled:"Cancelled",status_rejected:"Rejected",
-    eta_accepted:"Accepted — preparing shortly",eta_preparing:"Being prepared — arriving soon",eta_on_the_way:"On the way to your room now",
+    eta_accepted:"Accepted — preparing shortly",eta_preparing:"Being prepared — arriving soon",eta_on_the_way:"On the way now",
     cat_food:"🍽️ Food & Room Service",cat_taxi:"🚕 Transport & Transfers",cat_tour:"🌍 Tours & Safari",
-    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",
-    cat_short_food:"Food",cat_short_taxi:"Taxi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hotel",cat_short_other:"More",cat_all:"All",
-    nav_home:"Home",nav_services:"Services",nav_orders:"Orders",nav_help:"Help",
+    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",cat_services_only:"🛎️ Restaurant Services",
+    cat_all:"All",
+    nav_home:"Home",nav_menu:"Menu",nav_orders:"Orders",nav_help:"Help",
     confirm_request:"Confirm Request",your_whatsapp:"Your WhatsApp number",special_instructions:"Special instructions",
     note_placeholder:"Time, preference, or request",cancel:"Cancel",place_order:"✅ Place Order",sending:"⏳ Sending…",
     order_note:"Your request is sent directly to the hotel team.",
     success_title:"Request Received!",reference_label:"GUESTHUB REFERENCE",track_order:"Great — Track My Order",
     orders_title:"📋 My Orders",orders_desc:"Track your GuestHub requests.",
     no_orders_title:"No orders yet",no_orders_desc:"Your requests will appear here.",
-    reorder:"↻ Order again",rate_prompt:"Rate:",thanks_rating:"✓ Thanks for rating",
+    rate_prompt:"Rate:",thanks_rating:"✓ Thanks for rating",
     help_title:"💬 Talk to the Hotel",help_desc:"Direct WhatsApp — fastest response.",whatsapp_now:"WhatsApp instantly",
     info_title:"ℹ️ How It Works",info_desc:"Your hotel experience in one place.",
     t_enter_name:"Please enter your name",t_enter_room:"Please enter your room number",
-    t_valid_phone:"Enter a valid Kenyan number (e.g. 0712 345 678)",
+    t_enter_table:"Please enter your table number",
+    t_valid_phone:"Enter a valid phone number (e.g. 0712 345 678)",
     t_wait:"Please wait {s}s before placing another order",
     t_offline:"📶 You're offline — we'll reconnect automatically",
-    t_service_gone:"Service no longer available",t_dept_no_wa:"This department has no WhatsApp yet",
+    t_dept_no_wa:"This department has no WhatsApp yet",
     t_rate_thanks:"Thanks for the feedback! ✨",t_order_fail:"Something went wrong. Please try again.",
-    t_order_failed:"Order failed",
-    hotel_fallback:"YOUR HOTEL",tagline_fallback:"Room service • Transport • Tours • Spa • Concierge",
-    no_services_title:"No services yet",no_services_body:"This hotel hasn't set up its services yet. Try again later or ask the front desk.",
-    empty_search:"No service found",empty_search_sub:"Try another search.",
-    footer_secure:"🔒 GuestHub Verified",footer_line1:"Your hotel coordinates your requested service.",footer_line2:"GuestHub • Hospitality made simple ✨",
+    t_order_failed:"Order failed",t_item_added:"Added to your order",t_cart_empty:"Your order is empty",
+    hotel_fallback:"YOUR HOTEL",tagline_fallback:"Room service • Restaurant • Transport • Tours • Spa",
+    no_services_title:"Nothing here yet",no_services_body:"Your hotel hasn't published a menu yet. Please ask the front desk.",
+    empty_search:"Nothing found",empty_search_sub:"Try another search.",
+    footer_secure:"🔒 GuestHub Verified",footer_line1:"Your hotel coordinates your requested service.",
+    footer_line2:"GuestHub • Hospitality made simple ✨",
     stay_day:"Day {d} of {t}",stay_arriving:"Arriving in {d}d",stay_last_day:"Last day — checkout tomorrow",
     stay_checked_out:"Thanks for staying ✨",stay_ready:"✨ Ready",stay_checkin_today:"Checking in today ✨",
-    language:"Language",lang_title:"🌐 Language",lang_desc:"Choose your preferred language.",
+    lang_title:"🌐 Language",lang_desc:"Choose your preferred language.",
     good_morning:"Good morning",good_afternoon:"Good afternoon",good_evening:"Good evening",
-    sent_to:"sent to",
-    order_sent:"sent to",
-    ask_hotel:"Ask the hotel",
-    front_desk:"Ask the front desk",
-    front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly."
+    ask_hotel:"Ask hotel",sent_to:"sent to",
+    your_order:"🧾 Your Order",subtotal:"Subtotal",service_charge:"Service charge",total:"Total",
+    view_cart:"View Cart →",checkout:"✅ Send Order",clear_cart:"Clear",
+    items:"items",item:"item",empty_cart:"Your order is empty",add:"Add",
+    table_label:"Table",dine_in:"Dine-in",deliver_to:"Deliver to",
+    front_desk:"Ask the front desk",front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly."
   },
   sw:{dir:"ltr",flag:"🇰🇪",name:"Kiswahili",native:"Kiswahili",
-    welcome:"✦ GUESTHUB",your_stay:"👋 Malazi Yako",secured:"SALAMA",
-    your_name:"Jina lako",room_number:"Namba ya chumba",
-    search_placeholder:"Tafuta huduma ya chumba, safari, teksi…",loading_text:"Inapakia huduma za hoteli…",
-    qa_food:"Huduma ya Chumba",qa_taxi:"Teksi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Usafi",qa_orders:"Oda Zangu",
+    welcome:"✦ GUESTHUB",secured:"SALAMA",room_number:"Chumba",table_number:"Meza",
+    search_placeholder:"Tafuta vyakula, vinywaji, huduma…",loading_text:"Inapakia menyu na huduma…",
+    scan_room:"Chumba",scan_table:"Meza",change:"Badilisha",
+    ctx_title:"Uko wapi?",ctx_desc:"Chagua chumba au meza yako.",ctx_save:"Thibitisha",
+    ctx_room_sub:"Huduma ya chumba na huduma zote",
+    ctx_table_sub:"Kula hapa — agiza moja kwa moja mezani",
+    qa_menu:"Menyu",qa_food:"Huduma ya Chumba",qa_taxi:"Teksi",qa_tour:"Safari",qa_spa:"Spa",
+    qa_services:"Usafi",qa_orders:"Oda Zangu",qa_waiter:"Ita Mhudumu",qa_water:"Maji",
+    qa_bill:"Omba Bili",qa_help:"Msaada",qa_concierge:"Concierge",
     live_updates:"Sasisho za moja kwa moja",polling_mode:"Inaangalia kila sekunde 15",
     step_sent:"Imetumwa",step_accepted:"Imepokelewa",step_progress:"Inaendelea",step_done:"Imekamilika",
     status_pending:"Inasubiri",status_new:"Mpya",status_accepted:"Imepokelewa",status_preparing:"Inaandaliwa",
     status_on_the_way:"Njiani",status_completed:"Imekamilika",status_cancelled:"Imefutwa",status_rejected:"Imekataliwa",
-    eta_accepted:"Imepokelewa — inaandaliwa hivi karibuni",eta_preparing:"Inaandaliwa — inafika hivi karibuni",eta_on_the_way:"Ipo njiani kuelekea chumbani kwako",
+    eta_accepted:"Imepokelewa — inaandaliwa hivi karibuni",eta_preparing:"Inaandaliwa — inafika hivi karibuni",eta_on_the_way:"Ipo njiani sasa",
     cat_food:"🍽️ Chakula & Huduma ya Chumba",cat_taxi:"🚕 Usafiri",cat_tour:"🌍 Safari na Ziara",
-    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",
-    cat_short_food:"Chakula",cat_short_taxi:"Teksi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hoteli",cat_short_other:"Zaidi",cat_all:"Zote",
-    nav_home:"Nyumbani",nav_services:"Huduma",nav_orders:"Oda",nav_help:"Msaada",
+    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",cat_services_only:"🛎️ Huduma za Mkahawa",
+    cat_all:"Zote",nav_home:"Nyumbani",nav_menu:"Menyu",nav_orders:"Oda",nav_help:"Msaada",
     confirm_request:"Thibitisha Ombi",your_whatsapp:"Namba yako ya WhatsApp",special_instructions:"Maelezo maalum",
     note_placeholder:"Muda, upendeleo, au ombi",cancel:"Ghairi",place_order:"✅ Tuma Ombi",sending:"⏳ Inatuma…",
     order_note:"Ombi lako linatumwa moja kwa moja kwa timu ya hoteli.",
-    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Vizuri — Fuatilia Ombi Langu",
-    orders_title:"📋 Oda Zangu",orders_desc:"Fuatilia maombi yako ya GuestHub.",
+    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Vizuri — Fuatilia Ombi",
+    orders_title:"📋 Oda Zangu",orders_desc:"Fuatilia maombi yako.",
     no_orders_title:"Hakuna oda bado",no_orders_desc:"Maombi yako yataonekana hapa.",
-    reorder:"↻ Agiza tena",rate_prompt:"Kadiria:",thanks_rating:"✓ Asante kwa maoni",
-    help_title:"💬 Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja — jibu la haraka.",whatsapp_now:"WhatsApp papo hapo",
-    info_title:"ℹ️ Inavyofanya Kazi",info_desc:"Uzoefu wako wa hoteli mahali pamoja.",
+    rate_prompt:"Kadiria:",thanks_rating:"✓ Asante kwa maoni",
+    help_title:"💬 Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja.",whatsapp_now:"WhatsApp papo hapo",
+    info_title:"ℹ️ Inavyofanya Kazi",info_desc:"Uzoefu wako mahali pamoja.",
     t_enter_name:"Tafadhali ingiza jina lako",t_enter_room:"Tafadhali ingiza namba ya chumba",
-    t_valid_phone:"Ingiza namba sahihi ya Kenya (mf. 0712 345 678)",
-    t_wait:"Tafadhali subiri sekunde {s} kabla ya kuagiza tena",
-    t_offline:"📶 Huna mtandao — tutaunganisha tena kiotomatiki",
-    t_service_gone:"Huduma haipatikani tena",t_dept_no_wa:"Idara hii haina WhatsApp bado",
-    t_rate_thanks:"Asante kwa maoni! ✨",t_order_fail:"Kitu kilienda vibaya. Tafadhali jaribu tena.",
-    t_order_failed:"Ombi limeshindikana",
-    hotel_fallback:"HOTELI YAKO",tagline_fallback:"Huduma ya chumba • Usafiri • Safari • Spa • Concierge",
-    no_services_title:"Hakuna huduma bado",no_services_body:"Hoteli hii bado haijaweka huduma zake. Jaribu tena baadaye au uliza mapokezi.",
-    empty_search:"Hakuna huduma iliyopatikana",empty_search_sub:"Jaribu utafutaji mwingine.",
-    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma uliyoomba.",footer_line2:"GuestHub • Ukarimu rahisi ✨",
+    t_enter_table:"Tafadhali ingiza namba ya meza",
+    t_valid_phone:"Ingiza namba sahihi (mf. 0712 345 678)",
+    t_wait:"Tafadhali subiri sekunde {s}",
+    t_offline:"📶 Huna mtandao — tutaunganisha tena",
+    t_dept_no_wa:"Idara hii haina WhatsApp bado",
+    t_rate_thanks:"Asante kwa maoni! ✨",t_order_fail:"Kitu kilienda vibaya. Jaribu tena.",
+    t_order_failed:"Ombi limeshindikana",t_item_added:"Imeongezwa kwenye oda yako",t_cart_empty:"Oda yako ni tupu",
+    hotel_fallback:"HOTELI YAKO",tagline_fallback:"Huduma ya chumba • Mkahawa • Usafiri • Safari • Spa",
+    no_services_title:"Hakuna kitu bado",no_services_body:"Hoteli hii bado haijatoa menyu. Uliza mapokezi.",
+    empty_search:"Hakuna kilichopatikana",empty_search_sub:"Jaribu utafutaji mwingine.",
+    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma uliyoomba.",
+    footer_line2:"GuestHub • Ukarimu rahisi ✨",
     stay_day:"Siku {d} kati ya {t}",stay_arriving:"Kuwasili baada ya siku {d}",stay_last_day:"Siku ya mwisho — kuondoka kesho",
     stay_checked_out:"Asante kwa kukaa ✨",stay_ready:"✨ Tayari",stay_checkin_today:"Unaingia leo ✨",
-    language:"Lugha",lang_title:"🌐 Lugha",lang_desc:"Chagua lugha unayopendelea.",
+    lang_title:"🌐 Lugha",lang_desc:"Chagua lugha unayopendelea.",
     good_morning:"Habari ya asubuhi",good_afternoon:"Habari ya mchana",good_evening:"Habari ya jioni",
-    sent_to:"imetumwa kwa",
-    order_sent:"imetumwa kwa",
-    ask_hotel:"Uliza hoteli",
-    front_desk:"Uliza mapokezi",
-    front_desk_body:"Idara za WhatsApp hazijawekwa bado. Tafadhali piga simu mapokezi moja kwa moja."
+    ask_hotel:"Uliza hoteli",sent_to:"imetumwa kwa",
+    your_order:"🧾 Oda Yako",subtotal:"Jumla ndogo",service_charge:"Ada ya huduma",total:"Jumla",
+    view_cart:"Angalia Oda →",checkout:"✅ Tuma Oda",clear_cart:"Futa",
+    items:"vitu",item:"kitu",empty_cart:"Oda yako ni tupu",add:"Ongeza",
+    table_label:"Meza",dine_in:"Kula hapa",deliver_to:"Peleka",
+    front_desk:"Uliza mapokezi",front_desk_body:"Idara za WhatsApp hazijawekwa bado. Piga simu mapokezi."
   },
   fr:{dir:"ltr",flag:"🇫🇷",name:"Français",native:"Français",
-    welcome:"✦ GUESTHUB",your_stay:"👋 Votre Séjour",secured:"SÉCURISÉ",
-    your_name:"Votre nom",room_number:"Numéro de chambre",
-    search_placeholder:"Rechercher service en chambre, safari, taxi…",loading_text:"Chargement des services…",
-    qa_food:"Service en Chambre",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",qa_services:"Ménage",qa_orders:"Mes Commandes",
+    welcome:"✦ GUESTHUB",secured:"SÉCURISÉ",room_number:"Chambre",table_number:"Table",
+    search_placeholder:"Rechercher plats, boissons, services…",loading_text:"Chargement du menu…",
+    scan_room:"Chambre",scan_table:"Table",change:"Changer",
+    ctx_title:"Où êtes-vous ?",ctx_desc:"Choisissez votre chambre ou table.",ctx_save:"Confirmer",
+    ctx_room_sub:"Service en chambre et tous les services",
+    ctx_table_sub:"Sur place — commandez à table",
+    qa_menu:"Menu",qa_food:"Service en Chambre",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",
+    qa_services:"Ménage",qa_orders:"Mes Commandes",qa_waiter:"Appeler Serveur",qa_water:"Eau",
+    qa_bill:"Demander l'Addition",qa_help:"Aide",qa_concierge:"Concierge",
     live_updates:"Mises à jour en direct",polling_mode:"Actualisation toutes les 15s",
     step_sent:"Envoyé",step_accepted:"Accepté",step_progress:"En Cours",step_done:"Terminé",
     status_pending:"En attente",status_new:"Nouveau",status_accepted:"Accepté",status_preparing:"En préparation",
     status_on_the_way:"En route",status_completed:"Terminé",status_cancelled:"Annulé",status_rejected:"Refusé",
-    eta_accepted:"Accepté — préparation imminente",eta_preparing:"En préparation — arrivée proche",eta_on_the_way:"En route vers votre chambre",
-    cat_food:"🍽️ Nourriture & Service en Chambre",cat_taxi:"🚕 Transport & Transferts",cat_tour:"🌍 Excursions & Safari",
-    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services de l'Hôtel",cat_other:"✨ Plus",
-    cat_short_food:"Nourriture",cat_short_taxi:"Taxi",cat_short_tour:"Safari",cat_short_spa:"Spa",cat_short_services:"Hôtel",cat_short_other:"Plus",cat_all:"Tout",
-    nav_home:"Accueil",nav_services:"Services",nav_orders:"Commandes",nav_help:"Aide",
-    confirm_request:"Confirmer la Demande",your_whatsapp:"Votre numéro WhatsApp",special_instructions:"Instructions spéciales",
-    note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"✅ Passer la Commande",sending:"⏳ Envoi…",
-    order_note:"Votre demande est envoyée directement à l'équipe de l'hôtel.",
-    success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Super — Suivre Ma Commande",
-    orders_title:"📋 Mes Commandes",orders_desc:"Suivez vos demandes GuestHub.",
+    eta_accepted:"Accepté — préparation imminente",eta_preparing:"En préparation",eta_on_the_way:"En route",
+    cat_food:"🍽️ Nourriture & Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Excursions & Safari",
+    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services",cat_other:"✨ Plus",cat_services_only:"🛎️ Services du Restaurant",
+    cat_all:"Tout",nav_home:"Accueil",nav_menu:"Menu",nav_orders:"Commandes",nav_help:"Aide",
+    confirm_request:"Confirmer la Demande",your_whatsapp:"Votre WhatsApp",special_instructions:"Instructions spéciales",
+    note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"✅ Commander",sending:"⏳ Envoi…",
+    order_note:"Votre demande est envoyée directement à l'équipe.",
+    success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Suivre",
+    orders_title:"📋 Mes Commandes",orders_desc:"Suivez vos demandes.",
     no_orders_title:"Aucune commande",no_orders_desc:"Vos demandes apparaîtront ici.",
-    reorder:"↻ Commander à nouveau",rate_prompt:"Note :",thanks_rating:"✓ Merci pour votre avis",
-    help_title:"💬 Parler à l'Hôtel",help_desc:"WhatsApp direct — réponse la plus rapide.",whatsapp_now:"WhatsApp instantané",
-    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience hôtelière en un seul endroit.",
-    t_enter_name:"Veuillez entrer votre nom",t_enter_room:"Veuillez entrer votre numéro de chambre",
-    t_valid_phone:"Entrez un numéro kenyan valide (ex. 0712 345 678)",
-    t_wait:"Veuillez patienter {s}s avant de commander à nouveau",
-    t_offline:"📶 Vous êtes hors ligne — reconnexion automatique",
-    t_service_gone:"Service plus disponible",t_dept_no_wa:"Ce département n'a pas encore WhatsApp",
-    t_rate_thanks:"Merci pour votre avis ! ✨",t_order_fail:"Une erreur est survenue. Veuillez réessayer.",
-    t_order_failed:"Commande échouée",
-    hotel_fallback:"VOTRE HÔTEL",tagline_fallback:"Service en chambre • Transport • Excursions • Spa • Concierge",
-    no_services_title:"Aucun service",no_services_body:"Cet hôtel n'a pas encore configuré ses services. Réessayez plus tard.",
-    empty_search:"Aucun service trouvé",empty_search_sub:"Essayez une autre recherche.",
-    footer_secure:"🔒 GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service demandé.",footer_line2:"GuestHub • L'hospitalité simplifiée ✨",
-    stay_day:"Jour {d} sur {t}",stay_arriving:"Arrivée dans {d}j",stay_last_day:"Dernier jour — départ demain",
-    stay_checked_out:"Merci de votre séjour ✨",stay_ready:"✨ Prêt",stay_checkin_today:"Arrivée aujourd'hui ✨",
-    language:"Langue",lang_title:"🌐 Langue",lang_desc:"Choisissez votre langue préférée.",
+    rate_prompt:"Note :",thanks_rating:"✓ Merci",
+    help_title:"💬 Parler à l'Hôtel",help_desc:"WhatsApp direct.",whatsapp_now:"WhatsApp",
+    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience en un seul endroit.",
+    t_enter_name:"Veuillez entrer votre nom",t_enter_room:"Veuillez entrer votre chambre",
+    t_enter_table:"Veuillez entrer votre table",
+    t_valid_phone:"Entrez un numéro valide",
+    t_wait:"Veuillez patienter {s}s",
+    t_offline:"📶 Hors ligne — reconnexion automatique",
+    t_dept_no_wa:"Pas encore de WhatsApp",
+    t_rate_thanks:"Merci ! ✨",t_order_fail:"Une erreur est survenue.",
+    t_order_failed:"Commande échouée",t_item_added:"Ajouté",t_cart_empty:"Commande vide",
+    hotel_fallback:"VOTRE HÔTEL",tagline_fallback:"Service en chambre • Restaurant • Transport • Excursions • Spa",
+    no_services_title:"Rien pour l'instant",no_services_body:"Cet hôtel n'a pas encore publié de menu.",
+    empty_search:"Aucun résultat",empty_search_sub:"Essayez autre chose.",
+    footer_secure:"🔒 GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service.",
+    footer_line2:"GuestHub • L'hospitalité simplifiée ✨",
+    stay_day:"Jour {d} sur {t}",stay_arriving:"Arrivée dans {d}j",stay_last_day:"Dernier jour",
+    stay_checked_out:"Merci ✨",stay_ready:"✨ Prêt",stay_checkin_today:"Arrivée aujourd'hui ✨",
+    lang_title:"🌐 Langue",lang_desc:"Choisissez votre langue.",
     good_morning:"Bonjour",good_afternoon:"Bon après-midi",good_evening:"Bonsoir",
-    sent_to:"envoyé à",
-    order_sent:"envoyé à",
-    ask_hotel:"Demander à l'hôtel",
-    front_desk:"Demander à la réception",
-    front_desk_body:"Aucun département WhatsApp configuré. Appelez la réception directement."
+    ask_hotel:"Demander",sent_to:"envoyé à",
+    your_order:"🧾 Votre Commande",subtotal:"Sous-total",service_charge:"Frais de service",total:"Total",
+    view_cart:"Voir le Panier →",checkout:"✅ Envoyer",clear_cart:"Vider",
+    items:"articles",item:"article",empty_cart:"Commande vide",add:"Ajouter",
+    table_label:"Table",dine_in:"Sur place",deliver_to:"Livrer à",
+    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception directement."
   },
   ar:{dir:"rtl",flag:"🇸🇦",name:"العربية",native:"العربية",
-    welcome:"✦ GUESTHUB",your_stay:"👋 إقامتك",secured:"مؤمّن",
-    your_name:"اسمك",room_number:"رقم الغرفة",
-    search_placeholder:"ابحث عن خدمة الغرفة، رحلة سفاري، سيارة أجرة…",loading_text:"جارٍ تحميل خدمات الفندق…",
-    qa_food:"خدمة الغرفة",qa_taxi:"سيارة أجرة",qa_tour:"رحلة سفاري",qa_spa:"سبا",qa_services:"التدبير المنزلي",qa_orders:"طلباتي",
+    welcome:"✦ GUESTHUB",secured:"مؤمّن",room_number:"الغرفة",table_number:"الطاولة",
+    search_placeholder:"ابحث عن الأطباق والمشروبات والخدمات…",loading_text:"جارٍ تحميل القائمة…",
+    scan_room:"غرفة",scan_table:"طاولة",change:"تغيير",
+    ctx_title:"أين أنت؟",ctx_desc:"اختر غرفتك أو طاولتك.",ctx_save:"تأكيد",
+    ctx_room_sub:"خدمة الغرف وجميع خدمات الفندق",
+    ctx_table_sub:"تناول الطعام هنا — اطلب مباشرة",
+    qa_menu:"القائمة",qa_food:"خدمة الغرف",qa_taxi:"سيارة أجرة",qa_tour:"سفاري",qa_spa:"سبا",
+    qa_services:"التدبير المنزلي",qa_orders:"طلباتي",qa_waiter:"نادِ النادل",qa_water:"ماء",
+    qa_bill:"اطلب الفاتورة",qa_help:"مساعدة",qa_concierge:"الكونسيرج",
     live_updates:"تحديثات مباشرة",polling_mode:"تحديث كل 15 ثانية",
     step_sent:"تم الإرسال",step_accepted:"تم القبول",step_progress:"قيد التنفيذ",step_done:"مكتمل",
     status_pending:"قيد الانتظار",status_new:"جديد",status_accepted:"مقبول",status_preparing:"قيد التحضير",
     status_on_the_way:"في الطريق",status_completed:"مكتمل",status_cancelled:"ملغى",status_rejected:"مرفوض",
-    eta_accepted:"تم القبول — سيتم التحضير قريباً",eta_preparing:"قيد التحضير — الوصول قريباً",eta_on_the_way:"في الطريق إلى غرفتك",
+    eta_accepted:"تم القبول",eta_preparing:"قيد التحضير",eta_on_the_way:"في الطريق الآن",
     cat_food:"🍽️ الطعام وخدمة الغرف",cat_taxi:"🚕 النقل",cat_tour:"🌍 الجولات والسفاري",
-    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",
-    cat_short_food:"طعام",cat_short_taxi:"تاكسي",cat_short_tour:"سفاري",cat_short_spa:"سبا",cat_short_services:"فندق",cat_short_other:"المزيد",cat_all:"الكل",
-    nav_home:"الرئيسية",nav_services:"الخدمات",nav_orders:"الطلبات",nav_help:"مساعدة",
+    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",cat_services_only:"🛎️ خدمات المطعم",
+    cat_all:"الكل",nav_home:"الرئيسية",nav_menu:"القائمة",nav_orders:"الطلبات",nav_help:"مساعدة",
     confirm_request:"تأكيد الطلب",your_whatsapp:"رقم واتساب",special_instructions:"تعليمات خاصة",
     note_placeholder:"الوقت أو التفضيل أو الطلب",cancel:"إلغاء",place_order:"✅ إرسال الطلب",sending:"⏳ جاري الإرسال…",
     order_note:"يُرسل طلبك مباشرة إلى فريق الفندق.",
-    success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"رائع — تتبع طلبي",
+    success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"تتبع طلبي",
     orders_title:"📋 طلباتي",orders_desc:"تابع طلباتك.",
     no_orders_title:"لا توجد طلبات بعد",no_orders_desc:"ستظهر طلباتك هنا.",
-    reorder:"↻ اطلب مرة أخرى",rate_prompt:"التقييم:",thanks_rating:"✓ شكراً على تقييمك",
-    help_title:"💬 التحدث مع الفندق",help_desc:"واتساب مباشر — أسرع استجابة.",whatsapp_now:"واتساب فوري",
+    rate_prompt:"التقييم:",thanks_rating:"✓ شكراً",
+    help_title:"💬 التحدث مع الفندق",help_desc:"واتساب مباشر.",whatsapp_now:"واتساب فوري",
     info_title:"ℹ️ كيف يعمل",info_desc:"تجربة فندقك في مكان واحد.",
-    t_enter_name:"يرجى إدخال اسمك",t_enter_room:"يرجى إدخال رقم غرفتك",
-    t_valid_phone:"أدخل رقماً كينياً صحيحاً (مثال 0712 345 678)",
-    t_wait:"يرجى الانتظار {s} ثانية قبل الطلب مرة أخرى",
-    t_offline:"📶 أنت غير متصل — سنعيد الاتصال تلقائياً",
-    t_service_gone:"الخدمة لم تعد متاحة",t_dept_no_wa:"هذا القسم ليس لديه واتساب بعد",
-    t_rate_thanks:"شكراً على ملاحظاتك! ✨",t_order_fail:"حدث خطأ. حاول مرة أخرى.",
-    t_order_failed:"فشل الطلب",
-    hotel_fallback:"فندقك",tagline_fallback:"خدمة الغرف • النقل • الجولات • السبا • الكونسيرج",
-    no_services_title:"لا توجد خدمات بعد",no_services_body:"لم يقم هذا الفندق بإعداد خدماته بعد.",
-    empty_search:"لم يتم العثور على خدمة",empty_search_sub:"جرب بحثاً آخر.",
-    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة المطلوبة.",footer_line2:"GuestHub • الضيافة ببساطة ✨",
-    stay_day:"اليوم {d} من {t}",stay_arriving:"الوصول خلال {d} أيام",stay_last_day:"اليوم الأخير — المغادرة غداً",
+    t_enter_name:"يرجى إدخال اسمك",t_enter_room:"يرجى إدخال رقم الغرفة",
+    t_enter_table:"يرجى إدخال رقم الطاولة",
+    t_valid_phone:"أدخل رقماً صحيحاً",
+    t_wait:"يرجى الانتظار {s} ثانية",
+    t_offline:"📶 أنت غير متصل",
+    t_dept_no_wa:"لا يوجد واتساب بعد",
+    t_rate_thanks:"شكراً! ✨",t_order_fail:"حدث خطأ. حاول مرة أخرى.",
+    t_order_failed:"فشل الطلب",t_item_added:"أُضيف إلى طلبك",t_cart_empty:"طلبك فارغ",
+    hotel_fallback:"فندقك",tagline_fallback:"خدمة الغرف • المطعم • النقل • الجولات • السبا",
+    no_services_title:"لا يوجد شيء بعد",no_services_body:"لم ينشر هذا الفندق قائمة بعد.",
+    empty_search:"لا نتائج",empty_search_sub:"جرب بحثاً آخر.",
+    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة المطلوبة.",
+    footer_line2:"GuestHub • الضيافة ببساطة ✨",
+    stay_day:"اليوم {d} من {t}",stay_arriving:"الوصول خلال {d} أيام",stay_last_day:"اليوم الأخير",
     stay_checked_out:"شكراً لإقامتك ✨",stay_ready:"✨ جاهز",stay_checkin_today:"تسجيل الوصول اليوم ✨",
-    language:"اللغة",lang_title:"🌐 اللغة",lang_desc:"اختر لغتك المفضلة.",
+    lang_title:"🌐 اللغة",lang_desc:"اختر لغتك المفضلة.",
     good_morning:"صباح الخير",good_afternoon:"مساء الخير",good_evening:"مساء الخير",
-    sent_to:"أُرسل إلى",
-    order_sent:"أُرسل إلى",
-    ask_hotel:"اسأل الفندق",
-    front_desk:"اسأل مكتب الاستقبال",
-    front_desk_body:"لم يتم إعداد أقسام واتساب بعد. يرجى الاتصال بالاستقبال مباشرة."
+    ask_hotel:"اسأل الفندق",sent_to:"أُرسل إلى",
+    your_order:"🧾 طلبك",subtotal:"المجموع الفرعي",service_charge:"رسوم الخدمة",total:"الإجمالي",
+    view_cart:"عرض السلة →",checkout:"✅ إرسال الطلب",clear_cart:"مسح",
+    items:"عناصر",item:"عنصر",empty_cart:"طلبك فارغ",add:"أضف",
+    table_label:"طاولة",dine_in:"تناول هنا",deliver_to:"التوصيل إلى",
+    front_desk:"اسأل مكتب الاستقبال",front_desk_body:"اتصل بالاستقبال مباشرة."
   }
 };
 
-let currentLang = (new URLSearchParams(location.search).get("lang")) ||
-                  localStorage.getItem("guesthub_lang") ||
-                  (I18N[(navigator.language||"en").slice(0,2).toLowerCase()] ? (navigator.language||"en").slice(0,2).toLowerCase() : "en");
+let currentLang = params.get("lang") || localStorage.getItem("guesthub_lang") ||
+                  ((navigator.language || "en").slice(0,2).toLowerCase());
 if(!I18N[currentLang]) currentLang = "en";
 
 function t(key, vars){
@@ -708,15 +870,122 @@ function t(key, vars){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STATE
+   4. STATE
 ═══════════════════════════════════════════════════════════════ */
-let HOTEL = null, SERVICES = [], DEPARTMENTS = [], selected = null, lastFocused = null;
+let HOTEL = null;
+let SERVICES = [];
+let DEPARTMENTS = [];
+let selected = null;
+let lastFocused = null;
 let pollTimer = null, resubTimer = null, refreshing = false, audioCtx = null;
 let supa = null, realtimeChannel = null, realtimeOK = false;
 let activeCategory = "all";
+let MENU = { categories:[], items:[] };
+
+const STATE = { currency:"Ksh", serviceCharge:0, hotelName:"", tagline:"", cart:[] };
 
 /* ═══════════════════════════════════════════════════════════════
-   MODAL HELPERS
+   5. FALLBACK DEMO MENU (shown only when the backend has none)
+   The GM publishes the real menu from the hotel dashboard.
+═══════════════════════════════════════════════════════════════ */
+const DEMO_CATEGORIES = [
+  { id:"breakfast", name:"Breakfast",         emoji:"🍳", order:1 },
+  { id:"starters",  name:"Starters & Salads", emoji:"🥗", order:2 },
+  { id:"mains",     name:"Main Dishes",       emoji:"🍛", order:3 },
+  { id:"grill",     name:"From the Grill",    emoji:"🔥", order:4 },
+  { id:"desserts",  name:"Desserts",          emoji:"🍰", order:5 },
+  { id:"hot",       name:"Hot Drinks",        emoji:"☕", order:6 },
+  { id:"cold",      name:"Cold Drinks",       emoji:"🥤", order:7 }
+];
+const DEMO_ITEMS = [
+  { id:"d1", cat:"breakfast", emoji:"🍳", name:"Full Breakfast",    desc:"Eggs, sausage, toast & coffee",      price:1200, tags:["popular"] },
+  { id:"d2", cat:"breakfast", emoji:"🥞", name:"Pancake Stack",     desc:"Maple syrup, fresh berries",          price:850,  tags:[] },
+  { id:"d3", cat:"starters",  emoji:"🥗", name:"Garden Salad",      desc:"Crisp greens, house dressing",        price:700,  tags:["veg"] },
+  { id:"d4", cat:"starters",  emoji:"🍲", name:"Mushroom Soup",     desc:"Truffle oil, garlic croutons",        price:650,  tags:["veg"] },
+  { id:"d5", cat:"mains",     emoji:"🍛", name:"Chicken Curry",     desc:"Coconut curry, basmati rice",         price:1400, tags:["popular"] },
+  { id:"d6", cat:"mains",     emoji:"🐟", name:"Grilled Tilapia",   desc:"Lemon butter, ugali & greens",        price:1650, tags:[] },
+  { id:"d7", cat:"grill",     emoji:"🥩", name:"Ribeye Steak 300g", desc:"Chimichurri & hand-cut chips",        price:2600, tags:["popular"] },
+  { id:"d8", cat:"grill",     emoji:"🍗", name:"Peri-Peri Chicken", desc:"Flame-grilled, spicy, fries",         price:1800, tags:["spicy"] },
+  { id:"d9", cat:"desserts",  emoji:"🍰", name:"Chocolate Lava",    desc:"Warm centre, vanilla ice cream",      price:750,  tags:["popular"] },
+  { id:"d10",cat:"hot",       emoji:"☕", name:"Kenyan AA Coffee",  desc:"Single origin, freshly brewed",       price:350,  tags:["veg"] },
+  { id:"d11",cat:"cold",      emoji:"🥤", name:"Passion Juice",     desc:"Freshly squeezed",                    price:400,  tags:["veg"] },
+  { id:"d12",cat:"cold",      emoji:"💧", name:"Still Water",       desc:"750ml chilled bottle",                price:200,  tags:["veg"] }
+];
+
+const DEFAULT_SERVICES = [
+  { id:"s1",  title:"Room Service",         icon:"🍽️", category:"food",     price:0, description:"Full menu delivered to your room" },
+  { id:"s2",  title:"Airport Transfer",     icon:"🚕", category:"taxi",     price:0, description:"Meet & greet, fixed rate" },
+  { id:"s3",  title:"City Taxi",            icon:"🚗", category:"taxi",     price:0, description:"On-demand rides around town" },
+  { id:"s4",  title:"Game Drive / Safari",  icon:"🦁", category:"tour",     price:0, description:"Half-day or full-day safari" },
+  { id:"s5",  title:"City & Cultural Tour", icon:"🏛️", category:"tour",     price:0, description:"Guided local experience" },
+  { id:"s6",  title:"Massage & Spa",        icon:"💆", category:"spa",      price:0, description:"In-room or at the spa" },
+  { id:"s7",  title:"Laundry & Pressing",   icon:"🧺", category:"spa",      price:0, description:"Same-day return available" },
+  { id:"s8",  title:"Housekeeping",         icon:"🧹", category:"services", price:0, description:"Clean, towels, amenities" },
+  { id:"s9",  title:"Maintenance Request",  icon:"🔧", category:"services", price:0, description:"AC, plumbing, electrics" },
+  { id:"s10", title:"Wake-up Call",         icon:"⏰", category:"services", price:0, description:"Set a precise time" },
+  { id:"s11", title:"Express Checkout",     icon:"💳", category:"services", price:0, description:"Skip the queue" },
+  { id:"s12", title:"Concierge",            icon:"🛎️", category:"services", price:0, description:"Anything you need, arranged" },
+  { id:"s13", title:"Doctor / First Aid",   icon:"🩺", category:"other",    price:0, description:"Medical assistance" },
+  { id:"s14", title:"Room Celebration",     icon:"🎉", category:"other",    price:0, description:"Birthdays, anniversaries" }
+];
+
+const DEFAULT_DEPARTMENTS = [
+  { name:"reception",    whatsapp:"254700000001", icon:"🛎️" },
+  { name:"housekeeping", whatsapp:"254700000002", icon:"🧹" },
+  { name:"kitchen",      whatsapp:"254700000003", icon:"👨‍🍳" },
+  { name:"restaurant",   whatsapp:"254700000004", icon:"🍽️" },
+  { name:"concierge",    whatsapp:"254700000006", icon:"🎩" },
+  { name:"transport",    whatsapp:"254700000007", icon:"🚕" }
+];
+
+/* Quick requests shown on the table-mode quick bar */
+const QUICK_SERVICES = {
+  waiter:{ id:"qs_waiter", title:"Call Waiter",      icon:"🛎️", category:"services", price:0, description:"A member of staff will come to your table" },
+  water: { id:"qs_water",  title:"Drinking Water",   icon:"💧", category:"food",     price:0, description:"Chilled still water for the table" },
+  bill:  { id:"qs_bill",   title:"Request the Bill", icon:"🧾", category:"services", price:0, description:"We'll bring your bill to the table" }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   6. PERSISTENCE — cart, local orders, read-only menu cache
+═══════════════════════════════════════════════════════════════ */
+const CART_KEY = () => `guesthub_cart_${HOTEL_ID}_${ctxNumber() || "x"}`;
+const LOCAL_ORDERS_KEY = () => `guesthub_orders_${HOTEL_ID}_${ctxNumber() || "x"}`;
+const MENU_CACHE_KEY = `guesthub_menu_cache_${HOTEL_ID}`;
+
+function loadCart(){
+  try{
+    const raw = localStorage.getItem(CART_KEY());
+    STATE.cart = raw ? JSON.parse(raw) : [];
+    if(!Array.isArray(STATE.cart)) STATE.cart = [];
+  }catch(_){ STATE.cart = []; }
+}
+function saveCart(){
+  try{ localStorage.setItem(CART_KEY(), JSON.stringify(STATE.cart)); }catch(_){}
+  renderCartBar();
+}
+function loadLocalOrders(){
+  try{ const raw = localStorage.getItem(LOCAL_ORDERS_KEY()); return raw ? JSON.parse(raw) : []; }
+  catch(_){ return []; }
+}
+function saveLocalOrder(order){
+  const list = loadLocalOrders();
+  list.unshift(order);
+  try{ localStorage.setItem(LOCAL_ORDERS_KEY(), JSON.stringify(list.slice(0, 40))); }catch(_){}
+}
+function cacheMenu(menu){
+  try{ localStorage.setItem(MENU_CACHE_KEY, JSON.stringify(menu)); }catch(_){}
+}
+function readCachedMenu(){
+  try{
+    const raw = localStorage.getItem(MENU_CACHE_KEY);
+    if(!raw) return null;
+    const m = JSON.parse(raw);
+    return m && Array.isArray(m.categories) && Array.isArray(m.items) ? m : null;
+  }catch(_){ return null; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. MODALS / TOAST / SOUND
 ═══════════════════════════════════════════════════════════════ */
 function openModal(id){
   const m = $(id); if(!m) return;
@@ -724,16 +993,16 @@ function openModal(id){
   m.classList.add("active");
   document.body.style.overflow = "hidden";
   setTimeout(() => {
-    const f = m.querySelector("input:not([type=hidden]), button, [tabindex]:not([tabindex='-1'])");
-    if(f) f.focus({preventScroll:true});
-  }, 40);
+    const f = m.querySelector("input:not([type=hidden]), textarea, button:not(.close), [tabindex]:not([tabindex='-1'])");
+    if(f) f.focus({ preventScroll:true });
+  }, 60);
 }
 function closeModal(id){
   const m = $(id); if(!m) return;
   m.classList.remove("active");
   if(!document.querySelector(".modal.active")){
     document.body.style.overflow = "";
-    if(lastFocused && typeof lastFocused.focus === "function"){ try { lastFocused.focus({preventScroll:true}); } catch(_) {} }
+    if(lastFocused && typeof lastFocused.focus === "function"){ try{ lastFocused.focus({ preventScroll:true }); }catch(_){} }
   }
 }
 function closeAllModals(){
@@ -741,12 +1010,9 @@ function closeAllModals(){
   document.body.style.overflow = "";
 }
 document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); }));
-document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
+document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.close)));
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeAllModals(); });
 
-/* ═══════════════════════════════════════════════════════════════
-   TOAST + SOUND
-═══════════════════════════════════════════════════════════════ */
 let toastTimer = null;
 function toast(msg){
   const el = $("toast");
@@ -758,13 +1024,14 @@ function toast(msg){
 
 function ensureAudio(){
   if(audioCtx) return audioCtx;
-  try { const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return null; audioCtx = new Ctx(); } catch(_) { audioCtx = null; }
+  try{ const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return null; audioCtx = new Ctx(); }
+  catch(_){ audioCtx = null; }
   return audioCtx;
 }
 function beep(times = 2, freq = 880){
   if(!SOUND_ENABLED) return;
   const ctx = ensureAudio(); if(!ctx) return;
-  if(ctx.state === "suspended") ctx.resume().catch(()=>{});
+  if(ctx.state === "suspended") ctx.resume().catch(() => {});
   for(let i = 0; i < times; i++){
     const t0 = ctx.currentTime + i * 0.19;
     const o = ctx.createOscillator(), g = ctx.createGain();
@@ -778,68 +1045,114 @@ function beep(times = 2, freq = 880){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   CATEGORY NORMALIZATION
+   8. SERVICE CATEGORY NORMALISATION
 ═══════════════════════════════════════════════════════════════ */
 function normalizeCategory(value){
   const c = String(value || "").toLowerCase().trim();
   if(!c) return "other";
-  if(c.includes("taxi") || c.includes("transport") || c.includes("transfer") ||
-     c.includes("ride") || c.includes("airport") || c.includes("shuttle") ||
-     c.includes("driver") || c.includes("car")) return "taxi";
-  if(c.includes("tour") || c.includes("safari") || c.includes("travel") ||
-     c.includes("excursion") || c.includes("trip") || c.includes("park") ||
-     c.includes("game drive") || c.includes("adventure")) return "tour";
-  if(c.includes("spa") || c.includes("massage") || c.includes("wellness") ||
-     c.includes("laundry") || c.includes("gym") || c.includes("beauty") ||
-     c.includes("fitness") || c.includes("salon") || c.includes("hair") ||
-     c.includes("nail") || c.includes("sauna") || c.includes("steam")) return "spa";
-  if(c.includes("food") || c.includes("restaurant") || c.includes("dining") ||
-     c.includes("room service") || c.includes("drink") || c.includes("bar") ||
-     c.includes("kitchen") || c.includes("menu") || c.includes("meal") ||
-     c.includes("main") || c.includes("starter") || c.includes("appetizer") ||
-     c.includes("dessert") || c.includes("snack") || c.includes("breakfast") ||
-     c.includes("lunch") || c.includes("dinner") || c.includes("beverage") ||
-     c.includes("juice") || c.includes("cocktail") || c.includes("wine") ||
-     c.includes("beer") || c.includes("tea") || c.includes("coffee") ||
-     c.includes("soda") || c.includes("pizza") || c.includes("burger") ||
-     c.includes("chicken") || c.includes("rice") || c.includes("pilau") ||
-     c.includes("nyama") || c.includes("ugali") || c.includes("soup") ||
-     c.includes("salad") || c.includes("fish") || c.includes("beef") ||
-     c.includes("vegetarian")) return "food";
-  if(c.includes("housekeep") || c.includes("front") || c.includes("service") ||
-     c.includes("maintenance") || c.includes("maint") || c.includes("clean") ||
-     c.includes("towel") || c.includes("amenity")) return "services";
+  if(/(taxi|transport|transfer|ride|airport|shuttle|driver|car|rental)/.test(c)) return "taxi";
+  if(/(tour|safari|travel|excursion|trip|park|game|adventure|guide)/.test(c)) return "tour";
+  if(/(spa|massage|wellness|laundry|gym|beauty|fitness|salon|hair|nail|sauna|steam|press)/.test(c)) return "spa";
+  if(/(food|restaurant|dining|room service|drink|bar|kitchen|menu|meal|breakfast|lunch|dinner|beverage)/.test(c)) return "food";
+  if(/(housekeep|front|service|maintenance|maint|clean|towel|amenity|concierge|luggage|checkout|wake)/.test(c)) return "services";
   return "other";
 }
-
 const CATEGORY_META = {
-  food:     { titleKey:"cat_food",     shortKey:"cat_short_food",     order:1 },
-  taxi:     { titleKey:"cat_taxi",     shortKey:"cat_short_taxi",     order:2 },
-  tour:     { titleKey:"cat_tour",     shortKey:"cat_short_tour",     order:3 },
-  spa:      { titleKey:"cat_spa",      shortKey:"cat_short_spa",      order:4 },
-  services: { titleKey:"cat_services", shortKey:"cat_short_services", order:5 },
-  other:    { titleKey:"cat_other",    shortKey:"cat_short_other",    order:6 }
+  food:     { titleKey:"cat_food",     order:1 },
+  taxi:     { titleKey:"cat_taxi",     order:2 },
+  tour:     { titleKey:"cat_tour",     order:3 },
+  spa:      { titleKey:"cat_spa",      order:4 },
+  services: { titleKey:"cat_services", order:5 },
+  other:    { titleKey:"cat_other",    order:6 }
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   GREETING / STAY CHIPS
+   9. MENU HELPERS
 ═══════════════════════════════════════════════════════════════ */
-function setGreeting(){
-  const h = new Date().getHours();
-  const name = $("guestName").value.trim();
-  const key = h < 12 ? "good_morning" : h < 17 ? "good_afternoon" : "good_evening";
-  $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]} ✨` : `${t(key)} 👋`;
+function sortedCategories(){ return [...MENU.categories].sort((a,b) => (a.order ?? 99) - (b.order ?? 99)); }
+function itemsInCategory(id){ return MENU.items.filter(i => i.cat === id); }
+function findMenuItem(id){ return MENU.items.find(i => String(i.id) === String(id)); }
+
+/* ═══════════════════════════════════════════════════════════════
+   10. CART
+═══════════════════════════════════════════════════════════════ */
+function cartCount(){ return STATE.cart.reduce((n, l) => n + l.qty, 0); }
+function cartSubtotal(){ return STATE.cart.reduce((n, l) => n + l.qty * (Number(l.price) || 0), 0); }
+function cartServiceCharge(){ return Math.round(cartSubtotal() * (Number(STATE.serviceCharge) || 0) / 100); }
+function cartTotal(){ return cartSubtotal() + cartServiceCharge(); }
+
+function addToCart(itemId){
+  const item = findMenuItem(itemId);
+  if(!item) return;
+  if(item.available === false){ toast(t("sold_out")); return; }
+  const line = STATE.cart.find(l => String(l.id) === String(itemId));
+  if(line) line.qty += 1;
+  else STATE.cart.push({ id:item.id, name:item.name, price:Number(item.price) || 0, emoji:item.emoji || "🍽️", qty:1 });
+  saveCart();
+  toast(`✓ ${item.name} — ${t("t_item_added")}`);
+  if(navigator.vibrate) navigator.vibrate(30);
+  beep(1, 720);
 }
-function updateStayChips(){
-  const room = $("roomNo").value.trim();
-  $("topRoom").textContent = room || "—";
-  const roomLabel = t("room_number");
-  $("heroRoom").textContent = room ? `🛏️ ${roomLabel} ${room}` : `🛏️ —`;
-  updateHeroStay();
+function setQty(itemId, qty){
+  const line = STATE.cart.find(l => String(l.id) === String(itemId));
+  if(!line) return;
+  if(qty <= 0) STATE.cart = STATE.cart.filter(l => String(l.id) !== String(itemId));
+  else line.qty = qty;
+  saveCart();
+  if($("cartModal").classList.contains("active")) renderCart();
+}
+function clearCart(){ STATE.cart = []; saveCart(); renderCart(); }
+
+function renderCartBar(){
+  const bar = $("cartBar");
+  const n = cartCount();
+  if(n === 0){ bar.classList.remove("show"); updateOrdersBadge(); return; }
+  bar.classList.add("show");
+  $("cartCount").textContent = `${n} ${n === 1 ? t("item") : t("items")}`;
+  $("cartTotal").textContent = money(cartTotal()) || "—";
+  updateOrdersBadge();
+}
+function updateOrdersBadge(){
+  const badge = $("ordersBadge");
+  const n = cartCount();
+  if(n > 0){ badge.style.display = "grid"; badge.textContent = n; }
+  else badge.style.display = "none";
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   STAY DATES
+   11. GREETING / CONTEXT
+═══════════════════════════════════════════════════════════════ */
+function setGreeting(){
+  const h = new Date().getHours();
+  const name = ($("guestName") && $("guestName").value.trim()) || localStorage.getItem("guest_name") || "";
+  const key = h < 12 ? "good_morning" : h < 17 ? "good_afternoon" : "good_evening";
+  $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]} ✨` : `${t(key)} 👋`;
+}
+
+function updateContextUI(){
+  const isTable = CONTEXT.mode === "table";
+  document.body.classList.toggle("tableMode", isTable);
+
+  const chip = $("ctxChip");
+  chip.className = "ctxChip" + (isTable ? " table" : "");
+  chip.innerHTML = isTable ? `🍽️ <b>${esc(CONTEXT.table || "—")}</b>` : `🛏️ <b>${esc(CONTEXT.room || "—")}</b>`;
+
+  $("heroCtx").textContent = isTable
+    ? `🍽️ ${t("table_label")} ${CONTEXT.table || "—"}`
+    : `🛏️ ${t("room_number")} ${CONTEXT.room || "—"}`;
+
+  $("ctxIcon").textContent = isTable ? "🍽️" : "🛏️";
+  $("ctxTitle").textContent = isTable
+    ? `${t("scan_table")} ${CONTEXT.table || "—"}`
+    : `${t("scan_room")} ${CONTEXT.room || "—"}`;
+  $("ctxSub").textContent = isTable ? t("ctx_table_sub") : t("ctx_room_sub");
+
+  $("activeLocLabel").textContent = isTable ? t("table_label") : t("room_number");
+  $("heroEyebrow").textContent = isTable ? "✦ DINE IN — GUESTHUB" : "✦ GUESTHUB OS";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. STAY DATES (room mode)
 ═══════════════════════════════════════════════════════════════ */
 let STAY = { checkin:null, checkout:null };
 let midnightTimer = null;
@@ -848,14 +1161,12 @@ function parseDate(v){ if(!v) return null; const d = new Date(v); return isNaN(d
 function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
 
 function initStay(){
-  const p = new URLSearchParams(location.search);
-  const ciStr = p.get("checkin")  || localStorage.getItem(`stay_checkin_${HOTEL_ID}`);
-  const coStr = p.get("checkout") || localStorage.getItem(`stay_checkout_${HOTEL_ID}`);
-  if(ciStr){ STAY.checkin  = parseDate(ciStr); if(STAY.checkin)  localStorage.setItem(`stay_checkin_${HOTEL_ID}`,  ciStr); }
-  if(coStr){ STAY.checkout = parseDate(coStr); if(STAY.checkout) localStorage.setItem(`stay_checkout_${HOTEL_ID}`, coStr); }
+  const ci = params.get("checkin")  || localStorage.getItem(`stay_checkin_${HOTEL_ID}`);
+  const co = params.get("checkout") || localStorage.getItem(`stay_checkout_${HOTEL_ID}`);
+  if(ci){ STAY.checkin  = parseDate(ci); if(STAY.checkin)  localStorage.setItem(`stay_checkin_${HOTEL_ID}`,  ci); }
+  if(co){ STAY.checkout = parseDate(co); if(STAY.checkout) localStorage.setItem(`stay_checkout_${HOTEL_ID}`, co); }
   scheduleMidnightRefresh();
 }
-
 function setStayFromHotel(hotel){
   if(!hotel) return;
   if(!STAY.checkin){
@@ -868,18 +1179,17 @@ function setStayFromHotel(hotel){
   }
   updateHeroStay();
 }
-
 function stayInfo(){
   if(!STAY.checkin || !STAY.checkout) return null;
   const MS = 86400000;
   const ci = startOfDay(STAY.checkin), co = startOfDay(STAY.checkout), today = startOfDay(new Date());
   const total = Math.max(1, Math.round((co - ci) / MS));
-  const day   = Math.floor((today - ci) / MS) + 1;
+  const day = Math.floor((today - ci) / MS) + 1;
   return { day, total, ci, co, today };
 }
-
 function updateHeroStay(){
   const el = $("heroStay"); if(!el) return;
+  if(CONTEXT.mode === "table"){ el.textContent = t("dine_in"); return; }
   const info = stayInfo();
   if(!info){ el.textContent = t("stay_ready"); return; }
   const { day, total, ci, co, today } = info;
@@ -889,7 +1199,6 @@ function updateHeroStay(){
   if(day === total){ el.textContent = t("stay_last_day"); return; }
   el.textContent = t("stay_day", { d: day, t: total });
 }
-
 function scheduleMidnightRefresh(){
   if(midnightTimer) clearTimeout(midnightTimer);
   const now = new Date();
@@ -898,89 +1207,453 @@ function scheduleMidnightRefresh(){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   I18N APPLY
+   13. RENDER — quick actions, pills, catalog
 ═══════════════════════════════════════════════════════════════ */
-function applyI18n(){
-  document.documentElement.lang = currentLang;
-  document.documentElement.dir  = I18N[currentLang].dir || "ltr";
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.dataset.i18n;
-    if(el.tagName === "INPUT" || el.tagName === "TEXTAREA") el.placeholder = t(key);
-    else el.textContent = t(key);
+function renderQuickActions(){
+  const row = $("quickRow");
+  const isTable = CONTEXT.mode === "table";
+  const items = isTable
+    ? [
+        { k:"menu",   i:"📖", label:t("qa_menu") },
+        { k:"waiter", i:"🛎️", label:t("qa_waiter") },
+        { k:"water",  i:"💧", label:t("qa_water") },
+        { k:"bill",   i:"🧾", label:t("qa_bill") },
+        { k:"orders", i:"📋", label:t("qa_orders") },
+        { k:"help",   i:"💬", label:t("qa_help") }
+      ]
+    : [
+        { k:"menu",         i:"🍽️", label:t("qa_food") },
+        { k:"taxi",         i:"🚕", label:t("qa_taxi") },
+        { k:"tour",         i:"🦁", label:t("qa_tour") },
+        { k:"spa",          i:"🧖", label:t("qa_spa") },
+        { k:"housekeeping", i:"🧹", label:t("qa_services") },
+        { k:"orders",       i:"📋", label:t("qa_orders") }
+      ];
+  row.innerHTML = items.map(it =>
+    `<button class="quickAction" data-quick="${esc(it.k)}"><i>${it.i}</i><span>${esc(it.label)}</span></button>`
+  ).join("");
+  row.querySelectorAll("[data-quick]").forEach(btn => btn.addEventListener("click", () => handleQuick(btn.dataset.quick)));
+}
+function handleQuick(k){
+  if(k === "orders"){ viewOrders(); return; }
+  if(k === "help"){ openModal("helpModal"); return; }
+  if(k === "menu"){
+    setActiveCategory("all");
+    document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" });
+    return;
+  }
+  if(QUICK_SERVICES[k]){ openServiceOrder(QUICK_SERVICES[k]); return; }
+  const pill = document.querySelector(`.pill[data-cat="svc:${k}"]`);
+  if(pill) pill.click();
+  document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function renderPills(){
+  const pills = $("pills");
+  const html = [`<button class="pill ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}</button>`];
+  sortedCategories().forEach(c => {
+    if(!itemsInCategory(c.id).length) return;
+    html.push(`<button class="pill ${activeCategory === "menu:" + c.id ? "active" : ""}" data-cat="menu:${esc(c.id)}">${esc(c.emoji || "🍽️")} ${esc(c.name)}</button>`);
   });
-  setGreeting();
-  updateStayChips();
-  renderPills();
-  renderAll();
-  renderHelp();
-  const banner = $("activeOrder");
-  if(banner && banner.classList.contains("show") && banner._lastOrder) renderActiveOrder(banner._lastOrder);
-  const lt = $("langTitle"); if(lt) lt.textContent = t("lang_title");
-  const ld = $("langDesc");  if(ld) ld.textContent = t("lang_desc");
-  renderLangGrid();
-  setLiveIndicator(realtimeOK, realtimeOK ? t("live_updates") : t("polling_mode"));
+  const svcCats = new Set(SERVICES.map(s => s.category));
+  Object.keys(CATEGORY_META).filter(c => svcCats.has(c)).sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order)
+    .forEach(c => {
+      const title = c === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[c].titleKey);
+      html.push(`<button class="pill ${activeCategory === "svc:" + c ? "active" : ""}" data-cat="svc:${esc(c)}">${esc(title)}</button>`);
+    });
+  pills.innerHTML = html.join("");
+  pills.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => setActiveCategory(p.dataset.cat)));
+}
+function setActiveCategory(cat){
+  activeCategory = cat;
+  document.querySelectorAll("#pills .pill").forEach(x => x.classList.toggle("active", x.dataset.cat === cat));
+  applyFilters();
 }
 
-function setLanguage(code){
-  if(!I18N[code]) return;
-  currentLang = code;
-  localStorage.setItem("guesthub_lang", code);
-  applyI18n();
-  closeModal("langModal");
-  toast(I18N[code].flag + "  " + I18N[code].native);
+function renderAll(){
+  const area = $("serviceArea");
+  if(!area) return;
+  const html = [];
+
+  /* Menu sections */
+  const cats = sortedCategories().filter(c => itemsInCategory(c.id).length);
+  cats.forEach(c => {
+    const items = itemsInCategory(c.id);
+    html.push(`
+      <section class="section" data-filter="menu:${esc(c.id)}" data-kind="menu">
+        <h3>${esc(c.emoji || "🍽️")} ${esc(c.name)} <span class="count">${items.length}</span></h3>
+        <div class="menuList">${items.map(menuItemHTML).join("")}</div>
+      </section>`);
+  });
+
+  /* Service sections */
+  if(SERVICES.length){
+    const groups = {};
+    SERVICES.forEach(s => { const c = s.category || "other"; (groups[c] = groups[c] || []).push(s); });
+    const ordered = Object.keys(CATEGORY_META).filter(c => groups[c] && groups[c].length)
+      .sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
+    ordered.forEach(cat => {
+      const title = cat === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[cat].titleKey);
+      html.push(`
+        <section class="section" data-filter="svc:${esc(cat)}" data-kind="svc">
+          <h3>${esc(title)} <span class="count">${groups[cat].length}</span></h3>
+          <div class="grid2">${groups[cat].map(serviceCardHTML).join("")}</div>
+        </section>`);
+    });
+  }
+
+  if(!html.length){
+    area.innerHTML = `<div class="section"><h3>${esc(t("no_services_title"))}</h3>
+      <p style="color:#a8a8a8;font-size:13px;line-height:1.6;margin:0">${esc(t("no_services_body"))}</p></div>`;
+    return;
+  }
+
+  area.innerHTML = html.join("");
+  area.querySelectorAll(".svc").forEach(el => el.addEventListener("click", () => openServiceOrderById(el.dataset.id)));
+  area.querySelectorAll("[data-add]").forEach(el => el.addEventListener("click", e => {
+    e.stopPropagation();
+    addToCart(el.dataset.add);
+  }));
+  applyFilters();
 }
 
-function renderLangGrid(){
-  const grid = $("langGrid"); if(!grid) return;
-  grid.innerHTML = Object.keys(I18N).map(code => {
-    const L = I18N[code];
-    const active = code === currentLang;
-    return `<button class="langCard ${active?"active":""}" data-lang="${code}">
-      <span class="flag">${L.flag}</span>
-      <b>${esc(L.native)}</b>
-      <small>${esc(L.name)}</small>
-      ${active?'<span class="check">✓</span>':''}
-    </button>`;
+function menuItemHTML(i){
+  const out = i.available === false;
+  const thumb = /^https?:\/\//i.test(i.emoji || "")
+    ? `<img src="${esc(i.emoji)}" alt="" loading="lazy">`
+    : esc(i.emoji || "🍽️");
+  const tags = (i.tags || []).map(tag => {
+    const cls = ["veg","spicy","popular","new"].includes(tag) ? tag : "";
+    const label = tag === "popular" ? "★ popular" : tag;
+    return `<span class="miTag ${cls}">${esc(label)}</span>`;
   }).join("");
-  grid.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => setLanguage(b.dataset.lang)));
+  const searchBlob = `${i.name || ""} ${i.desc || ""} ${(i.tags || []).join(" ")}`.toLowerCase();
+  return `
+    <div class="menuItem ${out ? "out" : ""}" data-search="${esc(searchBlob)}">
+      <div class="miThumb">${thumb}</div>
+      <div class="miBody">
+        <b>${esc(i.name || "Item")}</b>
+        ${i.desc ? `<small>${esc(i.desc)}</small>` : ""}
+        ${tags ? `<div class="miTags">${tags}</div>` : ""}
+        <div class="miFoot">
+          <span class="miPrice">${esc(priceLabel(i.price))}</span>
+          <button class="addBtn" data-add="${esc(i.id)}" ${out ? "disabled" : ""}>${out ? "—" : "+ " + esc(t("add"))}</button>
+        </div>
+      </div>
+      ${out ? `<span class="soldOut">—</span>` : ""}
+    </div>`;
+}
+
+function serviceCardHTML(s){
+  const vendorLine = s.vendor_name ? `<span class="svcVendor">• ${esc(s.vendor_name)}</span>` : "";
+  const searchBlob = `${s.title || ""} ${s.description || ""} ${s.category || ""} ${s.vendor_name || ""}`.toLowerCase();
+  return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}">
+    <div class="price">${esc(priceLabel(s.price))}</div>
+    <i>${esc(s.icon || "🛎️")}</i>
+    <b>${esc(s.title || "Service")}</b>
+    <small>${esc(s.description || "")}${vendorLine}</small>
+  </button>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   GUEST INFO / VALIDATION
+   14. FILTER / SEARCH
 ═══════════════════════════════════════════════════════════════ */
-function saveGuestInfo(){
-  const name = $("guestName").value.trim();
-  const room = $("roomNo").value.trim();
-  const phone = $("guestPhone") ? $("guestPhone").value.trim() : "";
-  if(name)  localStorage.setItem("guest_name", name);
-  if(room)  localStorage.setItem("guest_room", room);
-  if(phone) localStorage.setItem("guest_phone", phone);
+function applyFilters(){
+  const q = ($("searchService").value || "").trim().toLowerCase();
+  const sections = document.querySelectorAll("#serviceArea .section[data-filter]");
+  let visibleCards = 0;
+
+  sections.forEach(sec => {
+    const filter = sec.dataset.filter || "";
+    const catOK = activeCategory === "all" || filter === activeCategory;
+    if(!catOK){ sec.classList.add("hidden"); return; }
+
+    if(sec.dataset.kind === "menu"){
+      let shown = 0;
+      sec.querySelectorAll(".menuItem").forEach(item => {
+        const match = !q || (item.dataset.search || "").includes(q);
+        item.classList.toggle("hidden-card", !match);
+        if(match) shown++;
+      });
+      sec.classList.toggle("hidden", shown === 0);
+      visibleCards += shown;
+    } else {
+      let shown = 0;
+      sec.querySelectorAll(".svc").forEach(card => {
+        const match = !q || (card.dataset.search || "").includes(q);
+        card.classList.toggle("hidden-card", !match);
+        if(match) shown++;
+      });
+      sec.classList.toggle("hidden", shown === 0);
+      visibleCards += shown;
+    }
+  });
+
+  $("emptySearch").classList.toggle("show", !!q && visibleCards === 0);
 }
-function validGuest(){
-  const name = $("guestName").value.trim();
-  const room = $("roomNo").value.trim();
+$("searchService").addEventListener("input", applyFilters);
+
+/* ═══════════════════════════════════════════════════════════════
+   15. ORDER FLOW — services
+═══════════════════════════════════════════════════════════════ */
+function openServiceOrderById(id){
+  const s = SERVICES.find(x => String(x.id) === String(id));
+  if(s) openServiceOrder(s);
+}
+function openServiceOrder(s){
+  if(!validateGuest()) return;
+  selected = s;
+  $("mTitle").innerText = s.title || t("confirm_request");
+  const bits = [];
+  if(s.description) bits.push(s.description);
+  if(Number(s.price) > 0) bits.push(money(s.price));
+  if(s.vendor_name) bits.push(s.vendor_name);
+  $("mDesc").innerText = bits.join(" • ");
+  $("guestPhone").value = localStorage.getItem("guest_phone") || "";
+  $("orderNote").value = "";
+  openModal("orderModal");
+}
+
+$("confirmOrder").addEventListener("click", async () => {
+  if(!selected) return;
+  if(!validateGuest()) return;
+  if(!checkRateLimit()) return;
+  ensureAudio();
+
+  const rawPhone = $("guestPhone").value.trim();
+  const finalPhone = normalizePhone(rawPhone);
+  if(rawPhone && !validPhone(finalPhone)){ toast(t("t_valid_phone")); $("guestPhone").focus(); return; }
+
+  const btn = $("confirmOrder");
+  btn.disabled = true;
+  const original = btn.innerText;
+  btn.innerText = t("sending");
+
+  try{
+    const payload = {
+      hotel_id: HOTEL_ID,
+      mode: CONTEXT.mode,
+      room_number: CONTEXT.mode === "room" ? ctxNumber() : "",
+      table_number: CONTEXT.mode === "table" ? ctxNumber() : "",
+      guest_name: guestName(),
+      guest_phone: finalPhone,
+      service_id: selected.id,
+      service_title: selected.title,
+      category: selected.category,
+      details: $("orderNote").value.trim() || selected.description || "",
+      amount: Number(selected.price) || 0,
+      department: departmentFor(selected.category)
+    };
+    const result = await submitOrder(payload);
+    saveGuestInfo();
+    markRateLimit();
+
+    $("orderRef").innerText = result.reference;
+    $("successText").innerText = `${selected.title} — ${t("sent_to")} ${HOTEL?.name || HOTEL_ID} · ${ctxLabel()}`;
+    closeModal("orderModal");
+    openModal("successModal");
+
+    if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    beep(1, 660);
+    loadActiveOrder();
+  }catch(e){
+    toast(e.message || t("t_order_fail"));
+  }finally{
+    btn.disabled = false;
+    btn.innerText = original || t("place_order");
+  }
+});
+$("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
+
+/* ═══════════════════════════════════════════════════════════════
+   16. ORDER FLOW — cart / menu
+═══════════════════════════════════════════════════════════════ */
+$("cartOpen").addEventListener("click", () => {
+  if(!STATE.cart.length){ toast(t("empty_cart")); return; }
+  renderCart();
+  openModal("cartModal");
+});
+
+function renderCart(){
+  const wrap = $("cartItems");
+  $("cartSubtitle").textContent = CONTEXT.mode === "table"
+    ? `${t("dine_in")} · ${t("table_label")} ${ctxNumber() || "—"}`
+    : `${t("deliver_to")} ${t("room_number")} ${ctxNumber() || "—"}`;
+
+  if(!STATE.cart.length){
+    wrap.innerHTML = `<div style="text-align:center;padding:30px 12px;color:var(--muted-3);font-size:12.5px">${esc(t("empty_cart"))}</div>`;
+    $("cartTotals").innerHTML = "";
+    return;
+  }
+  wrap.innerHTML = STATE.cart.map(l => {
+    const thumb = /^https?:\/\//i.test(l.emoji || "") ? `<img src="${esc(l.emoji)}" alt="">` : esc(l.emoji || "🍽️");
+    return `<div class="cartRow">
+      <div class="ci">${thumb}</div>
+      <div class="cb">
+        <b>${esc(l.name)}</b>
+        <small>${esc(money(l.price) || t("ask_hotel"))}</small>
+      </div>
+      <div class="qty">
+        <button data-dec="${esc(l.id)}" aria-label="Less">−</button>
+        <span>${l.qty}</span>
+        <button data-inc="${esc(l.id)}" aria-label="More">+</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  const sub = cartSubtotal(), sc = cartServiceCharge(), tot = cartTotal();
+  const pct = Number(STATE.serviceCharge) || 0;
+  $("cartTotals").innerHTML = `
+    <div class="totalsRow"><span>${esc(t("subtotal"))}</span><span>${esc(money(sub) || "—")}</span></div>
+    ${pct > 0 ? `<div class="totalsRow"><span>${esc(t("service_charge"))} (${pct}%)</span><span>${esc(money(sc) || "—")}</span></div>` : ""}
+    <div class="totalsRow grand"><span>${esc(t("total"))}</span><span>${esc(money(tot) || "—")}</span></div>`;
+
+  wrap.querySelectorAll("[data-inc]").forEach(b => b.addEventListener("click", () => {
+    const line = STATE.cart.find(l => String(l.id) === String(b.dataset.inc));
+    setQty(b.dataset.inc, (line?.qty || 0) + 1);
+  }));
+  wrap.querySelectorAll("[data-dec]").forEach(b => b.addEventListener("click", () => {
+    const line = STATE.cart.find(l => String(l.id) === String(b.dataset.dec));
+    setQty(b.dataset.dec, (line?.qty || 0) - 1);
+  }));
+}
+
+$("cartClear").addEventListener("click", () => { clearCart(); renderCart(); });
+$("cartPhone").addEventListener("input", saveGuestInfo);
+
+$("cartCheckout").addEventListener("click", async () => {
+  if(!STATE.cart.length){ toast(t("empty_cart")); return; }
+  if(!validateGuest()){ closeModal("cartModal"); return; }
+  if(!checkRateLimit()) return;
+  ensureAudio();
+
+  const rawPhone = $("cartPhone").value.trim();
+  const finalPhone = normalizePhone(rawPhone);
+  if(rawPhone && !validPhone(finalPhone)){ toast(t("t_valid_phone")); $("cartPhone").focus(); return; }
+
+  const btn = $("cartCheckout");
+  btn.disabled = true;
+  const original = btn.innerText;
+  btn.innerText = t("sending");
+
+  try{
+    const n = cartCount();
+    const payload = {
+      hotel_id: HOTEL_ID,
+      mode: CONTEXT.mode,
+      room_number: CONTEXT.mode === "room" ? ctxNumber() : "",
+      table_number: CONTEXT.mode === "table" ? ctxNumber() : "",
+      guest_name: guestName(),
+      guest_phone: finalPhone,
+      service_id: "menu_order",
+      service_title: CONTEXT.mode === "table"
+        ? `${t("table_label")} ${ctxNumber() || "—"} • ${n} ${n === 1 ? t("item") : t("items")}`
+        : `${t("room_number")} ${ctxNumber() || "—"} • ${n} ${n === 1 ? t("item") : t("items")}`,
+      category: "food",
+      details: $("cartNote").value.trim(),
+      amount: cartTotal(),
+      department: "kitchen",
+      items: STATE.cart.map(l => ({ id:l.id, name:l.name, price:l.price, qty:l.qty })),
+      subtotal: cartSubtotal(),
+      service_charge: cartServiceCharge(),
+      total: cartTotal()
+    };
+    const result = await submitOrder(payload);
+    saveGuestInfo();
+    markRateLimit();
+
+    $("orderRef").innerText = result.reference;
+    $("successText").innerText = `${n} ${n === 1 ? t("item") : t("items")} — ${t("sent_to")} ${HOTEL?.name || HOTEL_ID} · ${ctxLabel()}`;
+    closeModal("cartModal");
+    clearCart();
+    openModal("successModal");
+
+    if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
+    beep(1, 660);
+    loadActiveOrder();
+  }catch(e){
+    toast(e.message || t("t_order_fail"));
+  }finally{
+    btn.disabled = false;
+    btn.innerText = original || t("checkout");
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   17. ORDER SUBMISSION (API + graceful local fallback)
+═══════════════════════════════════════════════════════════════ */
+function departmentFor(cat){
+  return { food:"kitchen", taxi:"transport", tour:"concierge", spa:"spa",
+           services:"housekeeping", other:"reception" }[cat] || "reception";
+}
+async function submitOrder(payload){
+  const reference = "GH-" + Date.now().toString(36).toUpperCase().slice(-6);
+  const localOrder = Object.assign({}, payload, {
+    reference, status:"pending", created_at:new Date().toISOString()
+  });
+  try{
+    const r = await fetch(`${API_BASE}/api/orders`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify(payload)
+    });
+    if(r.status === 429){
+      const j = await r.json().catch(() => ({}));
+      throw new Error(j.error || t("t_wait", { s: 20 }));
+    }
+    const j = await r.json();
+    if(!j || !j.ok) throw new Error((j && j.error) || t("t_order_failed"));
+    const order = j.order || localOrder;
+    saveLocalOrder(order);
+    return { reference: order.reference || reference, order };
+  }catch(err){
+    if(String(err.message || "").includes("wait")) throw err;
+    saveLocalOrder(localOrder);
+    return { reference, order: localOrder, offline:true };
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   18. GUEST INFO / VALIDATION
+═══════════════════════════════════════════════════════════════ */
+function guestName(){
+  const el = $("guestName");
+  return (el && el.value.trim()) || localStorage.getItem("guest_name") || "Guest";
+}
+function saveGuestInfo(){
+  const n = $("guestName") && $("guestName").value.trim();
+  const p = $("guestPhone") && $("guestPhone").value.trim();
+  const cp = $("cartPhone") && $("cartPhone").value.trim();
+  if(n) localStorage.setItem("guest_name", n);
+  if(p) localStorage.setItem("guest_phone", p);
+  else if(cp) localStorage.setItem("guest_phone", cp);
+}
+function validateGuest(){
+  const name = ($("guestName").value || "").trim();
   if(!name){ toast(t("t_enter_name")); $("guestName").focus(); return false; }
-  if(!room){ toast(t("t_enter_room")); $("roomNo").focus(); return false; }
+  if(!ctxNumber()){
+    toast(CONTEXT.mode === "table" ? t("t_enter_table") : t("t_enter_room"));
+    openCtxModal();
+    return false;
+  }
   return true;
 }
 function normalizePhone(raw){
   const digits = String(raw || "").replace(/\D/g, "");
   if(!digits) return "";
   if(digits.startsWith("254")) return digits;
-  if(digits.startsWith("0"))   return "254" + digits.slice(1);
-  if(digits.length === 9)      return "254" + digits;
+  if(digits.startsWith("0")) return "254" + digits.slice(1);
+  if(digits.length === 9) return "254" + digits;
   return digits;
 }
-function validKenyanPhone(p){ return /^254(7|1)\d{8}$/.test(p); }
+function validPhone(p){ return /^254(7|1)\d{8}$/.test(p) || /^\d{9,15}$/.test(p); }
 
-function rateLimitKey(){ const room = $("roomNo").value.trim() || "_"; return `last_order_at_${HOTEL_ID}_${room}`; }
+function rateLimitKey(){ return `last_order_at_${HOTEL_ID}_${ctxNumber() || "_"}`; }
 function checkRateLimit(){
-  const key = rateLimitKey();
-  const last = Number(localStorage.getItem(key) || 0);
+  const last = Number(localStorage.getItem(rateLimitKey()) || 0);
   const elapsed = Date.now() - last;
   if(last && elapsed < ORDER_COOLDOWN_MS){
-    const wait = Math.ceil((ORDER_COOLDOWN_MS - elapsed) / 1000);
-    toast(t("t_wait", { s: wait }));
+    toast(t("t_wait", { s: Math.ceil((ORDER_COOLDOWN_MS - elapsed) / 1000) }));
     return false;
   }
   return true;
@@ -988,13 +1661,13 @@ function checkRateLimit(){
 function markRateLimit(){ localStorage.setItem(rateLimitKey(), String(Date.now())); }
 
 /* ═══════════════════════════════════════════════════════════════
-   SUPABASE REALTIME
+   19. SUPABASE REALTIME + POLLING
 ═══════════════════════════════════════════════════════════════ */
 function initSupabase(){
-  if(!window.supabase){ console.info("[GuestHub] Supabase SDK not loaded — polling only"); return null; }
-  if(!SUPA_URL || !SUPA_KEY){ console.info("[GuestHub] Supabase credentials missing — polling only"); return null; }
-  try { return window.supabase.createClient(SUPA_URL, SUPA_KEY, { realtime: { params: { eventsPerSecond: 5 } } }); }
-  catch(e){ console.warn("[GuestHub] Supabase init failed:", e); return null; }
+  if(!window.supabase) return null;
+  if(!SUPA_URL || !SUPA_KEY) return null;
+  try{ return window.supabase.createClient(SUPA_URL, SUPA_KEY, { realtime:{ params:{ eventsPerSecond:5 } } }); }
+  catch(_){ return null; }
 }
 function setLiveIndicator(on, title){
   const dot = $("liveDot"); if(!dot) return;
@@ -1002,34 +1675,33 @@ function setLiveIndicator(on, title){
   dot.title = title || (on ? t("live_updates") : t("polling_mode"));
 }
 function unsubscribeRealtime(){
-  if(realtimeChannel && supa){ try { supa.removeChannel(realtimeChannel); } catch(_){} }
+  if(realtimeChannel && supa){ try{ supa.removeChannel(realtimeChannel); }catch(_){} }
   realtimeChannel = null; realtimeOK = false; setLiveIndicator(false);
 }
 function subscribeRealtime(){
   if(!supa){ realtimeOK = false; schedulePoll(); return; }
-  const room = $("roomNo").value.trim();
-  if(!room){ unsubscribeRealtime(); return; }
+  const loc = ctxNumber();
+  if(!loc){ unsubscribeRealtime(); return; }
   unsubscribeRealtime();
-  try {
-    realtimeChannel = supa.channel(`gh-orders-${HOTEL_ID}-${room}`)
+  try{
+    realtimeChannel = supa.channel(`gh-${HOTEL_ID}-${CONTEXT.mode}-${loc}`)
       .on("postgres_changes", { event:"*", schema:"public", table:"orders", filter:`hotel_id=eq.${HOTEL_ID}` }, payload => {
         const row = payload.new || payload.old;
         if(!row) return;
-        const rn = row.room_number ?? row.room;
-        if(String(rn) !== room) return;
+        const matches = CONTEXT.mode === "table"
+          ? String(row.table_number ?? "") === String(loc)
+          : String(row.room_number ?? row.room ?? "") === String(loc);
+        if(!matches) return;
         if(payload.eventType === "INSERT" || payload.eventType === "UPDATE") handleRealtimeOrder(row);
       })
-      .subscribe((status, err) => {
+      .subscribe(status => {
         if(status === "SUBSCRIBED"){
           realtimeOK = true; stopPolling(); setLiveIndicator(true, t("live_updates")); loadActiveOrder();
         } else if(["CHANNEL_ERROR","TIMED_OUT","CLOSED"].includes(status)){
-          realtimeOK = false; setLiveIndicator(false, t("polling_mode"));
-          if(err) console.warn("[GuestHub] Realtime channel issue:", err);
-          schedulePoll();
+          realtimeOK = false; setLiveIndicator(false, t("polling_mode")); schedulePoll();
         }
       });
-  } catch(e){
-    console.warn("[GuestHub] Realtime subscribe failed:", e);
+  }catch(_){
     realtimeOK = false; setLiveIndicator(false, t("polling_mode")); schedulePoll();
   }
 }
@@ -1038,15 +1710,44 @@ function handleRealtimeOrder(row){
   renderActiveOrder(row);
   if($("ordersModal").classList.contains("active")) viewOrders();
 }
+function schedulePoll(){
+  if(pollTimer) clearTimeout(pollTimer);
+  if(realtimeOK) return;
+  const active = $("activeOrder").classList.contains("show");
+  pollTimer = setTimeout(async () => { await loadActiveOrder(); schedulePoll(); }, active ? POLL_ACTIVE_MS : POLL_IDLE_MS);
+}
+function stopPolling(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; } }
+
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden) stopPolling();
+  else {
+    loadActiveOrder();
+    if(realtimeOK) setLiveIndicator(true, t("live_updates"));
+    else if(supa) subscribeRealtime();
+    else schedulePoll();
+  }
+});
+$("refreshActive").addEventListener("click", () => loadActiveOrder(true));
 
 /* ═══════════════════════════════════════════════════════════════
-   STATUS CHANGES
+   20. ACTIVE ORDER
 ═══════════════════════════════════════════════════════════════ */
-function seenStatusKey(order){ return `seen_status_${HOTEL_ID}_${order.reference || order.id}`; }
+const STATUS_STEPS = { pending:1, new:1, accepted:2, preparing:3, on_the_way:3, ontheway:3, completed:4, cancelled:0, rejected:0 };
+
+function pickActiveOrder(orders){
+  if(!orders || !orders.length) return null;
+  const sorted = [...orders].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  return sorted.find(o => {
+    const s = String(o.status || "").toLowerCase();
+    return s !== "completed" && s !== "cancelled" && s !== "rejected";
+  }) || null;
+}
+function seenStatusKey(o){ return `seen_status_${HOTEL_ID}_${o.reference || o.id}`; }
+
 function detectStatusChange(order){
   const key = seenStatusKey(order);
   const prev = localStorage.getItem(key);
-  const current = String(order.status || "").toLowerCase().replace(/\s+/g,"_");
+  const current = String(order.status || "").toLowerCase().replace(/\s+/g, "_");
   if(prev && prev !== current) notifyStatusChange(order, prev, current);
   localStorage.setItem(key, current);
 }
@@ -1056,9 +1757,7 @@ function notifyStatusChange(order, from, to){
   void banner.offsetWidth;
   banner.classList.add("flash");
   setTimeout(() => banner.classList.remove("flash"), 3400);
-  const label = t("status_" + to) || to;
-  const service = order.service_title || "—";
-  toast(`${service} — ${label}`);
+  toast(`${order.service_title || "—"} — ${t("status_" + to) || to}`);
   if(navigator.vibrate){
     if(to === "completed") navigator.vibrate([80, 60, 80, 60, 160]);
     else navigator.vibrate([120, 60, 120]);
@@ -1066,292 +1765,58 @@ function notifyStatusChange(order, from, to){
   if(to === "on_the_way" || to === "completed") beep(2);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════════════════════ */
-async function init(){
-  $("guestName").value = localStorage.getItem("guest_name") || "";
-  $("guestPhone").value = localStorage.getItem("guest_phone") || "";
-  $("roomNo").value = ROOM_PARAM || localStorage.getItem("guest_room") || "";
-
-  initStay();
-
-  setGreeting();
-  updateStayChips();
-  applyI18n();
-  updateOffline();
-  window.addEventListener("offline", updateOffline);
-  window.addEventListener("online", () => { updateOffline(); loadActiveOrder(); if(supa) subscribeRealtime(); });
-
-  try {
-    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
-    if(r.ok){
-      const j = await r.json();
-      HOTEL = j.hotel || j;
-      $("hotelName").innerText = (HOTEL.name || HOTEL.hotel_name || t("hotel_fallback")).toUpperCase();
-      $("hotelTagline").innerText = HOTEL.tagline || t("tagline_fallback");
-      setStayFromHotel(HOTEL);
-    } else {
-      $("hotelName").innerText = HOTEL_ID;
-      $("hotelTagline").innerText = t("tagline_fallback");
-    }
-  } catch {
-    $("hotelName").innerText = HOTEL_ID;
-    $("hotelTagline").innerText = t("tagline_fallback");
-  }
-
-  try {
-    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
-    const j = await r.json();
-    SERVICES = (j.services || []).map(s => ({ ...s, category: normalizeCategory(s.category || s.type || s.title) }));
-    DEPARTMENTS = j.departments || [];
-  } catch (e) { console.warn("services load failed", e); SERVICES = []; }
-
-  $("loading").style.display = "none";
-  $("serviceArea").style.display = "block";
-
-  renderAll();
-  renderPills();
-  renderHelp();
-  await loadActiveOrder();
-
-  supa = initSupabase();
-  if(supa) subscribeRealtime(); else schedulePoll();
-
-  if(HOTEL && HOTEL.promo_text){
-    $("promoTitle").textContent = "🎉 " + (HOTEL.promo_title || "Special offer");
-    $("promoText").textContent  = HOTEL.promo_text;
-  }
-}
-
-function updateOffline(){
-  const bar = $("offlineBar");
-  if(!navigator.onLine) bar.classList.add("show"); else bar.classList.remove("show");
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   RENDER SERVICES
-═══════════════════════════════════════════════════════════════ */
-function renderAll(){
-  const area = $("serviceArea");
-  if(!area) return;
-  if(!SERVICES.length){
-    area.innerHTML = `<div class="section"><h3>${esc(t("no_services_title"))}</h3><p style="color:#a8a8a8;font-size:13px;line-height:1.5;margin:0">${esc(t("no_services_body"))}</p></div>`;
-    return;
-  }
-  const groups = {};
-  SERVICES.forEach(s => { const cat = s.category || "other"; (groups[cat] = groups[cat] || []).push(s); });
-  const orderedCats = Object.keys(CATEGORY_META).filter(c => groups[c] && groups[c].length).sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
-  let html = "";
-  orderedCats.forEach(cat => { html += sectionBlock(t(CATEGORY_META[cat].titleKey), groups[cat], cat); });
-  area.innerHTML = html;
-  document.querySelectorAll(".svc").forEach(el => el.addEventListener("click", () => openOrder(el.dataset.id)));
-  applyCategoryFilter();
-  applySearch();
-}
-function sectionBlock(title, items, cat){
-  return `<section class="section" data-cat="${esc(cat)}"><h3>${esc(title)} <span class="count">${items.length}</span></h3><div class="grid2">${items.map(serviceCardHTML).join("")}</div></section>`;
-}
-function serviceCardHTML(s){
-  const vendorLine = s.vendor_name ? `<span class="svcVendor">• ${esc(s.vendor_name)}</span>` : "";
-  const desc = s.description ? esc(s.description) : "";
-  const searchBlob = ((s.title||"") + " " + (s.description||"") + " " + (s.category||"") + " " + (s.vendor_name||"")).toLowerCase();
-  const priceTxt = s.price > 0 ? money(s.price) : t("ask_hotel");
-  return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}"><div class="price">${esc(priceTxt)}</div><i>${esc(s.icon || "🍽️")}</i><b>${esc(s.title || "Service")}</b><small>${desc}${vendorLine}</small></button>`;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   PILLS
-═══════════════════════════════════════════════════════════════ */
-function renderPills(){
-  const pills = $("pills"); if(!pills) return;
-  const present = new Set(SERVICES.map(s => s.category));
-  const ordered = Object.keys(CATEGORY_META).filter(c => present.has(c)).sort((a,b)=>CATEGORY_META[a].order-CATEGORY_META[b].order);
-  let html = `<button class="pill ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}</button>`;
-  ordered.forEach(c => {
-    html += `<button class="pill ${activeCategory === c ? "active" : ""}" data-cat="${esc(c)}">${esc(t(CATEGORY_META[c].shortKey))}</button>`;
-  });
-  pills.innerHTML = html;
-  pills.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => {
-    pills.querySelectorAll(".pill").forEach(x => x.classList.remove("active"));
-    p.classList.add("active");
-    activeCategory = p.dataset.cat;
-    applyCategoryFilter();
-    applySearch();
-  }));
-}
-function applyCategoryFilter(){
-  document.querySelectorAll("#serviceArea .section").forEach(sec => {
-    const match = activeCategory === "all" || sec.dataset.cat === activeCategory;
-    sec.classList.toggle("hidden", !match);
-  });
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SEARCH
-═══════════════════════════════════════════════════════════════ */
-function applySearch(){
-  const q = $("searchService").value.trim().toLowerCase();
-  const cards = document.querySelectorAll(".svc");
-  const sections = document.querySelectorAll("#serviceArea .section");
-  let totalVisible = 0;
-  cards.forEach(card => {
-    const match = !q || (card.dataset.search || "").includes(q);
-    card.classList.toggle("hidden-card", !match);
-    if(match) totalVisible++;
-  });
-  sections.forEach(sec => {
-    const visible = sec.querySelectorAll(".svc:not(.hidden-card)").length;
-    const catOK = activeCategory === "all" || sec.dataset.cat === activeCategory;
-    sec.classList.toggle("hidden", visible === 0 || !catOK);
-  });
-  $("emptySearch").classList.toggle("show", !!q && totalVisible === 0);
-}
-$("searchService").addEventListener("input", applySearch);
-
-/* ═══════════════════════════════════════════════════════════════
-   ORDER FLOW
-═══════════════════════════════════════════════════════════════ */
-function openOrder(id){
-  if(!validGuest()) return;
-  selected = SERVICES.find(s => String(s.id) === String(id));
-  if(!selected) return;
-  $("mTitle").innerText = selected.title || t("confirm_request");
-  const bits = [];
-  if(selected.description) bits.push(selected.description);
-  if(selected.price > 0)   bits.push(money(selected.price));
-  if(selected.vendor_name) bits.push(selected.vendor_name);
-  $("mDesc").innerText = bits.join(" • ");
-  $("guestPhone").value = localStorage.getItem("guest_phone") || "";
-  $("orderNote").value = "";
-  openModal("orderModal");
-}
-
-$("confirmOrder").addEventListener("click", async () => {
-  if(!selected) return;
-  if(!validGuest()) return;
-  if(!checkRateLimit()) return;
-  ensureAudio();
-
-  const rawPhone = $("guestPhone").value.trim();
-  const finalPhone = normalizePhone(rawPhone);
-  if(!validKenyanPhone(finalPhone)){
-    toast(t("t_valid_phone"));
-    $("guestPhone").focus();
-    return;
-  }
-
-  const btn = $("confirmOrder");
-  btn.disabled = true;
-  const originalText = btn.innerText;
-  btn.innerText = t("sending");
-
-  try {
-    const room = $("roomNo").value.trim();
-    const payload = {
-      hotel_id: HOTEL_ID,
-      room_number: room,
-      guest_name: $("guestName").value.trim(),
-      guest_phone: finalPhone,
-      service_id: selected.id,
-      service_title: selected.title,
-      category: selected.category,
-      details: $("orderNote").value.trim() || selected.description || "",
-      amount: Number(selected.price) || 0,
-      department: selected.category
-    };
-    const r = await fetch(`${API_BASE}/api/orders`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    if(r.status === 429){
-      const j = await r.json().catch(() => ({}));
-      toast(j.error || t("t_wait", { s: 30 }));
-      return;
-    }
-    const j = await r.json();
-    if(!j.ok) throw new Error(j.error || t("t_order_failed"));
-
-    saveGuestInfo();
-    markRateLimit();
-
-    $("orderRef").innerText = (j.order && j.order.reference) || "—";
-    const hotelName = HOTEL?.name || HOTEL_ID;
-    $("successText").innerText = `${selected.title} ${t("sent_to")} ${hotelName} · ${t("room_number")} ${room}`;
-    closeModal("orderModal");
-    openModal("successModal");
-
-    if(navigator.vibrate) navigator.vibrate([80, 40, 80]);
-    beep(1, 660);
-
-    if(j.order){
-      const key = seenStatusKey(j.order);
-      localStorage.setItem(key, String(j.order.status || "pending").toLowerCase().replace(/\s+/g,"_"));
-    }
-    loadActiveOrder();
-  } catch (e) {
-    toast(e.message || t("t_order_fail"));
-  } finally {
-    btn.disabled = false;
-    btn.innerText = t("place_order");
-  }
-});
-
-$("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
-
-/* ═══════════════════════════════════════════════════════════════
-   ACTIVE ORDER
-═══════════════════════════════════════════════════════════════ */
-const STATUS_STEPS = { pending:1, new:1, accepted:2, preparing:3, on_the_way:3, ontheway:3, completed:4, cancelled:0, rejected:0 };
-
-function pickActiveOrder(orders){
-  if(!orders || !orders.length) return null;
-  const sorted = [...orders].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  const live = sorted.find(o => { const s = String(o.status || "").toLowerCase(); return s !== "completed" && s !== "cancelled" && s !== "rejected"; });
-  return live || null;
-}
-
 async function loadActiveOrder(manual = false){
   if(refreshing) return;
   refreshing = true;
   const btn = $("refreshActive");
   if(btn && manual) btn.classList.add("spinning");
-  try {
-    const room = $("roomNo").value.trim();
+  try{
+    const loc = ctxNumber();
     const banner = $("activeOrder");
-    if(!room){ banner.classList.remove("show"); return; }
-    const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(room)}`);
-    if(!r.ok) throw new Error("no orders");
-    const j = await r.json();
-    const active = pickActiveOrder(j.orders || []);
+    if(!loc){ banner.classList.remove("show"); return; }
+
+    let orders = loadLocalOrders();
+    try{
+      const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(loc)}`);
+      if(r.ok){
+        const j = await r.json();
+        const map = new Map();
+        orders.forEach(o => map.set(o.reference || o.id, o));
+        (j.orders || []).forEach(o => map.set(o.reference || o.id, o));
+        orders = [...map.values()];
+      }
+    }catch(_){}
+
+    const active = pickActiveOrder(orders);
     if(!active){ banner.classList.remove("show"); return; }
     detectStatusChange(active);
     renderActiveOrder(active);
-  } catch(_) {} finally {
+  }finally{
     refreshing = false;
-    if(btn && manual){ setTimeout(() => btn.classList.remove("spinning"), 400); }
+    if(btn && manual) setTimeout(() => btn.classList.remove("spinning"), 400);
   }
 }
 
 function renderActiveOrder(order){
   const banner = $("activeOrder");
   banner._lastOrder = order;
-  const status = String(order.status || "pending").toLowerCase().replace(/\s+/g,"_");
+  const status = String(order.status || "pending").toLowerCase().replace(/\s+/g, "_");
   const step = STATUS_STEPS[status] ?? 1;
 
   $("activeService").innerText = order.service_title || "—";
   $("activeReference").innerText = order.reference || "GH-XXXX";
-  $("activeRoom").innerText = order.room_number || order.room || "—";
-  $("activeAmount").innerText = order.amount > 0 ? money(order.amount) : "—";
+  $("activeRoom").innerText = CONTEXT.mode === "table"
+    ? (order.table_number || ctxNumber() || "—")
+    : (order.room_number || order.room || ctxNumber() || "—");
+  $("activeAmount").innerText = Number(order.amount) > 0 ? money(order.amount) : "—";
 
   const statusEl = $("activeStatus");
   statusEl.className = "status " + status;
-  statusEl.innerText = t("status_" + status) || status.replace(/_/g," ");
+  statusEl.innerText = t("status_" + status) || status.replace(/_/g, " ");
 
   document.querySelectorAll("#progress .progressStep").forEach(el => {
     const s = Number(el.dataset.step);
-    el.classList.remove("active","cancelled");
+    el.classList.remove("active", "cancelled");
     if(status === "cancelled" || status === "rejected") return;
     if(s <= step) el.classList.add("active");
   });
@@ -1364,173 +1829,389 @@ function renderActiveOrder(order){
   }
 
   const eta = $("orderEta");
-  const etaText = $("orderEtaText");
   if(status === "accepted" || status === "preparing" || status === "on_the_way"){
     eta.style.display = "flex";
-    etaText.textContent = t("eta_" + status);
-  } else {
+    $("orderEtaText").textContent = t("eta_" + status);
+  }else{
     eta.style.display = "none";
   }
-
   banner.classList.add("show");
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   POLLING
-═══════════════════════════════════════════════════════════════ */
-function schedulePoll(){
-  if(pollTimer) clearTimeout(pollTimer);
-  if(realtimeOK) return;
-  const active = $("activeOrder").classList.contains("show");
-  const interval = active ? POLL_ACTIVE_MS : POLL_IDLE_MS;
-  pollTimer = setTimeout(async () => { await loadActiveOrder(); schedulePoll(); }, interval);
-}
-function stopPolling(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; } }
-
-document.addEventListener("visibilitychange", () => {
-  if(document.hidden){ stopPolling(); }
-  else {
-    loadActiveOrder();
-    if(realtimeOK) setLiveIndicator(true, t("live_updates"));
-    else if(supa) subscribeRealtime();
-    else schedulePoll();
-  }
-});
-
-$("refreshActive").addEventListener("click", () => loadActiveOrder(true));
-
-/* ═══════════════════════════════════════════════════════════════
-   ORDER HISTORY
+   21. ORDER HISTORY
 ═══════════════════════════════════════════════════════════════ */
 async function viewOrders(){
-  const room = $("roomNo").value.trim();
-  if(!room){ toast(t("t_enter_room")); $("roomNo").focus(); return; }
+  const loc = ctxNumber();
+  if(!loc){ toast(CONTEXT.mode === "table" ? t("t_enter_table") : t("t_enter_room")); openCtxModal(); return; }
   openModal("ordersModal");
   $("ordersList").innerHTML = '<div class="loading" style="padding:20px"><div class="spinner"></div></div>';
-  try {
-    const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(room)}`);
-    const j = await r.json();
-    const orders = j.orders || [];
-    if(!orders.length){
-      $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#a8a8a8"><div style="font-size:34px;margin-bottom:8px">📋</div><strong style="color:#fff;font-size:13px">${esc(t("no_orders_title"))}</strong><div style="font-size:12px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
-      return;
-    }
-    $("ordersList").innerHTML = orders.map(o => {
-      const status = String(o.status || "pending").toLowerCase().replace(/\s+/g,"_");
-      const when = o.created_at ? new Date(o.created_at).toLocaleString() : "";
-      const amount = o.amount > 0 ? money(o.amount) : "";
-      const canReorder = (status === "completed" || status === "cancelled" || status === "rejected") && SERVICES.some(s => String(s.title) === String(o.service_title));
-      const canRate = status === "completed";
-      return `
-        <div class="orderItem">
-          <strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong>
-          <small>${esc(t("room_number"))} ${esc(o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
-          <div class="status ${esc(status)}" style="margin-top:8px">${esc((t("status_" + status) || status.replace(/_/g," ")).toUpperCase())}</div>
-          ${canRate ? `<div class="rateRow">${esc(t("rate_prompt"))} <button data-rate="5">⭐</button><button data-rate="4">👍</button><button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
-          ${canReorder ? `<button class="reorderBtn" data-reorder="${esc(o.service_title)}">${esc(t("reorder"))}</button>` : ""}
-        </div>`;
-    }).join("");
 
-    $("ordersList").querySelectorAll("[data-reorder]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const title = btn.dataset.reorder;
-        const svc = SERVICES.find(s => String(s.title) === String(title));
-        if(!svc){ toast(t("t_service_gone")); return; }
-        closeAllModals();
-        setTimeout(() => openOrder(svc.id), 200);
-      });
-    });
-    $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        toast(t("t_rate_thanks"));
-        btn.parentElement.innerHTML = `<span style="color:var(--lime)">${esc(t("thanks_rating"))}</span>`;
-      });
-    });
-  } catch (e) {
-    $("ordersList").innerHTML = `<div style="color:#ef4444;text-align:center;padding:20px;font-size:13px">${esc(t("t_order_fail"))}</div>`;
+  let orders = loadLocalOrders();
+  try{
+    const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(loc)}`);
+    if(r.ok){
+      const j = await r.json();
+      const map = new Map();
+      orders.forEach(o => map.set(o.reference || o.id, o));
+      (j.orders || []).forEach(o => map.set(o.reference || o.id, o));
+      orders = [...map.values()].sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    }
+  }catch(_){}
+
+  if(!orders.length){
+    $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#a8a8a8">
+      <div style="font-size:34px;margin-bottom:8px">📋</div>
+      <strong style="color:#fff;font-size:13px">${esc(t("no_orders_title"))}</strong>
+      <div style="font-size:12px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
+    return;
   }
+
+  $("ordersList").innerHTML = orders.map(o => {
+    const status = String(o.status || "pending").toLowerCase().replace(/\s+/g, "_");
+    const when = o.created_at ? new Date(o.created_at).toLocaleString() : "";
+    const amount = Number(o.amount) > 0 ? money(o.amount) : "";
+    const canRate = status === "completed";
+    const itemSummary = Array.isArray(o.items) && o.items.length
+      ? o.items.map(i => `${i.qty}× ${i.name}`).join(", ") : "";
+    return `<div class="orderItem">
+      <strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong>
+      <small>${esc(CONTEXT.mode === "table" ? t("table_label") : t("room_number"))} ${esc(o.table_number || o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
+      ${itemSummary ? `<small style="color:#c9c9c9">${esc(itemSummary)}</small>` : ""}
+      <div class="status ${esc(status)}" style="margin-top:8px">${esc((t("status_" + status) || status.replace(/_/g, " ")).toUpperCase())}</div>
+      ${canRate ? `<div class="rateRow">${esc(t("rate_prompt"))}
+        <button data-rate="5">⭐</button><button data-rate="4">👍</button>
+        <button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
+    </div>`;
+  }).join("");
+
+  $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      toast(t("t_rate_thanks"));
+      btn.parentElement.innerHTML = `<span style="color:var(--lime)">${esc(t("thanks_rating"))}</span>`;
+    });
+  });
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   HELP
+   22. HELP
 ═══════════════════════════════════════════════════════════════ */
 function renderHelp(){
-  const list = $("helpList"); if(!list) return;
+  const list = $("helpList");
   if(!DEPARTMENTS.length){
-    list.innerHTML = `<div class="orderItem"><strong>${esc(t("front_desk"))}</strong><small>${esc(t("front_desk_body"))}</small></div>`;
+    list.innerHTML = `<div class="orderItem"><strong>${esc(t("help_title"))}</strong>
+      <small>${esc(t("front_desk_body"))}</small></div>`;
     return;
   }
   list.innerHTML = DEPARTMENTS.map(d => {
     const name = String(d.name || "").trim();
     const display = name.charAt(0).toUpperCase() + name.slice(1);
-    return `<button class="help-btn" data-dept="${esc(name)}" style="width:100%;margin-bottom:8px"><span>💬</span><b>${esc(display)}</b><small>${esc(t("whatsapp_now"))}</small></button>`;
+    const icon = d.icon || "💬";
+    return `<button class="help-btn" data-dept="${esc(name)}">
+      <span class="hi">${esc(icon)}</span>
+      <span style="flex:1">
+        <b>${esc(display)}</b>
+        <small>${esc(t("whatsapp_now"))}</small>
+      </span>
+      <span class="arrow">›</span>
+    </button>`;
   }).join("");
   list.querySelectorAll(".help-btn").forEach(el => el.addEventListener("click", () => whatsapp(el.dataset.dept)));
 }
 function whatsapp(dept){
-  const room = $("roomNo").value.trim() || "—";
+  const loc = ctxNumber() || "—";
   const d = DEPARTMENTS.find(x => String(x.name).toLowerCase() === String(dept).toLowerCase());
   if(!d || !d.whatsapp){ toast(t("t_dept_no_wa")); return; }
   const phone = String(d.whatsapp).replace(/\D/g, "");
-  const msg = encodeURIComponent(`Hi, I'm a GuestHub guest in Room ${room}. I need ${dept} assistance.`);
+  const locLine = CONTEXT.mode === "table" ? `Table ${loc}` : `Room ${loc}`;
+  const msg = encodeURIComponent(`Hi, I'm a GuestHub guest — ${locLine}. I need assistance with ${dept}.`);
   window.open("https://wa.me/" + phone + "?text=" + msg, "_blank");
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   UI EVENTS
+   23. CONTEXT SWITCHING
 ═══════════════════════════════════════════════════════════════ */
-
-/* Quick actions */
-document.querySelectorAll("[data-quick]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const cat = btn.dataset.quick;
-    const pill = document.querySelector(`.pill[data-cat="${cat}"]`);
-    if(pill) pill.click();
-    document.querySelector("#serviceArea")?.scrollIntoView({behavior:"smooth", block:"start"});
-  });
+function openCtxModal(){
+  $("ctxFieldLabel").textContent = CONTEXT.mode === "table" ? t("table_number") : t("room_number");
+  $("ctxField").value = ctxNumber() || "";
+  $("ctxField").placeholder = CONTEXT.mode === "table" ? "5" : "101";
+  highlightCtxButtons();
+  openModal("ctxModal");
+  setTimeout(() => $("ctxField").focus(), 100);
+}
+function highlightCtxButtons(){
+  $("ctxPickRoom").style.borderColor  = CONTEXT.mode === "room"  ? "var(--lime)" : "#333";
+  $("ctxPickRoom").style.color        = CONTEXT.mode === "room"  ? "var(--lime)" : "#fff";
+  $("ctxPickTable").style.borderColor = CONTEXT.mode === "table" ? "var(--gold)" : "#333";
+  $("ctxPickTable").style.color       = CONTEXT.mode === "table" ? "var(--gold)" : "#fff";
+}
+$("ctxPickRoom").addEventListener("click", () => {
+  CONTEXT.mode = "room";
+  $("ctxFieldLabel").textContent = t("room_number");
+  $("ctxField").placeholder = "101";
+  $("ctxField").value = CONTEXT.room || "";
+  highlightCtxButtons();
 });
-$("quickOrders").addEventListener("click", viewOrders);
+$("ctxPickTable").addEventListener("click", () => {
+  CONTEXT.mode = "table";
+  $("ctxFieldLabel").textContent = t("table_number");
+  $("ctxField").placeholder = "5";
+  $("ctxField").value = CONTEXT.table || "";
+  highlightCtxButtons();
+});
+$("ctxSave").addEventListener("click", () => {
+  const val = $("ctxField").value.trim();
+  if(!val){ toast(CONTEXT.mode === "table" ? t("t_enter_table") : t("t_enter_room")); return; }
+  if(CONTEXT.mode === "table") CONTEXT.table = val;
+  else CONTEXT.room = val;
+  persistContext();
+  closeModal("ctxModal");
+  updateContextUI();
+  updateHeroStay();
+  loadCart();
+  renderCartBar();
+  loadActiveOrder();
+  if(supa) subscribeRealtime();
+});
+$("ctxChange").addEventListener("click", openCtxModal);
 
-/* Promo */
+/* ═══════════════════════════════════════════════════════════════
+   24. I18N APPLY
+═══════════════════════════════════════════════════════════════ */
+function applyI18n(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir  = I18N[currentLang].dir || "ltr";
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+    if(el.tagName === "INPUT" || el.tagName === "TEXTAREA") el.placeholder = t(key);
+    else el.textContent = t(key);
+  });
+
+  $("langTitle").textContent = t("lang_title");
+  $("langDesc").textContent  = t("lang_desc");
+
+  setGreeting();
+  updateContextUI();
+  updateHeroStay();
+  renderQuickActions();
+  renderPills();
+  renderAll();
+  renderHelp();
+  renderCartBar();
+  renderInfo();
+
+  const banner = $("activeOrder");
+  if(banner && banner.classList.contains("show") && banner._lastOrder) renderActiveOrder(banner._lastOrder);
+
+  renderLangGrid();
+  setLiveIndicator(realtimeOK, realtimeOK ? t("live_updates") : t("polling_mode"));
+}
+function setLanguage(code){
+  if(!I18N[code]) return;
+  currentLang = code;
+  localStorage.setItem("guesthub_lang", code);
+  applyI18n();
+  closeModal("langModal");
+  toast(I18N[code].flag + "  " + I18N[code].native);
+}
+function renderLangGrid(){
+  const grid = $("langGrid");
+  grid.innerHTML = Object.keys(I18N).map(code => {
+    const L = I18N[code];
+    const active = code === currentLang;
+    return `<button class="langCard ${active ? "active" : ""}" data-lang="${code}">
+      <span class="flag">${L.flag}</span>
+      <b>${esc(L.native)}</b>
+      <small>${esc(L.name)}</small>
+      ${active ? '<span class="check">✓</span>' : ""}
+    </button>`;
+  }).join("");
+  grid.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => setLanguage(b.dataset.lang)));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   25. INFO MODAL
+═══════════════════════════════════════════════════════════════ */
+function renderInfo(){
+  const isTable = CONTEXT.mode === "table";
+  const steps = isTable
+    ? [
+        ["1️⃣ Scan the table QR", "You're connected instantly — no app, no signup."],
+        ["2️⃣ Browse the menu",   "Add dishes and drinks to your order."],
+        ["3️⃣ Send to the kitchen","Your order lands with the team in real time."],
+        ["4️⃣ Track it live",     "Watch each status update as it happens."],
+        ["5️⃣ Enjoy ✨",           "Need anything? Tap Call Waiter or Help."]
+      ]
+    : [
+        ["1️⃣ Scan your room QR", "You're connected instantly — no app, no signup."],
+        ["2️⃣ Choose a service",  "Food, taxi, safari, spa, housekeeping — all in one place."],
+        ["3️⃣ Confirm your details","Your name, room number and WhatsApp."],
+        ["4️⃣ Track it live",     "Status updates appear here in real time."],
+        ["5️⃣ Enjoy your stay ✨",  "One GuestHub experience for your entire stay."]
+      ];
+  $("infoBody").innerHTML = steps.map(([a, b]) =>
+    `<div class="orderItem"><strong>${esc(a)}</strong><small>${esc(b)}</small></div>`).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   26. UI EVENTS
+═══════════════════════════════════════════════════════════════ */
+$("langBtn").addEventListener("click", () => { renderLangGrid(); openModal("langModal"); });
+$("bellBtn").addEventListener("click", () => { renderInfo(); openModal("helpModal"); });
 $("promoClose").addEventListener("click", () => {
   $("promoBanner").style.display = "none";
   localStorage.setItem(`promo_closed_${HOTEL_ID}`, "1");
 });
 
-/* Bell → help */
-$("bellBtn").addEventListener("click", () => openModal("helpModal"));
-
-/* Language */
-$("langBtn").addEventListener("click", () => { renderLangGrid(); openModal("langModal"); });
-
-/* Bottom nav */
 document.querySelectorAll(".navBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
     document.querySelectorAll(".navBtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    if(tab === "home"){ closeAllModals(); window.scrollTo({top:0, behavior:"smooth"}); }
-    if(tab === "services"){ closeAllModals(); document.querySelector("#serviceArea")?.scrollIntoView({behavior:"smooth", block:"start"}); }
-    if(tab === "orders") viewOrders();
-    if(tab === "help")   openModal("helpModal");
+    if(tab === "home"){ closeAllModals(); window.scrollTo({ top:0, behavior:"smooth" }); }
+    if(tab === "menu"){ closeAllModals(); setActiveCategory("all"); document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" }); }
+    if(tab === "orders"){ viewOrders(); }
+    if(tab === "help"){ openModal("helpModal"); }
   });
 });
 
-/* Guest info save */
-$("guestName").addEventListener("input", () => { saveGuestInfo(); setGreeting(); });
-$("roomNo").addEventListener("input", () => {
-  saveGuestInfo();
-  updateStayChips();
-  clearTimeout(resubTimer);
-  resubTimer = setTimeout(() => { if(supa) subscribeRealtime(); loadActiveOrder(); }, 700);
-});
-$("guestPhone").addEventListener("input", saveGuestInfo);
+// Guest identity — stored locally only, never editable by anyone but the guest
+let nameInput = document.createElement("input");
+// (Guest name is captured inline the first time an order is placed — no dedicated panel needed.)
 
-/* Cleanup */
+$("guestPhone").addEventListener("input", saveGuestInfo);
+$("cartPhone").addEventListener("input", saveGuestInfo);
+
 window.addEventListener("beforeunload", unsubscribeRealtime);
 window.addEventListener("pagehide", unsubscribeRealtime);
+window.addEventListener("offline", updateOffline);
+window.addEventListener("online", () => { updateOffline(); loadActiveOrder(); if(supa) subscribeRealtime(); });
 
-/* Boot */
+function updateOffline(){
+  const bar = $("offlineBar");
+  if(!navigator.onLine) bar.classList.add("show");
+  else bar.classList.remove("show");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   27. INIT
+═══════════════════════════════════════════════════════════════ */
+async function init(){
+  loadCart();
+  initStay();
+  persistContext();
+  updateContextUI();
+  setGreeting();
+  updateHeroStay();
+  updateOffline();
+
+  // hidden guest-name input so validateGuest() has a source
+  const hiddenName = document.createElement("input");
+  hiddenName.type = "hidden";
+  hiddenName.id = "guestName";
+  hiddenName.value = localStorage.getItem("guest_name") || "";
+  document.body.appendChild(hiddenName);
+
+  $("guestPhone").value = localStorage.getItem("guest_phone") || "";
+  $("cartPhone").value  = localStorage.getItem("guest_phone") || "";
+
+  if(localStorage.getItem(`promo_closed_${HOTEL_ID}`) === "1") $("promoBanner").style.display = "none";
+
+  // ---- Hotel info ----
+  try{
+    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
+    if(r.ok){
+      const j = await r.json();
+      HOTEL = j.hotel || j;
+      STATE.hotelName = HOTEL.name || HOTEL.hotel_name || "";
+      STATE.tagline   = HOTEL.tagline || "";
+      STATE.currency  = HOTEL.currency || "Ksh";
+      STATE.serviceCharge = Number(HOTEL.service_charge) || 0;
+      setStayFromHotel(HOTEL);
+    }
+  }catch(_){}
+
+  // ---- Menu (published by the GM from the hotel dashboard) ----
+  let menuLoaded = false;
+  try{
+    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/menu`);
+    if(r.ok){
+      const j = await r.json();
+      const menu = j.menu || j;
+      if(menu && Array.isArray(menu.categories) && Array.isArray(menu.items)){
+        MENU = {
+          categories: menu.categories.map((c, idx) => ({
+            id: c.id || ("cat_" + idx),
+            name: c.name || "Menu",
+            emoji: c.emoji || "🍽️",
+            order: c.order ?? (idx + 1)
+          })),
+          items: menu.items.map((i, idx) => ({
+            id: i.id || ("m_" + idx),
+            cat: i.cat || i.category || (menu.categories[0] && menu.categories[0].id),
+            name: i.name || i.title || "Item",
+            desc: i.desc || i.description || "",
+            price: Number(i.price) || 0,
+            emoji: i.emoji || i.icon || "🍽️",
+            tags: Array.isArray(i.tags) ? i.tags : String(i.tags || "").split(",").map(x => x.trim()).filter(Boolean),
+            available: i.available !== false
+          }))
+        };
+        cacheMenu(MENU);
+        menuLoaded = true;
+      }
+    }
+  }catch(_){}
+
+  if(!menuLoaded){
+    const cached = readCachedMenu();
+    if(cached){ MENU = cached; menuLoaded = true; }
+  }
+  if(!menuLoaded){
+    // Show a friendly demo menu only when the GM hasn't published yet
+    MENU = {
+      categories: DEMO_CATEGORIES.map(c => ({ ...c })),
+      items: DEMO_ITEMS.map(i => ({ ...i, available:true }))
+    };
+  }
+
+  // ---- Services & departments ----
+  try{
+    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
+    if(r.ok){
+      const j = await r.json();
+      SERVICES = (j.services || []).map(s => ({ ...s, category: normalizeCategory(s.category || s.type || s.title) }));
+      DEPARTMENTS = j.departments || [];
+    }
+  }catch(_){}
+
+  if(!SERVICES.length) SERVICES = DEFAULT_SERVICES.map(s => ({ ...s }));
+  if(!DEPARTMENTS.length) DEPARTMENTS = DEFAULT_DEPARTMENTS.map(d => ({ ...d }));
+
+  // ---- Branding ----
+  $("hotelName").innerText   = (STATE.hotelName || t("hotel_fallback")).toUpperCase();
+  $("hotelTagline").innerText = STATE.tagline || t("tagline_fallback");
+
+  $("loading").style.display = "none";
+  $("serviceArea").style.display = "block";
+
+  applyI18n();
+
+  await loadActiveOrder();
+
+  supa = initSupabase();
+  if(supa) subscribeRealtime(); else schedulePoll();
+
+  if(HOTEL && HOTEL.promo_text){
+    $("promoTitle").textContent = "🎉 " + (HOTEL.promo_title || "Special offer");
+    $("promoText").textContent  = HOTEL.promo_text;
+  }else if(CONTEXT.mode === "table"){
+    $("promoTitle").textContent = "🍽️ " + (STATE.hotelName || HOTEL_ID);
+    $("promoText").textContent  = "Welcome — tap any dish to add it to your order. A waiter is never far away.";
+  }
+}
+
 init();
 </script>
 </body>
