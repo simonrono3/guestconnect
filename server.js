@@ -1,6 +1,13 @@
 // ============================================================
-// GuestHub V1.2 — Direct-to-Vendor Payments
+// GuestHub V1.3 — Direct-to-Vendor Payments + Table Mode
 // Aligned with GM OS + Guest SuperApp + Vendor OS
+// Changes vs V1.2:
+//   - NEW:  GET /api/public/hotel/:hotelId/menu   (guest menu)
+//   - NEW:  table_number + mode + items on POST /api/orders
+//   - FIX:  GET /api/orders/:id accepts ref OR uuid safely
+//   - FIX:  GET /api/orders/:hotelId/:room is case-insensitive
+//   - FIX:  validatePayment send_money enforces full 254xxxxxxxxx
+//   - FIX:  room/table lookup falls back when columns missing
 // ============================================================
 
 import express from "express";
@@ -20,7 +27,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 10000;
 
-// ---------- env check (WARN only — do NOT exit) ----------
 const REQUIRED = ["SUPABASE_URL", "SUPABASE_KEY", "SUPABASE_SERVICE_KEY", "JWT_SECRET", "ADMIN_PASSWORD"];
 const missing = REQUIRED.filter(k => !process.env[k]);
 if (missing.length) {
@@ -34,7 +40,6 @@ const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY || "";
 const JWT_SECRET = process.env.JWT_SECRET || "dev_only_change_me";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 
-// Only create client if we have valid keys
 let supa = null;
 if (SUPABASE_URL && SUPABASE_SERVICE) {
   supa = createClient(SUPABASE_URL, SUPABASE_SERVICE, {
@@ -52,7 +57,6 @@ app.use(compression());
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 
-// ---------- CORS ----------
 const ALLOWED_ORIGINS = [
   "https://guestconnect-ap2q.onrender.com",
   "https://ap2q.onrender.com",
@@ -69,25 +73,22 @@ app.use(cors({
   credentials: true
 }));
 
-// ---------- Rate limits ----------
 const loginLimiter  = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true });
 const signupLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 30, standardHeaders: true });
 const orderLimiter  = rateLimit({ windowMs: 60 * 1000,      max: 30, standardHeaders: true });
 app.use("/api/", rateLimit({ windowMs: 60 * 1000, max: 300, standardHeaders: true }));
 
-// ---------- Health checks ----------
 app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V1.2",
+    os: "GuestHub V1.3",
     time: new Date().toISOString(),
     supabase: !!supa,
     missing_env: missing
   })
 );
 
-// ---------- Config served to browsers ----------
 app.get("/config.js", (req, res) => {
   res.type("application/javascript");
   res.setHeader("Cache-Control", "no-cache");
@@ -125,10 +126,15 @@ function requireSupabase(req, res, next) {
   next();
 }
 
+// ---------- Column-missing safety ----------
+// Retry an insert/update dropping columns the DB complains about.
+// Lets us ship new features before the migration runs.
+function isMissingColumnError(err) {
+  return err && /column|schema cache|does not exist/i.test(err.message || "");
+}
+
 // ---------- Order status model ----------
-const ALLOWED_STATUSES = [
-  "pending", "new", "accepted", "preparing", "on_the_way", "completed", "cancelled"
-];
+const ALLOWED_STATUSES = ["pending", "new", "accepted", "preparing", "on_the_way", "completed", "cancelled"];
 const VALID_TRANSITIONS = {
   pending:    ["accepted", "preparing", "on_the_way", "completed", "cancelled"],
   new:        ["accepted", "preparing", "on_the_way", "completed", "cancelled"],
@@ -140,7 +146,7 @@ const VALID_TRANSITIONS = {
 };
 const normalizeStatusKey = v => String(v || "pending").toLowerCase().trim().replace(/\s+/g, "_");
 
-// ---------- Direct-payment model ----------
+// ---------- Payment model ----------
 const PAYMENT_CHANNELS = ["paybill", "till", "send_money"];
 
 function validatePayment(body, forcedChannel) {
@@ -158,15 +164,19 @@ function validatePayment(body, forcedChannel) {
     patch.paybill_number = num;
     patch.paybill_account = acc;
     patch.till_number = null;
+    patch.mpesa = null;
   } else if (channel === "till") {
     const till = String(body.till_number || "").replace(/\D/g, "");
     if (!/^\d{4,10}$/.test(till)) return { error: "Till number must be 4–10 digits" };
     patch.till_number = till;
     patch.paybill_number = null;
     patch.paybill_account = null;
+    patch.mpesa = null;
   } else {
+    // FIX: enforce full normalized Kenyan mobile (254 + 9 digits)
     const phone = cleanPhone(body.mpesa || body.phone);
-    if (phone.length < 10) return { error: "Valid M-Pesa phone required" };
+    if (!/^254\d{9}$/.test(phone))
+      return { error: "Valid M-Pesa phone required (e.g., 0712 345 678)" };
     patch.mpesa = phone;
     patch.paybill_number = null;
     patch.paybill_account = null;
@@ -281,9 +291,8 @@ app.get("/api/admin/hotels", requireAdmin, requireSupabase, async (req, res) => 
 
 app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (req, res) => {
   try {
-    const id = req.params.id;
-    const { hotel } = await findHotel(id);
-    if (!hotel) return sendError(res, 404, "Hotel not found: " + id);
+    const { hotel } = await findHotel(req.params.id);
+    if (!hotel) return sendError(res, 404, "Hotel not found: " + req.params.id);
 
     const { data: updated, error } = await supa
       .from("hotels")
@@ -479,7 +488,7 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
 });
 
 // ============================================================
-// VENDOR SIGNUP (public) — includes payment setup
+// VENDOR SIGNUP
 // ============================================================
 app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
@@ -496,14 +505,11 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
 
     const finalEmail = clean(email);
     if (!isValidEmail(finalEmail)) return sendError(res, 400, "Invalid email");
-
     if (!password || String(password).length < 8)
       return sendError(res, 400, "Password must be 8+");
-
     if (!phone) return sendError(res, 400, "Phone required");
     if (!id_number) return sendError(res, 400, "ID number required");
 
-    // ---- Validate payment setup ----
     const payCheck = validatePayment(req.body);
     if (payCheck.error) return sendError(res, 400, payCheck.error);
 
@@ -534,20 +540,15 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       services: serviceList,
       payout_method: cleanText(req.body.payout_method || payCheck.patch.payment_channel, 20),
       mpesa_name: cleanText(req.body.mpesa_name || finalName, 100),
-      // Payment fields
       ...payCheck.patch
     };
 
     let { data: vendor, error } = await supa
       .from("vendors").insert([{ ...insertPayload, ...optional }]).select().single();
 
-    if (error && /column|schema cache/i.test(error.message || "")) {
+    if (error && isMissingColumnError(error)) {
       console.warn("⚠️ Optional vendor columns missing, retrying minimal insert:", error.message);
-      // Try again with only guaranteed columns + payment
-      const retry = await supa.from("vendors").insert([{
-        ...insertPayload,
-        ...payCheck.patch
-      }]).select().single();
+      const retry = await supa.from("vendors").insert([{ ...insertPayload, ...payCheck.patch }]).select().single();
       vendor = retry.data;
       error = retry.error;
     }
@@ -557,15 +558,13 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       return sendError(res, 500, error.message);
     }
 
-    // ---- Link hotels ----
     const chosen = Array.isArray(hotels) && hotels.length ? hotels
                  : Array.isArray(hotel_ids) && hotel_ids.length ? hotel_ids
                  : [];
 
     let hotelIds = chosen.filter(h => isValidId(h) && h !== "ALL");
     if (chosen.includes("ALL")) {
-      const { data: allHotels } = await supa.from("hotels")
-        .select("hotel_id").eq("status", "APPROVED");
+      const { data: allHotels } = await supa.from("hotels").select("hotel_id").eq("status", "APPROVED");
       hotelIds = (allHotels || []).map(h => h.hotel_id).filter(Boolean);
     }
 
@@ -591,14 +590,10 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
   }
 });
 
-// ============================================================
-// VENDOR LOGIN
-// ============================================================
 app.post("/api/vendors/login", loginLimiter, requireSupabase, async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password)
-      return sendError(res, 400, "Email and password required");
+    if (!email || !password) return sendError(res, 400, "Email and password required");
 
     const { data: vendor } = await supa
       .from("vendors").select("*").eq("email", clean(email)).maybeSingle();
@@ -703,7 +698,7 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
     .select("id").eq("hotel_id", hid).eq("vendor_id", vid).maybeSingle();
 
   if (!existing) {
-    await supa.from("hotel_services").insert([{
+    const insertPayload = {
       hotel_id: hid,
       title: `${v.vendor_name} — ${v.category || "service"}`,
       description: v.bio || "Available through GuestHub",
@@ -714,7 +709,16 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
       vendor_name: v.vendor_name,
       vendor_phone: v.phone,
       is_active: true
-    }]);
+    };
+    let { error } = await supa.from("hotel_services").insert([insertPayload]);
+    // FIX: gracefully drop vendor_* columns if the migration hasn't run
+    if (error && isMissingColumnError(error)) {
+      delete insertPayload.vendor_name;
+      delete insertPayload.vendor_phone;
+      const retry = await supa.from("hotel_services").insert([insertPayload]);
+      error = retry.error;
+    }
+    if (error) return sendError(res, 500, error.message);
   } else {
     await supa.from("hotel_services").update({ is_active: true }).eq("id", existing.id);
   }
@@ -766,9 +770,7 @@ app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req
     const current = normalizeStatusKey(existing.status);
     if (next !== current) {
       const allowed = VALID_TRANSITIONS[current] || [];
-      if (!allowed.includes(next)) {
-        return sendError(res, 400, `Cannot transition ${current} → ${next}`);
-      }
+      if (!allowed.includes(next)) return sendError(res, 400, `Cannot transition ${current} → ${next}`);
     }
 
     const now = new Date().toISOString();
@@ -779,12 +781,11 @@ app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req
     if (next === "cancelled")  patch.cancelled_at  = now;
 
     let { data, error } = await supa.from("orders").update(patch).eq("id", req.params.id).select().single();
-    if (error && /column|schema cache/i.test(error.message || "")) {
+    if (error && isMissingColumnError(error)) {
       const r2 = await supa.from("orders").update({ status: next }).eq("id", req.params.id).select().single();
       data = r2.data; error = r2.error;
     }
     if (error) return sendError(res, 500, error.message);
-
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
@@ -796,7 +797,6 @@ app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) 
     return sendError(res, 403, "Not yours");
 
   const patch = {};
-
   if (req.body.status !== undefined) {
     const next = normalizeStatusKey(req.body.status);
     if (!ALLOWED_STATUSES.includes(next)) return sendError(res, 400, "Invalid status");
@@ -826,7 +826,7 @@ app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) 
 });
 
 // ============================================================
-// VENDOR endpoints (authenticated)
+// VENDOR endpoints
 // ============================================================
 app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   const { data } = await supa.from("vendors").select("*").eq("id", req.user.vendor_id).maybeSingle();
@@ -835,14 +835,12 @@ app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   return sendSuccess(res, { vendor: data });
 });
 
-// ---- Orders ----
 app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
   const { data: links } = await supa.from("vendor_hotels")
     .select("hotel_id").eq("vendor_id", vid).eq("is_active", true);
   const hotelIds = (links || []).map(l => l.hotel_id);
 
-  // Also include hotels the vendor chose at signup (may be is_active=false until approved)
   const { data: linksAll } = await supa.from("vendor_hotels")
     .select("hotel_id").eq("vendor_id", vid);
   const allHotelIds = (linksAll || []).map(l => l.hotel_id);
@@ -869,17 +867,13 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
       .eq("id", req.params.id).maybeSingle();
     if (!order) return sendError(res, 404, "Order not found");
 
-    // Ownership gate
     if (order.vendor_id && String(order.vendor_id) !== String(vid))
       return sendError(res, 403, "This order belongs to another vendor");
 
-    // Transition gate
     const current = normalizeStatusKey(order.status);
     if (status !== current) {
       const allowed = VALID_TRANSITIONS[current] || [];
-      if (!allowed.includes(status)) {
-        return sendError(res, 400, `Cannot transition ${current} → ${status}`);
-      }
+      if (!allowed.includes(status)) return sendError(res, 400, `Cannot transition ${current} → ${status}`);
     }
 
     const { data: v } = await supa.from("vendors")
@@ -898,9 +892,8 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
     if (status === "completed")  patch.completed_at  = now;
     if (status === "cancelled")  patch.cancelled_at  = now;
 
-    let { data, error } = await supa.from("orders")
-      .update(patch).eq("id", req.params.id).select().single();
-    if (error && /column|schema cache/i.test(error.message || "")) {
+    let { data, error } = await supa.from("orders").update(patch).eq("id", req.params.id).select().single();
+    if (error && isMissingColumnError(error)) {
       const r2 = await supa.from("orders").update({
         status, vendor_id: vid,
         vendor_name: v?.vendor_name || null,
@@ -921,15 +914,13 @@ app.get("/api/vendor/hotels", requireVendor, requireSupabase, async (req, res) =
   sendSuccess(res, { hotels: data || [] });
 });
 
-// ---- Availability toggle ----
 app.patch("/api/vendor/availability", requireVendor, requireSupabase, async (req, res) => {
   const isAvailable = !!req.body.available;
   let { data, error } = await supa.from("vendors")
     .update({ is_available: isAvailable })
     .eq("id", req.user.vendor_id).select().single();
 
-  if (error && /column|schema cache/i.test(error.message || "")) {
-    // Column missing — soft-succeed so UI doesn't break
+  if (error && isMissingColumnError(error)) {
     return sendSuccess(res, {
       available: isAvailable,
       warning: "Add is_available column to vendors table to persist this."
@@ -939,7 +930,6 @@ app.patch("/api/vendor/availability", requireVendor, requireSupabase, async (req
   return sendSuccess(res, { available: data.is_available });
 });
 
-// ---- Vendor edits own services / price / bio / mpesa ----
 app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, res) => {
   const patch = {};
   if (Array.isArray(req.body.services))
@@ -956,15 +946,12 @@ app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, re
   return sendSuccess(res, { vendor: data });
 });
 
-// ---- Direct payment setup ----
 app.get("/api/vendor/payment", requireVendor, requireSupabase, async (req, res) => {
   const { data, error } = await supa.from("vendors")
     .select("payment_channel, paybill_number, paybill_account, till_number, mpesa, mpesa_name")
     .eq("id", req.user.vendor_id).maybeSingle();
-  if (error && /column|schema cache/i.test(error.message || "")) {
-    return sendError(res, 501,
-      "Payment columns missing. Run the ALTER TABLE from the migration.");
-  }
+  if (error && isMissingColumnError(error))
+    return sendError(res, 501, "Payment columns missing. Run the ALTER TABLE from the migration.");
   if (error) return sendError(res, 500, error.message);
   return sendSuccess(res, { payment: data || {} });
 });
@@ -973,7 +960,6 @@ app.patch("/api/vendor/payment", requireVendor, requireSupabase, async (req, res
   const check = validatePayment(req.body);
   if (check.error) return sendError(res, 400, check.error);
 
-  // Attach optional mpesa_name
   if (req.body.mpesa_name !== undefined) {
     check.patch.mpesa_name = cleanText(req.body.mpesa_name, 100);
   }
@@ -981,16 +967,13 @@ app.patch("/api/vendor/payment", requireVendor, requireSupabase, async (req, res
   let { data, error } = await supa.from("vendors")
     .update(check.patch).eq("id", req.user.vendor_id).select().single();
 
-  if (error && /column|schema cache/i.test(error.message || "")) {
-    return sendError(res, 501,
-      "Payment columns missing. Run the ALTER TABLE from the migration.");
-  }
+  if (error && isMissingColumnError(error))
+    return sendError(res, 501, "Payment columns missing. Run the ALTER TABLE from the migration.");
   if (error) return sendError(res, 500, error.message);
   delete data.password_hash;
   return sendSuccess(res, { vendor: data });
 });
 
-// ---- PUBLIC: guest reads vendor payment details ----
 app.get("/api/public/vendor/:vendorId/payment", requireSupabase, async (req, res) => {
   const vid = req.params.vendorId;
   if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
@@ -1004,6 +987,8 @@ app.get("/api/public/vendor/:vendorId/payment", requireSupabase, async (req, res
 // ============================================================
 // GUEST — public
 // ============================================================
+
+// Existing: all active services + departments
 app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
   const { data } = await supa.from("hotel_services").select("*")
@@ -1013,24 +998,121 @@ app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res)
   res.json({ services: data || [], departments: depts || [] });
 });
 
+// NEW: menu endpoint for the guest dashboard
+// Returns { menu: { categories: [...], items: [...] } } built from hotel_services
+// where category looks like food/drink/kitchen/bar/main/starter/...
+app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => {
+  try {
+    const hid = String(req.params.hotelId || "").toUpperCase();
+    const { data, error } = await supa.from("hotel_services").select("*")
+      .eq("hotel_id", hid).eq("is_active", true)
+      .order("created_at", { ascending: true }).limit(500);
+    if (error) return sendError(res, 500, error.message);
+
+    const FOOD_HINTS = [
+      "food","restaurant","dining","room service","drink","bar","kitchen","menu",
+      "meal","main","starter","appetizer","dessert","snack","breakfast","lunch",
+      "dinner","beverage","juice","cocktail","wine","beer","tea","coffee","soda",
+      "water","pizza","burger","chicken","rice","pilau","nyama","ugali","soup",
+      "salad","fish","beef","vegetarian","drinks"
+    ];
+    const isFood = s => {
+      const c = String(s.category || "").toLowerCase();
+      const t = String(s.title || "").toLowerCase();
+      return FOOD_HINTS.some(h => c.includes(h) || t.includes(h));
+    };
+
+    const foodServices = (data || []).filter(isFood);
+
+    // Group by category (raw string, normalized)
+    const catMap = new Map();
+    const items = foodServices.map((s, i) => {
+      const rawCat = String(s.category || "Menu").trim();
+      const catKey = rawCat.toLowerCase() || "menu";
+      if (!catMap.has(catKey)) {
+        catMap.set(catKey, {
+          id: catKey.replace(/\s+/g, "_"),
+          name: rawCat || "Menu",
+          emoji: s.icon || "🍽️",
+          order: catMap.size + 1
+        });
+      }
+      return {
+        id: s.id,
+        cat: catKey.replace(/\s+/g, "_"),
+        name: s.title || "Item",
+        desc: s.description || "",
+        price: Number(s.price) || 0,
+        emoji: s.icon || "🍽️",
+        tags: Array.isArray(s.tags) ? s.tags : [],
+        available: s.is_active !== false,
+        vendor_id: s.vendor_id || null,
+        vendor_name: s.vendor_name || null
+      };
+    });
+
+    return sendSuccess(res, {
+      menu: {
+        categories: [...catMap.values()],
+        items
+      }
+    });
+  } catch (e) {
+    return sendError(res, 500, e.message);
+  }
+});
+
+// NEW: hotel settings (used by guest dashboard for currency, tagline, service charge)
+app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res) => {
+  const hid = String(req.params.hotelId || "").toUpperCase();
+  const { data } = await supa.from("hotels").select("name, hotel_name, tagline, currency, service_charge, promo_title, promo_text").ilike("hotel_id", hid).maybeSingle();
+  if (!data) return sendError(res, 404, "Hotel not found");
+  return sendSuccess(res, {
+    settings: {
+      hotelName: data.name || data.hotel_name || hid,
+      tagline: data.tagline || "",
+      currency: data.currency || "Ksh",
+      serviceCharge: Number(data.service_charge) || 0,
+      promoTitle: data.promo_title || "",
+      promoText: data.promo_text || ""
+    }
+  });
+});
+
+// ---------- Order creation ----------
+// FIX: now accepts room OR table, plus mode + items array + totals
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
-    const { hotel_id, room_number, guest_name, guest_phone, service_id, service_title,
-            category, details, amount, department } = req.body;
+    const {
+      hotel_id, mode,
+      room_number, table_number,
+      guest_name, guest_phone,
+      service_id, service_title,
+      category, details, amount, department,
+      items, subtotal, service_charge, total
+    } = req.body;
 
     if (!hotel_id) return sendError(res, 400, "hotel_id required");
-    if (!room_number) return sendError(res, 400, "Room number required");
     if (!guest_name) return sendError(res, 400, "Guest name required");
     if (!guest_phone) return sendError(res, 400, "Phone required");
     if (!service_title) return sendError(res, 400, "Service required");
 
+    const isTable = String(mode || "").toLowerCase() === "table";
+    const locValue = isTable
+      ? cleanText(table_number || room_number, 30)
+      : cleanText(room_number || table_number, 30);
+
+    if (!locValue)
+      return sendError(res, 400, isTable ? "Table number required" : "Room number required");
+
     const hid = String(hotel_id).toUpperCase();
     const ref = makeRef();
 
-    const { data, error } = await supa.from("orders").insert([{
+    // Base payload — safe on any orders schema
+    const basePayload = {
       reference: ref,
       hotel_id: hid,
-      room_number: cleanText(room_number, 30),
+      room_number: isTable ? null : locValue,
       guest_name: cleanText(guest_name, 100),
       guest_phone: cleanPhone(guest_phone),
       service_id: cleanText(service_id, 60),
@@ -1040,17 +1122,52 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
       amount: safeNumber(amount, 0),
       department: cleanText(department || "services", 30),
       status: "pending"
-    }]).select().single();
+    };
+
+    // Extended payload — requires migration
+    const extendedPayload = { ...basePayload };
+    if (isTable) {
+      extendedPayload.mode = "table";
+      extendedPayload.table_number = locValue;
+    } else {
+      extendedPayload.mode = "room";
+    }
+    if (Array.isArray(items) && items.length) {
+      extendedPayload.items = items.map(i => ({
+        id: cleanText(i.id, 60),
+        name: cleanText(i.name, 120),
+        price: safeNumber(i.price, 0),
+        qty: Math.max(1, safeNumber(i.qty, 1))
+      }));
+    }
+    if (subtotal !== undefined)       extendedPayload.subtotal       = safeNumber(subtotal, 0);
+    if (service_charge !== undefined) extendedPayload.service_charge = safeNumber(service_charge, 0);
+    if (total !== undefined)          extendedPayload.total          = safeNumber(total, 0);
+
+    // Try extended first, fall back to base
+    let { data, error } = await supa.from("orders").insert([extendedPayload]).select().single();
+    if (error && isMissingColumnError(error)) {
+      console.warn("⚠️ orders extended insert failed, retrying base:", error.message);
+      const retry = await supa.from("orders").insert([basePayload]).select().single();
+      data = retry.data; error = retry.error;
+    }
 
     if (error) return sendError(res, 500, error.message);
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
+// FIX: /api/orders/:id — safely handle UUID vs reference
 app.get("/api/orders/:id", requireSupabase, async (req, res) => {
-  const id = req.params.id;
-  const { data } = await supa.from("orders").select("*")
-    .or(`id.eq.${id},reference.eq.${id}`).maybeSingle();
+  const id = String(req.params.id || "").trim();
+  if (!id) return sendError(res, 400, "Order id required");
+
+  let query = supa.from("orders").select("*");
+  if (isUUID(id)) query = query.or(`id.eq.${id},reference.eq.${id}`);
+  else query = query.eq("reference", id);
+
+  const { data, error } = await query.maybeSingle();
+  if (error) return sendError(res, 500, error.message);
   if (!data) return sendError(res, 404, "Order not found");
   return sendSuccess(res, { order: data });
 });
@@ -1069,30 +1186,46 @@ app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
     const now = new Date().toISOString();
     let { data, error } = await supa.from("orders")
       .update({ rating: stars, rated_at: now }).eq("id", req.params.id).select().single();
-    if (error && /column|schema cache/i.test(error.message || "")) {
+    if (error && isMissingColumnError(error))
       return sendError(res, 501, "Rating not configured on orders table");
-    }
     if (error) return sendError(res, 500, error.message);
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
+// FIX: case-insensitive room/table lookup + table fallback
 app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
   try {
     const hotelId = String(req.params.hotelId || "").toUpperCase();
-    const room = cleanText(req.params.room, 30);
-
-    if (!hotelId || !room || room.toLowerCase() === "rate") {
+    const raw = String(req.params.room || "").trim();
+    if (!hotelId || !raw || raw.toLowerCase() === "rate")
       return sendError(res, 400, "hotelId and room required");
-    }
 
-    const { data, error } = await supa.from("orders")
+    // First try room_number (case-insensitive)
+    let { data, error } = await supa.from("orders")
       .select("*")
       .eq("hotel_id", hotelId)
-      .eq("room_number", room)
+      .ilike("room_number", raw)
       .order("created_at", { ascending: false })
       .limit(50);
+
+    if (error && isMissingColumnError(error)) {
+      // Column check safety
+      return sendError(res, 500, error.message);
+    }
     if (error) return sendError(res, 500, error.message);
+
+    // If nothing found, try table_number (may not exist on older schemas)
+    if (!data || !data.length) {
+      const t = await supa.from("orders")
+        .select("*")
+        .eq("hotel_id", hotelId)
+        .ilike("table_number", raw)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (!t.error) data = t.data || [];
+    }
+
     return sendSuccess(res, { orders: data || [] });
   } catch (e) { return sendError(res, 500, e.message); }
 });
@@ -1140,7 +1273,6 @@ app.get("*", (req, res) => {
   });
 });
 
-// ---------- Error handler ----------
 app.use((err, req, res, next) => {
   console.error("❌", err.message);
   if (res.headersSent) return next(err);
@@ -1150,19 +1282,49 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V1.2 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V1.3 running on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
   console.log("--------------------------------------------");
   console.log("💳 Direct-to-vendor payments enabled");
+  console.log("🍽️  Table-mode ordering enabled");
   console.log("📌 Required migration (run once in Supabase SQL):");
-  console.log("   ALTER TABLE vendors");
-  console.log("     ADD COLUMN IF NOT EXISTS payment_channel text DEFAULT 'send_money',");
-  console.log("     ADD COLUMN IF NOT EXISTS paybill_number  text,");
-  console.log("     ADD COLUMN IF NOT EXISTS paybill_account text,");
-  console.log("     ADD COLUMN IF NOT EXISTS till_number     text,");
-  console.log("     ADD COLUMN IF NOT EXISTS mpesa_name      text,");
-  console.log("     ADD COLUMN IF NOT EXISTS is_available    boolean DEFAULT true;");
+  console.log(`
+-- Vendors: payment + availability
+ALTER TABLE vendors
+  ADD COLUMN IF NOT EXISTS payment_channel text DEFAULT 'send_money',
+  ADD COLUMN IF NOT EXISTS paybill_number  text,
+  ADD COLUMN IF NOT EXISTS paybill_account text,
+  ADD COLUMN IF NOT EXISTS till_number     text,
+  ADD COLUMN IF NOT EXISTS mpesa_name      text,
+  ADD COLUMN IF NOT EXISTS is_available    boolean DEFAULT true;
+
+-- Orders: table mode + cart
+ALTER TABLE orders
+  ADD COLUMN IF NOT EXISTS mode            text DEFAULT 'room',
+  ADD COLUMN IF NOT EXISTS table_number    text,
+  ADD COLUMN IF NOT EXISTS items           jsonb,
+  ADD COLUMN IF NOT EXISTS subtotal        numeric DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS service_charge  numeric DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS total           numeric DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS rating          smallint,
+  ADD COLUMN IF NOT EXISTS rated_at        timestamptz;
+
+-- Hotel services: vendor attribution
+ALTER TABLE hotel_services
+  ADD COLUMN IF NOT EXISTS vendor_id     uuid,
+  ADD COLUMN IF NOT EXISTS vendor_name   text,
+  ADD COLUMN IF NOT EXISTS vendor_phone  text,
+  ADD COLUMN IF NOT EXISTS tags          jsonb;
+
+-- Hotels: guest-facing settings
+ALTER TABLE hotels
+  ADD COLUMN IF NOT EXISTS tagline         text,
+  ADD COLUMN IF NOT EXISTS currency        text DEFAULT 'Ksh',
+  ADD COLUMN IF NOT EXISTS service_charge  numeric DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS promo_title     text,
+  ADD COLUMN IF NOT EXISTS promo_text      text;
+  `);
   console.log("============================================");
 });
