@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" onerror="console.warn('QRCode lib failed to load')"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" onerror="window.__qrLibFailed=true"></script>
 <script src="/config.js" onerror="console.warn('config.js missing')"></script>
 <style>
 :root{
@@ -31,15 +31,15 @@ button{font:inherit;cursor:pointer;border:0}
 input,select,textarea{font:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
-/* ⚠️ CRITICAL — this was missing, breaks ALL view switching */
+/* ── CRITICAL: hides inactive tab views ── */
 .hidden{display:none!important}
 
-/* ── DIAGNOSTIC OVERLAY ─────────────── */
+/* ── BOOT ERROR BANNER ── */
 #bootError{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#7f1d1d,#b91c1c);color:#fff;padding:12px 14px;font-size:12px;font-weight:800;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.5)}
 #bootError.show{display:block}
 #bootError button{background:#000;color:#fff;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:900;margin-left:8px}
 
-/* ── HEADER ───────────────────────────── */
+/* ── HEADER ── */
 .header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(198,255,0,.35);padding:11px 14px}
 .header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
@@ -54,8 +54,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .iconBtn .dot-notif{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1.5px solid #141414;display:none}
 .iconBtn.has-notif .dot-notif{display:block}
 
-/* ── BUTTONS ──────────────────────────── */
-.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11.5px;font-weight:900;cursor:pointer;transition:transform .12s,opacity .15s;letter-spacing:.2px;white-space:nowrap}
+/* ── BUTTONS ── */
+.btn{border:0;border-radius:11px;padding:10px 14px;font-size:11.5px;font-weight:900;cursor:pointer;transition:transform .12s,opacity .15s;letter-spacing:.2px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:wait}
 .btn-primary{background:var(--lime);color:#000}
@@ -68,37 +68,37 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .btn-sm{padding:7px 10px;font-size:10.5px}
 .btn-lg{padding:13px 18px;font-size:13px}
 
-/* ── LAYOUT ───────────────────────────── */
+/* ── LAYOUT ── */
 .dashboard{padding:14px 12px;max-width:1500px;margin:auto}
 .hero{border:1px solid var(--border);border-radius:20px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;width:200px;height:200px;right:-100px;top:-100px;border:1px solid rgba(198,255,0,.1);border-radius:50%}
-.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(22px,4.5vw,32px);line-height:1.05;letter-spacing:-.6px}
+.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(20px,4.5vw,32px);line-height:1.05;letter-spacing:-.6px;position:relative;z-index:2}
 .hero h1 span{color:var(--lime)}
-.hero p{margin:8px 0 0;color:#999;font-size:12px;max-width:600px;line-height:1.5}
-.status-pill{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 12px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.3px}
+.hero p{margin:8px 0 0;color:#999;font-size:12px;max-width:600px;line-height:1.5;position:relative;z-index:2}
+.status-pill{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0c1d10;border:1px solid #194f28;color:#5ee680;padding:7px 12px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.3px;position:relative;z-index:2}
 .status-pill.warn{background:#2a1e05;border-color:#5f4508;color:#fbbf24}
 .status-pill.off{background:#1a1a1a;border-color:#333;color:#888}
-.dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+.dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
 .dot.warn{background:var(--gold);animation:pulse 1.4s infinite}
 .dot.off{background:#555;animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 
-/* ── STATS ────────────────────────────── */
+/* ── STATS ── */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;transition:border-color .15s}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr);gap:8px}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;position:relative;overflow:hidden;transition:border-color .15s;min-width:0}
 .stat:hover{border-color:#333}
-.stat b{display:block;font-family:'Space Grotesk';font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.5px}
+.stat b{display:block;font-family:'Space Grotesk';font-size:clamp(16px,3.2vw,22px);line-height:1.15;font-weight:800;letter-spacing:-.5px;word-break:break-word;overflow-wrap:anywhere}
 .stat small{color:var(--muted-2);font-size:9.5px;font-weight:900;letter-spacing:.6px;margin-top:5px;display:block}
 .stat.highlight{border-color:var(--lime-line);background:linear-gradient(135deg,rgba(198,255,0,.06),rgba(255,255,255,.01))}
 .stat.highlight b{color:var(--lime)}
 
-/* ── TABS ─────────────────────────────── */
+/* ── TABS ── */
 .tabs-wrap{position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}
 .tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:9px 14px;font-size:11px;font-weight:900;cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:6px;touch-action:manipulation;-webkit-user-select:none;user-select:none;pointer-events:auto}
+.tab{flex:0 0 auto;white-space:nowrap;border:1px solid var(--border);background:#101010;color:#ddd;border-radius:999px;padding:9px 14px;font-size:11px;font-weight:900;cursor:pointer;transition:all .15s;position:relative;display:inline-flex;align-items:center;gap:6px;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 .tab:hover{border-color:#3a3a3a}
 .tab.active{background:var(--lime);color:#000;border-color:var(--lime)}
 .tab .badge-count{background:#202020;color:#fff;font-size:9.5px;font-weight:900;padding:1px 6px;border-radius:999px;min-width:18px;text-align:center}
@@ -106,27 +106,27 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tab .badge-count.hot{background:var(--red);color:#fff;animation:shake .4s ease 3}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
 
-/* ── VIEW ─────────────────────────────── */
+/* ── VIEW ── */
 .view{padding:14px 12px;max-width:1500px;margin:auto}
 .card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px;margin-bottom:10px}
 .card-title{font-family:'Space Grotesk';font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .card-sub{color:var(--muted-2);font-size:11px;margin-top:5px;line-height:1.5}
 
-/* ── INPUTS ───────────────────────────── */
+/* ── INPUTS ── */
 .input,.select,textarea{width:100%;padding:11px 13px;background:var(--input);border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none;font-size:13px;font-weight:600;transition:border-color .15s}
 .input:focus,.select:focus,textarea:focus{border-color:var(--lime)}
 .input::placeholder{color:#555}
 label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
 
-/* ── FILTER PILLS ─────────────────────── */
+/* ── FILTER PILLS ── */
 .filterRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .filterRow::-webkit-scrollbar{display:none}
-.fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center;touch-action:manipulation;cursor:pointer}
+.fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center;touch-action:manipulation;cursor:pointer;font-family:inherit}
 .fpill.active{background:var(--lime);border-color:var(--lime);color:#000}
 .fpill:hover:not(.active){border-color:#3a3a3a}
 .fpill .n{font-size:10px;opacity:.7}
 
-/* ── ORDER ROW ────────────────────────── */
+/* ── ORDER ROW ── */
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:13px;margin-bottom:8px;flex-wrap:wrap;transition:border-color .15s,background .15s;position:relative}
 .row:hover{border-color:#2a2a2a}
 .row.new-order{border-color:var(--lime-line);background:linear-gradient(90deg,rgba(198,255,0,.06),rgba(255,255,255,.005));animation:flashRow 1s ease 4}
@@ -138,7 +138,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .row .rowMain small{color:#999;font-size:11.5px;display:block;margin-top:5px}
 .rowActions{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
 
-/* ── BADGES ───────────────────────────── */
+/* ── BADGES ── */
 .badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9.5px;font-weight:900;letter-spacing:.4px}
 .badge-green{background:#0a2914;color:#4ade80}
 .badge-yellow{background:#352200;color:#fbbf24}
@@ -147,7 +147,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .badge-red{background:#2b0d0d;color:#ffb4b4}
 .badge-gray{background:#1b1b1b;color:#999}
 
-/* ── ORDER META ───────────────────────── */
+/* ── ORDER META ── */
 .orderMeta{color:var(--muted-2);font-size:10.5px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-weight:700}
 .orderRef{font-family:'Space Grotesk';color:var(--lime);letter-spacing:.6px;font-weight:800;font-size:10.5px}
 .elapsed{color:var(--gold);font-weight:900;font-size:10.5px}
@@ -155,11 +155,11 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .elapsed.old{color:var(--red);animation:pulse-t 2s infinite}
 @keyframes pulse-t{0%,100%{opacity:1}50%{opacity:.55}}
 
-/* ── SKELETON ─────────────────────────── */
+/* ── SKELETON ── */
 .skel{height:78px;border-radius:14px;background:linear-gradient(90deg,#111 0%,#1a1a1a 50%,#111 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;margin-bottom:8px;border:1px solid #1a1a1a}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── MODAL ────────────────────────────── */
+/* ── MODAL ── */
 .modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .modal.active{display:grid}
 .modalBox{width:100%;max-width:520px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:24px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
@@ -170,20 +170,20 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1;transition:border-color .15s}
 .close:hover{border-color:#555}
 
-/* ── QR ───────────────────────────────── */
+/* ── QR ── */
 .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
 .qr-box{background:#fff;border-radius:12px;padding:12px;width:max-content;margin:14px auto}
 .qr-label{color:#000;font-weight:900;font-size:11px;margin-top:8px}
 
-/* ── TOAST ────────────────────────────── */
+/* ── TOAST ── */
 .toast{position:fixed;right:14px;bottom:20px;left:14px;max-width:400px;margin-left:auto;z-index:500;background:#161616;border:1px solid #333;border-radius:14px;padding:14px 16px;font-size:12.5px;font-weight:700;transform:translateY(140%);opacity:0;transition:all .28s cubic-bezier(.3,1.3,.5,1);word-break:break-word;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
 @media(min-width:640px){.toast{left:auto}}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
 .toast.success{background:#0c1d10;border-color:#1f5a2c;color:#86efac}
 
-/* ── CHART ────────────────────────────── */
+/* ── CHART ── */
 .chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:140px;padding:10px 0}
 .bar{background:linear-gradient(180deg,var(--lime),#a3d100);border-radius:6px 6px 3px 3px;min-height:4px;position:relative;transition:opacity .15s}
 .bar:hover{opacity:.85}
@@ -191,7 +191,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .bar .barVal{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--lime);font-weight:900}
 .chart-wrap{padding-bottom:26px}
 
-/* ── HEATMAP ──────────────────────────── */
+/* ── HEATMAP ── */
 .heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:44px;margin-top:10px}
 .hm{background:#141414;border-radius:3px;transition:background .15s;position:relative}
 .hm[data-lvl="1"]{background:#2a3a0c}
@@ -200,14 +200,14 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .hm[data-lvl="4"]{background:var(--lime)}
 .hm:hover{outline:2px solid var(--lime);outline-offset:1px;z-index:2}
 
-/* ── EMPTY STATE ──────────────────────── */
+/* ── EMPTY STATE ── */
 .empty{text-align:center;padding:40px 20px;color:var(--muted-2);font-size:12.5px}
 .emptyIcon{font-size:38px;margin-bottom:10px;opacity:.7}
 .empty strong{display:block;color:#fff;font-size:14px;margin-bottom:6px}
 
-/* ── LANG MODAL GRID ──────────────────── */
+/* ── LANG MODAL GRID ── */
 .langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative;cursor:pointer;touch-action:manipulation}
+.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative;cursor:pointer;touch-action:manipulation;font-family:inherit}
 .langCard:hover{border-color:var(--lime)}
 .langCard.active{border-color:var(--lime);background:var(--lime-soft)}
 .langCard .flag{font-size:22px;line-height:1}
@@ -215,13 +215,13 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
 .langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900}
 
-/* ── RTL ──────────────────────────────── */
+/* ── RTL ── */
 [dir="rtl"] .rowActions{flex-direction:row-reverse}
 [dir="rtl"] .tabs{direction:rtl}
 [dir="rtl"] .toast{right:auto;left:14px}
 @media(min-width:640px){[dir="rtl"] .toast{left:auto;right:14px}}
 
-/* ── RESPONSIVE ───────────────────────── */
+/* ── RESPONSIVE ── */
 @media(max-width:560px){
   .brand-sub{display:none}
   .hero{padding:16px}
@@ -235,7 +235,6 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 </head>
 <body>
 
-<!-- BOOT ERROR BANNER -->
 <div id="bootError" role="alert">
   <span id="bootErrorMsg">⚠️ Something went wrong loading the dashboard.</span>
   <button type="button" onclick="document.getElementById('bootError').classList.remove('show')">Dismiss</button>
@@ -251,7 +250,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
       </div>
     </div>
     <div class="headActions">
-      <button type="button" class="iconBtn" id="notifBtn" title="Notifications" aria-label="Toggle notifications">🔔</button>
+      <button type="button" class="iconBtn" id="notifBtn" title="Notifications" aria-label="Toggle notifications">🔔<span class="dot-notif"></span></button>
       <button type="button" class="iconBtn" id="langBtn" title="Language" aria-label="Language">🌐</button>
       <button type="button" class="iconBtn" id="refreshBtn" title="Refresh" aria-label="Refresh">🔄</button>
       <button type="button" class="btn btn-gold btn-sm" id="guestBtn" title="Open guest view">👁️ <span class="label">Guest</span></button>
@@ -326,33 +325,25 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 <script>
 "use strict";
 
-/* ═══════════════════════════════════════════════════════════════
-   BOOT ERROR CATCHER — shows errors visibly instead of silently failing
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ BOOT ERROR CATCHER ═══════ */
 function showBootError(msg){
   try {
     const el = document.getElementById('bootError');
     const msgEl = document.getElementById('bootErrorMsg');
-    if(el && msgEl){
-      msgEl.textContent = '⚠️ ' + msg;
-      el.classList.add('show');
-    }
+    if(el && msgEl){ msgEl.textContent = '⚠️ ' + msg; el.classList.add('show'); }
     console.error('[GuestHub GM]', msg);
   } catch(_) {}
 }
 window.addEventListener('error', e => showBootError((e.message || 'JS error') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '')));
 window.addEventListener('unhandledrejection', e => showBootError('Promise rejected: ' + (e.reason?.message || e.reason)));
 
-/* ═══════════════════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ CONFIG ═══════ */
 const GUEST_APP_PATH = '/guest.html';
 const POLL_MS = 20000;
 const ORDERS_LIMIT = 500;
+const SEARCH_DEBOUNCE_MS = 150;
 
-/* ═══════════════════════════════════════════════════════════════
-   AUTH GUARD
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ AUTH GUARD ═══════ */
 (function authGuard(){
   try {
     const token = localStorage.getItem('hotel_token') || localStorage.getItem('gm_token');
@@ -374,9 +365,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = v => 'Ksh ' + Number(v || 0).toLocaleString('en-KE');
 
-/* ═══════════════════════════════════════════════════════════════
-   SUPABASE
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ SUPABASE ═══════ */
 let supa = null;
 try {
   const u = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || '';
@@ -389,9 +378,7 @@ try {
   }
 } catch(e){ console.warn('[GuestHub GM] Supabase init failed:', e); }
 
-/* ═══════════════════════════════════════════════════════════════
-   I18N
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ I18N ═══════ */
 const I18N = {
   en:{dir:'ltr',flag:'🇬🇧',name:'English',native:'English',
     control_center:'Control Center',
@@ -425,8 +412,10 @@ const I18N = {
     toast_added:'✅ Added — guest sees it now',toast_removed:'Removed',
     toast_saved:'✅ Saved — guest sees it instantly',toast_copied:'📋 Copied',
     vendor_pool_title:'🏪 Vendors Marketplace',vendor_pool_sub:'Approved vendors. Adding one here makes it appear on every guest phone instantly.',
-    lang_saved:'Language updated'},
-
+    lang_saved:'Language updated',refresh_done:'Refreshed',refreshing:'Refreshing…',
+    qr_lib_missing:'QR library not loaded — check your connection',enter_rooms:'Enter at least one room',
+    name_price_req:'Name & price required',session_expired:'Session expired — please log in again',
+    no_supabase:'Supabase not configured',unknown_status:'Unknown status: '},
   sw:{dir:'ltr',flag:'🇰🇪',name:'Kiswahili',native:'Kiswahili',
     control_center:'Kituo cha Udhibiti',
     hero_desc:'Kila hali unayobofya inafika kwenye simu ya mgeni chini ya sekunde moja.',
@@ -459,8 +448,10 @@ const I18N = {
     toast_added:'✅ Imeongezwa',toast_removed:'Imeondolewa',
     toast_saved:'✅ Imehifadhiwa',toast_copied:'📋 Imenakiliwa',
     vendor_pool_title:'🏪 Soko la Wauzaji',vendor_pool_sub:'Wauzaji walioidhinishwa.',
-    lang_saved:'Lugha imebadilishwa'},
-
+    lang_saved:'Lugha imebadilishwa',refresh_done:'Imesasishwa',refreshing:'Inasasisha…',
+    qr_lib_missing:'Maktaba ya QR haijapakiwa',enter_rooms:'Ingiza chumba kimoja',
+    name_price_req:'Jina na bei inahitajika',session_expired:'Kipindi kimeisha — ingia tena',
+    no_supabase:'Supabase haijasanidiwa',unknown_status:'Hali isiyojulikana: '},
   fr:{dir:'ltr',flag:'🇫🇷',name:'Français',native:'Français',
     control_center:'Centre de Contrôle',
     hero_desc:"Chaque changement de statut arrive sur le téléphone du client en moins d'une seconde.",
@@ -493,8 +484,10 @@ const I18N = {
     toast_added:'✅ Ajouté',toast_removed:'Retiré',
     toast_saved:'✅ Enregistré',toast_copied:'📋 Copié',
     vendor_pool_title:'🏪 Marché Vendeurs',vendor_pool_sub:'Vendeurs approuvés.',
-    lang_saved:'Langue mise à jour'},
-
+    lang_saved:'Langue mise à jour',refresh_done:'Actualisé',refreshing:'Actualisation…',
+    qr_lib_missing:'Bibliothèque QR non chargée',enter_rooms:'Entrez au moins une chambre',
+    name_price_req:'Nom et prix requis',session_expired:'Session expirée — reconnectez-vous',
+    no_supabase:'Supabase non configuré',unknown_status:'Statut inconnu: '},
   ar:{dir:'rtl',flag:'🇸🇦',name:'العربية',native:'العربية',
     control_center:'مركز التحكم',
     hero_desc:'كل تغيير حالة يصل إلى هاتف الضيف خلال أقل من ثانية.',
@@ -527,7 +520,10 @@ const I18N = {
     toast_added:'✅ تمت الإضافة',toast_removed:'تمت الإزالة',
     toast_saved:'✅ تم الحفظ',toast_copied:'📋 تم النسخ',
     vendor_pool_title:'🏪 سوق البائعين',vendor_pool_sub:'بائعون معتمدون.',
-    lang_saved:'تم تحديث اللغة'}
+    lang_saved:'تم تحديث اللغة',refresh_done:'تم التحديث',refreshing:'جارٍ التحديث…',
+    qr_lib_missing:'مكتبة QR غير محملة',enter_rooms:'أدخل غرفة واحدة على الأقل',
+    name_price_req:'الاسم والسعر مطلوبان',session_expired:'انتهت الجلسة — يرجى تسجيل الدخول',
+    no_supabase:'Supabase غير مُهيأ',unknown_status:'حالة غير معروفة: '}
 };
 
 let currentLang = params.get('lang') || localStorage.getItem('hotelhub_lang') ||
@@ -540,9 +536,7 @@ function t(key, vars){
   return str;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ STATE ═══════ */
 let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [];
 let currentTab = localStorage.getItem('hotel_last_tab') || 'orders';
 let orderFilter = 'all';
@@ -552,12 +546,11 @@ let soundEnabled = localStorage.getItem('hotel_sound') !== 'off';
 let rtChannel = null;
 let pollTimer = null;
 let tickTimer = null;
+let searchDebounceTimer = null;
 let loadingSkeleton = false;
 let bootComplete = false;
 
-/* ═══════════════════════════════════════════════════════════════
-   STATUS MODEL
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ STATUS MODEL ═══════ */
 const GUEST_STATUSES = {
   pending:    { label:'pending',    step:1, badge:'badge-gray'   },
   new:        { label:'new',        step:1, badge:'badge-gray'   },
@@ -575,12 +568,11 @@ const NEXT_STATUS = {
   on_the_way:['completed','cancelled'], completed:[], cancelled:[]
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ HELPERS ═══════ */
 let toastTimer = null;
 function toast(msg, kind = 'success'){
   const el = $('toast');
+  if(!el) return;
   el.textContent = msg;
   el.className = 'toast show ' + kind;
   clearTimeout(toastTimer);
@@ -649,7 +641,7 @@ async function api(path, opts = {}){
   const res = await fetch(path, Object.assign({}, opts, { headers }));
   if(res.status === 401){
     ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
-    toast('Session expired — please log in again', 'error');
+    toast(t('session_expired'), 'error');
     setTimeout(() => location.replace('/hotel-login.html'), 1200);
     throw new Error('Unauthorized');
   }
@@ -658,7 +650,7 @@ async function api(path, opts = {}){
 
 function guestLink(room){
   const base = location.origin + GUEST_APP_PATH;
-  const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room) });
+  const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room || '') });
   return base + '?' + q.toString();
 }
 function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
@@ -673,9 +665,7 @@ function orderRoom(o){ return o.room_number ?? o.room ?? '—'; }
 function orderGuest(o){ return o.guest_name ?? o.guest ?? 'Guest'; }
 function orderCat(o){ return o.category ?? o.department ?? 'service'; }
 
-/* ═══════════════════════════════════════════════════════════════
-   CATEGORY NORMALIZER
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ CATEGORY NORMALIZER ═══════ */
 function normalizeCategory(raw){
   const c = String(raw || '').toLowerCase().trim();
   if(!c) return 'other';
@@ -687,9 +677,7 @@ function normalizeCategory(raw){
   return 'other';
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   DATA LOADERS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ DATA LOADERS ═══════ */
 async function loadHotelMeta(){
   try {
     const res = await fetch(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
@@ -784,13 +772,12 @@ async function refreshAll(){
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   STATS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ STATS ═══════ */
 function updateStats(){
   const now = Date.now();
   const day = 24 * 3600 * 1000;
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  const todayStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   const live = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
   const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
   const todayRev = ORDERS.filter(o => (o.created_at || '').startsWith(todayStr)).reduce((s, o) => s + orderAmount(o), 0);
@@ -798,11 +785,12 @@ function updateStats(){
   const completedOrders = ORDERS.filter(o => o.status === 'completed');
   const aov = completedOrders.length ? completedOrders.reduce((s, o) => s + orderAmount(o), 0) / completedOrders.length : 0;
 
-  $('s_live').textContent = live;
-  $('s_active').textContent = active;
-  $('s_today_rev').textContent = money(todayRev);
-  $('s_week_rev').textContent = money(weekRev);
-  $('s_aov').textContent = money(aov);
+  const el = id => $(id);
+  if(el('s_live')) el('s_live').textContent = live;
+  if(el('s_active')) el('s_active').textContent = active;
+  if(el('s_today_rev')) el('s_today_rev').textContent = money(todayRev);
+  if(el('s_week_rev')) el('s_week_rev').textContent = money(weekRev);
+  if(el('s_aov')) el('s_aov').textContent = money(aov);
 }
 
 function updateTabBadges(){
@@ -814,9 +802,7 @@ function updateTabBadges(){
   const cv = $('c_vendors'); if(cv) cv.textContent = MY_VENDOR_IDS.length;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   RENDER — ORDERS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ RENDER — ORDERS ═══════ */
 function renderOrders(){
   const box = $('view-orders');
   if(!box) return;
@@ -841,14 +827,14 @@ function renderOrders(){
     all: byFilter.all.length, new: byFilter.new.length, active: byFilter.active.length,
     done: byFilter.done.length, cancelled: byFilter.cancelled.length
   };
-  const list = byFilter[orderFilter] || [];
+  const list = byFilter[orderFilter] || byFilter.all;
   const pendingNew = byFilter.new;
 
   box.innerHTML = `
     <div class="card">
       <div class="card-title">🔔 ${esc(t('tab_orders'))} — ${esc(HOTEL_ID)}</div>
       <div class="card-sub">Tap a status button — the guest's phone updates in ~0.4s</div>
-      <input id="orderSearch" class="input" style="margin-top:10px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}">
+      <input id="orderSearch" class="input" style="margin-top:10px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}" autocomplete="off">
       <div class="filterRow">
         <button type="button" class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
         <button type="button" class="fpill ${orderFilter==='new'?'active':''}" data-f="new">🆕 ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
@@ -868,10 +854,13 @@ function renderOrders(){
   if(search){
     search.addEventListener('input', e => {
       orderSearch = e.target.value;
-      const cur = search.selectionStart;
-      renderOrders();
-      const next = $('orderSearch');
-      if(next){ next.focus(); next.setSelectionRange(cur, cur); }
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        const cur = search.selectionStart;
+        renderOrders();
+        const next = $('orderSearch');
+        if(next){ next.focus(); try { next.setSelectionRange(cur, cur); } catch(_){} }
+      }, SEARCH_DEBOUNCE_MS);
     });
   }
   box.querySelectorAll('[data-f]').forEach(p => p.addEventListener('click', () => {
@@ -926,7 +915,7 @@ function orderCard(o){
     </div>`;
 }
 
-/* ── VENDORS ───────────────────────────────────────────── */
+/* ═══════ VENDORS ═══════ */
 function renderVendors(){
   const box = $('view-vendors'); if(!box) return;
   box.innerHTML = `
@@ -954,7 +943,7 @@ function renderVendors(){
     }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">🏪</div><strong>${esc(t('empty_vendors'))}</strong></div></div>`}`;
 }
 
-/* ── MENU ──────────────────────────────────────────────── */
+/* ═══════ MENU ═══════ */
 function renderMenu(){
   const box = $('view-menu'); if(!box) return;
   const food = SERVICES.filter(s => normalizeCategory(s.category) === 'food' || normalizeCategory(s.title) === 'food');
@@ -990,7 +979,7 @@ function renderMenu(){
   `;
 }
 
-/* ── SERVICES ──────────────────────────────────────────── */
+/* ═══════ SERVICES ═══════ */
 function renderServices(){
   const box = $('view-services'); if(!box) return;
   const activeCount = SERVICES.filter(s => s.is_active).length;
@@ -1014,7 +1003,7 @@ function renderServices(){
   `;
 }
 
-/* ── WHATSAPP ──────────────────────────────────────────── */
+/* ═══════ WHATSAPP ═══════ */
 function renderWhatsApp(){
   const box = $('view-whatsapp'); if(!box) return;
   const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
@@ -1033,7 +1022,7 @@ function renderWhatsApp(){
     </div>`;
 }
 
-/* ── QR ────────────────────────────────────────────────── */
+/* ═══════ QR ═══════ */
 function renderQR(){
   const box = $('view-qr'); if(!box) return;
   box.innerHTML = `
@@ -1059,7 +1048,7 @@ function renderQR(){
     </div>`;
 }
 
-/* ── FINANCE ──────────────────────────────────────────── */
+/* ═══════ FINANCE ═══════ */
 function renderFinance(){
   const box = $('view-finance'); if(!box) return;
   const now = Date.now(); const day = 24 * 3600 * 1000;
@@ -1085,7 +1074,7 @@ function renderFinance(){
     </div>`;
 }
 
-/* ── ANALYTICS ─────────────────────────────────────────── */
+/* ═══════ ANALYTICS ═══════ */
 function renderAnalytics(){
   const box = $('view-analytics'); if(!box) return;
   const day = 24 * 3600 * 1000; const now = Date.now();
@@ -1166,14 +1155,12 @@ function renderAnalytics(){
     </div>`;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ACTIONS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ ACTIONS ═══════ */
 async function updateStatus(id, s){
   const clean = normalizeStatus(s);
-  if(!GUEST_STATUSES[clean]) return toast('Unknown status: ' + s, 'error');
+  if(!GUEST_STATUSES[clean]) return toast(t('unknown_status') + s, 'error');
   if(clean === 'cancelled'){ if(!confirm(t('confirm_cancel'))) return; }
-  if(!supa) return toast('Supabase not configured', 'error');
+  if(!supa) return toast(t('no_supabase'), 'error');
   const patch = { status: clean, updated_at: new Date().toISOString() };
   const { error } = await supa.from('orders').update(patch).eq('id', id);
   if(error) return toast(t('error_prefix') + error.message, 'error');
@@ -1230,8 +1217,8 @@ async function addMenu(){
   const name = $('mName').value.trim();
   const price = parseInt($('mPrice').value);
   const cat = $('mCat').value;
-  if(!name || !price) return toast('Name & price required', 'error');
-  if(!supa) return;
+  if(!name || !price) return toast(t('name_price_req'), 'error');
+  if(!supa) return toast(t('no_supabase'), 'error');
   const { error } = await supa.from('hotel_services').insert([{
     hotel_id: HOTEL_ID, title: name, price, category: normalizeCategory(cat), icon: '🍔', is_active: true
   }]);
@@ -1260,7 +1247,7 @@ async function delService(id){
 }
 
 async function saveWhatsApp(){
-  if(!supa) return;
+  if(!supa) return toast(t('no_supabase'), 'error');
   const keys = ['kitchen','housekeeping','laundry','taxi','frontdesk'];
   for(const d of keys){
     const num = $('wa_' + d)?.value.trim();
@@ -1273,20 +1260,29 @@ async function saveWhatsApp(){
   loadDepts();
 }
 
+function qrReady(){
+  if(typeof QRCode === 'undefined' || window.__qrLibFailed){
+    toast(t('qr_lib_missing'), 'error');
+    return false;
+  }
+  return true;
+}
 function genSingle(){
-  if(typeof QRCode === 'undefined') return toast('QR library not loaded', 'error');
+  if(!qrReady()) return;
   const room = ($('qrRoom').value.trim() || '101');
   const box = $('singleQR');
   box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div class="qr-label">${esc(HOTEL_ID)} — ROOM ${esc(room)}</div></div>`;
   setTimeout(() => {
-    try { new QRCode($('qrSingleCanvas'), { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
+    const el = $('qrSingleCanvas');
+    if(!el) return;
+    try { new QRCode(el, { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
     catch(e){ toast('QR generation failed: ' + e.message, 'error'); }
   }, 60);
 }
 function genBatch(){
-  if(typeof QRCode === 'undefined') return toast('QR library not loaded', 'error');
+  if(!qrReady()) return;
   const raw = ($('qrBatch').value || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
-  if(!raw.length) return toast('Enter at least one room', 'error');
+  if(!raw.length) return toast(t('enter_rooms'), 'error');
   const box = $('batchQR');
   box.innerHTML = raw.map((room, i) => `<div class="qr-card"><div id="qrBatch-${i}"></div><div class="qr-label" style="color:#fff">ROOM ${esc(room)}</div></div>`).join('');
   raw.forEach((room, i) => {
@@ -1317,9 +1313,7 @@ function exportCSV(){
   toast('📥 CSV exported');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ORDER DETAIL MODAL
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ ORDER DETAIL MODAL ═══════ */
 function openOrderModal(id){
   const o = ORDERS.find(x => String(x.id) === String(id));
   if(!o) return;
@@ -1358,12 +1352,17 @@ function copyOrder(id){
   const o = ORDERS.find(x => String(x.id) === String(id));
   if(!o) return;
   const txt = `Room ${orderRoom(o)} — ${orderGuest(o)}\n${orderItemsText(o)} — ${money(orderAmount(o))}\n${orderRef(o)} · ${o.status}`;
-  navigator.clipboard.writeText(txt).then(() => toast(t('toast_copied'))).catch(() => toast('Copy failed', 'error'));
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => toast(t('toast_copied'))).catch(() => toast('Copy failed', 'error'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast(t('toast_copied')); } catch(_){ toast('Copy failed', 'error'); }
+    ta.remove();
+  }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MODAL HELPERS
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ MODAL HELPERS ═══════ */
 function openModal(id){ const m = $(id); if(m){ m.classList.add('active'); document.body.style.overflow = 'hidden'; } }
 function closeModal(id){
   const m = $(id); if(m) m.classList.remove('active');
@@ -1377,15 +1376,12 @@ document.addEventListener('keydown', e => {
   const map = { '1':'orders','2':'vendors','3':'menu','4':'services','5':'whatsapp','6':'qr','7':'finance','8':'analytics' };
   if(map[e.key]) switchTab(map[e.key]);
   if(e.key === '/'){ const s = $('orderSearch'); if(s){ e.preventDefault(); s.focus(); } }
-  if(e.key.toLowerCase() === 'r'){ refreshAll(); }
+  if(e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey){ refreshAll(); }
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   TABS — switchTab + delegation
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ TABS ═══════ */
 function switchTab(name){
   try {
-    console.log('[GuestHub GM] Switching to tab:', name);
     currentTab = name;
     localStorage.setItem('hotel_last_tab', name);
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
@@ -1395,6 +1391,7 @@ function switchTab(name){
     if(view) view.classList.remove('hidden');
     if(tab) tab.classList.add('active');
     renderCurrentTab();
+    try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(_){ window.scrollTo(0, 0); }
   } catch(e){
     showBootError('switchTab(' + name + '): ' + e.message);
   }
@@ -1416,7 +1413,6 @@ function renderCurrentTab(){
   }
 }
 
-/* Event delegation on the tabs container — survives re-renders */
 (function wireTabs(){
   const bar = document.getElementById('tabsBar');
   if(!bar){ showBootError('tabsBar missing'); return; }
@@ -1431,11 +1427,11 @@ function renderCurrentTab(){
   console.log('[GuestHub GM] Tab listeners wired (delegation)');
 })();
 
-/* ═══════════════════════════════════════════════════════════════
-   NEW ORDERS ALERT
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ NEW ORDERS ALERT ═══════ */
 function onNewOrders(orders){
+  if(!orders || !orders.length) return;
   const o = orders[0];
+  if(!o) return;
   const room = orderRoom(o);
   toast(`🔔 New order — Room ${room} · ${orderItemsText(o)}`);
   beepNewOrder();
@@ -1447,9 +1443,7 @@ function onNewOrders(orders){
   updateTabBadges();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   REALTIME
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ REALTIME ═══════ */
 function setSyncDot(state){
   const pill = $('syncPill');
   const dot = $('rtDot');
@@ -1509,9 +1503,7 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
 window.addEventListener('offline', () => setSyncDot('off'));
 
-/* ═══════════════════════════════════════════════════════════════
-   TICKER
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ TICKER ═══════ */
 function tickTimes(){
   document.querySelectorAll('[data-tick]').forEach(el => {
     el.textContent = relativeTime(el.dataset.tick);
@@ -1520,10 +1512,8 @@ function tickTimes(){
   });
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   HEADER ACTIONS
-═══════════════════════════════════════════════════════════════ */
-$('refreshBtn').addEventListener('click', () => { refreshAll(); toast('Refreshed'); });
+/* ═══════ HEADER ACTIONS ═══════ */
+$('refreshBtn').addEventListener('click', () => { refreshAll(); toast(t('refresh_done')); });
 $('guestBtn').addEventListener('click', () => window.open(guestLink('101'), '_blank'));
 $('langBtn').addEventListener('click', () => { renderLangGrid(); openModal('langModal'); });
 $('logoutBtn').addEventListener('click', () => {
@@ -1533,9 +1523,11 @@ $('logoutBtn').addEventListener('click', () => {
 
 const notifBtn = $('notifBtn');
 function updateNotifUI(){
+  if(!notifBtn) return;
   notifBtn.classList.toggle('muted', !soundEnabled);
   notifBtn.textContent = soundEnabled ? '🔔' : '🔕';
-  const dot = document.createElement('span'); dot.className = 'dot-notif';
+  const dot = document.createElement('span');
+  dot.className = 'dot-notif';
   notifBtn.appendChild(dot);
 }
 notifBtn.addEventListener('click', async () => {
@@ -1551,9 +1543,7 @@ notifBtn.addEventListener('click', async () => {
   } else { toast('🔕 Alerts muted'); }
 });
 
-/* ═══════════════════════════════════════════════════════════════
-   I18N APPLY + LANG GRID
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ I18N APPLY ═══════ */
 function applyI18n(){
   document.documentElement.lang = currentLang;
   document.documentElement.dir = I18N[currentLang].dir || 'ltr';
@@ -1579,9 +1569,7 @@ function renderLangGrid(){
   }));
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════════════════════ */
+/* ═══════ BOOT ═══════ */
 (async function boot(){
   try {
     console.log('[GuestHub GM] Booting…', { HOTEL_ID, hasSupa: !!supa, hasToken: !!AUTH_TOKEN });
@@ -1590,12 +1578,8 @@ function renderLangGrid(){
     applyI18n();
     $('hotelSub').textContent = HOTEL_ID + ' • GM OS • GUEST SYNC';
 
-    /* Switch to restored tab (defaults to orders) */
     const wanted = document.querySelector(`.tab[data-tab="${currentTab}"]`) ? currentTab : 'orders';
     switchTab(wanted);
-
-    /* Initial render so user sees something immediately */
-    renderCurrentTab();
 
     await refreshAll();
     subscribeRealtime();
@@ -1606,19 +1590,17 @@ function renderLangGrid(){
     console.log('[GuestHub GM] Boot complete');
   } catch(e){
     showBootError('Boot failed: ' + e.message);
-    /* Still try to render something */
     try { switchTab('orders'); } catch(_){}
   }
 })();
 
-/* Failsafe: if boot didn't complete in 4s, show hint */
 setTimeout(() => {
   if(!bootComplete){
     showBootError('Dashboard did not finish loading. Check console for errors, or tap Refresh.');
   }
 }, 4000);
 
-/* Expose critical functions globally for inline onclick handlers */
+/* Expose for inline onclick */
 window.acceptAllNew = acceptAllNew;
 window.exportCSV = exportCSV;
 window.addVendor = addVendor;
