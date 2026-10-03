@@ -1,10 +1,10 @@
 // ============================================================
-// GuestHub V1.4 — Direct-to-Vendor Payments + Table Mode + Images
+// GuestHub V1.5 — Direct-to-Vendor Payments + Table Mode + Images + Hotel Payment
 // Aligned with GM OS + Guest SuperApp + Vendor OS
-// Changes vs V1.3:
-//   - NEW:  POST /api/hotels/images  (Supabase Storage upload)
-//   - NEW:  image_url + images returned by /api/data
-//   - NEW:  hotel-images bucket auto-created on boot
+// Changes vs V1.4:
+//   - NEW:  GET  /api/public/hotel/:hotelId/payment  (guest reads hotel paybill/till)
+//   - NEW:  PATCH /api/gm/payment                    (GM saves paybill/till)
+//   - NEW:  hotel payment columns added to boot migration
 // ============================================================
 
 import express from "express";
@@ -80,7 +80,7 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V1.4",
+    os: "GuestHub V1.5",
     time: new Date().toISOString(),
     supabase: !!supa,
     missing_env: missing
@@ -155,9 +155,9 @@ function validatePayment(body, forcedChannel) {
     const num = String(body.paybill_number || "").replace(/\D/g, "");
     const acc = cleanText(body.paybill_account, 40);
     if (!/^\d{4,10}$/.test(num)) return { error: "Paybill number must be 4–10 digits" };
-    if (!acc) return { error: "Paybill account number/name required" };
+    // Account number optional for hotels (guest ref used as fallback)
     patch.paybill_number = num;
-    patch.paybill_account = acc;
+    patch.paybill_account = acc || null;
     patch.till_number = null;
     patch.mpesa = null;
   } else if (channel === "till") {
@@ -602,6 +602,105 @@ app.post(
     }
   }
 );
+
+// ============================================================
+// HOTEL PAYMENT — GM saves paybill/till · guests read it
+// ============================================================
+
+// GM sets payment info from the hotel dashboard
+app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => {
+  try {
+    const check = validatePayment(req.body);
+    if (check.error) return sendError(res, 400, check.error);
+
+    if (req.body.mpesa_name !== undefined) {
+      check.patch.mpesa_name = cleanText(req.body.mpesa_name, 100) || null;
+    }
+
+    // Resolve hotel UUID from the JWT's hotel_id
+    const { hotel } = await findHotel(req.user.hotel_id);
+    if (!hotel) return sendError(res, 404, "Hotel not found");
+
+    let { data, error } = await supa
+      .from("hotels")
+      .update(check.patch)
+      .eq("id", hotel.id)
+      .select()
+      .single();
+
+    if (error && isMissingColumnError(error))
+      return sendError(res, 501, "Payment columns missing on hotels table. Run the ALTER TABLE from the boot log.");
+    if (error) return sendError(res, 500, error.message);
+
+    return sendSuccess(res, {
+      payment: {
+        channel:         data.payment_channel,
+        paybill_number:  data.paybill_number,
+        paybill_account: data.paybill_account,
+        till_number:     data.till_number,
+        mpesa_phone:     data.phone,
+        mpesa_name:      data.mpesa_name,
+        configured:      !!(data.paybill_number || data.till_number || data.phone)
+      }
+    });
+  } catch (e) {
+    console.error("GM payment save error:", e);
+    return sendError(res, 500, e.message);
+  }
+});
+
+// Public — guests read the hotel's paybill/till to show the payment card
+app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) => {
+  try {
+    const hid = String(req.params.hotelId || "").trim().toUpperCase();
+    if (!hid) return sendError(res, 400, "hotelId required");
+
+    const { data, error } = await supa
+      .from("hotels")
+      .select("hotel_id, name, hotel_name, phone, payment_channel, paybill_number, paybill_account, till_number, mpesa_name")
+      .ilike("hotel_id", hid)
+      .maybeSingle();
+
+    if (error) {
+      // Graceful fallback if new columns don't exist yet
+      if (isMissingColumnError(error)) {
+        return sendSuccess(res, {
+          payment: {
+            channel: "paybill",
+            paybill_number: null,
+            paybill_account: null,
+            till_number: null,
+            mpesa_name: null,
+            mpesa_phone: null,
+            configured: false
+          }
+        });
+      }
+      return sendError(res, 500, error.message);
+    }
+    if (!data) return sendError(res, 404, "Hotel not found");
+
+    const channel = String(data.payment_channel || "").toLowerCase();
+    const hasPaybill = channel === "paybill" && !!data.paybill_number;
+    const hasTill    = channel === "till"    && !!data.till_number;
+    const hasSend    = channel === "send_money" && !!data.phone;
+
+    return sendSuccess(res, {
+      payment: {
+        channel:         channel || "paybill",
+        paybill_number:  data.paybill_number  || null,
+        paybill_account: data.paybill_account || null,
+        till_number:     data.till_number     || null,
+        mpesa_phone:     data.phone           || null,
+        mpesa_name:      data.mpesa_name      || data.name || data.hotel_name || null,
+        configured:      !!(hasPaybill || hasTill || hasSend)
+      }
+    });
+  } catch (e) {
+    console.error("Public hotel payment error:", e);
+    return sendError(res, 500, e.message);
+  }
+});
 
 // ============================================================
 // VENDOR SIGNUP
@@ -1381,7 +1480,7 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V1.4 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V1.5 running on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   console.log(`📦 Storage bucket: ${BUCKET}`);
@@ -1390,6 +1489,7 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("💳 Direct-to-vendor payments enabled");
   console.log("🍽️  Table-mode ordering enabled");
   console.log("📸 Hotel image uploads enabled");
+  console.log("🏦 Hotel paybill/till endpoints enabled");
   console.log("📌 Required migration (run once in Supabase SQL):");
   console.log(`
 -- Vendors: payment + availability
@@ -1419,7 +1519,7 @@ ALTER TABLE hotel_services
   ADD COLUMN IF NOT EXISTS vendor_phone  text,
   ADD COLUMN IF NOT EXISTS tags          jsonb;
 
--- Hotels: guest-facing settings + images
+-- Hotels: guest-facing settings + images + M-Pesa payment
 ALTER TABLE hotels
   ADD COLUMN IF NOT EXISTS tagline         text,
   ADD COLUMN IF NOT EXISTS currency        text DEFAULT 'Ksh',
@@ -1427,7 +1527,12 @@ ALTER TABLE hotels
   ADD COLUMN IF NOT EXISTS promo_title     text,
   ADD COLUMN IF NOT EXISTS promo_text      text,
   ADD COLUMN IF NOT EXISTS image_url       text,
-  ADD COLUMN IF NOT EXISTS images          jsonb;
+  ADD COLUMN IF NOT EXISTS images          jsonb,
+  ADD COLUMN IF NOT EXISTS payment_channel text DEFAULT 'paybill',
+  ADD COLUMN IF NOT EXISTS paybill_number  text,
+  ADD COLUMN IF NOT EXISTS paybill_account text,
+  ADD COLUMN IF NOT EXISTS till_number     text,
+  ADD COLUMN IF NOT EXISTS mpesa_name      text;
   `);
   console.log("============================================");
 });
