@@ -284,6 +284,32 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .reference small{display:block;color:var(--muted-3);font-size:10px;letter-spacing:.9px;font-weight:800}
 .reference strong{display:block;color:var(--lime);font-family:'Space Grotesk';font-size:18px;margin-top:5px;letter-spacing:1.2px}
 
+/* ── PAYMENT CARD ─────────────────────────── */
+.payCard{margin:16px 0;padding:16px;border-radius:16px;background:linear-gradient(155deg,#0f1a0f,#0a0a0a);border:1px solid var(--lime-line);text-align:left}
+.payCard .ptitle{font-family:'Space Grotesk';font-size:13px;font-weight:900;color:var(--lime);letter-spacing:.5px;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.payCard .ptitle .amt{margin-left:auto;color:#fff;background:rgba(198,255,0,.12);padding:4px 10px;border-radius:999px;font-size:12px;font-family:'Space Grotesk'}
+.payBox{background:#050505;border:1px dashed #2f2f2f;border-radius:13px;padding:13px;margin-bottom:12px}
+.payBox .row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.payBox .row + .row{border-top:1px solid #181818;padding-top:11px;margin-top:6px}
+.payBox .lbl{font-size:10px;font-weight:900;color:var(--muted-3);letter-spacing:.8px;text-transform:uppercase;flex:1}
+.payBox .val{font-family:'Space Grotesk';font-size:19px;font-weight:900;color:#fff;letter-spacing:1px}
+.payCopy{width:32px;height:32px;border-radius:9px;background:#1b1b1b;border:1px solid #2a2a2a;color:var(--lime);font-size:14px;display:grid;place-items:center;flex-shrink:0;transition:background .15s}
+.payCopy:active{background:var(--lime);color:#000}
+.paySteps{list-style:none;padding:0;margin:0 0 12px;counter-reset:s}
+.paySteps li{position:relative;padding-left:28px;font-size:12px;color:var(--muted);line-height:1.6;font-weight:600;margin-bottom:4px;counter-increment:s}
+.paySteps li:before{content:counter(s);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:var(--lime);color:#000;font-size:10px;font-weight:900;display:grid;place-items:center;margin-top:1px}
+.payCard .payActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.payCard .payActions a{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:11px;background:var(--lime);color:#000;font-size:12.5px;font-weight:900;text-decoration:none;text-align:center}
+.payCard .payActions a.ghost{background:#1e1e1e;border:1px solid #303030;color:#fff}
+.payCard.warn{background:linear-gradient(155deg,#1a1408,#0a0a0a);border-color:var(--gold-line)}
+.payCard.warn .ptitle{color:var(--gold)}
+.payCard.warn .ptitle .amt{background:rgba(251,191,36,.12)}
+.payCard.warn .paySteps li:before{background:var(--gold)}
+
+/* Pay button on active order */
+.payNowBtn{margin-top:12px;width:100%;padding:13px;border-radius:13px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;font-family:'Space Grotesk';font-weight:900;font-size:13.5px;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 22px rgba(198,255,0,.22)}
+.payNowBtn:active{transform:scale(.98)}
+
 /* ── ORDER HISTORY ────────────────────────── */
 .orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:13px;margin-bottom:8px}
 .orderItem strong{font-size:13px;display:block;font-weight:800}
@@ -453,6 +479,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <span><strong id="activeAmount">—</strong></span>
   </div>
   <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
+  <button class="payNowBtn" id="payNowBtn" style="display:none">💳 <span id="payNowText">Pay now</span></button>
 </section>
 
 <!-- ═══════ MENU STICKY BAR ═══════ -->
@@ -585,6 +612,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center">Request Received!</h3>
     <p id="successText" class="modalDesc" style="text-align:center;margin-top:8px"></p>
     <div class="reference"><small data-i18n="reference_label">GUESTHUB REFERENCE</small><strong id="orderRef">GH-XXXX</strong></div>
+    <div id="payMount"></div>
     <button class="btn" id="successDone" data-i18n="track_order">Great — Track My Order</button>
   </div>
 </div>
@@ -750,7 +778,9 @@ const I18N = {
     clear_cart:"Clear",items:"items",item:"item",empty_cart:"Your order is empty",add:"Add",
     table_label:"Table",dine_in:"Dine-in",deliver_to:"Deliver to",
     front_desk:"Ask the front desk",front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly.",
-    sold_out:"Sold out",popular_badge:"★ Popular"
+    sold_out:"Sold out",popular_badge:"★ Popular",
+    pay_now:"Pay now",pay_title:"Payment",pay_no_config:"Your hotel hasn't set up M-Pesa yet. Please pay at the reception or ask the front desk.",
+    pay_tap_copy:"Tap to copy"
   },
   sw:{dir:"ltr",flag:"🇰🇪",name:"Kiswahili",native:"Kiswahili",
     welcome:"✦ GUESTHUB",room_number:"Chumba",table_number:"Meza",
@@ -798,7 +828,9 @@ const I18N = {
     service_charge:"Ada ya huduma",total:"Jumla",view_cart:"Angalia Oda →",checkout:"✅ Tuma Oda",
     clear_cart:"Futa",items:"vitu",item:"kitu",empty_cart:"Oda yako ni tupu",add:"Ongeza",
     table_label:"Meza",dine_in:"Kula hapa",deliver_to:"Peleka",
-    front_desk:"Uliza mapokezi",front_desk_body:"Piga simu mapokezi.",sold_out:"Imeisha",popular_badge:"★ Maarufu"
+    front_desk:"Uliza mapokezi",front_desk_body:"Piga simu mapokezi.",sold_out:"Imeisha",popular_badge:"★ Maarufu",
+    pay_now:"Lipa sasa",pay_title:"Malipo",pay_no_config:"Hoteli yako bado haijaweka M-Pesa. Tafadhali lipa mapokezi.",
+    pay_tap_copy:"Gusa kunakili"
   },
   fr:{dir:"ltr",flag:"🇫🇷",name:"Français",native:"Français",
     welcome:"✦ GUESTHUB",room_number:"Chambre",table_number:"Table",
@@ -845,7 +877,9 @@ const I18N = {
     service_charge:"Frais de service",total:"Total",view_cart:"Voir le Panier →",checkout:"✅ Envoyer",
     clear_cart:"Vider",items:"articles",item:"article",empty_cart:"Commande vide",add:"Ajouter",
     table_label:"Table",dine_in:"Sur place",deliver_to:"Livrer à",
-    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception.",sold_out:"Épuisé",popular_badge:"★ Populaire"
+    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception.",sold_out:"Épuisé",popular_badge:"★ Populaire",
+    pay_now:"Payer",pay_title:"Paiement",pay_no_config:"L'hôtel n'a pas configuré M-Pesa. Payez à la réception.",
+    pay_tap_copy:"Appuyez pour copier"
   },
   ar:{dir:"rtl",flag:"🇸🇦",name:"العربية",native:"العربية",
     welcome:"✦ GUESTHUB",room_number:"الغرفة",table_number:"الطاولة",
@@ -892,7 +926,9 @@ const I18N = {
     service_charge:"رسوم الخدمة",total:"الإجمالي",view_cart:"عرض السلة →",checkout:"✅ إرسال الطلب",
     clear_cart:"مسح",items:"عناصر",item:"عنصر",empty_cart:"طلبك فارغ",add:"أضف",
     table_label:"طاولة",dine_in:"تناول هنا",deliver_to:"التوصيل إلى",
-    front_desk:"اسأل الاستقبال",front_desk_body:"اتصل بالاستقبال.",sold_out:"نفذ",popular_badge:"★ شائع"
+    front_desk:"اسأل الاستقبال",front_desk_body:"اتصل بالاستقبال.",sold_out:"نفذ",popular_badge:"★ شائع",
+    pay_now:"ادفع الآن",pay_title:"الدفع",pay_no_config:"الفندق لم يقم بإعداد M-Pesa. ادفع في الاستقبال.",
+    pay_tap_copy:"اضغط للنسخ"
   }
 };
 
@@ -918,6 +954,7 @@ let pollTimer = null, refreshing = false, audioCtx = null;
 let supa = null, realtimeChannel = null, realtimeOK = false;
 let activeCategory = "all";
 let MENU = { categories:[], items:[] };
+let HOTEL_PAYMENT = null;
 
 const STATE = { currency:"Ksh", serviceCharge:0, hotelName:"", tagline:"", cart:[] };
 
@@ -1104,8 +1141,6 @@ const CATEGORY_META = {
 function sortedCategories(){ return [...MENU.categories].sort((a,b) => (a.order ?? 99) - (b.order ?? 99)); }
 function itemsInCategory(id){ return MENU.items.filter(i => i.cat === id); }
 function findMenuItem(id){ return MENU.items.find(i => String(i.id) === String(id)); }
-function menuIsEmpty(){ return !MENU.items.length; }
-function serviceIsEmpty(){ return !SERVICES.length; }
 
 /* ═══════════════════════════════════════════════════════════════
    10. CART
@@ -1156,8 +1191,6 @@ function updateOrdersBadge(){
   if(n > 0){ badge.style.display = "grid"; badge.textContent = n; }
   else badge.style.display = "none";
 }
-
-/* Update qty badges on every card currently rendered */
 function updateQtyBadges(){
   document.querySelectorAll("[data-add]").forEach(btn => {
     const id = btn.dataset.add;
@@ -1186,12 +1219,10 @@ function updateContextUI(){
   const isTable = CONTEXT.mode === "table";
   document.body.classList.toggle("tableMode", isTable);
 
-  /* top bar chip */
   const chip = $("ctxChip");
   chip.className = "ctxChip" + (isTable ? " table" : "");
   chip.innerHTML = isTable ? `🍽️ <b>${esc(CONTEXT.table || "—")}</b>` : `🛏️ <b>${esc(CONTEXT.room || "—")}</b>`;
 
-  /* table mode — hide hero, show hotel strip + quick requests */
   $("heroSection").style.display = isTable ? "none" : "block";
   $("hotelStrip").style.display  = isTable ? "flex"  : "none";
   $("quickReq").style.display    = isTable ? "grid"  : "none";
@@ -1278,7 +1309,6 @@ function renderCategoryTabs(){
   const tabs = $("catTabs");
   const html = [];
 
-  /* Menu categories first */
   const menuCats = sortedCategories().filter(c => itemsInCategory(c.id).length);
   if(menuCats.length){
     html.push(`<button class="catTab ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}<span class="cnt">${MENU.items.length}</span></button>`);
@@ -1287,7 +1317,6 @@ function renderCategoryTabs(){
     });
   }
 
-  /* Service categories */
   const svcCats = new Set(SERVICES.map(s => s.category));
   const svcOrdered = Object.keys(CATEGORY_META).filter(c => svcCats.has(c))
     .sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
@@ -1300,7 +1329,6 @@ function renderCategoryTabs(){
   tabs.innerHTML = html.join("");
   tabs.querySelectorAll(".catTab").forEach(b => b.addEventListener("click", () => {
     setActiveCategory(b.dataset.cat);
-    /* scroll to that section if it's a specific category */
     if(b.dataset.cat !== "all"){
       const sec = document.querySelector(`.menuSection[data-filter="${b.dataset.cat}"]`);
       if(sec){
@@ -1316,7 +1344,6 @@ function renderCategoryTabs(){
 function renderPopular(){
   const wrap = $("popularSection");
   const scroll = $("popularScroll");
-  /* Choose up to 6 items: prefer tag:popular, then first items */
   const tagged = MENU.items.filter(i => (i.tags || []).includes("popular") && i.available !== false);
   const picks = (tagged.length ? tagged : MENU.items.filter(i => i.available !== false)).slice(0, 6);
   if(!picks.length){ wrap.style.display = "none"; return; }
@@ -1358,7 +1385,6 @@ function renderAll(){
   if(!area) return;
   const html = [];
 
-  /* Menu sections */
   const cats = sortedCategories().filter(c => itemsInCategory(c.id).length);
   cats.forEach(c => {
     const items = itemsInCategory(c.id);
@@ -1372,7 +1398,6 @@ function renderAll(){
       </section>`);
   });
 
-  /* Service sections */
   if(SERVICES.length){
     const groups = {};
     SERVICES.forEach(s => { const c = s.category || "other"; (groups[c] = groups[c] || []).push(s); });
@@ -1485,8 +1510,6 @@ function applyFilters(){
   });
 
   $("emptySearch").classList.toggle("show", !!q && visibleCards === 0);
-
-  /* Hide popular when searching or when filter is not "all" */
   $("popularSection").style.display = (q || activeCategory !== "all") ? "none" : "";
 }
 $("searchService").addEventListener("input", applyFilters);
@@ -1559,6 +1582,8 @@ $("confirmOrder").addEventListener("click", async () => {
 
     $("orderRef").innerText = result.reference;
     $("successText").innerText = `${selected.title} — ${t("sent_to")} ${HOTEL?.name || HOTEL_ID} · ${ctxLabel()}`;
+    await fetchHotelPayment();
+    renderPaymentCard(Number(selected.price) || 0, result.reference);
     closeModal("orderModal");
     openModal("successModal");
 
@@ -1680,6 +1705,8 @@ $("cartCheckout").addEventListener("click", async () => {
 
     $("orderRef").innerText = result.reference;
     $("successText").innerText = `${n} ${n === 1 ? t("item") : t("items")} — ${t("sent_to")} ${HOTEL?.name || HOTEL_ID} · ${ctxLabel()}`;
+    await fetchHotelPayment();
+    renderPaymentCard(cartTotal(), result.reference);
     closeCartSheet();
     clearCart();
     openModal("successModal");
@@ -1938,6 +1965,7 @@ function renderActiveOrder(order){
     eta.style.display = "none";
   }
   banner.classList.add("show");
+  attachPayToActive(order);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2075,7 +2103,6 @@ $("ctxSave").addEventListener("click", () => {
 });
 $("ctxChange").addEventListener("click", openCtxModal);
 
-/* Quick request buttons (dine-in) */
 document.querySelectorAll("[data-quick-req]").forEach(btn => {
   btn.addEventListener("click", () => {
     const key = btn.dataset.quickReq;
@@ -2194,7 +2221,170 @@ function updateOffline(){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   27. INIT
+   27. HOTEL PAYMENT (M-Pesa Paybill / Till / Send Money)
+═══════════════════════════════════════════════════════════════ */
+async function fetchHotelPayment(){
+  if(HOTEL_PAYMENT) return HOTEL_PAYMENT;
+  try{
+    const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/payment`);
+    if(r.ok){
+      const j = await r.json();
+      HOTEL_PAYMENT = j.payment || null;
+    }
+  }catch(_){}
+  return HOTEL_PAYMENT;
+}
+
+async function copyText(text, btn){
+  try{
+    await navigator.clipboard.writeText(String(text));
+    const old = btn.textContent;
+    btn.textContent = "✓";
+    setTimeout(() => { btn.textContent = old; }, 1200);
+    if(navigator.vibrate) navigator.vibrate(20);
+  }catch(_){
+    toast("Copy failed — please copy manually");
+  }
+}
+
+function renderPaymentCard(amount, reference){
+  const mount = $("payMount");
+  if(!mount) return;
+  const p = HOTEL_PAYMENT;
+  if(!p || !p.configured){
+    mount.innerHTML = `
+      <div class="payCard warn">
+        <div class="ptitle">💳 <span>${esc(t("pay_title"))}</span></div>
+        <p style="margin:0;font-size:12.5px;color:var(--muted);line-height:1.6">
+          ${esc(t("pay_no_config"))}
+        </p>
+      </div>`;
+    return;
+  }
+
+  const amt = Number(amount) > 0 ? money(amount) : "";
+  const ch = (p.channel || "").toLowerCase();
+
+  if(ch === "paybill" && p.paybill_number){
+    const acc = p.paybill_account || reference;
+    mount.innerHTML = `
+      <div class="payCard">
+        <div class="ptitle">💳 <span>Pay via M-Pesa Paybill</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="payBox">
+          <div class="row">
+            <span class="lbl">Paybill number</span>
+            <span class="val">${esc(p.paybill_number)}</span>
+            <button class="payCopy" data-copy="${esc(p.paybill_number)}" aria-label="Copy">📋</button>
+          </div>
+          <div class="row">
+            <span class="lbl">Account number</span>
+            <span class="val" style="font-size:15px">${esc(acc)}</span>
+            <button class="payCopy" data-copy="${esc(acc)}" aria-label="Copy">📋</button>
+          </div>
+        </div>
+        <ol class="paySteps">
+          <li>Open M-Pesa on your phone</li>
+          <li>Choose <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
+          <li>Business No: <b>${esc(p.paybill_number)}</b></li>
+          <li>Account: <b>${esc(acc)}</b></li>
+          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>Enter your PIN and confirm</li>
+        </ol>
+        <div class="payActions">
+          <a href="tel:*334*${esc(p.paybill_number)}*${esc(acc)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
+          <a class="ghost" href="#" data-copy="${esc(p.paybill_number)}">📋 Copy Paybill</a>
+        </div>
+      </div>`;
+  }
+  else if(ch === "till" && p.till_number){
+    mount.innerHTML = `
+      <div class="payCard">
+        <div class="ptitle">💳 <span>Pay via M-Pesa Till</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="payBox">
+          <div class="row">
+            <span class="lbl">Till number</span>
+            <span class="val">${esc(p.till_number)}</span>
+            <button class="payCopy" data-copy="${esc(p.till_number)}" aria-label="Copy">📋</button>
+          </div>
+        </div>
+        <ol class="paySteps">
+          <li>Open M-Pesa on your phone</li>
+          <li>Choose <b>Lipa na M-Pesa</b> → <b>Buy Goods &amp; Services</b></li>
+          <li>Till No: <b>${esc(p.till_number)}</b></li>
+          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>Enter your PIN and confirm</li>
+        </ol>
+        <div class="payActions">
+          <a href="tel:*334*${esc(p.till_number)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
+          <a class="ghost" href="#" data-copy="${esc(p.till_number)}">📋 Copy Till</a>
+        </div>
+      </div>`;
+  }
+  else if(ch === "send_money" && p.mpesa_phone){
+    const phone = String(p.mpesa_phone).replace(/\D/g, "");
+    mount.innerHTML = `
+      <div class="payCard">
+        <div class="ptitle">💳 <span>Send Money via M-Pesa</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="payBox">
+          <div class="row">
+            <span class="lbl">Send to</span>
+            <span class="val" style="font-size:15px">${esc(phone)}</span>
+            <button class="payCopy" data-copy="${esc(phone)}" aria-label="Copy">📋</button>
+          </div>
+          ${p.mpesa_name ? `<div class="row"><span class="lbl">Name</span><span class="val" style="font-size:14px">${esc(p.mpesa_name)}</span></div>` : ""}
+        </div>
+        <ol class="paySteps">
+          <li>Open M-Pesa on your phone</li>
+          <li>Choose <b>Send Money</b></li>
+          <li>Enter number: <b>${esc(phone)}</b></li>
+          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>Enter your PIN and confirm</li>
+        </ol>
+        <div class="payActions">
+          <a href="tel:*334*${esc(phone)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
+          <a class="ghost" href="#" data-copy="${esc(phone)}">📋 Copy Number</a>
+        </div>
+      </div>`;
+  }
+  else {
+    mount.innerHTML = `
+      <div class="payCard warn">
+        <div class="ptitle">💳 <span>${esc(t("pay_title"))}</span></div>
+        <p style="margin:0;font-size:12.5px;color:var(--muted);line-height:1.6">
+          ${esc(t("pay_no_config"))}
+        </p>
+      </div>`;
+  }
+
+  mount.querySelectorAll("[data-copy]").forEach(b => {
+    b.addEventListener("click", e => {
+      e.preventDefault();
+      copyText(b.dataset.copy, b);
+    });
+  });
+}
+
+async function attachPayToActive(order){
+  const btn = $("payNowBtn");
+  if(!btn) return;
+  const amt = Number(order.amount) || 0;
+  if(amt <= 0){
+    btn.style.display = "none";
+    return;
+  }
+  await fetchHotelPayment();
+  btn.style.display = "flex";
+  $("payNowText").textContent = `${t("pay_now")} ${money(amt)}`;
+  btn.onclick = () => {
+    $("orderRef").innerText = order.reference || "—";
+    $("successText").innerText = `${order.service_title || ""} · ${ctxLabel()}`;
+    renderPaymentCard(amt, order.reference);
+    openModal("successModal");
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   28. INIT
 ═══════════════════════════════════════════════════════════════ */
 async function init(){
   loadCart();
@@ -2277,6 +2467,9 @@ async function init(){
   }catch(_){}
   if(!SERVICES.length) SERVICES = DEFAULT_SERVICES.map(s => ({ ...s }));
   if(!DEPARTMENTS.length) DEPARTMENTS = DEFAULT_DEPARTMENTS.map(d => ({ ...d }));
+
+  /* Prefetch hotel payment info */
+  fetchHotelPayment();
 
   /* Branding */
   $("hotelName").innerText   = (STATE.hotelName || t("hotel_fallback")).toUpperCase();
