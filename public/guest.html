@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070707">
+<meta name="theme-color" content="#060606">
 <meta name="description" content="GuestHub — scan, order and enjoy. Room service, restaurant menu, tours, transport and concierge in one place.">
 <title>GuestHub — Scan · Order · Enjoy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,19 +21,20 @@
   --muted:#a8a8a8;--muted-2:#7a7a7a;--muted-3:#5a5a5a;
   --radius:20px;--radius-sm:14px;--radius-lg:26px;
   --shadow:0 18px 50px rgba(0,0,0,.45);
+  --topbar-h:60px;
   color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;min-height:100vh;background:
-  radial-gradient(circle at 50% -10%,rgba(198,255,0,.10),transparent 34%),
-  radial-gradient(circle at 100% 100%,rgba(56,189,248,.05),transparent 30%),
+  radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 34%),
+  radial-gradient(circle at 100% 100%,rgba(56,189,248,.04),transparent 30%),
   var(--bg);
   color:#fff;font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.5;
-  padding-bottom:calc(104px + env(safe-area-inset-bottom));
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 body.tableMode{background:
-  radial-gradient(circle at 50% -10%,rgba(251,191,36,.12),transparent 34%),
+  radial-gradient(circle at 50% -10%,rgba(251,191,36,.10),transparent 34%),
   radial-gradient(circle at 100% 100%,rgba(198,255,0,.05),transparent 30%),
   var(--bg);}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
@@ -45,7 +46,7 @@ img{max-width:100%;display:block}
 .offlineBar{position:fixed;top:0;left:0;right:0;z-index:1500;background:linear-gradient(90deg,#b91c1c,#ef4444);color:#fff;text-align:center;padding:9px 12px;font-size:12px;font-weight:800;letter-spacing:.3px;transform:translateY(-120%);transition:transform .3s ease;box-shadow:0 4px 20px rgba(239,68,68,.35)}
 .offlineBar.show{transform:translateY(0)}
 
-/* Top Bar */
+/* ── TOP BAR ─────────────────────────────── */
 .topbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:rgba(6,6,6,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
 .brand{display:flex;align-items:center;gap:9px;min-width:0;user-select:none}
 .brandMark{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,var(--lime),#a3d100);color:#000;font-family:'Space Grotesk';font-weight:800;font-size:17px;box-shadow:0 6px 22px rgba(198,255,0,.18)}
@@ -55,73 +56,132 @@ img{max-width:100%;display:block}
 .ctxChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid var(--lime-line);font-size:11px;font-weight:900;color:var(--lime);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
 .ctxChip.table{border-color:var(--gold-line);color:var(--gold)}
 .iconBtn{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:16px;transition:border-color .15s,color .15s}
-.iconBtn:hover,.iconBtn:active{border-color:var(--lime);color:var(--lime)}
+.iconBtn:active{border-color:var(--lime);color:var(--lime)}
 
-/* Hero */
+/* ── HOTEL STRIP (table mode) ─────────────── */
+.hotelStrip{padding:14px 16px 10px;display:flex;align-items:center;gap:12px}
+.hotelStrip .avatar{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#f59e0b);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:800;font-size:18px;color:#000;flex-shrink:0;box-shadow:0 6px 18px rgba(251,191,36,.22)}
+.hotelStrip .info{min-width:0;flex:1}
+.hotelStrip .info b{font-family:'Space Grotesk';font-size:16px;font-weight:800;display:block;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hotelStrip .info small{color:var(--muted-2);font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:6px;margin-top:2px}
+.hotelStrip .info small .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.hotelStrip .info small .sep{opacity:.4}
+
+/* ── HERO (room mode) ─────────────────────── */
 .hero{position:relative;overflow:hidden;padding:22px 16px 26px;background:
   radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
   linear-gradient(135deg,#c6ff00 0%,#e6ff66 45%,#fbbf24 100%);
   color:#000;border-radius:0 0 32px 32px}
-body.tableMode .hero{background:
-  radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
-  linear-gradient(135deg,#fbbf24 0%,#fcd34d 45%,#c6ff00 100%)}
 .hero:before{content:"";position:absolute;width:240px;height:240px;right:-120px;bottom:-130px;border:1px solid rgba(0,0,0,.14);border-radius:50%}
 .hero:after{content:"";position:absolute;width:140px;height:140px;right:-40px;bottom:-70px;border:1px solid rgba(0,0,0,.10);border-radius:50%}
 .heroContent{position:relative;z-index:2}
 .eyebrow{display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);padding:6px 11px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.7px;margin-bottom:12px}
-body.tableMode .eyebrow{color:var(--gold)}
-.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(25px,7vw,35px);line-height:1.02;letter-spacing:-1.1px;font-weight:800}
+.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(25px,7vw,34px);line-height:1.02;letter-spacing:-1.1px;font-weight:800}
 .hero h1 span{display:block;color:rgba(0,0,0,.62);font-size:.55em;letter-spacing:-.4px;margin-top:5px;font-weight:800}
 .hero p{margin:10px 0 0;max-width:360px;font-size:12.5px;font-weight:700;opacity:.78;line-height:1.45}
-.heroBottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.heroBottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
 .verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:10.5px;font-weight:900}
 .heroMeta{display:flex;gap:6px;flex-wrap:wrap}
 .heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.09);color:#000;font-size:10.5px;font-weight:900}
-.heroMeta span#heroStay{background:rgba(0,0,0,.15)}
 
-/* Context panel */
-.ctxPanel{margin-top:14px;display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));border:1px solid var(--lime-line)}
+/* ── CONTEXT PANEL ────────────────────────── */
+.ctxPanel{margin:12px 12px 0;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));border:1px solid var(--lime-line)}
 body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(255,255,255,.015));border-color:var(--gold-line)}
-.ctxIcon{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:14px;background:#0b0b0b;border:1px solid #2a2a2a;font-size:21px}
-.ctxPanel b{display:block;font-family:'Space Grotesk';font-size:14.5px;font-weight:800}
+.ctxIcon{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border-radius:13px;background:#0b0b0b;border:1px solid #2a2a2a;font-size:20px}
+.ctxPanel b{display:block;font-family:'Space Grotesk';font-size:14px;font-weight:800}
 .ctxPanel small{display:block;color:var(--muted-2);font-size:11px;margin-top:2px;font-weight:600}
 .ctxChange{margin-left:auto;padding:8px 13px;border-radius:10px;background:#1b1b1b;border:1px solid #303030;color:#fff;font-size:11.5px;font-weight:800;flex-shrink:0}
 
-/* Panels */
-.wrap{padding:0 12px}
-.input{width:100%;padding:13px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s,background .18s}
-.input::placeholder{color:#6a6a6a;font-weight:500}
-.input:focus{outline:none;border-color:var(--lime);background:#0d0d0d}
+/* ── QUICK REQUESTS (dine-in) ─────────────── */
+.quickReq{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 12px 4px}
+.quickReqBtn{padding:12px 8px;background:linear-gradient(145deg,#141414,#0a0a0a);border:1px solid #262626;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:800;transition:border-color .15s,transform .15s;color:#fff}
+.quickReqBtn:active{transform:scale(.95);border-color:var(--gold)}
+.quickReqBtn i{font-style:normal;font-size:22px;line-height:1}
 
-/* Promo */
-.promo{margin-top:14px;padding:14px 15px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.06));border:1px solid var(--lime-line);display:flex;justify-content:space-between;align-items:center;gap:12px}
-.promo b{font-family:'Space Grotesk';font-size:13px;display:block}
-.promo small{color:var(--muted);font-size:11px;display:block;margin-top:3px;line-height:1.4}
-.promoTag{padding:5px 10px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.4px;flex-shrink:0}
-.promoClose{color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
+/* ── STICKY MENU BAR ──────────────────────── */
+.menuSticky{position:sticky;top:var(--topbar-h);z-index:150;background:rgba(6,6,6,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 12px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.searchBox{position:relative;margin-bottom:9px}
+.searchIcon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:14px;opacity:.65}
+.searchBox input{width:100%;padding:12px 14px 12px 42px;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:13px;color:#fff;font-size:13.5px;font-weight:600;transition:border-color .18s,background .18s;outline:none}
+.searchBox input::placeholder{color:#6a6a6a;font-weight:500}
+.searchBox input:focus{border-color:var(--lime);background:#111}
+.searchClear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:#202020;color:#888;font-size:14px;display:none;place-items:center;line-height:1}
+.searchClear.show{display:grid}
 
-/* Quick Actions */
-.quickRow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
-@media(min-width:520px){.quickRow{grid-template-columns:repeat(6,1fr)}}
-.quickAction{min-height:84px;padding:10px 6px;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:10.5px;font-weight:800;transition:transform .15s,border-color .15s;text-align:center;line-height:1.15}
-.quickAction i{font-style:normal;font-size:22px;line-height:1}
-.quickAction:active{transform:scale(.96);border-color:var(--lime)}
-.quickAction:hover{border-color:#3a3a3a}
+.catTabs{display:flex;gap:7px;overflow-x:auto;padding:2px 0 4px;scrollbar-width:none;-ms-overflow-style:none}
+.catTabs::-webkit-scrollbar{display:none}
+.catTab{flex-shrink:0;padding:9px 14px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:12px;font-weight:800;white-space:nowrap;transition:all .18s;letter-spacing:.1px}
+.catTab.active{background:var(--lime);border-color:var(--lime);color:#000;box-shadow:0 4px 14px rgba(198,255,0,.28)}
+.catTab .cnt{opacity:.55;margin-left:5px;font-size:10.5px;font-weight:900}
+.catTab.active .cnt{opacity:.8}
 
-/* Search */
-.search{margin-top:14px}
-.searchBox{position:relative}
-.searchIcon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:15px;opacity:.65}
-.searchBox .input{padding-left:44px}
+/* ── POPULAR CAROUSEL ─────────────────────── */
+.popularSection{padding:16px 0 4px}
+.popularHead{display:flex;align-items:center;justify-content:space-between;padding:0 16px 12px;gap:10px}
+.popularHead h2{margin:0;font-family:'Space Grotesk';font-size:16px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:7px}
+.popularHead .fire{font-size:16px}
+.popularHead small{color:var(--muted-3);font-size:11px;font-weight:700}
+.popularScroll{display:flex;gap:11px;overflow-x:auto;padding:0 12px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.popularScroll::-webkit-scrollbar{display:none}
+.popCard{flex:0 0 185px;scroll-snap-align:start;background:linear-gradient(155deg,#171717,#0d0d0d);border:1px solid #262626;border-radius:18px;overflow:hidden;text-align:left;position:relative;transition:transform .18s,border-color .18s}
+.popCard:active{transform:scale(.97);border-color:var(--lime)}
+.popCard .img{height:112px;background:linear-gradient(135deg,#202020,#0a0a0a);display:grid;place-items:center;font-size:44px;overflow:hidden;position:relative}
+.popCard .img img{width:100%;height:100%;object-fit:cover}
+.popCard .badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#000;font-size:9px;font-weight:900;letter-spacing:.5px;padding:3px 8px;border-radius:999px;box-shadow:0 4px 12px rgba(251,191,36,.3)}
+.popCard .body{padding:11px 12px 12px}
+.popCard b{font-size:13px;display:block;line-height:1.25;font-weight:800;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.popCard small{color:var(--muted-2);font-size:11px;display:block;line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.popCard .price{font-family:'Space Grotesk';color:var(--lime);font-weight:900;font-size:14.5px;margin-top:8px;display:inline-block}
+.popCard .addMini{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:10px;background:var(--lime);color:#000;font-size:17px;font-weight:900;display:grid;place-items:center;line-height:1;transition:transform .15s;box-shadow:0 6px 16px rgba(198,255,0,.25)}
+.popCard .addMini:active{transform:scale(.85)}
+.popCard .addMini.hasQty{width:auto;padding:0 11px;background:var(--gold);font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
 
-/* Pills */
-.pills{display:flex;gap:7px;overflow-x:auto;padding:14px 12px 2px;scrollbar-width:none;-ms-overflow-style:none}
-.pills::-webkit-scrollbar{display:none}
-.pill{padding:8px 13px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11.5px;font-weight:800;white-space:nowrap;transition:all .15s}
-.pill.active{background:var(--lime);border-color:var(--lime);color:#000}
+/* ── MENU LIST ────────────────────────────── */
+.menuWrap{padding:0 12px}
+.menuSection{margin-top:18px;scroll-margin-top:150px}
+.menuSectionHead{display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px;gap:10px}
+.menuSectionHead h3{margin:0;font-family:'Space Grotesk';font-size:17px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
+.menuSectionHead h3 .emoji{font-size:18px}
+.menuSectionHead .count{color:var(--muted-3);font-size:11px;font-weight:700}
+.menuList{display:flex;flex-direction:column;gap:10px}
 
-/* Active Order */
-.activeOrder{display:none;margin-top:14px;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(255,255,255,.015));border:1px solid var(--lime-line);border-radius:var(--radius);transition:border-color .3s}
+.menuCard{display:flex;gap:13px;padding:12px;background:linear-gradient(145deg,#151515,#0c0c0c);border:1px solid #242424;border-radius:18px;position:relative;transition:border-color .18s,transform .12s}
+.menuCard:active{transform:scale(.99)}
+.menuCard:hover{border-color:#333}
+.menuCard.out{opacity:.55}
+.menuCard .img{width:88px;height:88px;border-radius:14px;background:linear-gradient(135deg,#1f1f1f,#101010);display:grid;place-items:center;font-size:36px;flex-shrink:0;overflow:hidden;border:1px solid #2a2a2a;position:relative}
+.menuCard .img img{width:100%;height:100%;object-fit:cover}
+.menuCard .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.menuCard .body > b{font-size:14.5px;font-weight:800;line-height:1.25;display:block}
+.menuCard .body small{color:var(--muted-2);font-size:11.5px;margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.menuCard .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.miTag{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px;background:#1e1e1e;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.miTag.veg{background:rgba(34,197,94,.14);color:#4ade80}
+.miTag.spicy{background:rgba(239,68,68,.14);color:#f87171}
+.miTag.popular{background:rgba(251,191,36,.16);color:var(--gold)}
+.miTag.new{background:rgba(56,189,248,.14);color:var(--blue)}
+.menuCard .foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;gap:8px}
+.menuCard .price{font-family:'Space Grotesk';font-weight:900;font-size:15px;color:var(--lime)}
+.menuCard .addBtn{width:38px;height:38px;border-radius:12px;background:var(--lime);color:#000;font-size:20px;font-weight:900;display:grid;place-items:center;line-height:1;transition:transform .15s,background .15s;box-shadow:0 6px 18px rgba(198,255,0,.22)}
+.menuCard .addBtn:active{transform:scale(.88)}
+.menuCard .addBtn.hasQty{width:auto;min-width:38px;padding:0 12px;background:var(--gold);color:#000;font-size:13px;gap:6px;display:inline-flex;align-items:center}
+.menuCard .addBtn:disabled{background:#242424;color:#666;box-shadow:none}
+.soldOut{position:absolute;top:12px;right:12px;font-size:9px;font-weight:900;background:#2a2a2a;color:#999;padding:3px 8px;border-radius:999px;letter-spacing:.4px}
+
+/* ── SERVICE CARDS (room mode) ────────────── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:520px){.grid2{grid-template-columns:repeat(3,1fr)}}
+.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;transition:transform .15s,border-color .15s;min-height:130px;display:flex;flex-direction:column;overflow:hidden}
+.svc:hover{border-color:#3a3a3a;transform:translateY(-2px)}
+.svc:active{transform:scale(.98);border-color:var(--lime)}
+.svc i{font-style:normal;font-size:24px;display:block;margin-bottom:8px;line-height:1}
+.svc b{font-size:13px;display:block;line-height:1.25;padding-right:70px;font-weight:800}
+.svc small{color:var(--muted-2);font-size:11px;display:block;margin-top:6px;line-height:1.4;flex:1}
+.svc .price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:4px 9px;border-radius:999px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svcVendor{display:inline-block;margin-top:8px;font-size:10px;color:var(--muted-3);font-weight:700}
+
+/* ── ACTIVE ORDER ─────────────────────────── */
+.activeOrder{display:none;margin:14px 12px 0;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(255,255,255,.015));border:1px solid var(--lime-line);border-radius:var(--radius);transition:border-color .3s}
 .activeOrder.show{display:block}
 .activeOrder.flash{animation:bannerFlash 1s ease 3;border-color:var(--lime)}
 @keyframes bannerFlash{0%,100%{box-shadow:0 0 0 0 rgba(198,255,0,.55)}50%{box-shadow:0 0 0 12px rgba(198,255,0,0)}}
@@ -133,7 +193,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .liveDot.on{background:var(--green);animation:pulseDot 2s infinite}
 @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 .refreshBtn{width:34px;height:34px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#9a9a9a;font-size:15px;line-height:1;display:grid;place-items:center;transition:color .18s,border-color .18s}
-.refreshBtn:hover{color:var(--lime);border-color:var(--lime)}
+.refreshBtn:active{color:var(--lime);border-color:var(--lime)}
 .refreshBtn.spinning{animation:spin .8s linear infinite;color:var(--lime)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .status{display:inline-block;height:max-content;padding:5px 10px;border-radius:999px;font-size:10px;font-weight:900;letter-spacing:.4px;background:#202020;color:var(--muted);white-space:nowrap}
@@ -154,90 +214,54 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .orderDetails strong{color:#fff;font-weight:800}
 .orderEta{margin-top:10px;padding:9px 12px;background:rgba(198,255,0,.06);border:1px dashed var(--lime-line);border-radius:12px;font-size:11.5px;color:var(--lime);font-weight:800;display:flex;align-items:center;gap:7px}
 
-/* Sections */
-.section{margin:14px 12px 0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:15px}
-.section.hidden{display:none}
-.section h3{margin:0 0 12px;font-family:'Space Grotesk';color:var(--lime);font-size:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center;gap:10px}
-.count{background:#202020;color:var(--muted);font-size:11px;font-weight:900;padding:3px 9px;border-radius:999px;min-width:24px;text-align:center}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(min-width:650px){.grid2{grid-template-columns:repeat(3,1fr)}}
-
-/* Service Card */
-.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;transition:transform .15s,border-color .15s,box-shadow .15s;min-height:132px;display:flex;flex-direction:column;overflow:hidden}
-.svc:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(198,255,0,.06),transparent 50%);opacity:0;transition:opacity .2s;pointer-events:none}
-.svc:hover{border-color:#3a3a3a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.svc:hover:before{opacity:1}
-.svc:active{transform:scale(.98);border-color:var(--lime)}
-.svc i{font-style:normal;font-size:24px;display:block;margin-bottom:8px;line-height:1}
-.svc b{font-size:13px;display:block;line-height:1.25;padding-right:70px;font-weight:800}
-.svc small{color:var(--muted-2);font-size:11px;display:block;margin-top:6px;line-height:1.4;flex:1}
-.svc.hidden-card{display:none}
-.price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10px;font-weight:900;padding:4px 9px;border-radius:999px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.svcVendor{display:inline-block;margin-top:8px;font-size:10px;color:var(--muted-3);font-weight:700}
-
-/* Menu Items */
-.menuList{display:flex;flex-direction:column;gap:10px}
-.menuItem{display:flex;gap:12px;padding:12px;border:1px solid #232323;background:linear-gradient(145deg,#141414,#0c0c0c);border-radius:16px;position:relative;transition:border-color .15s}
-.menuItem:hover{border-color:#333}
-.menuItem.hidden-card{display:none}
-.menuItem.out{opacity:.55}
-.miThumb{width:62px;height:62px;border-radius:14px;background:#1b1b1b;display:grid;place-items:center;font-size:27px;flex-shrink:0;overflow:hidden;border:1px solid #262626}
-.miThumb img{width:100%;height:100%;object-fit:cover}
-.miBody{flex:1;min-width:0}
-.miBody>b{font-size:13.5px;font-weight:800;display:block;line-height:1.25}
-.miBody small{color:var(--muted-2);font-size:11.5px;display:block;margin-top:4px;line-height:1.45}
-.miTags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
-.miTag{font-size:9px;font-weight:900;padding:3px 7px;border-radius:999px;background:#1e1e1e;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
-.miTag.veg{background:rgba(34,197,94,.14);color:#4ade80}
-.miTag.spicy{background:rgba(239,68,68,.14);color:#f87171}
-.miTag.popular{background:rgba(251,191,36,.16);color:var(--gold)}
-.miTag.new{background:rgba(56,189,248,.14);color:var(--blue)}
-.miFoot{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px}
-.miPrice{font-family:'Space Grotesk';font-weight:800;font-size:14px;color:var(--lime)}
-.addBtn{padding:8px 15px;border-radius:10px;background:var(--lime);color:#000;font-weight:900;font-size:12px;transition:transform .12s}
-.addBtn:active{transform:scale(.94)}
-.addBtn:disabled{background:#242424;color:#666}
-.soldOut{position:absolute;top:12px;right:12px;font-size:9px;font-weight:900;background:#2a2a2a;color:#888;padding:3px 8px;border-radius:999px;letter-spacing:.4px}
-
-/* Cart bar */
-.cartBar{position:fixed;left:12px;right:12px;bottom:calc(78px + env(safe-area-inset-bottom));z-index:480;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 16px;border-radius:18px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;box-shadow:0 14px 40px rgba(198,255,0,.28)}
-.cartBar.show{display:flex;animation:fadeUp .22s ease}
-@keyframes fadeUp{from{opacity:0}to{opacity:1}}
+/* ── CART BAR (floating) ─────────────────── */
+.cartBar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:480;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 16px;border-radius:18px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;box-shadow:0 14px 40px rgba(198,255,0,.32);animation:fadeUp .22s ease}
+.cartBar.show{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .cartBar b{display:block;font-family:'Space Grotesk';font-size:13.5px;font-weight:900}
 .cartBar small{display:block;font-size:11px;font-weight:800;opacity:.72}
 .cartBar button{padding:11px 18px;border-radius:12px;background:#000;color:var(--lime);font-weight:900;font-size:12.5px;white-space:nowrap}
 
-/* Cart rows */
-.cartRow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #202020}
+/* ── CART BOTTOM SHEET ───────────────────── */
+.cartSheet{position:fixed;left:0;right:0;bottom:0;z-index:900;background:linear-gradient(180deg,#0e0e0e,#060606);border-top:1px solid #2a2a2a;border-radius:24px 24px 0 0;padding:8px 0 max(16px,env(safe-area-inset-bottom));transform:translateY(102%);transition:transform .32s cubic-bezier(.2,.85,.3,1);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 -20px 60px rgba(0,0,0,.55)}
+.cartSheet.open{transform:translateY(0)}
+.cartSheet .handle{width:42px;height:4px;background:#333;border-radius:999px;margin:6px auto 12px;flex-shrink:0}
+.cartSheet .head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;border-bottom:1px solid #1e1e1e;flex-shrink:0}
+.cartSheet .head h3{margin:0;font-family:'Space Grotesk';font-size:18px;font-weight:800;letter-spacing:-.2px}
+.cartSheet .head small{display:block;color:var(--muted-2);font-size:11.5px;font-weight:700;margin-top:3px}
+.cartSheet .closeSheet{width:36px;height:36px;border-radius:50%;border:1px solid #333;background:#111;font-size:18px;display:grid;place-items:center;line-height:1}
+.cartSheet .body{flex:1;overflow-y:auto;padding:14px 20px 8px}
+.cartSheet .foot{padding:14px 20px 4px;border-top:1px solid #1e1e1e;background:#0a0a0a;flex-shrink:0}
+.cartRow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #1c1c1c}
 .cartRow:last-of-type{border-bottom:0}
-.cartRow .ci{width:42px;height:42px;border-radius:12px;background:#181818;display:grid;place-items:center;font-size:19px;flex-shrink:0;overflow:hidden}
+.cartRow .ci{width:46px;height:46px;border-radius:12px;background:#181818;display:grid;place-items:center;font-size:20px;flex-shrink:0;overflow:hidden;border:1px solid #242424}
 .cartRow .ci img{width:100%;height:100%;object-fit:cover}
 .cartRow .cb{flex:1;min-width:0}
-.cartRow .cb b{font-size:12.5px;font-weight:800;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cartRow .cb small{color:var(--muted-2);font-size:11px;font-weight:700}
-.qty{display:inline-flex;align-items:center;gap:2px;background:#111;border:1px solid #2a2a2a;border-radius:10px;padding:3px}
-.qty button{width:26px;height:26px;border-radius:8px;background:#1e1e1e;color:#fff;font-size:15px;font-weight:900;display:grid;place-items:center;line-height:1}
-.qty span{min-width:20px;text-align:center;font-weight:900;font-size:13px}
-.totals{margin-top:14px;padding:13px;border-radius:14px;background:#0b0b0b;border:1px dashed #303030}
+.cartRow .cb b{font-size:13px;font-weight:800;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cartRow .cb small{color:var(--muted-2);font-size:11.5px;font-weight:700;margin-top:2px}
+.qty{display:inline-flex;align-items:center;gap:2px;background:#111;border:1px solid #2a2a2a;border-radius:11px;padding:3px}
+.qty button{width:28px;height:28px;border-radius:8px;background:#1e1e1e;color:#fff;font-size:16px;font-weight:900;display:grid;place-items:center;line-height:1}
+.qty button:active{background:var(--lime);color:#000}
+.qty span{min-width:22px;text-align:center;font-weight:900;font-size:13px}
+.totals{margin-top:6px;padding:13px;border-radius:14px;background:#0b0b0b;border:1px dashed #303030}
 .totalsRow{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:var(--muted);padding:4px 0}
 .totalsRow.grand{color:#fff;font-family:'Space Grotesk';font-size:16px;font-weight:900;padding-top:9px;margin-top:6px;border-top:1px solid #232323}
 .totalsRow.grand span:last-child{color:var(--lime)}
 
-/* Loading / Empty */
-.loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
-.spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
-.empty{display:none;text-align:center;padding:30px 16px;color:var(--muted-2);font-size:13px}
-.empty.show{display:block}
-.emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
+/* ── INPUT ────────────────────────────────── */
+.input{width:100%;padding:13px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s}
+.input::placeholder{color:#6a6a6a;font-weight:500}
+.input:focus{outline:none;border-color:var(--lime);background:#0d0d0d}
+.label{display:block;color:var(--muted-2);font-size:10px;font-weight:800;margin-top:14px;margin-bottom:6px;letter-spacing:.8px;text-transform:uppercase}
 
-/* Bottom Nav */
-.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #242424}
-.navBtn{min-height:54px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#7a7a7a;position:relative}
+/* ── BOTTOM NAV ───────────────────────────── */
+.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #242424}
+.navBtn{min-height:52px;font-size:10px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#7a7a7a;position:relative}
 .navBtn span:first-child{font-size:19px;line-height:1}
 .navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
 .navBadge{position:absolute;top:4px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;display:grid;place-items:center}
 
-/* Modal */
+/* ── MODAL ────────────────────────────────── */
 .modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .modal.active{display:grid}
 .modalBox{width:100%;max-width:470px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:26px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
@@ -246,16 +270,13 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .modalTitle{margin:0;font-family:'Space Grotesk';font-size:20px;font-weight:900;letter-spacing:-.3px}
 .modalDesc{margin-top:6px;color:var(--muted-2);font-size:12px;line-height:1.5}
 .close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;font-size:20px;line-height:1;transition:border-color .15s;display:grid;place-items:center}
-.close:hover{border-color:#555}
-.label{display:block;color:var(--muted-2);font-size:10px;font-weight:800;margin-top:14px;letter-spacing:.8px;text-transform:uppercase}
 .btn{width:100%;margin-top:12px;padding:15px;border-radius:13px;background:var(--lime);color:#000;font-size:14px;font-weight:900;transition:opacity .15s,transform .15s;letter-spacing:.2px}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.6;cursor:wait}
 .btn.secondary{background:#202020;border:1px solid #333;color:#fff}
-.btn.sm{padding:11px;font-size:12.5px;margin-top:0}
 .twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 
-/* Success */
+/* ── SUCCESS ──────────────────────────────── */
 .success{text-align:center;padding:6px}
 .successIcon{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 16px;border-radius:50%;background:var(--lime-soft);font-size:38px;color:var(--lime);animation:pop .4s cubic-bezier(.3,1.5,.5,1)}
 @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
@@ -263,7 +284,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .reference small{display:block;color:var(--muted-3);font-size:10px;letter-spacing:.9px;font-weight:800}
 .reference strong{display:block;color:var(--lime);font-family:'Space Grotesk';font-size:18px;margin-top:5px;letter-spacing:1.2px}
 
-/* Order History */
+/* ── ORDER HISTORY ────────────────────────── */
 .orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:13px;margin-bottom:8px}
 .orderItem strong{font-size:13px;display:block;font-weight:800}
 .orderItem small{color:var(--muted-2);font-size:11px;display:block;margin-top:4px;line-height:1.45}
@@ -272,55 +293,63 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 .rateRow button{border:1px solid #2a2a2a;border-radius:8px;padding:4px 7px;font-size:14px;transition:border-color .15s,transform .15s}
 .rateRow button:hover{border-color:var(--lime);transform:scale(1.1)}
 
-/* Help */
+/* ── HELP / LANG / INFO ───────────────────── */
 .help-btn{width:100%;margin-bottom:8px;background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;align-items:center;gap:12px}
 .help-btn:active{transform:scale(.98);border-color:var(--gold)}
 .help-btn span.hi{font-size:21px;line-height:1}
 .help-btn b{display:block;font-size:12.5px;font-weight:800}
 .help-btn small{display:block;color:var(--muted-3);font-size:10.5px;margin-top:2px}
 .help-btn .arrow{margin-left:auto;color:var(--muted-3);font-size:15px}
-
-/* Footer */
-.footer{text-align:center;color:var(--muted-3);padding:26px 20px 120px;font-size:11px;line-height:1.8}
-.footer strong{color:var(--muted)}
-
-/* Toast */
-.toast{position:fixed;left:12px;right:12px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13px;font-weight:700;text-align:center}
-.toast.show{display:block;animation:toastIn .22s ease}
-@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-/* Language */
 .langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
 .langCard:active{transform:scale(.97)}
-.langCard:hover{border-color:var(--lime)}
 .langCard.active{border-color:var(--lime);background:var(--lime-soft)}
 .langCard .flag{font-size:22px;line-height:1}
 .langCard b{font-size:13px;font-weight:800}
 .langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
 .langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900;font-size:14px}
 
-/* RTL */
+/* ── LOADING / EMPTY ──────────────────────── */
+.loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
+.spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
+.empty{display:none;text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13px}
+.empty.show{display:block}
+.emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
+
+/* ── PROMO ────────────────────────────────── */
+.promo{margin:14px 12px 0;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.06));border:1px solid var(--lime-line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.promo b{font-family:'Space Grotesk';font-size:13px;display:block}
+.promo small{color:var(--muted);font-size:11px;display:block;margin-top:3px;line-height:1.4}
+.promoTag{padding:5px 10px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.4px;flex-shrink:0}
+.promoClose{color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
+
+/* ── FOOTER ───────────────────────────────── */
+.footer{text-align:center;color:var(--muted-3);padding:26px 20px 120px;font-size:11px;line-height:1.8}
+.footer strong{color:var(--muted)}
+
+/* ── TOAST ────────────────────────────────── */
+.toast{position:fixed;left:12px;right:12px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13px;font-weight:700;text-align:center}
+.toast.show{display:block;animation:toastIn .22s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── RTL ──────────────────────────────────── */
 [dir="rtl"] .searchIcon{left:auto;right:15px}
-[dir="rtl"] .searchBox .input{padding-left:14px;padding-right:44px}
+[dir="rtl"] .searchBox input{padding-left:14px;padding-right:42px}
+[dir="rtl"] .searchClear{right:auto;left:10px}
 [dir="rtl"] .price{right:auto;left:10px}
 [dir="rtl"] .svc b{padding-right:0;padding-left:70px}
 [dir="rtl"] .progressStep{transform:scaleX(-1)}
-[dir="rtl"] .orderAmount{float:left!important}
-[dir="rtl"] .hero:before{right:auto;left:-120px}
-[dir="rtl"] .hero:after{right:auto;left:-40px}
-[dir="rtl"] .langCard .check{right:auto;left:12px}
-[dir="rtl"] .ctxChange{margin-left:0;margin-right:auto}
 [dir="rtl"] .soldOut{right:auto;left:12px}
 [dir="rtl"] .help-btn .arrow{margin-left:0;margin-right:auto;transform:scaleX(-1)}
 
-/* Responsive / A11y */
+/* ── RESPONSIVE ───────────────────────────── */
 @media(min-width:650px){
   body{max-width:800px;margin:auto}
   .bottomNav{max-width:800px;left:50%;transform:translateX(-50%)}
   .cartBar{max-width:776px;left:50%;transform:translateX(-50%)}
+  .cartSheet{max-width:800px;left:50%;transform:translateX(-50%) translateY(102%)}
+  .cartSheet.open{transform:translateX(-50%) translateY(0)}
   .modal{place-items:center}
-  .hero{border-radius:0 0 36px 36px}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -341,13 +370,27 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
   <div class="topActions">
     <div class="ctxChip" id="ctxChip">🛏️ <b>—</b></div>
-    <button class="iconBtn" id="langBtn" aria-label="Language" title="Language">🌐</button>
-    <button class="iconBtn" id="bellBtn" aria-label="Contact" title="Contact">🔔</button>
+    <button class="iconBtn" id="langBtn" aria-label="Language">🌐</button>
+    <button class="iconBtn" id="bellBtn" aria-label="Contact">🔔</button>
   </div>
 </header>
 
-<!-- ═══════ HERO ═══════ -->
-<section class="hero">
+<!-- ═══════ HOTEL STRIP (table mode) ═══════ -->
+<div class="hotelStrip" id="hotelStrip" style="display:none">
+  <div class="avatar" id="hotelAvatar">B</div>
+  <div class="info">
+    <b id="hotelStripName">YOUR HOTEL</b>
+    <small>
+      <span class="dot"></span>
+      <span id="hotelStripMode">Dine-in</span>
+      <span class="sep">·</span>
+      <span id="hotelStripTable">Table —</span>
+    </small>
+  </div>
+</div>
+
+<!-- ═══════ HERO (room mode) ═══════ -->
+<section class="hero" id="heroSection">
   <div class="heroContent">
     <div class="eyebrow" id="heroEyebrow">✦ GUESTHUB OS</div>
     <h1 id="greeting">Welcome</h1>
@@ -363,87 +406,92 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </section>
 
-<!-- ═══════ SCAN CONTEXT ═══════ -->
-<div class="wrap">
-  <div class="ctxPanel" id="ctxPanel">
-    <div class="ctxIcon" id="ctxIcon">🛏️</div>
-    <div style="min-width:0">
-      <b id="ctxTitle">—</b>
-      <small id="ctxSub">—</small>
-    </div>
-    <button class="ctxChange" id="ctxChange" data-i18n="change">Change</button>
+<!-- ═══════ CONTEXT PANEL ═══════ -->
+<div class="ctxPanel" id="ctxPanel">
+  <div class="ctxIcon" id="ctxIcon">🛏️</div>
+  <div style="min-width:0">
+    <b id="ctxTitle">—</b>
+    <small id="ctxSub">—</small>
   </div>
+  <button class="ctxChange" id="ctxChange" data-i18n="change">Change</button>
 </div>
 
-<!-- ═══════ QUICK ACTIONS ═══════ -->
-<div class="wrap">
-  <div class="quickRow" id="quickRow"></div>
-</div>
-
-<!-- ═══════ SEARCH ═══════ -->
-<div class="wrap search">
-  <div class="searchBox">
-    <span class="searchIcon">🔎</span>
-    <input id="searchService" class="input" data-i18n="search_placeholder" placeholder="Search dishes, drinks, services…" autocomplete="off" aria-label="Search">
-  </div>
+<!-- ═══════ QUICK REQUESTS (table mode) ═══════ -->
+<div class="quickReq" id="quickReq" style="display:none">
+  <button class="quickReqBtn" data-quick-req="waiter"><i>🛎️</i><span data-i18n="qa_waiter">Call Waiter</span></button>
+  <button class="quickReqBtn" data-quick-req="water"><i>💧</i><span data-i18n="qa_water">Water</span></button>
+  <button class="quickReqBtn" data-quick-req="bill"><i>🧾</i><span data-i18n="qa_bill">Request Bill</span></button>
 </div>
 
 <!-- ═══════ ACTIVE ORDER ═══════ -->
-<div class="wrap">
-  <section class="activeOrder" id="activeOrder" aria-live="polite" aria-label="Active request">
-    <div class="orderTop">
-      <div>
-        <div class="orderService" id="activeService">Your active request</div>
-        <div class="orderRef" id="activeReference">GH-000000</div>
-      </div>
-      <div class="orderActions">
-        <span class="liveDot" id="liveDot" title="Connecting…" aria-label="Live update status"></span>
-        <button class="refreshBtn" id="refreshActive" aria-label="Refresh order status">⟳</button>
-        <span class="status pending" id="activeStatus">Pending</span>
-      </div>
+<section class="activeOrder" id="activeOrder" aria-live="polite">
+  <div class="orderTop">
+    <div>
+      <div class="orderService" id="activeService">Your active request</div>
+      <div class="orderRef" id="activeReference">GH-000000</div>
     </div>
-    <div class="progress" id="progress">
-      <span class="progressStep active" data-step="1"></span>
-      <span class="progressStep" data-step="2"></span>
-      <span class="progressStep" data-step="3"></span>
-      <span class="progressStep" data-step="4"></span>
+    <div class="orderActions">
+      <span class="liveDot" id="liveDot"></span>
+      <button class="refreshBtn" id="refreshActive" aria-label="Refresh">⟳</button>
+      <span class="status pending" id="activeStatus">Pending</span>
     </div>
-    <div class="progressLabels">
-      <span data-step="1" data-i18n="step_sent">Sent</span>
-      <span data-step="2" data-i18n="step_accepted">Accepted</span>
-      <span data-step="3" data-i18n="step_progress">In Progress</span>
-      <span data-step="4" data-i18n="step_done">Done</span>
-    </div>
-    <div class="orderDetails">
-      <span><span id="activeLocLabel" data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
-      <span><strong id="activeAmount">—</strong></span>
-    </div>
-    <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
-  </section>
+  </div>
+  <div class="progress" id="progress">
+    <span class="progressStep active" data-step="1"></span>
+    <span class="progressStep" data-step="2"></span>
+    <span class="progressStep" data-step="3"></span>
+    <span class="progressStep" data-step="4"></span>
+  </div>
+  <div class="progressLabels">
+    <span data-step="1" data-i18n="step_sent">Sent</span>
+    <span data-step="2" data-i18n="step_accepted">Accepted</span>
+    <span data-step="3" data-i18n="step_progress">In Progress</span>
+    <span data-step="4" data-i18n="step_done">Done</span>
+  </div>
+  <div class="orderDetails">
+    <span><span id="activeLocLabel" data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
+    <span><strong id="activeAmount">—</strong></span>
+  </div>
+  <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
+</section>
+
+<!-- ═══════ MENU STICKY BAR ═══════ -->
+<div class="menuSticky" id="menuSticky">
+  <div class="searchBox">
+    <span class="searchIcon">🔎</span>
+    <input id="searchService" data-i18n="search_placeholder" placeholder="Search dishes, drinks, services…" autocomplete="off">
+    <button class="searchClear" id="searchClear" aria-label="Clear search">✕</button>
+  </div>
+  <div class="catTabs" id="catTabs" role="tablist"></div>
 </div>
 
-<!-- ═══════ PILLS ═══════ -->
-<div class="pills" id="pills"></div>
+<!-- ═══════ POPULAR CAROUSEL ═══════ -->
+<section class="popularSection" id="popularSection" style="display:none">
+  <div class="popularHead">
+    <h2><span class="fire">🔥</span> <span data-i18n="popular_today">Popular today</span></h2>
+    <small id="popularSub"></small>
+  </div>
+  <div class="popularScroll" id="popularScroll"></div>
+</section>
 
-<!-- ═══════ CATALOG ═══════ -->
-<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading…</span></div>
-<main id="serviceArea" style="display:none"></main>
+<!-- ═══════ MAIN MENU / CATALOG ═══════ -->
+<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading your hotel's menu & services…</span></div>
+<main id="serviceArea" class="menuWrap" style="display:none"></main>
 
 <div id="emptySearch" class="empty" style="margin:0 12px">
   <div class="emptyIcon">🔎</div>
-  <strong data-i18n="empty_search">Nothing found</strong><br><span data-i18n="empty_search_sub">Try another search.</span>
+  <strong data-i18n="empty_search">Nothing found</strong><br>
+  <span data-i18n="empty_search_sub">Try another search.</span>
 </div>
 
 <!-- ═══════ PROMO ═══════ -->
-<div class="wrap">
-  <div class="promo" id="promoBanner">
-    <div>
-      <b id="promoTitle">🎉 Welcome to GuestHub</b>
-      <small id="promoText">Scan · Order · Enjoy — everything from one place.</small>
-    </div>
-    <span class="promoTag">LIVE</span>
-    <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
+<div class="promo" id="promoBanner">
+  <div>
+    <b id="promoTitle">🎉 Welcome to GuestHub</b>
+    <small id="promoText">Scan · Order · Enjoy — everything from one place.</small>
   </div>
+  <span class="promoTag">LIVE</span>
+  <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
 </div>
 
 <!-- ═══════ FOOTER ═══════ -->
@@ -462,6 +510,32 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   <button id="cartOpen" data-i18n="view_cart">View Cart →</button>
 </div>
 
+<!-- ═══════ CART BOTTOM SHEET ═══════ -->
+<div class="cartSheet" id="cartSheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+  <div class="handle"></div>
+  <div class="head">
+    <div>
+      <h3 id="cartTitle" data-i18n="your_order">🧾 Your Order</h3>
+      <small id="cartSubtitle"></small>
+    </div>
+    <button class="closeSheet" id="cartClose" aria-label="Close">×</button>
+  </div>
+  <div class="body">
+    <div id="cartItems"></div>
+    <div class="totals" id="cartTotals"></div>
+  </div>
+  <div class="foot">
+    <label class="label" for="cartNote" data-i18n="special_instructions" style="margin-top:0">Special instructions</label>
+    <input id="cartNote" class="input" data-i18n="note_placeholder" placeholder="Allergies, timing, preferences…">
+    <label class="label" for="cartPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
+    <input id="cartPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
+    <div class="twoButtons">
+      <button class="btn secondary" id="cartClear" data-i18n="clear_cart">Clear</button>
+      <button class="btn" id="cartCheckout" data-i18n="checkout">✅ Send Order</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
   <button class="navBtn active" data-tab="home"><span>⌂</span><span data-i18n="nav_home">Home</span></button>
@@ -470,8 +544,8 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   <button class="navBtn" data-tab="help"><span>💬</span><span data-i18n="nav_help">Help</span></button>
 </nav>
 
-<!-- ═══════ CONTEXT MODAL ═══════ -->
-<div class="modal" id="ctxModal" role="dialog" aria-modal="true" aria-labelledby="ctxTitleM">
+<!-- ═══════ MODALS ═══════ -->
+<div class="modal" id="ctxModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="ctxTitleM" data-i18n="ctx_title">Where are you?</h3><div class="modalDesc" data-i18n="ctx_desc">Choose your room or restaurant table.</div></div>
@@ -487,8 +561,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ SERVICE REQUEST MODAL ═══════ -->
-<div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+<div class="modal" id="orderModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 id="mTitle" class="modalTitle" data-i18n="confirm_request">Confirm Request</h3><div id="mDesc" class="modalDesc"></div></div>
@@ -506,28 +579,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ CART MODAL ═══════ -->
-<div class="modal" id="cartModal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-  <div class="modalBox">
-    <div class="modalHead">
-      <div><h3 class="modalTitle" id="cartTitle" data-i18n="your_order">🧾 Your Order</h3><div class="modalDesc" id="cartSubtitle"></div></div>
-      <button class="close" data-close="cartModal" aria-label="Close">×</button>
-    </div>
-    <div id="cartItems" style="margin-top:8px"></div>
-    <div class="totals" id="cartTotals"></div>
-    <label class="label" for="cartNote" data-i18n="special_instructions">Special instructions</label>
-    <input id="cartNote" class="input" data-i18n="note_placeholder" placeholder="Allergies, timing, preferences…">
-    <label class="label" for="cartPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
-    <input id="cartPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
-    <div class="twoButtons">
-      <button class="btn secondary" id="cartClear" data-i18n="clear_cart">Clear</button>
-      <button class="btn" id="cartCheckout" data-i18n="checkout">✅ Send Order</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ SUCCESS MODAL ═══════ -->
-<div class="modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+<div class="modal" id="successModal" role="dialog" aria-modal="true">
   <div class="modalBox success">
     <div class="successIcon">✓</div>
     <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center">Request Received!</h3>
@@ -537,8 +589,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ ORDERS MODAL ═══════ -->
-<div class="modal" id="ordersModal" role="dialog" aria-modal="true" aria-labelledby="ordersTitle">
+<div class="modal" id="ordersModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="ordersTitle" data-i18n="orders_title">📋 My Orders</h3><div class="modalDesc" data-i18n="orders_desc">Track your GuestHub requests.</div></div>
@@ -548,8 +599,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ HELP MODAL ═══════ -->
-<div class="modal" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+<div class="modal" id="helpModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="helpTitle" data-i18n="help_title">💬 Talk to the Hotel</h3><div class="modalDesc" data-i18n="help_desc">Direct WhatsApp — fastest response.</div></div>
@@ -559,8 +609,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ INFO MODAL ═══════ -->
-<div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+<div class="modal" id="infoModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="infoTitle" data-i18n="info_title">ℹ️ How It Works</h3><div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div></div>
@@ -570,8 +619,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   </div>
 </div>
 
-<!-- ═══════ LANGUAGE MODAL ═══════ -->
-<div class="modal" id="langModal" role="dialog" aria-modal="true" aria-labelledby="langTitle">
+<div class="modal" id="langModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
       <div><h3 class="modalTitle" id="langTitle">🌐 Language</h3><div class="modalDesc" id="langDesc">Choose your preferred language.</div></div>
@@ -589,7 +637,7 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 /* ═══════════════════════════════════════════════════════════════
    1. CONFIG
 ═══════════════════════════════════════════════════════════════ */
-const API_BASE          = "";               // point at your backend
+const API_BASE          = "";
 const POLL_ACTIVE_MS    = 15000;
 const POLL_IDLE_MS      = 60000;
 const ORDER_COOLDOWN_MS = 20000;
@@ -648,28 +696,28 @@ function ctxLabel(){
 function ctxNumber(){ return CONTEXT.mode === "table" ? CONTEXT.table : CONTEXT.room; }
 
 /* ═══════════════════════════════════════════════════════════════
-   3. I18N — EN · SW · FR · AR
+   3. I18N (EN · SW · FR · AR)
 ═══════════════════════════════════════════════════════════════ */
 const I18N = {
   en:{dir:"ltr",flag:"🇬🇧",name:"English",native:"English",
-    welcome:"✦ GUESTHUB OS",secured:"SECURED",
-    room_number:"Room",table_number:"Table",
-    search_placeholder:"Search dishes, drinks, services…",loading_text:"Loading your hotel's menu & services…",
+    welcome:"✦ GUESTHUB OS",room_number:"Room",table_number:"Table",
+    search_placeholder:"Search dishes, drinks, services…",loading_text:"Loading your hotel's menu…",
     scan_room:"Room",scan_table:"Table",change:"Change",
     ctx_title:"Where are you?",ctx_desc:"Choose your room or restaurant table.",ctx_save:"Confirm",
     ctx_room_sub:"Room service & all hotel services",
     ctx_table_sub:"Dine in — order straight to your table",
+    qa_waiter:"Call Waiter",qa_water:"Water",qa_bill:"Request Bill",
     qa_menu:"Menu",qa_food:"Room Service",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",
-    qa_services:"Housekeeping",qa_orders:"My Orders",qa_waiter:"Call Waiter",qa_water:"Water",
-    qa_bill:"Request Bill",qa_help:"Help",qa_concierge:"Concierge",
+    qa_services:"Housekeeping",qa_orders:"My Orders",qa_help:"Help",qa_concierge:"Concierge",
+    popular_today:"Popular today",popular_sub:"Guest favourites",
+    menu_tab:"Menu",services_tab:"Services",cat_all:"All",cat_services_only:"Restaurant Services",
+    cat_food:"🍽️ Food & Room Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Tours & Safari",
+    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",
     live_updates:"Live updates active",polling_mode:"Polling every 15s",
     step_sent:"Sent",step_accepted:"Accepted",step_progress:"In Progress",step_done:"Done",
     status_pending:"Pending",status_new:"New",status_accepted:"Accepted",status_preparing:"Preparing",
     status_on_the_way:"On the way",status_completed:"Completed",status_cancelled:"Cancelled",status_rejected:"Rejected",
     eta_accepted:"Accepted — preparing shortly",eta_preparing:"Being prepared — arriving soon",eta_on_the_way:"On the way now",
-    cat_food:"🍽️ Food & Room Service",cat_taxi:"🚕 Transport & Transfers",cat_tour:"🌍 Tours & Safari",
-    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",cat_services_only:"🛎️ Restaurant Services",
-    cat_all:"All",
     nav_home:"Home",nav_menu:"Menu",nav_orders:"Orders",nav_help:"Help",
     confirm_request:"Confirm Request",your_whatsapp:"Your WhatsApp number",special_instructions:"Special instructions",
     note_placeholder:"Time, preference, or request",cancel:"Cancel",place_order:"✅ Place Order",sending:"⏳ Sending…",
@@ -697,83 +745,81 @@ const I18N = {
     stay_checked_out:"Thanks for staying ✨",stay_ready:"✨ Ready",stay_checkin_today:"Checking in today ✨",
     lang_title:"🌐 Language",lang_desc:"Choose your preferred language.",
     good_morning:"Good morning",good_afternoon:"Good afternoon",good_evening:"Good evening",
-    ask_hotel:"Ask hotel",sent_to:"sent to",
-    your_order:"🧾 Your Order",subtotal:"Subtotal",service_charge:"Service charge",total:"Total",
-    view_cart:"View Cart →",checkout:"✅ Send Order",clear_cart:"Clear",
-    items:"items",item:"item",empty_cart:"Your order is empty",add:"Add",
+    ask_hotel:"Ask hotel",sent_to:"sent to",your_order:"🧾 Your Order",subtotal:"Subtotal",
+    service_charge:"Service charge",total:"Total",view_cart:"View Cart →",checkout:"✅ Send Order",
+    clear_cart:"Clear",items:"items",item:"item",empty_cart:"Your order is empty",add:"Add",
     table_label:"Table",dine_in:"Dine-in",deliver_to:"Deliver to",
-    front_desk:"Ask the front desk",front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly."
+    front_desk:"Ask the front desk",front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly.",
+    sold_out:"Sold out",popular_badge:"★ Popular"
   },
   sw:{dir:"ltr",flag:"🇰🇪",name:"Kiswahili",native:"Kiswahili",
-    welcome:"✦ GUESTHUB",secured:"SALAMA",room_number:"Chumba",table_number:"Meza",
-    search_placeholder:"Tafuta vyakula, vinywaji, huduma…",loading_text:"Inapakia menyu na huduma…",
+    welcome:"✦ GUESTHUB",room_number:"Chumba",table_number:"Meza",
+    search_placeholder:"Tafuta vyakula, vinywaji, huduma…",loading_text:"Inapakia menyu…",
     scan_room:"Chumba",scan_table:"Meza",change:"Badilisha",
     ctx_title:"Uko wapi?",ctx_desc:"Chagua chumba au meza yako.",ctx_save:"Thibitisha",
-    ctx_room_sub:"Huduma ya chumba na huduma zote",
-    ctx_table_sub:"Kula hapa — agiza moja kwa moja mezani",
+    ctx_room_sub:"Huduma ya chumba na huduma zote",ctx_table_sub:"Kula hapa — agiza moja kwa moja mezani",
+    qa_waiter:"Ita Mhudumu",qa_water:"Maji",qa_bill:"Omba Bili",
     qa_menu:"Menyu",qa_food:"Huduma ya Chumba",qa_taxi:"Teksi",qa_tour:"Safari",qa_spa:"Spa",
-    qa_services:"Usafi",qa_orders:"Oda Zangu",qa_waiter:"Ita Mhudumu",qa_water:"Maji",
-    qa_bill:"Omba Bili",qa_help:"Msaada",qa_concierge:"Concierge",
+    qa_services:"Usafi",qa_orders:"Oda Zangu",qa_help:"Msaada",qa_concierge:"Concierge",
+    popular_today:"Maarufu leo",popular_sub:"Vipendwa na wageni",
+    menu_tab:"Menyu",services_tab:"Huduma",cat_all:"Zote",cat_services_only:"Huduma za Mkahawa",
+    cat_food:"🍽️ Chakula & Huduma ya Chumba",cat_taxi:"🚕 Usafiri",cat_tour:"🌍 Safari na Ziara",
+    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",
     live_updates:"Sasisho za moja kwa moja",polling_mode:"Inaangalia kila sekunde 15",
     step_sent:"Imetumwa",step_accepted:"Imepokelewa",step_progress:"Inaendelea",step_done:"Imekamilika",
     status_pending:"Inasubiri",status_new:"Mpya",status_accepted:"Imepokelewa",status_preparing:"Inaandaliwa",
     status_on_the_way:"Njiani",status_completed:"Imekamilika",status_cancelled:"Imefutwa",status_rejected:"Imekataliwa",
-    eta_accepted:"Imepokelewa — inaandaliwa hivi karibuni",eta_preparing:"Inaandaliwa — inafika hivi karibuni",eta_on_the_way:"Ipo njiani sasa",
-    cat_food:"🍽️ Chakula & Huduma ya Chumba",cat_taxi:"🚕 Usafiri",cat_tour:"🌍 Safari na Ziara",
-    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",cat_services_only:"🛎️ Huduma za Mkahawa",
-    cat_all:"Zote",nav_home:"Nyumbani",nav_menu:"Menyu",nav_orders:"Oda",nav_help:"Msaada",
+    eta_accepted:"Imepokelewa",eta_preparing:"Inaandaliwa",eta_on_the_way:"Ipo njiani sasa",
+    nav_home:"Nyumbani",nav_menu:"Menyu",nav_orders:"Oda",nav_help:"Msaada",
     confirm_request:"Thibitisha Ombi",your_whatsapp:"Namba yako ya WhatsApp",special_instructions:"Maelezo maalum",
     note_placeholder:"Muda, upendeleo, au ombi",cancel:"Ghairi",place_order:"✅ Tuma Ombi",sending:"⏳ Inatuma…",
     order_note:"Ombi lako linatumwa moja kwa moja kwa timu ya hoteli.",
-    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Vizuri — Fuatilia Ombi",
+    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Fuatilia Ombi",
     orders_title:"📋 Oda Zangu",orders_desc:"Fuatilia maombi yako.",
     no_orders_title:"Hakuna oda bado",no_orders_desc:"Maombi yako yataonekana hapa.",
-    rate_prompt:"Kadiria:",thanks_rating:"✓ Asante kwa maoni",
+    rate_prompt:"Kadiria:",thanks_rating:"✓ Asante",
     help_title:"💬 Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja.",whatsapp_now:"WhatsApp papo hapo",
     info_title:"ℹ️ Inavyofanya Kazi",info_desc:"Uzoefu wako mahali pamoja.",
-    t_enter_name:"Tafadhali ingiza jina lako",t_enter_room:"Tafadhali ingiza namba ya chumba",
-    t_enter_table:"Tafadhali ingiza namba ya meza",
-    t_valid_phone:"Ingiza namba sahihi (mf. 0712 345 678)",
-    t_wait:"Tafadhali subiri sekunde {s}",
-    t_offline:"📶 Huna mtandao — tutaunganisha tena",
-    t_dept_no_wa:"Idara hii haina WhatsApp bado",
-    t_rate_thanks:"Asante kwa maoni! ✨",t_order_fail:"Kitu kilienda vibaya. Jaribu tena.",
-    t_order_failed:"Ombi limeshindikana",t_item_added:"Imeongezwa kwenye oda yako",t_cart_empty:"Oda yako ni tupu",
+    t_enter_name:"Ingiza jina lako",t_enter_room:"Ingiza namba ya chumba",t_enter_table:"Ingiza namba ya meza",
+    t_valid_phone:"Ingiza namba sahihi",t_wait:"Subiri sekunde {s}",
+    t_offline:"📶 Huna mtandao",t_dept_no_wa:"Idara hii haina WhatsApp",
+    t_rate_thanks:"Asante! ✨",t_order_fail:"Kitu kilienda vibaya.",
+    t_order_failed:"Ombi limeshindikana",t_item_added:"Imeongezwa",t_cart_empty:"Oda yako ni tupu",
     hotel_fallback:"HOTELI YAKO",tagline_fallback:"Huduma ya chumba • Mkahawa • Usafiri • Safari • Spa",
-    no_services_title:"Hakuna kitu bado",no_services_body:"Hoteli hii bado haijatoa menyu. Uliza mapokezi.",
+    no_services_title:"Hakuna kitu bado",no_services_body:"Hoteli hii bado haijatoa menyu.",
     empty_search:"Hakuna kilichopatikana",empty_search_sub:"Jaribu utafutaji mwingine.",
-    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma uliyoomba.",
+    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma.",
     footer_line2:"GuestHub • Ukarimu rahisi ✨",
-    stay_day:"Siku {d} kati ya {t}",stay_arriving:"Kuwasili baada ya siku {d}",stay_last_day:"Siku ya mwisho — kuondoka kesho",
-    stay_checked_out:"Asante kwa kukaa ✨",stay_ready:"✨ Tayari",stay_checkin_today:"Unaingia leo ✨",
-    lang_title:"🌐 Lugha",lang_desc:"Chagua lugha unayopendelea.",
+    stay_day:"Siku {d} kati ya {t}",stay_arriving:"Kuwasili baada ya siku {d}",stay_last_day:"Siku ya mwisho",
+    stay_checked_out:"Asante ✨",stay_ready:"✨ Tayari",stay_checkin_today:"Unaingia leo ✨",
+    lang_title:"🌐 Lugha",lang_desc:"Chagua lugha.",
     good_morning:"Habari ya asubuhi",good_afternoon:"Habari ya mchana",good_evening:"Habari ya jioni",
-    ask_hotel:"Uliza hoteli",sent_to:"imetumwa kwa",
-    your_order:"🧾 Oda Yako",subtotal:"Jumla ndogo",service_charge:"Ada ya huduma",total:"Jumla",
-    view_cart:"Angalia Oda →",checkout:"✅ Tuma Oda",clear_cart:"Futa",
-    items:"vitu",item:"kitu",empty_cart:"Oda yako ni tupu",add:"Ongeza",
+    ask_hotel:"Uliza hoteli",sent_to:"imetumwa kwa",your_order:"🧾 Oda Yako",subtotal:"Jumla ndogo",
+    service_charge:"Ada ya huduma",total:"Jumla",view_cart:"Angalia Oda →",checkout:"✅ Tuma Oda",
+    clear_cart:"Futa",items:"vitu",item:"kitu",empty_cart:"Oda yako ni tupu",add:"Ongeza",
     table_label:"Meza",dine_in:"Kula hapa",deliver_to:"Peleka",
-    front_desk:"Uliza mapokezi",front_desk_body:"Idara za WhatsApp hazijawekwa bado. Piga simu mapokezi."
+    front_desk:"Uliza mapokezi",front_desk_body:"Piga simu mapokezi.",sold_out:"Imeisha",popular_badge:"★ Maarufu"
   },
   fr:{dir:"ltr",flag:"🇫🇷",name:"Français",native:"Français",
-    welcome:"✦ GUESTHUB",secured:"SÉCURISÉ",room_number:"Chambre",table_number:"Table",
+    welcome:"✦ GUESTHUB",room_number:"Chambre",table_number:"Table",
     search_placeholder:"Rechercher plats, boissons, services…",loading_text:"Chargement du menu…",
     scan_room:"Chambre",scan_table:"Table",change:"Changer",
     ctx_title:"Où êtes-vous ?",ctx_desc:"Choisissez votre chambre ou table.",ctx_save:"Confirmer",
-    ctx_room_sub:"Service en chambre et tous les services",
-    ctx_table_sub:"Sur place — commandez à table",
+    ctx_room_sub:"Service en chambre et tous les services",ctx_table_sub:"Sur place — commandez à table",
+    qa_waiter:"Appeler Serveur",qa_water:"Eau",qa_bill:"Demander l'Addition",
     qa_menu:"Menu",qa_food:"Service en Chambre",qa_taxi:"Taxi",qa_tour:"Safari",qa_spa:"Spa",
-    qa_services:"Ménage",qa_orders:"Mes Commandes",qa_waiter:"Appeler Serveur",qa_water:"Eau",
-    qa_bill:"Demander l'Addition",qa_help:"Aide",qa_concierge:"Concierge",
+    qa_services:"Ménage",qa_orders:"Mes Commandes",qa_help:"Aide",qa_concierge:"Concierge",
+    popular_today:"Populaire aujourd'hui",popular_sub:"Coups de cœur",
+    menu_tab:"Menu",services_tab:"Services",cat_all:"Tout",cat_services_only:"Services du Restaurant",
+    cat_food:"🍽️ Nourriture & Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Excursions",
+    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services",cat_other:"✨ Plus",
     live_updates:"Mises à jour en direct",polling_mode:"Actualisation toutes les 15s",
     step_sent:"Envoyé",step_accepted:"Accepté",step_progress:"En Cours",step_done:"Terminé",
     status_pending:"En attente",status_new:"Nouveau",status_accepted:"Accepté",status_preparing:"En préparation",
     status_on_the_way:"En route",status_completed:"Terminé",status_cancelled:"Annulé",status_rejected:"Refusé",
-    eta_accepted:"Accepté — préparation imminente",eta_preparing:"En préparation",eta_on_the_way:"En route",
-    cat_food:"🍽️ Nourriture & Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Excursions & Safari",
-    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services",cat_other:"✨ Plus",cat_services_only:"🛎️ Services du Restaurant",
-    cat_all:"Tout",nav_home:"Accueil",nav_menu:"Menu",nav_orders:"Commandes",nav_help:"Aide",
-    confirm_request:"Confirmer la Demande",your_whatsapp:"Votre WhatsApp",special_instructions:"Instructions spéciales",
+    eta_accepted:"Accepté",eta_preparing:"En préparation",eta_on_the_way:"En route",
+    nav_home:"Accueil",nav_menu:"Menu",nav_orders:"Commandes",nav_help:"Aide",
+    confirm_request:"Confirmer",your_whatsapp:"Votre WhatsApp",special_instructions:"Instructions spéciales",
     note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"✅ Commander",sending:"⏳ Envoi…",
     order_note:"Votre demande est envoyée directement à l'équipe.",
     success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Suivre",
@@ -781,17 +827,13 @@ const I18N = {
     no_orders_title:"Aucune commande",no_orders_desc:"Vos demandes apparaîtront ici.",
     rate_prompt:"Note :",thanks_rating:"✓ Merci",
     help_title:"💬 Parler à l'Hôtel",help_desc:"WhatsApp direct.",whatsapp_now:"WhatsApp",
-    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience en un seul endroit.",
-    t_enter_name:"Veuillez entrer votre nom",t_enter_room:"Veuillez entrer votre chambre",
-    t_enter_table:"Veuillez entrer votre table",
-    t_valid_phone:"Entrez un numéro valide",
-    t_wait:"Veuillez patienter {s}s",
-    t_offline:"📶 Hors ligne — reconnexion automatique",
-    t_dept_no_wa:"Pas encore de WhatsApp",
-    t_rate_thanks:"Merci ! ✨",t_order_fail:"Une erreur est survenue.",
-    t_order_failed:"Commande échouée",t_item_added:"Ajouté",t_cart_empty:"Commande vide",
+    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience en un endroit.",
+    t_enter_name:"Entrez votre nom",t_enter_room:"Entrez votre chambre",t_enter_table:"Entrez votre table",
+    t_valid_phone:"Numéro invalide",t_wait:"Patientez {s}s",t_offline:"📶 Hors ligne",
+    t_dept_no_wa:"Pas de WhatsApp",t_rate_thanks:"Merci ! ✨",t_order_fail:"Erreur.",
+    t_order_failed:"Échec",t_item_added:"Ajouté",t_cart_empty:"Commande vide",
     hotel_fallback:"VOTRE HÔTEL",tagline_fallback:"Service en chambre • Restaurant • Transport • Excursions • Spa",
-    no_services_title:"Rien pour l'instant",no_services_body:"Cet hôtel n'a pas encore publié de menu.",
+    no_services_title:"Rien pour l'instant",no_services_body:"Menu non publié.",
     empty_search:"Aucun résultat",empty_search_sub:"Essayez autre chose.",
     footer_secure:"🔒 GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service.",
     footer_line2:"GuestHub • L'hospitalité simplifiée ✨",
@@ -799,33 +841,33 @@ const I18N = {
     stay_checked_out:"Merci ✨",stay_ready:"✨ Prêt",stay_checkin_today:"Arrivée aujourd'hui ✨",
     lang_title:"🌐 Langue",lang_desc:"Choisissez votre langue.",
     good_morning:"Bonjour",good_afternoon:"Bon après-midi",good_evening:"Bonsoir",
-    ask_hotel:"Demander",sent_to:"envoyé à",
-    your_order:"🧾 Votre Commande",subtotal:"Sous-total",service_charge:"Frais de service",total:"Total",
-    view_cart:"Voir le Panier →",checkout:"✅ Envoyer",clear_cart:"Vider",
-    items:"articles",item:"article",empty_cart:"Commande vide",add:"Ajouter",
+    ask_hotel:"Demander",sent_to:"envoyé à",your_order:"🧾 Votre Commande",subtotal:"Sous-total",
+    service_charge:"Frais de service",total:"Total",view_cart:"Voir le Panier →",checkout:"✅ Envoyer",
+    clear_cart:"Vider",items:"articles",item:"article",empty_cart:"Commande vide",add:"Ajouter",
     table_label:"Table",dine_in:"Sur place",deliver_to:"Livrer à",
-    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception directement."
+    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception.",sold_out:"Épuisé",popular_badge:"★ Populaire"
   },
   ar:{dir:"rtl",flag:"🇸🇦",name:"العربية",native:"العربية",
-    welcome:"✦ GUESTHUB",secured:"مؤمّن",room_number:"الغرفة",table_number:"الطاولة",
-    search_placeholder:"ابحث عن الأطباق والمشروبات والخدمات…",loading_text:"جارٍ تحميل القائمة…",
+    welcome:"✦ GUESTHUB",room_number:"الغرفة",table_number:"الطاولة",
+    search_placeholder:"ابحث عن الأطباق والمشروبات…",loading_text:"جارٍ تحميل القائمة…",
     scan_room:"غرفة",scan_table:"طاولة",change:"تغيير",
     ctx_title:"أين أنت؟",ctx_desc:"اختر غرفتك أو طاولتك.",ctx_save:"تأكيد",
-    ctx_room_sub:"خدمة الغرف وجميع خدمات الفندق",
-    ctx_table_sub:"تناول الطعام هنا — اطلب مباشرة",
+    ctx_room_sub:"خدمة الغرف وجميع خدمات الفندق",ctx_table_sub:"تناول الطعام هنا",
+    qa_waiter:"نادِ النادل",qa_water:"ماء",qa_bill:"اطلب الفاتورة",
     qa_menu:"القائمة",qa_food:"خدمة الغرف",qa_taxi:"سيارة أجرة",qa_tour:"سفاري",qa_spa:"سبا",
-    qa_services:"التدبير المنزلي",qa_orders:"طلباتي",qa_waiter:"نادِ النادل",qa_water:"ماء",
-    qa_bill:"اطلب الفاتورة",qa_help:"مساعدة",qa_concierge:"الكونسيرج",
+    qa_services:"التدبير المنزلي",qa_orders:"طلباتي",qa_help:"مساعدة",qa_concierge:"الكونسيرج",
+    popular_today:"الأكثر رواجاً اليوم",popular_sub:"المفضلة لدى الضيوف",
+    menu_tab:"القائمة",services_tab:"الخدمات",cat_all:"الكل",cat_services_only:"خدمات المطعم",
+    cat_food:"🍽️ الطعام وخدمة الغرف",cat_taxi:"🚕 النقل",cat_tour:"🌍 الجولات",
+    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",
     live_updates:"تحديثات مباشرة",polling_mode:"تحديث كل 15 ثانية",
     step_sent:"تم الإرسال",step_accepted:"تم القبول",step_progress:"قيد التنفيذ",step_done:"مكتمل",
     status_pending:"قيد الانتظار",status_new:"جديد",status_accepted:"مقبول",status_preparing:"قيد التحضير",
     status_on_the_way:"في الطريق",status_completed:"مكتمل",status_cancelled:"ملغى",status_rejected:"مرفوض",
     eta_accepted:"تم القبول",eta_preparing:"قيد التحضير",eta_on_the_way:"في الطريق الآن",
-    cat_food:"🍽️ الطعام وخدمة الغرف",cat_taxi:"🚕 النقل",cat_tour:"🌍 الجولات والسفاري",
-    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",cat_services_only:"🛎️ خدمات المطعم",
-    cat_all:"الكل",nav_home:"الرئيسية",nav_menu:"القائمة",nav_orders:"الطلبات",nav_help:"مساعدة",
+    nav_home:"الرئيسية",nav_menu:"القائمة",nav_orders:"الطلبات",nav_help:"مساعدة",
     confirm_request:"تأكيد الطلب",your_whatsapp:"رقم واتساب",special_instructions:"تعليمات خاصة",
-    note_placeholder:"الوقت أو التفضيل أو الطلب",cancel:"إلغاء",place_order:"✅ إرسال الطلب",sending:"⏳ جاري الإرسال…",
+    note_placeholder:"الوقت أو التفضيل",cancel:"إلغاء",place_order:"✅ إرسال الطلب",sending:"⏳ جاري الإرسال…",
     order_note:"يُرسل طلبك مباشرة إلى فريق الفندق.",
     success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"تتبع طلبي",
     orders_title:"📋 طلباتي",orders_desc:"تابع طلباتك.",
@@ -833,29 +875,24 @@ const I18N = {
     rate_prompt:"التقييم:",thanks_rating:"✓ شكراً",
     help_title:"💬 التحدث مع الفندق",help_desc:"واتساب مباشر.",whatsapp_now:"واتساب فوري",
     info_title:"ℹ️ كيف يعمل",info_desc:"تجربة فندقك في مكان واحد.",
-    t_enter_name:"يرجى إدخال اسمك",t_enter_room:"يرجى إدخال رقم الغرفة",
-    t_enter_table:"يرجى إدخال رقم الطاولة",
-    t_valid_phone:"أدخل رقماً صحيحاً",
-    t_wait:"يرجى الانتظار {s} ثانية",
-    t_offline:"📶 أنت غير متصل",
-    t_dept_no_wa:"لا يوجد واتساب بعد",
-    t_rate_thanks:"شكراً! ✨",t_order_fail:"حدث خطأ. حاول مرة أخرى.",
-    t_order_failed:"فشل الطلب",t_item_added:"أُضيف إلى طلبك",t_cart_empty:"طلبك فارغ",
+    t_enter_name:"أدخل اسمك",t_enter_room:"أدخل رقم الغرفة",t_enter_table:"أدخل رقم الطاولة",
+    t_valid_phone:"رقم غير صحيح",t_wait:"انتظر {s} ثانية",t_offline:"📶 غير متصل",
+    t_dept_no_wa:"لا يوجد واتساب",t_rate_thanks:"شكراً! ✨",t_order_fail:"حدث خطأ.",
+    t_order_failed:"فشل الطلب",t_item_added:"أُضيف",t_cart_empty:"طلبك فارغ",
     hotel_fallback:"فندقك",tagline_fallback:"خدمة الغرف • المطعم • النقل • الجولات • السبا",
-    no_services_title:"لا يوجد شيء بعد",no_services_body:"لم ينشر هذا الفندق قائمة بعد.",
+    no_services_title:"لا يوجد شيء بعد",no_services_body:"لم تُنشر القائمة بعد.",
     empty_search:"لا نتائج",empty_search_sub:"جرب بحثاً آخر.",
-    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة المطلوبة.",
+    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة.",
     footer_line2:"GuestHub • الضيافة ببساطة ✨",
     stay_day:"اليوم {d} من {t}",stay_arriving:"الوصول خلال {d} أيام",stay_last_day:"اليوم الأخير",
-    stay_checked_out:"شكراً لإقامتك ✨",stay_ready:"✨ جاهز",stay_checkin_today:"تسجيل الوصول اليوم ✨",
-    lang_title:"🌐 اللغة",lang_desc:"اختر لغتك المفضلة.",
+    stay_checked_out:"شكراً ✨",stay_ready:"✨ جاهز",stay_checkin_today:"تسجيل الوصول اليوم ✨",
+    lang_title:"🌐 اللغة",lang_desc:"اختر لغتك.",
     good_morning:"صباح الخير",good_afternoon:"مساء الخير",good_evening:"مساء الخير",
-    ask_hotel:"اسأل الفندق",sent_to:"أُرسل إلى",
-    your_order:"🧾 طلبك",subtotal:"المجموع الفرعي",service_charge:"رسوم الخدمة",total:"الإجمالي",
-    view_cart:"عرض السلة →",checkout:"✅ إرسال الطلب",clear_cart:"مسح",
-    items:"عناصر",item:"عنصر",empty_cart:"طلبك فارغ",add:"أضف",
+    ask_hotel:"اسأل الفندق",sent_to:"أُرسل إلى",your_order:"🧾 طلبك",subtotal:"المجموع الفرعي",
+    service_charge:"رسوم الخدمة",total:"الإجمالي",view_cart:"عرض السلة →",checkout:"✅ إرسال الطلب",
+    clear_cart:"مسح",items:"عناصر",item:"عنصر",empty_cart:"طلبك فارغ",add:"أضف",
     table_label:"طاولة",dine_in:"تناول هنا",deliver_to:"التوصيل إلى",
-    front_desk:"اسأل مكتب الاستقبال",front_desk_body:"اتصل بالاستقبال مباشرة."
+    front_desk:"اسأل الاستقبال",front_desk_body:"اتصل بالاستقبال.",sold_out:"نفذ",popular_badge:"★ شائع"
   }
 };
 
@@ -877,7 +914,7 @@ let SERVICES = [];
 let DEPARTMENTS = [];
 let selected = null;
 let lastFocused = null;
-let pollTimer = null, resubTimer = null, refreshing = false, audioCtx = null;
+let pollTimer = null, refreshing = false, audioCtx = null;
 let supa = null, realtimeChannel = null, realtimeOK = false;
 let activeCategory = "all";
 let MENU = { categories:[], items:[] };
@@ -885,8 +922,7 @@ let MENU = { categories:[], items:[] };
 const STATE = { currency:"Ksh", serviceCharge:0, hotelName:"", tagline:"", cart:[] };
 
 /* ═══════════════════════════════════════════════════════════════
-   5. FALLBACK DEMO MENU (shown only when the backend has none)
-   The GM publishes the real menu from the hotel dashboard.
+   5. FALLBACK DEMO MENU
 ═══════════════════════════════════════════════════════════════ */
 const DEMO_CATEGORIES = [
   { id:"breakfast", name:"Breakfast",         emoji:"🍳", order:1 },
@@ -911,7 +947,6 @@ const DEMO_ITEMS = [
   { id:"d11",cat:"cold",      emoji:"🥤", name:"Passion Juice",     desc:"Freshly squeezed",                    price:400,  tags:["veg"] },
   { id:"d12",cat:"cold",      emoji:"💧", name:"Still Water",       desc:"750ml chilled bottle",                price:200,  tags:["veg"] }
 ];
-
 const DEFAULT_SERVICES = [
   { id:"s1",  title:"Room Service",         icon:"🍽️", category:"food",     price:0, description:"Full menu delivered to your room" },
   { id:"s2",  title:"Airport Transfer",     icon:"🚕", category:"taxi",     price:0, description:"Meet & greet, fixed rate" },
@@ -928,7 +963,6 @@ const DEFAULT_SERVICES = [
   { id:"s13", title:"Doctor / First Aid",   icon:"🩺", category:"other",    price:0, description:"Medical assistance" },
   { id:"s14", title:"Room Celebration",     icon:"🎉", category:"other",    price:0, description:"Birthdays, anniversaries" }
 ];
-
 const DEFAULT_DEPARTMENTS = [
   { name:"reception",    whatsapp:"254700000001", icon:"🛎️" },
   { name:"housekeeping", whatsapp:"254700000002", icon:"🧹" },
@@ -937,8 +971,6 @@ const DEFAULT_DEPARTMENTS = [
   { name:"concierge",    whatsapp:"254700000006", icon:"🎩" },
   { name:"transport",    whatsapp:"254700000007", icon:"🚕" }
 ];
-
-/* Quick requests shown on the table-mode quick bar */
 const QUICK_SERVICES = {
   waiter:{ id:"qs_waiter", title:"Call Waiter",      icon:"🛎️", category:"services", price:0, description:"A member of staff will come to your table" },
   water: { id:"qs_water",  title:"Drinking Water",   icon:"💧", category:"food",     price:0, description:"Chilled still water for the table" },
@@ -946,7 +978,7 @@ const QUICK_SERVICES = {
 };
 
 /* ═══════════════════════════════════════════════════════════════
-   6. PERSISTENCE — cart, local orders, read-only menu cache
+   6. PERSISTENCE
 ═══════════════════════════════════════════════════════════════ */
 const CART_KEY = () => `guesthub_cart_${HOTEL_ID}_${ctxNumber() || "x"}`;
 const LOCAL_ORDERS_KEY = () => `guesthub_orders_${HOTEL_ID}_${ctxNumber() || "x"}`;
@@ -962,6 +994,7 @@ function loadCart(){
 function saveCart(){
   try{ localStorage.setItem(CART_KEY(), JSON.stringify(STATE.cart)); }catch(_){}
   renderCartBar();
+  updateQtyBadges();
 }
 function loadLocalOrders(){
   try{ const raw = localStorage.getItem(LOCAL_ORDERS_KEY()); return raw ? JSON.parse(raw) : []; }
@@ -1011,7 +1044,7 @@ function closeAllModals(){
 }
 document.querySelectorAll(".modal").forEach(m => m.addEventListener("click", e => { if(e.target === m) closeModal(m.id); }));
 document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => closeModal(b.dataset.close)));
-document.addEventListener("keydown", e => { if(e.key === "Escape") closeAllModals(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape"){ closeAllModals(); closeCartSheet(); } });
 
 let toastTimer = null;
 function toast(msg){
@@ -1021,7 +1054,6 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove("show"), 3200);
 }
-
 function ensureAudio(){
   if(audioCtx) return audioCtx;
   try{ const Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return null; audioCtx = new Ctx(); }
@@ -1045,7 +1077,7 @@ function beep(times = 2, freq = 880){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   8. SERVICE CATEGORY NORMALISATION
+   8. CATEGORY NORMALISATION
 ═══════════════════════════════════════════════════════════════ */
 function normalizeCategory(value){
   const c = String(value || "").toLowerCase().trim();
@@ -1072,6 +1104,8 @@ const CATEGORY_META = {
 function sortedCategories(){ return [...MENU.categories].sort((a,b) => (a.order ?? 99) - (b.order ?? 99)); }
 function itemsInCategory(id){ return MENU.items.filter(i => i.cat === id); }
 function findMenuItem(id){ return MENU.items.find(i => String(i.id) === String(id)); }
+function menuIsEmpty(){ return !MENU.items.length; }
+function serviceIsEmpty(){ return !SERVICES.length; }
 
 /* ═══════════════════════════════════════════════════════════════
    10. CART
@@ -1080,6 +1114,10 @@ function cartCount(){ return STATE.cart.reduce((n, l) => n + l.qty, 0); }
 function cartSubtotal(){ return STATE.cart.reduce((n, l) => n + l.qty * (Number(l.price) || 0), 0); }
 function cartServiceCharge(){ return Math.round(cartSubtotal() * (Number(STATE.serviceCharge) || 0) / 100); }
 function cartTotal(){ return cartSubtotal() + cartServiceCharge(); }
+function qtyOf(id){
+  const line = STATE.cart.find(l => String(l.id) === String(id));
+  return line ? line.qty : 0;
+}
 
 function addToCart(itemId){
   const item = findMenuItem(itemId);
@@ -1089,8 +1127,8 @@ function addToCart(itemId){
   if(line) line.qty += 1;
   else STATE.cart.push({ id:item.id, name:item.name, price:Number(item.price) || 0, emoji:item.emoji || "🍽️", qty:1 });
   saveCart();
-  toast(`✓ ${item.name} — ${t("t_item_added")}`);
-  if(navigator.vibrate) navigator.vibrate(30);
+  toast(`✓ ${item.name}`);
+  if(navigator.vibrate) navigator.vibrate(25);
   beep(1, 720);
 }
 function setQty(itemId, qty){
@@ -1099,7 +1137,7 @@ function setQty(itemId, qty){
   if(qty <= 0) STATE.cart = STATE.cart.filter(l => String(l.id) !== String(itemId));
   else line.qty = qty;
   saveCart();
-  if($("cartModal").classList.contains("active")) renderCart();
+  if($("cartSheet").classList.contains("open")) renderCart();
 }
 function clearCart(){ STATE.cart = []; saveCart(); renderCart(); }
 
@@ -1119,12 +1157,27 @@ function updateOrdersBadge(){
   else badge.style.display = "none";
 }
 
+/* Update qty badges on every card currently rendered */
+function updateQtyBadges(){
+  document.querySelectorAll("[data-add]").forEach(btn => {
+    const id = btn.dataset.add;
+    const q = qtyOf(id);
+    if(q > 0){
+      btn.classList.add("hasQty");
+      btn.innerHTML = `×${q}`;
+    } else {
+      btn.classList.remove("hasQty");
+      btn.innerHTML = "+";
+    }
+  });
+}
+
 /* ═══════════════════════════════════════════════════════════════
    11. GREETING / CONTEXT
 ═══════════════════════════════════════════════════════════════ */
 function setGreeting(){
   const h = new Date().getHours();
-  const name = ($("guestName") && $("guestName").value.trim()) || localStorage.getItem("guest_name") || "";
+  const name = localStorage.getItem("guest_name") || "";
   const key = h < 12 ? "good_morning" : h < 17 ? "good_afternoon" : "good_evening";
   $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]} ✨` : `${t(key)} 👋`;
 }
@@ -1133,13 +1186,25 @@ function updateContextUI(){
   const isTable = CONTEXT.mode === "table";
   document.body.classList.toggle("tableMode", isTable);
 
+  /* top bar chip */
   const chip = $("ctxChip");
   chip.className = "ctxChip" + (isTable ? " table" : "");
   chip.innerHTML = isTable ? `🍽️ <b>${esc(CONTEXT.table || "—")}</b>` : `🛏️ <b>${esc(CONTEXT.room || "—")}</b>`;
 
-  $("heroCtx").textContent = isTable
-    ? `🍽️ ${t("table_label")} ${CONTEXT.table || "—"}`
-    : `🛏️ ${t("room_number")} ${CONTEXT.room || "—"}`;
+  /* table mode — hide hero, show hotel strip + quick requests */
+  $("heroSection").style.display = isTable ? "none" : "block";
+  $("hotelStrip").style.display  = isTable ? "flex"  : "none";
+  $("quickReq").style.display    = isTable ? "grid"  : "none";
+
+  if(isTable){
+    const initials = (STATE.hotelName || HOTEL_ID).trim().charAt(0).toUpperCase() || "H";
+    $("hotelAvatar").textContent = initials;
+    $("hotelStripName").textContent = STATE.hotelName || HOTEL_ID;
+    $("hotelStripMode").textContent = t("dine_in");
+    $("hotelStripTable").textContent = `${t("table_label")} ${CONTEXT.table || "—"}`;
+  }else{
+    $("heroCtx").textContent = `🛏️ ${t("room_number")} ${CONTEXT.room || "—"}`;
+  }
 
   $("ctxIcon").textContent = isTable ? "🍽️" : "🛏️";
   $("ctxTitle").textContent = isTable
@@ -1148,11 +1213,11 @@ function updateContextUI(){
   $("ctxSub").textContent = isTable ? t("ctx_table_sub") : t("ctx_room_sub");
 
   $("activeLocLabel").textContent = isTable ? t("table_label") : t("room_number");
-  $("heroEyebrow").textContent = isTable ? "✦ DINE IN — GUESTHUB" : "✦ GUESTHUB OS";
+  $("heroEyebrow").textContent = isTable ? "✦ DINE IN" : "✦ GUESTHUB OS";
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   12. STAY DATES (room mode)
+   12. STAY DATES
 ═══════════════════════════════════════════════════════════════ */
 let STAY = { checkin:null, checkout:null };
 let midnightTimer = null;
@@ -1189,7 +1254,6 @@ function stayInfo(){
 }
 function updateHeroStay(){
   const el = $("heroStay"); if(!el) return;
-  if(CONTEXT.mode === "table"){ el.textContent = t("dine_in"); return; }
   const info = stayInfo();
   if(!info){ el.textContent = t("stay_ready"); return; }
   const { day, total, ci, co, today } = info;
@@ -1207,67 +1271,86 @@ function scheduleMidnightRefresh(){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   13. RENDER — quick actions, pills, catalog
+   13. RENDER — category tabs, popular, menu, services
 ═══════════════════════════════════════════════════════════════ */
-function renderQuickActions(){
-  const row = $("quickRow");
-  const isTable = CONTEXT.mode === "table";
-  const items = isTable
-    ? [
-        { k:"menu",   i:"📖", label:t("qa_menu") },
-        { k:"waiter", i:"🛎️", label:t("qa_waiter") },
-        { k:"water",  i:"💧", label:t("qa_water") },
-        { k:"bill",   i:"🧾", label:t("qa_bill") },
-        { k:"orders", i:"📋", label:t("qa_orders") },
-        { k:"help",   i:"💬", label:t("qa_help") }
-      ]
-    : [
-        { k:"menu",         i:"🍽️", label:t("qa_food") },
-        { k:"taxi",         i:"🚕", label:t("qa_taxi") },
-        { k:"tour",         i:"🦁", label:t("qa_tour") },
-        { k:"spa",          i:"🧖", label:t("qa_spa") },
-        { k:"housekeeping", i:"🧹", label:t("qa_services") },
-        { k:"orders",       i:"📋", label:t("qa_orders") }
-      ];
-  row.innerHTML = items.map(it =>
-    `<button class="quickAction" data-quick="${esc(it.k)}"><i>${it.i}</i><span>${esc(it.label)}</span></button>`
-  ).join("");
-  row.querySelectorAll("[data-quick]").forEach(btn => btn.addEventListener("click", () => handleQuick(btn.dataset.quick)));
-}
-function handleQuick(k){
-  if(k === "orders"){ viewOrders(); return; }
-  if(k === "help"){ openModal("helpModal"); return; }
-  if(k === "menu"){
-    setActiveCategory("all");
-    document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" });
-    return;
+
+function renderCategoryTabs(){
+  const tabs = $("catTabs");
+  const html = [];
+
+  /* Menu categories first */
+  const menuCats = sortedCategories().filter(c => itemsInCategory(c.id).length);
+  if(menuCats.length){
+    html.push(`<button class="catTab ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}<span class="cnt">${MENU.items.length}</span></button>`);
+    menuCats.forEach(c => {
+      html.push(`<button class="catTab ${activeCategory === "menu:" + c.id ? "active" : ""}" data-cat="menu:${esc(c.id)}">${esc(c.emoji || "🍽️")} ${esc(c.name)}<span class="cnt">${itemsInCategory(c.id).length}</span></button>`);
+    });
   }
-  if(QUICK_SERVICES[k]){ openServiceOrder(QUICK_SERVICES[k]); return; }
-  const pill = document.querySelector(`.pill[data-cat="svc:${k}"]`);
-  if(pill) pill.click();
-  document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" });
+
+  /* Service categories */
+  const svcCats = new Set(SERVICES.map(s => s.category));
+  const svcOrdered = Object.keys(CATEGORY_META).filter(c => svcCats.has(c))
+    .sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
+  svcOrdered.forEach(c => {
+    const title = c === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[c].titleKey);
+    const count = SERVICES.filter(s => s.category === c).length;
+    html.push(`<button class="catTab ${activeCategory === "svc:" + c ? "active" : ""}" data-cat="svc:${esc(c)}">${esc(title)}<span class="cnt">${count}</span></button>`);
+  });
+
+  tabs.innerHTML = html.join("");
+  tabs.querySelectorAll(".catTab").forEach(b => b.addEventListener("click", () => {
+    setActiveCategory(b.dataset.cat);
+    /* scroll to that section if it's a specific category */
+    if(b.dataset.cat !== "all"){
+      const sec = document.querySelector(`.menuSection[data-filter="${b.dataset.cat}"]`);
+      if(sec){
+        const y = sec.getBoundingClientRect().top + window.scrollY - 155;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }));
 }
 
-function renderPills(){
-  const pills = $("pills");
-  const html = [`<button class="pill ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}</button>`];
-  sortedCategories().forEach(c => {
-    if(!itemsInCategory(c.id).length) return;
-    html.push(`<button class="pill ${activeCategory === "menu:" + c.id ? "active" : ""}" data-cat="menu:${esc(c.id)}">${esc(c.emoji || "🍽️")} ${esc(c.name)}</button>`);
-  });
-  const svcCats = new Set(SERVICES.map(s => s.category));
-  Object.keys(CATEGORY_META).filter(c => svcCats.has(c)).sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order)
-    .forEach(c => {
-      const title = c === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[c].titleKey);
-      html.push(`<button class="pill ${activeCategory === "svc:" + c ? "active" : ""}" data-cat="svc:${esc(c)}">${esc(title)}</button>`);
+function renderPopular(){
+  const wrap = $("popularSection");
+  const scroll = $("popularScroll");
+  /* Choose up to 6 items: prefer tag:popular, then first items */
+  const tagged = MENU.items.filter(i => (i.tags || []).includes("popular") && i.available !== false);
+  const picks = (tagged.length ? tagged : MENU.items.filter(i => i.available !== false)).slice(0, 6);
+  if(!picks.length){ wrap.style.display = "none"; return; }
+  wrap.style.display = "block";
+  $("popularSub").textContent = t("popular_sub");
+
+  scroll.innerHTML = picks.map(i => {
+    const thumb = /^https?:\/\//i.test(i.emoji || "")
+      ? `<img src="${esc(i.emoji)}" alt="" loading="lazy">`
+      : esc(i.emoji || "🍽️");
+    const q = qtyOf(i.id);
+    return `<button class="popCard" data-pop="${esc(i.id)}">
+      <div class="img">${thumb}${(i.tags || []).includes("popular") ? `<span class="badge">${esc(t("popular_badge"))}</span>` : ""}</div>
+      <div class="body">
+        <b>${esc(i.name)}</b>
+        <small>${esc(i.desc || "")}</small>
+        <span class="price">${esc(priceLabel(i.price))}</span>
+      </div>
+      <button class="addMini ${q > 0 ? "hasQty" : ""}" data-pop-add="${esc(i.id)}" aria-label="Add">${q > 0 ? "×" + q : "+"}</button>
+    </button>`;
+  }).join("");
+
+  scroll.querySelectorAll("[data-pop-add]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      addToCart(btn.dataset.popAdd);
     });
-  pills.innerHTML = html.join("");
-  pills.querySelectorAll(".pill").forEach(p => p.addEventListener("click", () => setActiveCategory(p.dataset.cat)));
-}
-function setActiveCategory(cat){
-  activeCategory = cat;
-  document.querySelectorAll("#pills .pill").forEach(x => x.classList.toggle("active", x.dataset.cat === cat));
-  applyFilters();
+  });
+  scroll.querySelectorAll("[data-pop]").forEach(card => {
+    card.addEventListener("click", e => {
+      if(e.target.closest("[data-pop-add]")) return;
+      addToCart(card.dataset.pop);
+    });
+  });
 }
 
 function renderAll(){
@@ -1280,9 +1363,12 @@ function renderAll(){
   cats.forEach(c => {
     const items = itemsInCategory(c.id);
     html.push(`
-      <section class="section" data-filter="menu:${esc(c.id)}" data-kind="menu">
-        <h3>${esc(c.emoji || "🍽️")} ${esc(c.name)} <span class="count">${items.length}</span></h3>
-        <div class="menuList">${items.map(menuItemHTML).join("")}</div>
+      <section class="menuSection" data-filter="menu:${esc(c.id)}" data-kind="menu">
+        <div class="menuSectionHead">
+          <h3><span class="emoji">${esc(c.emoji || "🍽️")}</span> ${esc(c.name)}</h3>
+          <span class="count">${items.length} ${items.length === 1 ? t("item") : t("items")}</span>
+        </div>
+        <div class="menuList">${items.map(menuCardHTML).join("")}</div>
       </section>`);
   });
 
@@ -1295,15 +1381,18 @@ function renderAll(){
     ordered.forEach(cat => {
       const title = cat === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[cat].titleKey);
       html.push(`
-        <section class="section" data-filter="svc:${esc(cat)}" data-kind="svc">
-          <h3>${esc(title)} <span class="count">${groups[cat].length}</span></h3>
+        <section class="menuSection" data-filter="svc:${esc(cat)}" data-kind="svc">
+          <div class="menuSectionHead">
+            <h3><span class="emoji">🛎️</span> ${esc(title)}</h3>
+            <span class="count">${groups[cat].length}</span>
+          </div>
           <div class="grid2">${groups[cat].map(serviceCardHTML).join("")}</div>
         </section>`);
     });
   }
 
   if(!html.length){
-    area.innerHTML = `<div class="section"><h3>${esc(t("no_services_title"))}</h3>
+    area.innerHTML = `<div class="menuSection"><div class="menuSectionHead"><h3>${esc(t("no_services_title"))}</h3></div>
       <p style="color:#a8a8a8;font-size:13px;line-height:1.6;margin:0">${esc(t("no_services_body"))}</p></div>`;
     return;
   }
@@ -1314,10 +1403,11 @@ function renderAll(){
     e.stopPropagation();
     addToCart(el.dataset.add);
   }));
+  updateQtyBadges();
   applyFilters();
 }
 
-function menuItemHTML(i){
+function menuCardHTML(i){
   const out = i.available === false;
   const thumb = /^https?:\/\//i.test(i.emoji || "")
     ? `<img src="${esc(i.emoji)}" alt="" loading="lazy">`
@@ -1328,19 +1418,22 @@ function menuItemHTML(i){
     return `<span class="miTag ${cls}">${esc(label)}</span>`;
   }).join("");
   const searchBlob = `${i.name || ""} ${i.desc || ""} ${(i.tags || []).join(" ")}`.toLowerCase();
+  const q = qtyOf(i.id);
   return `
-    <div class="menuItem ${out ? "out" : ""}" data-search="${esc(searchBlob)}">
-      <div class="miThumb">${thumb}</div>
-      <div class="miBody">
+    <div class="menuCard ${out ? "out" : ""}" data-search="${esc(searchBlob)}" data-id="${esc(i.id)}">
+      <div class="img">${thumb}</div>
+      <div class="body">
         <b>${esc(i.name || "Item")}</b>
         ${i.desc ? `<small>${esc(i.desc)}</small>` : ""}
-        ${tags ? `<div class="miTags">${tags}</div>` : ""}
-        <div class="miFoot">
-          <span class="miPrice">${esc(priceLabel(i.price))}</span>
-          <button class="addBtn" data-add="${esc(i.id)}" ${out ? "disabled" : ""}>${out ? "—" : "+ " + esc(t("add"))}</button>
+        ${tags ? `<div class="tags">${tags}</div>` : ""}
+        <div class="foot">
+          <span class="price">${esc(priceLabel(i.price))}</span>
+          <button class="addBtn ${q > 0 ? "hasQty" : ""}" data-add="${esc(i.id)}" ${out ? "disabled" : ""} aria-label="Add">
+            ${out ? "—" : (q > 0 ? "×" + q : "+")}
+          </button>
         </div>
       </div>
-      ${out ? `<span class="soldOut">—</span>` : ""}
+      ${out ? `<span class="soldOut">${esc(t("sold_out"))}</span>` : ""}
     </div>`;
 }
 
@@ -1360,38 +1453,54 @@ function serviceCardHTML(s){
 ═══════════════════════════════════════════════════════════════ */
 function applyFilters(){
   const q = ($("searchService").value || "").trim().toLowerCase();
-  const sections = document.querySelectorAll("#serviceArea .section[data-filter]");
+  $("searchClear").classList.toggle("show", !!q);
+
+  const sections = document.querySelectorAll("#serviceArea .menuSection[data-filter]");
   let visibleCards = 0;
 
   sections.forEach(sec => {
     const filter = sec.dataset.filter || "";
     const catOK = activeCategory === "all" || filter === activeCategory;
-    if(!catOK){ sec.classList.add("hidden"); return; }
+    if(!catOK){ sec.style.display = "none"; return; }
 
     if(sec.dataset.kind === "menu"){
       let shown = 0;
-      sec.querySelectorAll(".menuItem").forEach(item => {
+      sec.querySelectorAll(".menuCard").forEach(item => {
         const match = !q || (item.dataset.search || "").includes(q);
-        item.classList.toggle("hidden-card", !match);
+        item.style.display = match ? "" : "none";
         if(match) shown++;
       });
-      sec.classList.toggle("hidden", shown === 0);
+      sec.style.display = shown === 0 ? "none" : "";
       visibleCards += shown;
     } else {
       let shown = 0;
       sec.querySelectorAll(".svc").forEach(card => {
         const match = !q || (card.dataset.search || "").includes(q);
-        card.classList.toggle("hidden-card", !match);
+        card.style.display = match ? "" : "none";
         if(match) shown++;
       });
-      sec.classList.toggle("hidden", shown === 0);
+      sec.style.display = shown === 0 ? "none" : "";
       visibleCards += shown;
     }
   });
 
   $("emptySearch").classList.toggle("show", !!q && visibleCards === 0);
+
+  /* Hide popular when searching or when filter is not "all" */
+  $("popularSection").style.display = (q || activeCategory !== "all") ? "none" : "";
 }
 $("searchService").addEventListener("input", applyFilters);
+$("searchClear").addEventListener("click", () => {
+  $("searchService").value = "";
+  applyFilters();
+  $("searchService").focus();
+});
+
+function setActiveCategory(cat){
+  activeCategory = cat;
+  document.querySelectorAll("#catTabs .catTab").forEach(x => x.classList.toggle("active", x.dataset.cat === cat));
+  applyFilters();
+}
 
 /* ═══════════════════════════════════════════════════════════════
    15. ORDER FLOW — services
@@ -1466,13 +1575,20 @@ $("confirmOrder").addEventListener("click", async () => {
 $("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
 
 /* ═══════════════════════════════════════════════════════════════
-   16. ORDER FLOW — cart / menu
+   16. CART BOTTOM SHEET
 ═══════════════════════════════════════════════════════════════ */
-$("cartOpen").addEventListener("click", () => {
+function openCartSheet(){
   if(!STATE.cart.length){ toast(t("empty_cart")); return; }
   renderCart();
-  openModal("cartModal");
-});
+  $("cartSheet").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function closeCartSheet(){
+  $("cartSheet").classList.remove("open");
+  if(!document.querySelector(".modal.active")) document.body.style.overflow = "";
+}
+$("cartOpen").addEventListener("click", openCartSheet);
+$("cartClose").addEventListener("click", closeCartSheet);
 
 function renderCart(){
   const wrap = $("cartItems");
@@ -1518,12 +1634,12 @@ function renderCart(){
   }));
 }
 
-$("cartClear").addEventListener("click", () => { clearCart(); renderCart(); });
+$("cartClear").addEventListener("click", () => { clearCart(); renderCart(); if(!STATE.cart.length) closeCartSheet(); });
 $("cartPhone").addEventListener("input", saveGuestInfo);
 
 $("cartCheckout").addEventListener("click", async () => {
   if(!STATE.cart.length){ toast(t("empty_cart")); return; }
-  if(!validateGuest()){ closeModal("cartModal"); return; }
+  if(!validateGuest()){ closeCartSheet(); return; }
   if(!checkRateLimit()) return;
   ensureAudio();
 
@@ -1564,7 +1680,7 @@ $("cartCheckout").addEventListener("click", async () => {
 
     $("orderRef").innerText = result.reference;
     $("successText").innerText = `${n} ${n === 1 ? t("item") : t("items")} — ${t("sent_to")} ${HOTEL?.name || HOTEL_ID} · ${ctxLabel()}`;
-    closeModal("cartModal");
+    closeCartSheet();
     clearCart();
     openModal("successModal");
 
@@ -1580,7 +1696,7 @@ $("cartCheckout").addEventListener("click", async () => {
 });
 
 /* ═══════════════════════════════════════════════════════════════
-   17. ORDER SUBMISSION (API + graceful local fallback)
+   17. SUBMIT ORDER
 ═══════════════════════════════════════════════════════════════ */
 function departmentFor(cat){
   return { food:"kitchen", taxi:"transport", tour:"concierge", spa:"spa",
@@ -1617,20 +1733,15 @@ async function submitOrder(payload){
    18. GUEST INFO / VALIDATION
 ═══════════════════════════════════════════════════════════════ */
 function guestName(){
-  const el = $("guestName");
-  return (el && el.value.trim()) || localStorage.getItem("guest_name") || "Guest";
+  return localStorage.getItem("guest_name") || "Guest";
 }
 function saveGuestInfo(){
-  const n = $("guestName") && $("guestName").value.trim();
   const p = $("guestPhone") && $("guestPhone").value.trim();
   const cp = $("cartPhone") && $("cartPhone").value.trim();
-  if(n) localStorage.setItem("guest_name", n);
   if(p) localStorage.setItem("guest_phone", p);
   else if(cp) localStorage.setItem("guest_phone", cp);
 }
 function validateGuest(){
-  const name = ($("guestName").value || "").trim();
-  if(!name){ toast(t("t_enter_name")); $("guestName").focus(); return false; }
   if(!ctxNumber()){
     toast(CONTEXT.mode === "table" ? t("t_enter_table") : t("t_enter_room"));
     openCtxModal();
@@ -1743,7 +1854,6 @@ function pickActiveOrder(orders){
   }) || null;
 }
 function seenStatusKey(o){ return `seen_status_${HOTEL_ID}_${o.reference || o.id}`; }
-
 function detectStatusChange(order){
   const key = seenStatusKey(order);
   const prev = localStorage.getItem(key);
@@ -1764,7 +1874,6 @@ function notifyStatusChange(order, from, to){
   }
   if(to === "on_the_way" || to === "completed") beep(2);
 }
-
 async function loadActiveOrder(manual = false){
   if(refreshing) return;
   refreshing = true;
@@ -1774,7 +1883,6 @@ async function loadActiveOrder(manual = false){
     const loc = ctxNumber();
     const banner = $("activeOrder");
     if(!loc){ banner.classList.remove("show"); return; }
-
     let orders = loadLocalOrders();
     try{
       const r = await fetch(`${API_BASE}/api/orders/${encodeURIComponent(HOTEL_ID)}/${encodeURIComponent(loc)}`);
@@ -1786,7 +1894,6 @@ async function loadActiveOrder(manual = false){
         orders = [...map.values()];
       }
     }catch(_){}
-
     const active = pickActiveOrder(orders);
     if(!active){ banner.classList.remove("show"); return; }
     detectStatusChange(active);
@@ -1796,24 +1903,20 @@ async function loadActiveOrder(manual = false){
     if(btn && manual) setTimeout(() => btn.classList.remove("spinning"), 400);
   }
 }
-
 function renderActiveOrder(order){
   const banner = $("activeOrder");
   banner._lastOrder = order;
   const status = String(order.status || "pending").toLowerCase().replace(/\s+/g, "_");
   const step = STATUS_STEPS[status] ?? 1;
-
   $("activeService").innerText = order.service_title || "—";
   $("activeReference").innerText = order.reference || "GH-XXXX";
   $("activeRoom").innerText = CONTEXT.mode === "table"
     ? (order.table_number || ctxNumber() || "—")
     : (order.room_number || order.room || ctxNumber() || "—");
   $("activeAmount").innerText = Number(order.amount) > 0 ? money(order.amount) : "—";
-
   const statusEl = $("activeStatus");
   statusEl.className = "status " + status;
   statusEl.innerText = t("status_" + status) || status.replace(/_/g, " ");
-
   document.querySelectorAll("#progress .progressStep").forEach(el => {
     const s = Number(el.dataset.step);
     el.classList.remove("active", "cancelled");
@@ -1827,7 +1930,6 @@ function renderActiveOrder(order){
   if(status === "cancelled" || status === "rejected"){
     document.querySelectorAll("#progress .progressStep").forEach(el => el.classList.add("cancelled"));
   }
-
   const eta = $("orderEta");
   if(status === "accepted" || status === "preparing" || status === "on_the_way"){
     eta.style.display = "flex";
@@ -1866,7 +1968,6 @@ async function viewOrders(){
       <div style="font-size:12px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
     return;
   }
-
   $("ordersList").innerHTML = orders.map(o => {
     const status = String(o.status || "pending").toLowerCase().replace(/\s+/g, "_");
     const when = o.created_at ? new Date(o.created_at).toLocaleString() : "";
@@ -1884,7 +1985,6 @@ async function viewOrders(){
         <button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
     </div>`;
   }).join("");
-
   $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
     btn.addEventListener("click", () => {
       toast(t("t_rate_thanks"));
@@ -1975,6 +2075,14 @@ $("ctxSave").addEventListener("click", () => {
 });
 $("ctxChange").addEventListener("click", openCtxModal);
 
+/* Quick request buttons (dine-in) */
+document.querySelectorAll("[data-quick-req]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const key = btn.dataset.quickReq;
+    if(QUICK_SERVICES[key]) openServiceOrder(QUICK_SERVICES[key]);
+  });
+});
+
 /* ═══════════════════════════════════════════════════════════════
    24. I18N APPLY
 ═══════════════════════════════════════════════════════════════ */
@@ -1994,12 +2102,11 @@ function applyI18n(){
   setGreeting();
   updateContextUI();
   updateHeroStay();
-  renderQuickActions();
-  renderPills();
+  renderCategoryTabs();
+  renderPopular();
   renderAll();
   renderHelp();
   renderCartBar();
-  renderInfo();
 
   const banner = $("activeOrder");
   if(banner && banner.classList.contains("show") && banner._lastOrder) renderActiveOrder(banner._lastOrder);
@@ -2038,7 +2145,7 @@ function renderInfo(){
   const steps = isTable
     ? [
         ["1️⃣ Scan the table QR", "You're connected instantly — no app, no signup."],
-        ["2️⃣ Browse the menu",   "Add dishes and drinks to your order."],
+        ["2️⃣ Browse the menu",   "Add dishes and drinks — tap the + on any item."],
         ["3️⃣ Send to the kitchen","Your order lands with the team in real time."],
         ["4️⃣ Track it live",     "Watch each status update as it happens."],
         ["5️⃣ Enjoy ✨",           "Need anything? Tap Call Waiter or Help."]
@@ -2069,25 +2176,17 @@ document.querySelectorAll(".navBtn").forEach(btn => {
     const tab = btn.dataset.tab;
     document.querySelectorAll(".navBtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    if(tab === "home"){ closeAllModals(); window.scrollTo({ top:0, behavior:"smooth" }); }
-    if(tab === "menu"){ closeAllModals(); setActiveCategory("all"); document.querySelector("#serviceArea")?.scrollIntoView({ behavior:"smooth", block:"start" }); }
-    if(tab === "orders"){ viewOrders(); }
-    if(tab === "help"){ openModal("helpModal"); }
+    if(tab === "home"){ closeAllModals(); closeCartSheet(); window.scrollTo({ top:0, behavior:"smooth" }); }
+    if(tab === "menu"){ closeAllModals(); closeCartSheet(); setActiveCategory("all"); document.querySelector("#menuSticky")?.scrollIntoView({ behavior:"smooth", block:"start" }); }
+    if(tab === "orders"){ closeCartSheet(); viewOrders(); }
+    if(tab === "help"){ closeCartSheet(); openModal("helpModal"); }
   });
 });
-
-// Guest identity — stored locally only, never editable by anyone but the guest
-let nameInput = document.createElement("input");
-// (Guest name is captured inline the first time an order is placed — no dedicated panel needed.)
-
-$("guestPhone").addEventListener("input", saveGuestInfo);
-$("cartPhone").addEventListener("input", saveGuestInfo);
 
 window.addEventListener("beforeunload", unsubscribeRealtime);
 window.addEventListener("pagehide", unsubscribeRealtime);
 window.addEventListener("offline", updateOffline);
 window.addEventListener("online", () => { updateOffline(); loadActiveOrder(); if(supa) subscribeRealtime(); });
-
 function updateOffline(){
   const bar = $("offlineBar");
   if(!navigator.onLine) bar.classList.add("show");
@@ -2106,19 +2205,12 @@ async function init(){
   updateHeroStay();
   updateOffline();
 
-  // hidden guest-name input so validateGuest() has a source
-  const hiddenName = document.createElement("input");
-  hiddenName.type = "hidden";
-  hiddenName.id = "guestName";
-  hiddenName.value = localStorage.getItem("guest_name") || "";
-  document.body.appendChild(hiddenName);
-
   $("guestPhone").value = localStorage.getItem("guest_phone") || "";
   $("cartPhone").value  = localStorage.getItem("guest_phone") || "";
 
   if(localStorage.getItem(`promo_closed_${HOTEL_ID}`) === "1") $("promoBanner").style.display = "none";
 
-  // ---- Hotel info ----
+  /* Hotel info */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
     if(r.ok){
@@ -2132,7 +2224,7 @@ async function init(){
     }
   }catch(_){}
 
-  // ---- Menu (published by the GM from the hotel dashboard) ----
+  /* Menu */
   let menuLoaded = false;
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/menu`);
@@ -2163,20 +2255,18 @@ async function init(){
       }
     }
   }catch(_){}
-
   if(!menuLoaded){
     const cached = readCachedMenu();
     if(cached){ MENU = cached; menuLoaded = true; }
   }
   if(!menuLoaded){
-    // Show a friendly demo menu only when the GM hasn't published yet
     MENU = {
       categories: DEMO_CATEGORIES.map(c => ({ ...c })),
       items: DEMO_ITEMS.map(i => ({ ...i, available:true }))
     };
   }
 
-  // ---- Services & departments ----
+  /* Services & departments */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
     if(r.ok){
@@ -2185,11 +2275,10 @@ async function init(){
       DEPARTMENTS = j.departments || [];
     }
   }catch(_){}
-
   if(!SERVICES.length) SERVICES = DEFAULT_SERVICES.map(s => ({ ...s }));
   if(!DEPARTMENTS.length) DEPARTMENTS = DEFAULT_DEPARTMENTS.map(d => ({ ...d }));
 
-  // ---- Branding ----
+  /* Branding */
   $("hotelName").innerText   = (STATE.hotelName || t("hotel_fallback")).toUpperCase();
   $("hotelTagline").innerText = STATE.tagline || t("tagline_fallback");
 
@@ -2208,7 +2297,7 @@ async function init(){
     $("promoText").textContent  = HOTEL.promo_text;
   }else if(CONTEXT.mode === "table"){
     $("promoTitle").textContent = "🍽️ " + (STATE.hotelName || HOTEL_ID);
-    $("promoText").textContent  = "Welcome — tap any dish to add it to your order. A waiter is never far away.";
+    $("promoText").textContent  = "Welcome — tap any dish to add it to your order.";
   }
 }
 
