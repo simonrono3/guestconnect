@@ -31,15 +31,12 @@ button{font:inherit;cursor:pointer;border:0}
 input,select,textarea{font:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
 
-/* ── CRITICAL: hides inactive tab views ── */
 .hidden{display:none!important}
 
-/* ── BOOT ERROR BANNER ── */
 #bootError{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(90deg,#7f1d1d,#b91c1c);color:#fff;padding:12px 14px;font-size:12px;font-weight:800;line-height:1.4;box-shadow:0 6px 20px rgba(0,0,0,.5)}
 #bootError.show{display:block}
 #bootError button{background:#000;color:#fff;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:900;margin-left:8px}
 
-/* ── HEADER ── */
 .header{position:sticky;top:0;z-index:100;background:rgba(5,5,5,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(198,255,0,.35);padding:11px 14px}
 .header-inner{max-width:1500px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
@@ -54,7 +51,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .iconBtn .dot-notif{position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--red);border:1.5px solid #141414;display:none}
 .iconBtn.has-notif .dot-notif{display:block}
 
-/* ── BUTTONS ── */
 .btn{border:0;border-radius:11px;padding:10px 14px;font-size:11.5px;font-weight:900;cursor:pointer;transition:transform .12s,opacity .15s;letter-spacing:.2px;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
 .btn:active{transform:scale(.97)}
 .btn:disabled{opacity:.5;cursor:wait}
@@ -68,7 +64,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .btn-sm{padding:7px 10px;font-size:10.5px}
 .btn-lg{padding:13px 18px;font-size:13px}
 
-/* ── LAYOUT ── */
 .dashboard{padding:14px 12px;max-width:1500px;margin:auto}
 .hero{border:1px solid var(--border);border-radius:20px;background:linear-gradient(135deg,rgba(198,255,0,.08),rgba(251,191,36,.03)),var(--card);padding:18px 20px;margin-bottom:14px;position:relative;overflow:hidden}
 .hero:before{content:"";position:absolute;width:200px;height:200px;right:-100px;top:-100px;border:1px solid rgba(198,255,0,.1);border-radius:50%}
@@ -83,7 +78,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .dot.off{background:#555;animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
 
-/* ── STATS ── */
 .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr);gap:8px}}
@@ -94,7 +88,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .stat.highlight{border-color:var(--lime-line);background:linear-gradient(135deg,rgba(198,255,0,.06),rgba(255,255,255,.01))}
 .stat.highlight b{color:var(--lime)}
 
-/* ── TABS ── */
 .tabs-wrap{position:sticky;top:62px;z-index:80;background:rgba(5,5,5,.94);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:8px 12px;border-bottom:1px solid #161616}
 .tabs{max-width:1500px;margin:auto;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
@@ -106,19 +99,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tab .badge-count.hot{background:var(--red);color:#fff;animation:shake .4s ease 3}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
 
-/* ── VIEW ── */
 .view{padding:14px 12px;max-width:1500px;margin:auto}
 .card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:15px;margin-bottom:10px}
 .card-title{font-family:'Space Grotesk';font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .card-sub{color:var(--muted-2);font-size:11px;margin-top:5px;line-height:1.5}
 
-/* ── INPUTS ── */
 .input,.select,textarea{width:100%;padding:11px 13px;background:var(--input);border:1px solid #2a2a2a;border-radius:11px;color:#fff;outline:none;font-size:13px;font-weight:600;transition:border-color .15s}
 .input:focus,.select:focus,textarea:focus{border-color:var(--lime)}
 .input::placeholder{color:#555}
 label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
 
-/* ── FILTER PILLS ── */
 .filterRow{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .filterRow::-webkit-scrollbar{display:none}
 .fpill{flex:0 0 auto;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:11px;font-weight:900;transition:all .15s;white-space:nowrap;display:inline-flex;gap:6px;align-items:center;touch-action:manipulation;cursor:pointer;font-family:inherit}
@@ -126,7 +116,6 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .fpill:hover:not(.active){border-color:#3a3a3a}
 .fpill .n{font-size:10px;opacity:.7}
 
-/* ── ORDER ROW ── */
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#0a0a0a;border:1px solid #1b1b1b;border-radius:14px;padding:13px;margin-bottom:8px;flex-wrap:wrap;transition:border-color .15s,background .15s;position:relative}
 .row:hover{border-color:#2a2a2a}
 .row.new-order{border-color:var(--lime-line);background:linear-gradient(90deg,rgba(198,255,0,.06),rgba(255,255,255,.005));animation:flashRow 1s ease 4}
@@ -138,7 +127,6 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .row .rowMain small{color:#999;font-size:11.5px;display:block;margin-top:5px}
 .rowActions{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
 
-/* ── BADGES ── */
 .badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:9.5px;font-weight:900;letter-spacing:.4px}
 .badge-green{background:#0a2914;color:#4ade80}
 .badge-yellow{background:#352200;color:#fbbf24}
@@ -147,7 +135,6 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .badge-red{background:#2b0d0d;color:#ffb4b4}
 .badge-gray{background:#1b1b1b;color:#999}
 
-/* ── ORDER META ── */
 .orderMeta{color:var(--muted-2);font-size:10.5px;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;font-weight:700}
 .orderRef{font-family:'Space Grotesk';color:var(--lime);letter-spacing:.6px;font-weight:800;font-size:10.5px}
 .elapsed{color:var(--gold);font-weight:900;font-size:10.5px}
@@ -155,11 +142,9 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .elapsed.old{color:var(--red);animation:pulse-t 2s infinite}
 @keyframes pulse-t{0%,100%{opacity:1}50%{opacity:.55}}
 
-/* ── SKELETON ── */
 .skel{height:78px;border-radius:14px;background:linear-gradient(90deg,#111 0%,#1a1a1a 50%,#111 100%);background-size:200% 100%;animation:shimmer 1.4s infinite;margin-bottom:8px;border:1px solid #1a1a1a}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── MODAL ── */
 .modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .modal.active{display:grid}
 .modalBox{width:100%;max-width:520px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:24px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
@@ -170,20 +155,17 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#fff;font-size:20px;line-height:1;transition:border-color .15s}
 .close:hover{border-color:#555}
 
-/* ── QR ── */
 .qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
 .qr-card{background:#0e0e0e;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
 .qr-box{background:#fff;border-radius:12px;padding:12px;width:max-content;margin:14px auto}
 .qr-label{color:#000;font-weight:900;font-size:11px;margin-top:8px}
 
-/* ── TOAST ── */
 .toast{position:fixed;right:14px;bottom:20px;left:14px;max-width:400px;margin-left:auto;z-index:500;background:#161616;border:1px solid #333;border-radius:14px;padding:14px 16px;font-size:12.5px;font-weight:700;transform:translateY(140%);opacity:0;transition:all .28s cubic-bezier(.3,1.3,.5,1);word-break:break-word;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
 @media(min-width:640px){.toast{left:auto}}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.error{background:#2b0d0d;border-color:#672020;color:#ffb4b4}
 .toast.success{background:#0c1d10;border-color:#1f5a2c;color:#86efac}
 
-/* ── CHART ── */
 .chart{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:140px;padding:10px 0}
 .bar{background:linear-gradient(180deg,var(--lime),#a3d100);border-radius:6px 6px 3px 3px;min-height:4px;position:relative;transition:opacity .15s}
 .bar:hover{opacity:.85}
@@ -191,7 +173,6 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .bar .barVal{position:absolute;top:-18px;left:0;right:0;text-align:center;font-size:9.5px;color:var(--lime);font-weight:900}
 .chart-wrap{padding-bottom:26px}
 
-/* ── HEATMAP ── */
 .heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;height:44px;margin-top:10px}
 .hm{background:#141414;border-radius:3px;transition:background .15s;position:relative}
 .hm[data-lvl="1"]{background:#2a3a0c}
@@ -200,12 +181,10 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .hm[data-lvl="4"]{background:var(--lime)}
 .hm:hover{outline:2px solid var(--lime);outline-offset:1px;z-index:2}
 
-/* ── EMPTY STATE ── */
 .empty{text-align:center;padding:40px 20px;color:var(--muted-2);font-size:12.5px}
 .emptyIcon{font-size:38px;margin-bottom:10px;opacity:.7}
 .empty strong{display:block;color:#fff;font-size:14px;margin-bottom:6px}
 
-/* ── LANG MODAL GRID ── */
 .langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
 .langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;color:#fff;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative;cursor:pointer;touch-action:manipulation;font-family:inherit}
 .langCard:hover{border-color:var(--lime)}
@@ -215,13 +194,38 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
 .langCard small{font-size:10.5px;color:var(--muted-2);font-weight:700}
 .langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900}
 
-/* ── RTL ── */
+/* ── PAYMENT SETTINGS ── */
+.payTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.payTab{padding:14px 10px;background:#0d0d0d;border:1.5px solid #242424;border-radius:14px;color:#999;font-size:11.5px;font-weight:900;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .15s;cursor:pointer;font-family:inherit;letter-spacing:.2px}
+.payTab i{font-style:normal;font-size:22px;line-height:1}
+.payTab:hover{border-color:#3a3a3a;color:#fff}
+.payTab.active{background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.04));border-color:var(--lime);color:var(--lime);box-shadow:0 8px 22px rgba(198,255,0,.12)}
+.payField{display:none}
+.payField.show{display:block;animation:payFade .22s ease}
+@keyframes payFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.payPreview{margin-top:16px;padding:16px;border-radius:16px;background:linear-gradient(155deg,#0f1a0f,#0a0a0a);border:1px solid var(--lime-line)}
+.payPreview .pvTitle{font-family:'Space Grotesk';font-size:12.5px;font-weight:900;color:var(--lime);letter-spacing:.5px;display:flex;align-items:center;gap:7px;margin-bottom:12px;text-transform:uppercase}
+.payPreview .pvBox{background:#050505;border:1px dashed #2f2f2f;border-radius:13px;padding:13px;margin-bottom:12px}
+.payPreview .pvRow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;gap:10px}
+.payPreview .pvRow + .pvRow{border-top:1px solid #181818;padding-top:11px;margin-top:6px}
+.payPreview .pvLbl{font-size:10px;font-weight:900;color:#666;letter-spacing:.8px;text-transform:uppercase}
+.payPreview .pvVal{font-family:'Space Grotesk';font-size:17px;font-weight:900;color:#fff;letter-spacing:.8px}
+.payPreview .pvSteps{list-style:none;padding:0;margin:0;counter-reset:s}
+.payPreview .pvSteps li{position:relative;padding-left:26px;font-size:11.5px;color:#999;line-height:1.6;font-weight:600;margin-bottom:3px;counter-increment:s}
+.payPreview .pvSteps li:before{content:counter(s);position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:var(--lime);color:#000;font-size:9.5px;font-weight:900;display:grid;place-items:center;margin-top:1px}
+.payPreview.empty{background:#0a0a0a;border-color:#2a2a2a}
+.payPreview.empty .pvTitle{color:#666}
+.payPreview .pvNote{font-size:11.5px;color:#888;line-height:1.55;margin:0}
+.payHelp{padding:11px 13px;background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.2);border-radius:12px;font-size:11.5px;color:#7dd3fc;font-weight:700;line-height:1.55;margin-top:12px}
+.payHelp b{color:#fff}
+.paySaveBar{position:sticky;bottom:12px;display:flex;gap:8px;margin-top:16px;padding:10px;background:rgba(5,5,5,.92);backdrop-filter:blur(12px);border:1px solid #1f1f1f;border-radius:16px;z-index:5}
+.paySaveBar .btn{flex:1}
+
 [dir="rtl"] .rowActions{flex-direction:row-reverse}
 [dir="rtl"] .tabs{direction:rtl}
 [dir="rtl"] .toast{right:auto;left:14px}
 @media(min-width:640px){[dir="rtl"] .toast{left:auto;right:14px}}
 
-/* ── RESPONSIVE ── */
 @media(max-width:560px){
   .brand-sub{display:none}
   .hero{padding:16px}
@@ -285,6 +289,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
       <button type="button" class="tab" data-tab="whatsapp"><span>📱</span><span data-i18n="tab_whatsapp">WhatsApp</span></button>
       <button type="button" class="tab" data-tab="qr"><span>🔳</span><span data-i18n="tab_qr">QRs</span></button>
       <button type="button" class="tab" data-tab="finance"><span>💸</span><span data-i18n="tab_finance">Finance</span></button>
+      <button type="button" class="tab" data-tab="payment"><span>💳</span><span data-i18n="tab_payment">Payment</span></button>
       <button type="button" class="tab" data-tab="analytics"><span>📊</span><span data-i18n="tab_analytics">Analytics</span></button>
     </div>
   </div>
@@ -296,6 +301,7 @@ label{display:block;font-size:10px;font-weight:900;color:var(--muted);letter-spa
   <section id="view-whatsapp" class="view hidden"></section>
   <section id="view-qr" class="view hidden"></section>
   <section id="view-finance" class="view hidden"></section>
+  <section id="view-payment" class="view hidden"></section>
   <section id="view-analytics" class="view hidden"></section>
 </main>
 
@@ -385,7 +391,7 @@ const I18N = {
     hero_desc:"Every status tap reaches the guest's phone in under a second. Live sync keeps your floor team and guests in step.",
     connecting:'Connecting to live sync…',live_sync:'Live sync active — guest updates instantly',offline_polling:'Offline — polling every 20s',
     stat_live:'LIVE ORDERS',stat_active:'IN PROGRESS',stat_today:'TODAY',stat_week:'7-DAY REVENUE',stat_aov:'AVG ORDER',
-    tab_orders:'Orders',tab_vendors:'Vendors',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QRs',tab_finance:'Finance',tab_analytics:'Analytics',
+    tab_orders:'Orders',tab_vendors:'Vendors',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QRs',tab_finance:'Finance',tab_payment:'Payment',tab_analytics:'Analytics',
     order_details:'Order Details',lang_title:'🌐 Language',lang_desc:'Choose your preferred language.',
     room:'Room',guest:'Guest',search_ph:'Search room, guest, ref…',
     f_all:'All',f_new:'New',f_active:'Active',f_done:'Done',f_cancelled:'Cancelled',
@@ -421,7 +427,7 @@ const I18N = {
     hero_desc:'Kila hali unayobofya inafika kwenye simu ya mgeni chini ya sekunde moja.',
     connecting:'Inaunganisha…',live_sync:'Usawazishaji wa moja kwa moja',offline_polling:'Nje ya mtandao — inaangalia kila sekunde 20',
     stat_live:'ODA HAI',stat_active:'ZINAENDELEA',stat_today:'LEO',stat_week:'MAPATO YA SIKU 7',stat_aov:'WASTANI',
-    tab_orders:'Oda',tab_vendors:'Wafanyabiashara',tab_menu:'Menyu',tab_services:'Huduma',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Fedha',tab_analytics:'Uchanganuzi',
+    tab_orders:'Oda',tab_vendors:'Wafanyabiashara',tab_menu:'Menyu',tab_services:'Huduma',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Fedha',tab_payment:'Malipo',tab_analytics:'Uchanganuzi',
     order_details:'Maelezo ya Oda',lang_title:'🌐 Lugha',lang_desc:'Chagua lugha unayopendelea.',
     room:'Chumba',guest:'Mgeni',search_ph:'Tafuta chumba, mgeni, kumbukumbu…',
     f_all:'Zote',f_new:'Mpya',f_active:'Zinaendelea',f_done:'Zimekamilika',f_cancelled:'Zilizofutwa',
@@ -457,7 +463,7 @@ const I18N = {
     hero_desc:"Chaque changement de statut arrive sur le téléphone du client en moins d'une seconde.",
     connecting:'Connexion…',live_sync:'Synchronisation en direct',offline_polling:'Hors ligne — actualisation toutes les 20s',
     stat_live:'COMMANDES',stat_active:'EN COURS',stat_today:"AUJOURD'HUI",stat_week:'7 JOURS',stat_aov:'PANIER MOY.',
-    tab_orders:'Commandes',tab_vendors:'Vendeurs',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Finance',tab_analytics:'Analytique',
+    tab_orders:'Commandes',tab_vendors:'Vendeurs',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Finance',tab_payment:'Paiement',tab_analytics:'Analytique',
     order_details:'Détails',lang_title:'🌐 Langue',lang_desc:'Choisissez votre langue.',
     room:'Chambre',guest:'Client',search_ph:'Rechercher chambre, client, réf…',
     f_all:'Tout',f_new:'Nouveau',f_active:'En cours',f_done:'Terminé',f_cancelled:'Annulé',
@@ -493,7 +499,7 @@ const I18N = {
     hero_desc:'كل تغيير حالة يصل إلى هاتف الضيف خلال أقل من ثانية.',
     connecting:'جارٍ الاتصال…',live_sync:'المزامنة المباشرة نشطة',offline_polling:'غير متصل — تحديث كل 20 ثانية',
     stat_live:'الطلبات النشطة',stat_active:'قيد التنفيذ',stat_today:'اليوم',stat_week:'7 أيام',stat_aov:'المتوسط',
-    tab_orders:'الطلبات',tab_vendors:'البائعون',tab_menu:'القائمة',tab_services:'الخدمات',tab_whatsapp:'واتساب',tab_qr:'QR',tab_finance:'المالية',tab_analytics:'التحليلات',
+    tab_orders:'الطلبات',tab_vendors:'البائعون',tab_menu:'القائمة',tab_services:'الخدمات',tab_whatsapp:'واتساب',tab_qr:'QR',tab_finance:'المالية',tab_payment:'الدفع',tab_analytics:'التحليلات',
     order_details:'تفاصيل الطلب',lang_title:'🌐 اللغة',lang_desc:'اختر لغتك المفضلة.',
     room:'غرفة',guest:'ضيف',search_ph:'ابحث…',
     f_all:'الكل',f_new:'جديد',f_active:'نشط',f_done:'مكتمل',f_cancelled:'ملغى',
@@ -762,7 +768,7 @@ async function refreshAll(){
   loadingSkeleton = true;
   if(currentTab === 'orders') renderOrders();
   try {
-    await Promise.all([loadHotelMeta(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool()]);
+    await Promise.all([loadHotelMeta(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool(), loadPayment()]);
   } catch(e){
     console.warn('refreshAll partial failure:', e.message);
   } finally {
@@ -1046,6 +1052,290 @@ function renderQR(){
       </div>
       <div id="batchQR" style="margin-top:14px" class="qr-grid"></div>
     </div>`;
+}
+
+/* ═══════ PAYMENT SETTINGS ═══════ */
+let PAYMENT = {
+  channel: 'paybill',
+  paybill_number: '',
+  paybill_account: '',
+  till_number: '',
+  mpesa_phone: '',
+  mpesa_name: '',
+  configured: false
+};
+
+async function loadPayment(){
+  try {
+    const res = await fetch(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/payment`);
+    if(res.ok){
+      const j = await res.json();
+      const p = j.payment || {};
+      PAYMENT = {
+        channel: String(p.channel || 'paybill').toLowerCase(),
+        paybill_number: p.paybill_number || '',
+        paybill_account: p.paybill_account || '',
+        till_number: p.till_number || '',
+        mpesa_phone: p.mpesa_phone || '',
+        mpesa_name: p.mpesa_name || '',
+        configured: !!p.configured
+      };
+    }
+  } catch(e){
+    console.warn('loadPayment:', e.message);
+  }
+}
+
+function renderPayment(){
+  const box = $('view-payment');
+  if(!box) return;
+  const ch = PAYMENT.channel || 'paybill';
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">💳 Payment Settings</div>
+      <p class="card-sub">Set up how guests pay you. This appears on their phone immediately after they place an order. Choose <b>Paybill</b>, <b>Till</b>, or <b>Send Money</b>.</p>
+    </div>
+
+    <div class="card">
+      <label>Choose payment method</label>
+      <div class="payTabs">
+        <button type="button" class="payTab ${ch==='paybill'?'active':''}" data-channel="paybill">
+          <i>🏦</i><span>Paybill</span>
+        </button>
+        <button type="button" class="payTab ${ch==='till'?'active':''}" data-channel="till">
+          <i>🏪</i><span>Till</span>
+        </button>
+        <button type="button" class="payTab ${ch==='send_money'?'active':''}" data-channel="send_money">
+          <i>📱</i><span>Send Money</span>
+        </button>
+      </div>
+
+      <div class="payField ${ch==='paybill'?'show':''}" data-field="paybill">
+        <label>Paybill Number *</label>
+        <input id="pay_paybill_number" class="input" placeholder="e.g. 247247" inputmode="numeric" value="${esc(PAYMENT.paybill_number)}">
+        <label>Account Number (optional)</label>
+        <input id="pay_paybill_account" class="input" placeholder="e.g. HOTEL001" value="${esc(PAYMENT.paybill_account)}">
+        <p style="font-size:11px;color:#666;margin:6px 0 0;line-height:1.5">If left blank, guests will use their order reference as the account number.</p>
+      </div>
+
+      <div class="payField ${ch==='till'?'show':''}" data-field="till">
+        <label>Till Number *</label>
+        <input id="pay_till_number" class="input" placeholder="e.g. 123456" inputmode="numeric" value="${esc(PAYMENT.till_number)}">
+      </div>
+
+      <div class="payField ${ch==='send_money'?'show':''}" data-field="send_money">
+        <label>Receive Money On (M-Pesa number)</label>
+        <input id="pay_mpesa_phone" class="input" placeholder="e.g. 0712345678" inputmode="tel" value="${esc(PAYMENT.mpesa_phone)}">
+      </div>
+
+      <label>Account Name (shown to guests)</label>
+      <input id="pay_mpesa_name" class="input" placeholder="e.g. Baobab Resort" value="${esc(PAYMENT.mpesa_name)}">
+
+      <div class="payHelp">
+        <b>💡 Tip:</b> Double-check your Paybill / Till number — guests will send money directly to it. Wrong numbers = lost payments.
+      </div>
+
+      <div class="paySaveBar">
+        <button type="button" class="btn btn-dark btn-lg" onclick="clearPayment()">Clear</button>
+        <button type="button" class="btn btn-primary btn-lg" id="savePayBtn" onclick="savePayment()">💾 Save Payment</button>
+      </div>
+    </div>
+
+    ${paymentPreviewHTML()}
+  `;
+  box.querySelectorAll('[data-channel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      PAYMENT.channel = btn.dataset.channel;
+      renderPayment();
+    });
+  });
+}
+
+function paymentPreviewHTML(){
+  const ch = PAYMENT.channel;
+  const name = PAYMENT.mpesa_name || HOTEL_ID;
+  const sampleAmt = 'Ksh 1,450';
+
+  if(ch === 'paybill' && PAYMENT.paybill_number){
+    const acc = PAYMENT.paybill_account || 'GH-ABC123';
+    return `
+      <div class="card">
+        <div class="card-title">👁️ Preview — what guests will see</div>
+        <div class="payPreview">
+          <div class="pvTitle">💳 Pay via M-Pesa Paybill <span style="margin-left:auto;color:#fff;background:rgba(198,255,0,.12);padding:4px 10px;border-radius:999px;font-size:11px">${sampleAmt}</span></div>
+          <div class="pvBox">
+            <div class="pvRow"><span class="pvLbl">Paybill</span><span class="pvVal">${esc(PAYMENT.paybill_number)}</span></div>
+            <div class="pvRow"><span class="pvLbl">Account</span><span class="pvVal" style="font-size:14px">${esc(acc)}</span></div>
+            <div class="pvRow"><span class="pvLbl">To</span><span class="pvVal" style="font-size:13px;font-family:Inter;font-weight:800">${esc(name)}</span></div>
+          </div>
+          <ol class="pvSteps">
+            <li>Open M-Pesa on your phone</li>
+            <li>Choose <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
+            <li>Business No: <b>${esc(PAYMENT.paybill_number)}</b></li>
+            <li>Account: <b>${esc(acc)}</b></li>
+            <li>Amount: <b>1450</b> · Enter PIN</li>
+          </ol>
+        </div>
+      </div>`;
+  }
+  if(ch === 'till' && PAYMENT.till_number){
+    return `
+      <div class="card">
+        <div class="card-title">👁️ Preview — what guests will see</div>
+        <div class="payPreview">
+          <div class="pvTitle">💳 Pay via M-Pesa Till <span style="margin-left:auto;color:#fff;background:rgba(198,255,0,.12);padding:4px 10px;border-radius:999px;font-size:11px">${sampleAmt}</span></div>
+          <div class="pvBox">
+            <div class="pvRow"><span class="pvLbl">Till</span><span class="pvVal">${esc(PAYMENT.till_number)}</span></div>
+            <div class="pvRow"><span class="pvLbl">To</span><span class="pvVal" style="font-size:13px;font-family:Inter;font-weight:800">${esc(name)}</span></div>
+          </div>
+          <ol class="pvSteps">
+            <li>Open M-Pesa on your phone</li>
+            <li>Choose <b>Lipa na M-Pesa</b> → <b>Buy Goods & Services</b></li>
+            <li>Till No: <b>${esc(PAYMENT.till_number)}</b></li>
+            <li>Amount: <b>1450</b> · Enter PIN</li>
+          </ol>
+        </div>
+      </div>`;
+  }
+  if(ch === 'send_money' && (PAYMENT.mpesa_phone || PAYMENT.mpesa_name)){
+    const phone = String(PAYMENT.mpesa_phone || '').replace(/\D/g,'');
+    return `
+      <div class="card">
+        <div class="card-title">👁️ Preview — what guests will see</div>
+        <div class="payPreview">
+          <div class="pvTitle">💳 Send Money via M-Pesa <span style="margin-left:auto;color:#fff;background:rgba(198,255,0,.12);padding:4px 10px;border-radius:999px;font-size:11px">${sampleAmt}</span></div>
+          <div class="pvBox">
+            <div class="pvRow"><span class="pvLbl">Send to</span><span class="pvVal" style="font-size:14px">${esc(phone || '—')}</span></div>
+            <div class="pvRow"><span class="pvLbl">Name</span><span class="pvVal" style="font-size:13px;font-family:Inter;font-weight:800">${esc(name)}</span></div>
+          </div>
+          <ol class="pvSteps">
+            <li>Open M-Pesa on your phone</li>
+            <li>Choose <b>Send Money</b></li>
+            <li>Number: <b>${esc(phone || '—')}</b></li>
+            <li>Amount: <b>1450</b> · Enter PIN</li>
+          </ol>
+        </div>
+      </div>`;
+  }
+  return `
+    <div class="card">
+      <div class="card-title">👁️ Preview — what guests will see</div>
+      <div class="payPreview empty">
+        <div class="pvTitle">💳 Payment</div>
+        <p class="pvNote">Enter your payment details above and hit Save — a live preview of what guests see will appear here.</p>
+      </div>
+    </div>`;
+}
+
+async function savePayment(){
+  const btn = $('savePayBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Saving…'; }
+
+  const channel = PAYMENT.channel;
+  PAYMENT.paybill_number  = ($('pay_paybill_number')?.value  || '').trim();
+  PAYMENT.paybill_account = ($('pay_paybill_account')?.value || '').trim();
+  PAYMENT.till_number     = ($('pay_till_number')?.value     || '').trim();
+  PAYMENT.mpesa_phone     = ($('pay_mpesa_phone')?.value     || '').trim();
+  PAYMENT.mpesa_name      = ($('pay_mpesa_name')?.value      || '').trim();
+
+  const resetBtn = () => { if(btn){ btn.disabled = false; btn.textContent = '💾 Save Payment'; } };
+
+  if(channel === 'paybill'){
+    if(!/^\d{4,10}$/.test(PAYMENT.paybill_number)){
+      resetBtn();
+      return toast('Paybill number must be 4–10 digits', 'error');
+    }
+  } else if(channel === 'till'){
+    if(!/^\d{4,10}$/.test(PAYMENT.till_number)){
+      resetBtn();
+      return toast('Till number must be 4–10 digits', 'error');
+    }
+  } else if(channel === 'send_money'){
+    const digits = PAYMENT.mpesa_phone.replace(/\D/g,'');
+    if(!/^(254|0)\d{9}$/.test(digits)){
+      resetBtn();
+      return toast('Enter a valid M-Pesa number (e.g. 0712345678)', 'error');
+    }
+  }
+
+  const payload = {
+    payment_channel: channel,
+    mpesa_name: PAYMENT.mpesa_name || null
+  };
+  if(channel === 'paybill'){
+    payload.paybill_number  = PAYMENT.paybill_number;
+    payload.paybill_account = PAYMENT.paybill_account || null;
+    payload.till_number     = null;
+  } else if(channel === 'till'){
+    payload.till_number     = PAYMENT.till_number;
+    payload.paybill_number  = null;
+    payload.paybill_account = null;
+  } else {
+    payload.mpesa           = PAYMENT.mpesa_phone.replace(/\D/g,'');
+    payload.paybill_number  = null;
+    payload.paybill_account = null;
+    payload.till_number     = null;
+  }
+
+  let saved = false;
+
+  try {
+    const res = await api('/api/gm/payment', { method: 'PATCH', body: JSON.stringify(payload) });
+    if(res.ok){
+      const j = await res.json().catch(() => ({}));
+      if(j.ok) saved = true;
+    }
+  } catch(e){ console.warn('API save failed:', e.message); }
+
+  if(!saved && supa){
+    try {
+      const upd = { ...payload };
+      if(channel === 'send_money') upd.phone = payload.mpesa;
+      const { error } = await supa.from('hotels').update(upd).ilike('hotel_id', HOTEL_ID);
+      if(!error) saved = true;
+      else console.warn('Supabase fallback failed:', error.message);
+    } catch(e){ console.warn('Supabase fallback exception:', e.message); }
+  }
+
+  resetBtn();
+
+  if(saved){
+    PAYMENT.configured = true;
+    toast('✅ Saved — guests see it instantly');
+    beepConfirm();
+    renderPayment();
+  } else {
+    toast('Failed to save — check your connection', 'error');
+  }
+}
+
+async function clearPayment(){
+  if(!confirm('Clear all payment settings? Guests will see "Ask the front desk" until you set it again.')) return;
+  const empty = {
+    channel: 'paybill', paybill_number: '', paybill_account: '',
+    till_number: '', mpesa_phone: '', mpesa_name: '', configured: false
+  };
+  try {
+    await api('/api/gm/payment', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        payment_channel: 'paybill',
+        paybill_number: null, paybill_account: null,
+        till_number: null, mpesa_name: null
+      })
+    });
+  } catch(_){}
+  if(supa){
+    try {
+      await supa.from('hotels').update({
+        payment_channel: null, paybill_number: null, paybill_account: null,
+        till_number: null, mpesa_name: null
+      }).ilike('hotel_id', HOTEL_ID);
+    } catch(_){}
+  }
+  PAYMENT = empty;
+  toast('Payment settings cleared');
+  renderPayment();
 }
 
 /* ═══════ FINANCE ═══════ */
@@ -1373,7 +1663,7 @@ document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){ document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active')); document.body.style.overflow = ''; }
   if(e.target.matches('input, textarea, select')) return;
-  const map = { '1':'orders','2':'vendors','3':'menu','4':'services','5':'whatsapp','6':'qr','7':'finance','8':'analytics' };
+  const map = { '1':'orders','2':'vendors','3':'menu','4':'services','5':'whatsapp','6':'qr','7':'finance','8':'analytics','9':'payment' };
   if(map[e.key]) switchTab(map[e.key]);
   if(e.key === '/'){ const s = $('orderSearch'); if(s){ e.preventDefault(); s.focus(); } }
   if(e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey){ refreshAll(); }
@@ -1406,6 +1696,7 @@ function renderCurrentTab(){
     else if(currentTab === 'whatsapp') renderWhatsApp();
     else if(currentTab === 'qr') renderQR();
     else if(currentTab === 'finance') renderFinance();
+    else if(currentTab === 'payment') renderPayment();
     else if(currentTab === 'analytics') renderAnalytics();
     else renderOrders();
   } catch(e){
@@ -1614,6 +1905,8 @@ window.genSingle = genSingle;
 window.genBatch = genBatch;
 window.copyOrder = copyOrder;
 window.updateStatus = updateStatus;
+window.savePayment = savePayment;
+window.clearPayment = clearPayment;
 </script>
 </body>
 </html>
