@@ -1,13 +1,10 @@
 // ============================================================
-// GuestHub V1.3 — Direct-to-Vendor Payments + Table Mode
+// GuestHub V1.4 — Direct-to-Vendor Payments + Table Mode + Images
 // Aligned with GM OS + Guest SuperApp + Vendor OS
-// Changes vs V1.2:
-//   - NEW:  GET /api/public/hotel/:hotelId/menu   (guest menu)
-//   - NEW:  table_number + mode + items on POST /api/orders
-//   - FIX:  GET /api/orders/:id accepts ref OR uuid safely
-//   - FIX:  GET /api/orders/:hotelId/:room is case-insensitive
-//   - FIX:  validatePayment send_money enforces full 254xxxxxxxxx
-//   - FIX:  room/table lookup falls back when columns missing
+// Changes vs V1.3:
+//   - NEW:  POST /api/hotels/images  (Supabase Storage upload)
+//   - NEW:  image_url + images returned by /api/data
+//   - NEW:  hotel-images bucket auto-created on boot
 // ============================================================
 
 import express from "express";
@@ -20,6 +17,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import path from "path";
+import multer from "multer";
 import { fileURLToPath } from "url";
 
 dotenv.config();
@@ -82,7 +80,7 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V1.3",
+    os: "GuestHub V1.4",
     time: new Date().toISOString(),
     supabase: !!supa,
     missing_env: missing
@@ -126,9 +124,6 @@ function requireSupabase(req, res, next) {
   next();
 }
 
-// ---------- Column-missing safety ----------
-// Retry an insert/update dropping columns the DB complains about.
-// Lets us ship new features before the migration runs.
 function isMissingColumnError(err) {
   return err && /column|schema cache|does not exist/i.test(err.message || "");
 }
@@ -173,7 +168,6 @@ function validatePayment(body, forcedChannel) {
     patch.paybill_account = null;
     patch.mpesa = null;
   } else {
-    // FIX: enforce full normalized Kenyan mobile (254 + 9 digits)
     const phone = cleanPhone(body.mpesa || body.phone);
     if (!/^254\d{9}$/.test(phone))
       return { error: "Valid M-Pesa phone required (e.g., 0712 345 678)" };
@@ -244,6 +238,38 @@ async function findHotel(identifier) {
 
   return { hotel: null };
 }
+
+// ============================================================
+// SUPABASE STORAGE — hotel images bucket
+// ============================================================
+const BUCKET = "hotel-images";
+
+async function ensureBucket() {
+  if (!supa) return;
+  try {
+    const { data: buckets, error } = await supa.storage.listBuckets();
+    if (error) { console.warn("⚠️ listBuckets:", error.message); return; }
+    if (!buckets?.some(b => b.name === BUCKET)) {
+      const { error: cErr } = await supa.storage.createBucket(BUCKET, { public: true });
+      if (cErr) console.warn("⚠️ createBucket:", cErr.message);
+      else console.log(`✅ Created Supabase Storage bucket "${BUCKET}"`);
+    } else {
+      console.log(`✅ Supabase Storage bucket "${BUCKET}" ready`);
+    }
+  } catch (e) {
+    console.warn("⚠️ ensureBucket:", e.message);
+  }
+}
+ensureBucket();
+
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024, files: 8 },
+  fileFilter: (req, file, cb) => {
+    const ok = ["image/jpeg", "image/png", "image/webp"].includes(file.mimetype);
+    cb(ok ? null : new Error("Only JPG, PNG or WEBP allowed"), ok);
+  }
+});
 
 // ============================================================
 // ADMIN
@@ -385,11 +411,26 @@ app.get("/api/admin/orders", requireAdmin, requireSupabase, async (req, res) => 
 // ============================================================
 // HOTELS
 // ============================================================
+
+// Public hotel list for homepage — includes image_url + images
 app.get("/api/data", requireSupabase, async (req, res) => {
-  const { data } = await supa.from("hotels")
-    .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status")
+  let { data, error } = await supa.from("hotels")
+    .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status,image_url,images")
     .eq("status", "APPROVED").limit(500);
-  res.json({ hotels: data || [] });
+
+  if (error && isMissingColumnError(error)) {
+    const r2 = await supa.from("hotels")
+      .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status")
+      .eq("status", "APPROVED").limit(500);
+    data = r2.data || [];
+  }
+
+  const hotels = (data || []).map(h => ({
+    ...h,
+    image_url: h.image_url || (Array.isArray(h.images) && h.images[0]) || null
+  }));
+
+  res.json({ hotels });
 });
 
 app.get("/api/public/hotel/:id", requireSupabase, async (req, res) => {
@@ -486,6 +527,81 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
     return sendSuccess(res, { token, hotel_id: fullHotel.hotel_id, hotel: fullHotel });
   } catch (e) { return sendError(res, 500, e.message); }
 });
+
+// ============================================================
+// HOTEL IMAGES — upload to Supabase Storage
+// ============================================================
+app.post(
+  "/api/hotels/images",
+  signupLimiter,
+  requireSupabase,
+  imageUpload.array("images", 8),
+  async (req, res) => {
+    try {
+      const hotel_id = String(req.body.hotel_id || "").trim().toUpperCase();
+      const coverIndex = Math.max(0, safeNumber(req.body.cover_index, 0));
+
+      if (!hotel_id) return sendError(res, 400, "hotel_id required");
+      if (!req.files?.length) return sendError(res, 400, "No images received");
+
+      const { hotel } = await findHotel(hotel_id);
+      if (!hotel) return sendError(res, 404, "Hotel not found: " + hotel_id);
+
+      const uploaded = [];
+      for (let i = 0; i < req.files.length; i++) {
+        const f = req.files[i];
+        const ext = f.mimetype === "image/png" ? "png"
+                  : f.mimetype === "image/webp" ? "webp"
+                  : "jpg";
+        const fileName = `${hotel_id}_${Date.now()}_${i}.${ext}`;
+        const filePath = `${hotel_id}/${fileName}`;
+
+        const { error: upErr } = await supa.storage
+          .from(BUCKET)
+          .upload(filePath, f.buffer, {
+            contentType: f.mimetype,
+            cacheControl: "31536000",
+            upsert: false
+          });
+
+        if (upErr) {
+          console.warn("⚠️ upload failed:", fileName, upErr.message);
+          continue;
+        }
+
+        const { data: pub } = supa.storage.from(BUCKET).getPublicUrl(filePath);
+        if (pub?.publicUrl) uploaded.push(pub.publicUrl);
+      }
+
+      if (!uploaded.length) return sendError(res, 500, "All uploads failed");
+
+      const cover = uploaded[Math.min(coverIndex, uploaded.length - 1)];
+
+      const patch = { image_url: cover, images: uploaded };
+      let { error: dbErr } = await supa.from("hotels").update(patch).eq("id", hotel.id);
+
+      if (dbErr && isMissingColumnError(dbErr)) {
+        console.warn("⚠️ hotels.images missing, retrying with image_url only");
+        const r2 = await supa.from("hotels").update({ image_url: cover }).eq("id", hotel.id);
+        dbErr = r2.error;
+      }
+
+      if (dbErr) {
+        console.warn("⚠️ Could not save image URLs to hotels:", dbErr.message);
+        return sendSuccess(res, {
+          images: uploaded,
+          cover,
+          warning: "Images uploaded but not saved to hotel record: " + dbErr.message
+        });
+      }
+
+      return sendSuccess(res, { images: uploaded, cover });
+    } catch (e) {
+      console.error("Hotel image upload error:", e);
+      return sendError(res, 500, e.message);
+    }
+  }
+);
 
 // ============================================================
 // VENDOR SIGNUP
@@ -711,7 +827,6 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
       is_active: true
     };
     let { error } = await supa.from("hotel_services").insert([insertPayload]);
-    // FIX: gracefully drop vendor_* columns if the migration hasn't run
     if (error && isMissingColumnError(error)) {
       delete insertPayload.vendor_name;
       delete insertPayload.vendor_phone;
@@ -987,8 +1102,6 @@ app.get("/api/public/vendor/:vendorId/payment", requireSupabase, async (req, res
 // ============================================================
 // GUEST — public
 // ============================================================
-
-// Existing: all active services + departments
 app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
   const { data } = await supa.from("hotel_services").select("*")
@@ -998,9 +1111,6 @@ app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res)
   res.json({ services: data || [], departments: depts || [] });
 });
 
-// NEW: menu endpoint for the guest dashboard
-// Returns { menu: { categories: [...], items: [...] } } built from hotel_services
-// where category looks like food/drink/kitchen/bar/main/starter/...
 app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => {
   try {
     const hid = String(req.params.hotelId || "").toUpperCase();
@@ -1024,7 +1134,6 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
 
     const foodServices = (data || []).filter(isFood);
 
-    // Group by category (raw string, normalized)
     const catMap = new Map();
     const items = foodServices.map((s, i) => {
       const rawCat = String(s.category || "Menu").trim();
@@ -1062,7 +1171,6 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
   }
 });
 
-// NEW: hotel settings (used by guest dashboard for currency, tagline, service charge)
 app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
   const { data } = await supa.from("hotels").select("name, hotel_name, tagline, currency, service_charge, promo_title, promo_text").ilike("hotel_id", hid).maybeSingle();
@@ -1080,7 +1188,6 @@ app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res)
 });
 
 // ---------- Order creation ----------
-// FIX: now accepts room OR table, plus mode + items array + totals
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const {
@@ -1108,7 +1215,6 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     const hid = String(hotel_id).toUpperCase();
     const ref = makeRef();
 
-    // Base payload — safe on any orders schema
     const basePayload = {
       reference: ref,
       hotel_id: hid,
@@ -1124,7 +1230,6 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
       status: "pending"
     };
 
-    // Extended payload — requires migration
     const extendedPayload = { ...basePayload };
     if (isTable) {
       extendedPayload.mode = "table";
@@ -1144,7 +1249,6 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     if (service_charge !== undefined) extendedPayload.service_charge = safeNumber(service_charge, 0);
     if (total !== undefined)          extendedPayload.total          = safeNumber(total, 0);
 
-    // Try extended first, fall back to base
     let { data, error } = await supa.from("orders").insert([extendedPayload]).select().single();
     if (error && isMissingColumnError(error)) {
       console.warn("⚠️ orders extended insert failed, retrying base:", error.message);
@@ -1157,7 +1261,6 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// FIX: /api/orders/:id — safely handle UUID vs reference
 app.get("/api/orders/:id", requireSupabase, async (req, res) => {
   const id = String(req.params.id || "").trim();
   if (!id) return sendError(res, 400, "Order id required");
@@ -1193,7 +1296,6 @@ app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// FIX: case-insensitive room/table lookup + table fallback
 app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
   try {
     const hotelId = String(req.params.hotelId || "").toUpperCase();
@@ -1201,7 +1303,6 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
     if (!hotelId || !raw || raw.toLowerCase() === "rate")
       return sendError(res, 400, "hotelId and room required");
 
-    // First try room_number (case-insensitive)
     let { data, error } = await supa.from("orders")
       .select("*")
       .eq("hotel_id", hotelId)
@@ -1210,12 +1311,10 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
       .limit(50);
 
     if (error && isMissingColumnError(error)) {
-      // Column check safety
       return sendError(res, 500, error.message);
     }
     if (error) return sendError(res, 500, error.message);
 
-    // If nothing found, try table_number (may not exist on older schemas)
     if (!data || !data.length) {
       const t = await supa.from("orders")
         .select("*")
@@ -1282,13 +1381,15 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V1.3 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V1.4 running on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
+  console.log(`📦 Storage bucket: ${BUCKET}`);
   if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
   console.log("--------------------------------------------");
   console.log("💳 Direct-to-vendor payments enabled");
   console.log("🍽️  Table-mode ordering enabled");
+  console.log("📸 Hotel image uploads enabled");
   console.log("📌 Required migration (run once in Supabase SQL):");
   console.log(`
 -- Vendors: payment + availability
@@ -1318,13 +1419,15 @@ ALTER TABLE hotel_services
   ADD COLUMN IF NOT EXISTS vendor_phone  text,
   ADD COLUMN IF NOT EXISTS tags          jsonb;
 
--- Hotels: guest-facing settings
+-- Hotels: guest-facing settings + images
 ALTER TABLE hotels
   ADD COLUMN IF NOT EXISTS tagline         text,
   ADD COLUMN IF NOT EXISTS currency        text DEFAULT 'Ksh',
   ADD COLUMN IF NOT EXISTS service_charge  numeric DEFAULT 0,
   ADD COLUMN IF NOT EXISTS promo_title     text,
-  ADD COLUMN IF NOT EXISTS promo_text      text;
+  ADD COLUMN IF NOT EXISTS promo_text      text,
+  ADD COLUMN IF NOT EXISTS image_url       text,
+  ADD COLUMN IF NOT EXISTS images          jsonb;
   `);
   console.log("============================================");
 });
