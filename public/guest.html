@@ -6,23 +6,1247 @@
 <meta name="theme-color" content="#003580">
 <meta name="description" content="GuestHub — scan, order and enjoy. Room service, restaurant menu, tours, transport and concierge in one place.">
 <title>GuestHub — Scan · Order · Enjoy</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Design system — shared across guest app, hotel dashboard, vendor portal -->
-<link rel="stylesheet" href="/assets/guesthub-ui.css">
-<!-- Guest-app surface -->
-<link rel="stylesheet" href="/assets/guest.css">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js" onerror="console.warn('config.js not found — realtime disabled')"></script>
+<style>
+/* ============================================================
+   Design tokens — aligned with guesthub.app marketing site
+   ============================================================ */
+:root{
+  /* Brand */
+  --brand:        #003580;
+  --brand-2:      #0071c2;
+  --brand-3:      #005999;
+  --brand-soft:   #ebf3ff;
+
+  /* Signal */
+  --yellow:       #febb02;
+  --yellow-soft:  #fff6e0;
+  --green:        #008009;
+  --green-soft:   #e8f5e9;
+  --red:          #d32f2f;
+  --red-soft:     #fdeaea;
+  --purple:       #7c3aed;
+  --purple-soft:  #f3e8ff;
+
+  /* Aliases used by existing markup */
+  --lime:         #0071c2;
+  --lime-soft:    rgba(0,113,194,.08);
+  --lime-line:    rgba(0,113,194,.24);
+  --gold:         #febb02;
+  --gold-soft:    rgba(254,187,2,.14);
+  --gold-line:    rgba(254,187,2,.35);
+
+  /* Surfaces */
+  --bg:           #ffffff;
+  --bg-subtle:    #f5f7fa;
+  --surface:      #ffffff;
+  --card:         #ffffff;
+  --card-2:       #f9fafb;
+
+  /* Lines */
+  --border:       #e7e7e7;
+  --border-2:     #d9d9d9;
+  --border-3:     #c5c5c5;
+
+  /* Text */
+  --text:         #1a1a1a;
+  --muted:        #595959;
+  --muted-2:      #6f6f6f;
+  --muted-3:      #8a8a8a;
+
+  /* Shape */
+  --radius:       12px;
+  --radius-sm:    8px;
+  --radius-lg:    16px;
+  --shadow-xs:    0 1px 2px rgba(0,0,0,.04);
+  --shadow:       0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:    0 12px 32px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.04);
+
+  --topbar-h:     60px;
+  color-scheme: light;
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  font-size:14.5px;line-height:1.5;
+  padding-bottom:calc(96px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv02','cv03','cv04','cv11';
+}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:2px solid var(--brand-2);outline-offset:2px;border-radius:4px;
+}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--yellow);color:var(--text)}
+
+/* Global icon reset */
+.icon{display:inline-block;vertical-align:middle;flex-shrink:0;color:currentColor}
+
+/* ---------- Offline ---------- */
+.offlineBar{
+  position:fixed;top:0;left:0;right:0;z-index:1500;
+  background:var(--red);color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:9px 12px;font-size:12.5px;font-weight:500;letter-spacing:.1px;
+  transform:translateY(-120%);transition:transform .3s ease;
+  box-shadow:0 4px 12px rgba(211,47,47,.3);
+}
+.offlineBar.show{transform:translateY(0)}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 14px;
+  background:var(--brand);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  color:#fff;
+}
+.brand{display:flex;align-items:center;gap:9px;min-width:0;user-select:none}
+.brandMark{
+  width:32px;height:32px;display:grid;place-items:center;
+  border-radius:7px;background:#fff;color:var(--brand);
+  font-weight:700;font-size:15px;letter-spacing:-.02em;
+}
+.brandText{font-size:15px;font-weight:600;letter-spacing:-.02em;color:#fff}
+.brandText span{color:var(--yellow)}
+.topActions{display:flex;align-items:center;gap:8px}
+.ctxChip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 11px;border-radius:999px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  font-size:11.5px;font-weight:600;color:#fff;
+  white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;
+}
+.ctxChip.table{background:rgba(254,187,2,.18);border-color:rgba(254,187,2,.5)}
+.ctxChip b{font-weight:700}
+.iconBtn{
+  width:34px;height:34px;display:grid;place-items:center;border-radius:7px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  color:#fff;transition:background .15s ease,border-color .15s ease;
+}
+.iconBtn:hover{background:rgba(255,255,255,.16)}
+.iconBtn:active{background:rgba(255,255,255,.22)}
+
+/* ---------- Hotel strip (table mode) ---------- */
+.hotelStrip{
+  padding:16px 16px 12px;display:flex;align-items:center;gap:12px;
+  background:var(--bg);border-bottom:1px solid var(--border);
+}
+.hotelStrip .avatar{
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--yellow),#e2a800);
+  display:grid;place-items:center;color:#000;
+  flex-shrink:0;
+}
+.hotelStrip .avatar span{font-weight:700;font-size:17px;letter-spacing:-.02em}
+.hotelStrip .info{min-width:0;flex:1}
+.hotelStrip .info b{
+  font-size:15.5px;font-weight:700;display:block;
+  line-height:1.2;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hotelStrip .info small{
+  color:var(--muted-2);font-size:12.5px;font-weight:500;
+  display:flex;align-items:center;gap:6px;margin-top:3px;
+}
+.hotelStrip .info small .dot{
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+}
+.hotelStrip .info small .sep{opacity:.4}
+
+/* ---------- Hero (room mode) ---------- */
+.hero{
+  position:relative;overflow:hidden;
+  padding:36px 16px 32px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  color:var(--text);
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,53,128,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,53,128,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 600px 320px at 50% 0%,#000 0%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 600px 320px at 50% 0%,#000 0%,transparent 75%);
+  pointer-events:none;
+}
+.heroContent{position:relative;z-index:2;max-width:640px;margin-inline:auto}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--brand-soft);color:var(--brand-2);
+  border:1px solid #d4e4f5;
+  padding:5px 11px;border-radius:999px;
+  font-size:11px;font-weight:600;letter-spacing:.3px;
+  margin-bottom:14px;
+}
+.eyebrow .dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);display:inline-block;
+}
+.hero h1{
+  margin:0;font-size:clamp(24px,6.5vw,32px);line-height:1.1;
+  letter-spacing:-.03em;font-weight:700;color:var(--text);
+}
+.hero h1 span{
+  display:block;color:var(--muted-2);
+  font-size:.6em;letter-spacing:-.02em;margin-top:6px;font-weight:600;
+}
+.hero p{
+  margin:12px 0 0;max-width:400px;
+  font-size:13.5px;font-weight:500;color:var(--muted);
+  line-height:1.55;
+}
+.heroBottom{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-top:20px;flex-wrap:wrap;
+}
+.verified{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 11px;border-radius:999px;
+  background:var(--green-soft);color:var(--green);
+  font-size:11px;font-weight:600;
+}
+.heroMeta{display:flex;gap:6px;flex-wrap:wrap}
+.heroMeta span{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 11px;border-radius:999px;
+  background:var(--bg-subtle);color:var(--muted);
+  border:1px solid var(--border);
+  font-size:11px;font-weight:600;
+}
+
+/* ---------- Context panel ---------- */
+.ctxPanel{
+  margin:14px 14px 0;display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:var(--radius);
+  background:var(--brand-soft);
+  border:1px solid #d4e4f5;
+}
+body.tableMode .ctxPanel{
+  background:var(--yellow-soft);border-color:#f5dfa0;
+}
+.ctxIcon{
+  width:40px;height:40px;flex-shrink:0;display:grid;place-items:center;
+  border-radius:var(--radius-sm);background:#fff;
+  border:1px solid var(--border-2);color:var(--brand-2);
+}
+body.tableMode .ctxIcon{color:#a87a00}
+.ctxPanel b{display:block;font-size:14px;font-weight:700;color:var(--brand)}
+body.tableMode .ctxPanel b{color:#7a5c00}
+.ctxPanel small{
+  display:block;color:var(--muted-2);font-size:12px;
+  margin-top:2px;font-weight:500;
+}
+.ctxChange{
+  margin-left:auto;padding:7px 13px;border-radius:var(--radius-sm);
+  background:#fff;border:1px solid var(--border-2);
+  color:var(--brand);font-size:12px;font-weight:600;
+  flex-shrink:0;transition:border-color .15s ease,background .15s ease;
+}
+.ctxChange:hover{background:var(--bg-subtle);border-color:var(--border-3)}
+
+/* ---------- Quick requests ---------- */
+.quickReq{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding:14px 14px 4px;
+}
+.quickReqBtn{
+  padding:14px 8px;background:#fff;
+  border:1px solid var(--border);border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  font-size:11.5px;font-weight:600;color:var(--text);
+  transition:border-color .15s ease,background .15s ease,transform .15s ease;
+  box-shadow:var(--shadow-xs);
+}
+.quickReqBtn:hover{border-color:var(--border-3);background:var(--bg-subtle)}
+.quickReqBtn:active{transform:scale(.97);border-color:var(--yellow)}
+.quickReqBtn .icon{color:var(--brand-2)}
+
+/* ---------- Sticky menu bar ---------- */
+.menuSticky{
+  position:sticky;top:var(--topbar-h);z-index:150;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--border);
+}
+.searchBox{position:relative;margin-bottom:10px}
+.searchIcon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  pointer-events:none;color:var(--muted-3);
+}
+.searchBox input{
+  width:100%;padding:11px 14px 11px 40px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  color:var(--text);font-size:14px;font-weight:500;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+  outline:none;
+}
+.searchBox input::placeholder{color:var(--muted-3);font-weight:400}
+.searchBox input:focus{
+  border-color:var(--brand-2);background:#fff;
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+.searchClear{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:24px;height:24px;border-radius:50%;
+  background:var(--border);color:var(--muted);
+  display:none;place-items:center;
+}
+.searchClear.show{display:grid}
+
+.catTabs{
+  display:flex;gap:8px;overflow-x:auto;
+  padding:2px 24px 4px 2px;
+  scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);
+}
+.catTabs::-webkit-scrollbar{display:none}
+.catTab{
+  display:inline-flex;align-items:center;gap:6px;
+  flex-shrink:0;padding:7px 14px;border-radius:999px;
+  background:#fff;border:1px solid var(--border-2);
+  color:var(--muted);font-size:12.5px;font-weight:600;
+  white-space:nowrap;transition:all .18s ease;letter-spacing:-.01em;
+}
+.catTab:hover{border-color:var(--border-3);color:var(--text)}
+.catTab.active{
+  background:var(--brand-2);border-color:var(--brand-2);color:#fff;
+  box-shadow:var(--shadow-xs);
+}
+.catTab .cnt{opacity:.7;font-size:11px;font-weight:600}
+.catTab.active .cnt{opacity:.85}
+.catTab .icon{opacity:.85}
+
+/* ---------- Popular carousel ---------- */
+.popularSection{padding:18px 0 4px}
+.popularHead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px 12px;gap:10px;
+}
+.popularHead h2{
+  margin:0;font-size:15.5px;font-weight:700;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:7px;color:var(--text);
+}
+.popularHead .fire{color:var(--red)}
+.popularHead small{color:var(--muted-3);font-size:12px;font-weight:500}
+.popularScroll{
+  display:flex;gap:12px;overflow-x:auto;
+  padding:0 14px 8px;scroll-snap-type:x mandatory;
+  scrollbar-width:none;
+}
+.popularScroll::-webkit-scrollbar{display:none}
+.popCard{
+  flex:0 0 190px;scroll-snap-align:start;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;text-align:left;
+  position:relative;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+  box-shadow:var(--shadow-xs);
+}
+.popCard:hover{border-color:var(--border-2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.popCard:active{transform:translateY(0) scale(.99)}
+.popCard .img{
+  height:110px;background:var(--bg-subtle);
+  display:grid;place-items:center;font-size:42px;
+  overflow:hidden;position:relative;
+  border-bottom:1px solid var(--border);
+}
+.popCard .img img{width:100%;height:100%;object-fit:cover}
+.popCard .badge{
+  position:absolute;top:8px;left:8px;
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--yellow);color:#000;
+  font-size:10px;font-weight:700;letter-spacing:.2px;
+  padding:3px 8px;border-radius:3px;
+}
+.popCard .body{padding:11px 12px 12px}
+.popCard b{
+  font-size:13.5px;display:block;line-height:1.3;
+  font-weight:600;margin-bottom:3px;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.popCard small{
+  color:var(--muted-2);font-size:12px;display:block;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.popCard .price{
+  color:var(--brand);font-weight:700;font-size:14px;
+  margin-top:8px;display:inline-block;
+}
+.popCard .addMini{
+  position:absolute;bottom:10px;right:10px;
+  width:30px;height:30px;border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  display:grid;place-items:center;
+  transition:transform .15s ease,background .15s ease;
+  box-shadow:var(--shadow-xs);
+}
+.popCard .addMini:hover{background:var(--brand-3)}
+.popCard .addMini:active{transform:scale(.88)}
+.popCard .addMini.hasQty{
+  width:auto;padding:0 10px;background:var(--green);
+  font-size:12.5px;display:inline-flex;align-items:center;gap:5px;
+  font-weight:600;
+}
+
+/* ---------- Menu list ---------- */
+.menuWrap{padding:0 14px}
+.menuSection{margin-top:22px;scroll-margin-top:150px}
+.menuSectionHead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4px 10px;gap:10px;
+}
+.menuSectionHead h3{
+  margin:0;font-size:16px;font-weight:700;letter-spacing:-.02em;
+  display:flex;align-items:center;gap:9px;color:var(--text);
+}
+.menuSectionHead h3 .icon{color:var(--brand-2)}
+.menuSectionHead .count{color:var(--muted-3);font-size:11.5px;font-weight:500}
+.menuList{display:flex;flex-direction:column;gap:10px}
+
+.menuCard{
+  display:flex;gap:13px;padding:12px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);position:relative;
+  transition:border-color .18s ease,box-shadow .18s ease;
+  box-shadow:var(--shadow-xs);
+}
+.menuCard:hover{border-color:var(--border-2);box-shadow:var(--shadow)}
+.menuCard.out{opacity:.55}
+.menuCard .img{
+  width:88px;height:88px;border-radius:var(--radius-sm);
+  background:var(--bg-subtle);display:grid;place-items:center;
+  font-size:36px;flex-shrink:0;overflow:hidden;
+  border:1px solid var(--border);position:relative;
+}
+.menuCard .img img{width:100%;height:100%;object-fit:cover}
+.menuCard .img .icon{color:var(--muted-3)}
+.menuCard .body{flex:1;min-width:0;display:flex;flex-direction:column}
+.menuCard .body > b{
+  font-size:14.5px;font-weight:600;line-height:1.3;
+  display:block;color:var(--text);
+}
+.menuCard .body small{
+  color:var(--muted-2);font-size:12.5px;margin-top:4px;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.menuCard .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.miTag{
+  font-size:10px;font-weight:600;padding:3px 7px;border-radius:3px;
+  background:var(--bg-subtle);color:var(--muted);
+  letter-spacing:.2px;text-transform:uppercase;
+  border:1px solid var(--border);
+}
+.miTag.veg{background:var(--green-soft);color:var(--green);border-color:#c3e6c4}
+.miTag.spicy{background:var(--red-soft);color:var(--red);border-color:#f4c5c5}
+.miTag.popular{background:var(--yellow-soft);color:#7a5c00;border-color:#f0dfa0}
+.miTag.new{background:var(--brand-soft);color:var(--brand-2);border-color:#c8dbf3}
+.menuCard .foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;padding-top:10px;gap:8px;
+}
+.menuCard .price{font-weight:700;font-size:15px;color:var(--brand)}
+.menuCard .addBtn{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  display:grid;place-items:center;
+  transition:transform .15s ease,background .15s ease;
+  box-shadow:var(--shadow-xs);
+}
+.menuCard .addBtn:hover{background:var(--brand-3)}
+.menuCard .addBtn:active{transform:scale(.9)}
+.menuCard .addBtn.hasQty{
+  width:auto;min-width:36px;padding:0 11px;
+  background:var(--green);color:#fff;
+  font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;
+}
+.menuCard .addBtn:disabled{background:var(--border);color:var(--muted-3);box-shadow:none}
+.soldOut{
+  position:absolute;top:12px;right:12px;
+  font-size:10px;font-weight:600;
+  background:var(--bg-subtle);color:var(--muted-2);
+  padding:3px 8px;border-radius:3px;letter-spacing:.3px;
+  border:1px solid var(--border);
+}
+
+/* ---------- Service cards ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:520px){.grid2{grid-template-columns:repeat(3,1fr)}}
+.svc{
+  position:relative;text-align:left;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;
+  min-height:168px;display:flex;flex-direction:column;
+  overflow:hidden;box-shadow:var(--shadow-xs);color:var(--text);
+}
+.svc:hover{border-color:var(--border-2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.svc:active{transform:translateY(0) scale(.99)}
+.svc i.svc-icon{
+  display:grid;place-items:center;
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--brand-soft);color:var(--brand-2);
+  margin-bottom:10px;
+}
+.svc b{
+  font-size:13.5px;display:block;line-height:1.3;
+  padding-right:70px;font-weight:600;color:var(--text);
+}
+.svc small{
+  color:var(--muted-2);font-size:12px;display:block;
+  margin-top:6px;line-height:1.5;flex:1;margin-bottom:10px;
+}
+.svc .price{
+  position:absolute;top:10px;right:10px;
+  background:var(--brand-soft);color:var(--brand);
+  font-size:10.5px;font-weight:700;
+  padding:3px 8px;border-radius:3px;
+  max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.svcVendor{
+  display:inline-block;margin-top:8px;
+  font-size:10.5px;color:var(--muted-3);font-weight:500;
+}
+.svc .svcCta{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  margin-top:auto;padding:7px 12px;border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  font-size:11.5px;font-weight:600;letter-spacing:.1px;
+  align-self:flex-start;
+  transition:background .15s ease,transform .15s ease;
+}
+.svc:hover .svcCta{background:var(--brand-3)}
+.svc:active .svcCta{transform:scale(.97)}
+
+/* ---------- Active order ---------- */
+.activeOrder{
+  display:none;margin:16px 14px 0;padding:16px;
+  background:#fff;border:1px solid var(--border);
+  border-left:3px solid var(--brand-2);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  transition:border-color .3s ease;
+}
+.activeOrder.show{display:block}
+.activeOrder.flash{animation:bannerFlash 1s ease 3;border-left-color:var(--green)}
+@keyframes bannerFlash{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,128,9,.3)}
+  50%{box-shadow:0 0 0 8px rgba(0,128,9,0)}
+}
+.orderTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.orderService{font-weight:700;font-size:15px;color:var(--text);letter-spacing:-.01em}
+.orderRef{
+  color:var(--muted-3);font-size:11px;margin-top:3px;
+  letter-spacing:.5px;font-weight:600;
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+}
+.orderActions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.liveDot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--border-2);flex-shrink:0;transition:background .3s ease;
+}
+.liveDot.on{background:var(--green);animation:pulseDot 2s infinite}
+@keyframes pulseDot{
+  0%{box-shadow:0 0 0 0 rgba(0,128,9,.4)}
+  70%{box-shadow:0 0 0 8px rgba(0,128,9,0)}
+  100%{box-shadow:0 0 0 0 rgba(0,128,9,0)}
+}
+.refreshBtn{
+  width:32px;height:32px;flex-shrink:0;border-radius:50%;
+  border:1px solid var(--border-2);background:#fff;
+  color:var(--muted);display:grid;place-items:center;
+  transition:color .18s ease,border-color .18s ease;
+}
+.refreshBtn:hover{color:var(--brand-2);border-color:var(--brand-2)}
+.refreshBtn.spinning{animation:spin .8s linear infinite;color:var(--brand-2)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.status{
+  display:inline-block;height:max-content;
+  padding:5px 10px;border-radius:999px;
+  font-size:11px;font-weight:600;letter-spacing:.2px;
+  background:var(--bg-subtle);color:var(--muted);white-space:nowrap;
+}
+.status.pending,.status.new{color:var(--brand-2);background:var(--brand-soft)}
+.status.accepted{color:var(--green);background:var(--green-soft)}
+.status.preparing{color:#7a5c00;background:var(--yellow-soft)}
+.status.on_the_way,.status.ontheway{color:var(--purple);background:var(--purple-soft)}
+.status.completed{color:var(--green);background:var(--green-soft)}
+.status.cancelled,.status.rejected{color:var(--red);background:var(--red-soft)}
+
+.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:16px}
+.progressStep{height:4px;border-radius:999px;background:var(--border);transition:background .35s ease}
+.progressStep.active{background:var(--brand-2)}
+.progressStep.cancelled{background:var(--red)}
+.progressLabels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
+.progressLabels span{
+  font-size:11px;font-weight:500;color:var(--muted-3);
+  text-align:center;line-height:1.2;letter-spacing:.1px;
+}
+.progressLabels span.active{color:var(--brand-2);font-weight:600}
+.orderDetails{
+  display:flex;justify-content:space-between;gap:10px;
+  margin-top:14px;color:var(--muted-3);font-size:12px;font-weight:500;
+}
+.orderDetails strong{color:var(--text);font-weight:600}
+.orderEta{
+  margin-top:12px;padding:10px 12px;
+  background:var(--brand-soft);border:1px dashed #b6d1ef;
+  border-radius:var(--radius-sm);
+  font-size:12px;color:var(--brand);
+  font-weight:600;display:flex;align-items:center;gap:7px;
+}
+
+/* ---------- Cart bar ---------- */
+.cartBar{
+  position:fixed;left:12px;right:12px;
+  bottom:calc(76px + env(safe-area-inset-bottom));
+  z-index:480;display:none;
+  align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 10px 10px 16px;border-radius:var(--radius);
+  background:var(--brand);color:#fff;
+  box-shadow:0 12px 32px rgba(0,53,128,.28);
+  animation:fadeUp .22s ease;
+}
+.cartBar.show{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.cartBar b{
+  display:block;font-size:14px;font-weight:700;
+  color:#fff;letter-spacing:-.01em;
+}
+.cartBar small{display:block;font-size:11.5px;font-weight:500;opacity:.85;margin-top:1px}
+.cartBar button{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 14px;border-radius:var(--radius-sm);
+  background:#fff;color:var(--brand);
+  font-weight:600;font-size:13px;white-space:nowrap;
+  transition:background .15s ease;
+}
+.cartBar button:hover{background:rgba(255,255,255,.92)}
+
+/* ---------- Cart bottom sheet ---------- */
+.cartSheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:900;
+  background:#fff;border-top:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  padding:8px 0 max(16px,env(safe-area-inset-bottom));
+  transform:translateY(102%);
+  transition:transform .32s cubic-bezier(.2,.85,.3,1);
+  max-height:88vh;display:flex;flex-direction:column;
+  box-shadow:0 -12px 40px rgba(0,0,0,.12);
+}
+.cartSheet.open{transform:translateY(0)}
+.cartSheet .handle{
+  width:42px;height:4px;background:var(--border-2);
+  border-radius:999px;margin:6px auto 12px;flex-shrink:0;
+}
+.cartSheet .head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.cartSheet .head h3{
+  margin:0;font-size:17px;font-weight:700;
+  letter-spacing:-.02em;color:var(--text);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.cartSheet .head h3 .icon{color:var(--brand-2)}
+.cartSheet .head small{
+  display:block;color:var(--muted-2);font-size:12px;
+  font-weight:500;margin-top:3px;
+}
+.cartSheet .closeSheet{
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border-2);background:#fff;
+  display:grid;place-items:center;
+  color:var(--muted);
+}
+.cartSheet .closeSheet:hover{background:var(--bg-subtle)}
+.cartSheet .body{flex:1;overflow-y:auto;padding:14px 20px 8px}
+.cartSheet .foot{
+  padding:14px 20px 4px;border-top:1px solid var(--border);
+  background:var(--bg-subtle);flex-shrink:0;
+}
+.cartRow{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 0;border-bottom:1px solid var(--border);
+}
+.cartRow:last-of-type{border-bottom:0}
+.cartRow .ci{
+  width:46px;height:46px;border-radius:var(--radius-sm);
+  background:var(--bg-subtle);display:grid;place-items:center;
+  font-size:20px;flex-shrink:0;overflow:hidden;
+  border:1px solid var(--border);
+}
+.cartRow .ci img{width:100%;height:100%;object-fit:cover}
+.cartRow .ci .icon{color:var(--muted-3)}
+.cartRow .cb{flex:1;min-width:0}
+.cartRow .cb b{
+  font-size:13.5px;font-weight:600;display:block;
+  color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cartRow .cb small{color:var(--muted-2);font-size:12px;font-weight:500;margin-top:2px}
+.qty{
+  display:inline-flex;align-items:center;gap:2px;
+  background:var(--bg-subtle);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:3px;
+}
+.qty button{
+  width:28px;height:28px;border-radius:6px;
+  background:#fff;color:var(--text);border:1px solid var(--border);
+  display:grid;place-items:center;
+}
+.qty button:active{background:var(--brand-2);color:#fff;border-color:var(--brand-2)}
+.qty span{min-width:22px;text-align:center;font-weight:700;font-size:13.5px}
+.totals{
+  margin-top:6px;padding:14px;border-radius:var(--radius-sm);
+  background:#fff;border:1px solid var(--border);
+}
+.totalsRow{
+  display:flex;justify-content:space-between;
+  font-size:13px;font-weight:500;color:var(--muted);padding:4px 0;
+}
+.totalsRow.grand{
+  color:var(--text);font-size:16px;font-weight:700;
+  padding-top:10px;margin-top:6px;
+  border-top:1px solid var(--border);
+}
+.totalsRow.grand span:last-child{color:var(--brand)}
+
+/* ---------- Inputs ---------- */
+.input{
+  width:100%;padding:12px 14px;
+  background:#fff;border:1px solid var(--border-2);
+  border-radius:var(--radius-sm);color:var(--text);
+  font-size:14px;font-weight:500;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+.input::placeholder{color:var(--muted-3);font-weight:400}
+.input:focus{outline:none;border-color:var(--brand-2);box-shadow:0 0 0 3px var(--brand-soft)}
+.label{
+  display:block;color:var(--muted-2);font-size:11px;
+  font-weight:600;margin-top:14px;margin-bottom:6px;
+  letter-spacing:.4px;text-transform:uppercase;
+}
+
+/* ---------- Bottom nav ---------- */
+.bottomNav{
+  position:fixed;left:0;right:0;bottom:0;z-index:500;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:8px 8px max(8px,env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+}
+.navBtn{
+  min-height:52px;font-size:11.5px;font-weight:600;
+  border-radius:var(--radius-sm);letter-spacing:.1px;
+  transition:color .15s ease,background .15s ease;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;color:var(--muted-3);position:relative;
+}
+.navBtn.active{color:var(--brand-2);background:var(--brand-soft)}
+.navBadge{
+  position:absolute;top:4px;right:calc(50% - 22px);
+  min-width:17px;height:17px;padding:0 4px;
+  border-radius:999px;background:var(--yellow);color:#000;
+  font-size:10px;font-weight:700;display:grid;place-items:center;
+}
+
+/* ---------- Modals ---------- */
+.modal{
+  position:fixed;inset:0;z-index:1000;display:none;
+  place-items:end center;padding:12px;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.modal.active{display:grid}
+.modalBox{
+  width:100%;max-width:470px;max-height:90vh;overflow:auto;
+  padding:20px;border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  background:#fff;box-shadow:var(--shadow-lg);
+  animation:up .22s ease;
+}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.modalHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.modalTitle{
+  margin:0;font-size:19px;font-weight:700;
+  letter-spacing:-.02em;color:var(--text);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.modalTitle .icon{color:var(--brand-2)}
+.modalDesc{margin-top:6px;color:var(--muted-2);font-size:12.5px;line-height:1.55}
+.close{
+  width:34px;height:34px;flex-shrink:0;border-radius:50%;
+  border:1px solid var(--border-2);background:#fff;
+  color:var(--muted);
+  display:grid;place-items:center;transition:background .15s ease;
+}
+.close:hover{background:var(--bg-subtle)}
+.btn{
+  width:100%;margin-top:12px;padding:14px;
+  border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  font-size:14.5px;font-weight:600;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s ease,transform .15s ease,opacity .15s ease;
+  letter-spacing:-.01em;
+}
+.btn:hover{background:var(--brand-3)}
+.btn:active{transform:scale(.99)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.secondary{
+  background:#fff;border:1px solid var(--border-2);color:var(--text);
+}
+.btn.secondary:hover{background:var(--bg-subtle);border-color:var(--border-3)}
+.twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+
+/* ---------- Success ---------- */
+.success{text-align:center;padding:6px}
+.successIcon{
+  width:72px;height:72px;display:grid;place-items:center;
+  margin:0 auto 16px;border-radius:50%;
+  background:var(--green-soft);color:var(--green);
+  animation:pop .4s cubic-bezier(.3,1.5,.5,1);
+}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.reference{
+  margin:18px 0;padding:16px;
+  background:var(--bg-subtle);border:1px dashed var(--border-2);
+  border-radius:var(--radius-sm);
+}
+.reference small{
+  display:block;color:var(--muted-3);font-size:11px;
+  letter-spacing:.8px;font-weight:600;text-transform:uppercase;
+}
+.reference strong{
+  display:block;color:var(--brand);
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:17px;margin-top:6px;letter-spacing:1.2px;font-weight:700;
+}
+
+/* ---------- Payment card ---------- */
+.payCard{
+  margin:16px 0;padding:16px;
+  border-radius:var(--radius);
+  background:#fff;border:1px solid var(--border);
+  text-align:left;
+}
+.payCard .ptitle{
+  font-size:13.5px;font-weight:700;
+  color:var(--brand);letter-spacing:-.01em;
+  display:flex;align-items:center;gap:7px;margin-bottom:12px;
+}
+.payCard .ptitle .amt{
+  margin-left:auto;color:var(--brand);
+  background:var(--brand-soft);padding:3px 10px;
+  border-radius:999px;font-size:12.5px;font-weight:700;
+}
+.payBox{
+  background:var(--bg-subtle);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px;margin-bottom:12px;
+}
+.payBox .row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.payBox .row + .row{border-top:1px solid var(--border);padding-top:11px;margin-top:6px}
+.payBox .lbl{
+  font-size:10.5px;font-weight:600;color:var(--muted-3);
+  letter-spacing:.4px;text-transform:uppercase;flex:1;
+}
+.payBox .val{
+  font-family:ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:17px;font-weight:700;color:var(--text);letter-spacing:.5px;
+}
+.payCopy{
+  width:30px;height:30px;border-radius:6px;
+  background:#fff;border:1px solid var(--border-2);
+  color:var(--brand-2);
+  display:grid;place-items:center;
+  flex-shrink:0;transition:background .15s ease;
+}
+.payCopy:hover{background:var(--brand-soft)}
+.payCopy:active{background:var(--brand-2);color:#fff}
+.paySteps{list-style:none;padding:0;margin:0 0 12px;counter-reset:s}
+.paySteps li{
+  position:relative;padding-left:28px;font-size:12.5px;
+  color:var(--muted);line-height:1.65;font-weight:500;
+  margin-bottom:4px;counter-increment:s;
+}
+.paySteps li:before{
+  content:counter(s);position:absolute;left:0;top:1px;
+  width:19px;height:19px;border-radius:50%;
+  background:var(--brand-2);color:#fff;font-size:10px;font-weight:700;
+  display:grid;place-items:center;
+}
+.payCard .payActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.payCard .payActions a{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px;border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  font-size:13px;font-weight:600;text-decoration:none;text-align:center;
+  transition:background .15s ease;
+}
+.payCard .payActions a:hover{background:var(--brand-3)}
+.payCard .payActions a.ghost{
+  background:#fff;border:1px solid var(--border-2);color:var(--text);
+}
+.payCard .payActions a.ghost:hover{background:var(--bg-subtle)}
+.payCard.warn{background:var(--yellow-soft);border-color:#f0dfa0}
+.payCard.warn .ptitle{color:#7a5c00}
+.payCard.warn .ptitle .amt{background:rgba(254,187,2,.28);color:#7a5c00}
+.payCard.warn .paySteps li:before{background:var(--yellow);color:#000}
+
+/* ---------- Pay-now button ---------- */
+.payNowBtn{
+  margin-top:12px;width:100%;padding:12px;
+  border-radius:var(--radius-sm);
+  background:var(--brand-2);color:#fff;
+  font-weight:600;font-size:13.5px;letter-spacing:-.01em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .15s ease;
+}
+.payNowBtn:hover{background:var(--brand-3)}
+.payNowBtn:active{transform:scale(.99)}
+
+/* ---------- Order history ---------- */
+.orderItem{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:13px;margin-bottom:8px;
+}
+.orderItem strong{font-size:13.5px;display:block;font-weight:700;color:var(--text)}
+.orderItem small{color:var(--muted-2);font-size:12px;display:block;margin-top:4px;line-height:1.5}
+.orderAmount{color:var(--brand)!important;font-weight:700}
+.rateRow{
+  margin-top:10px;display:flex;gap:6px;align-items:center;
+  color:var(--muted-2);font-size:11.5px;font-weight:500;flex-wrap:wrap;
+}
+.rateRow button{
+  border:1px solid var(--border-2);border-radius:6px;
+  padding:4px 7px;font-size:14px;background:#fff;
+  transition:border-color .15s ease,transform .15s ease;
+}
+.rateRow button:hover{border-color:var(--brand-2);transform:scale(1.1)}
+
+/* ---------- Help / Lang / Info ---------- */
+.help-btn{
+  width:100%;margin-bottom:8px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px;
+  text-align:left;transition:border-color .15s ease,background .15s ease;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow-xs);
+}
+.help-btn:hover{border-color:var(--border-2);background:var(--bg-subtle)}
+.help-btn:active{transform:scale(.99)}
+.help-btn .hi{
+  display:grid;place-items:center;
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--brand-soft);color:var(--brand-2);
+}
+.help-btn b{display:block;font-size:13.5px;font-weight:600;color:var(--text)}
+.help-btn small{display:block;color:var(--muted-3);font-size:11.5px;margin-top:2px}
+.help-btn .arrow{margin-left:auto;color:var(--muted-3)}
+
+.langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.langCard{
+  padding:14px;border:1px solid var(--border);
+  background:#fff;border-radius:var(--radius-sm);
+  text-align:left;transition:border-color .15s ease,background .15s ease;
+  display:flex;flex-direction:column;gap:4px;position:relative;
+}
+.langCard:hover{border-color:var(--border-2);background:var(--bg-subtle)}
+.langCard.active{border-color:var(--brand-2);background:var(--brand-soft)}
+.langCard .flag{font-size:22px;line-height:1}
+.langCard b{font-size:13.5px;font-weight:600;color:var(--text)}
+.langCard small{font-size:11px;color:var(--muted-2);font-weight:500}
+.langCard .check{
+  position:absolute;top:10px;right:12px;
+  color:var(--brand-2);
+}
+
+/* ---------- Loading / Empty ---------- */
+.loading{
+  text-align:center;padding:48px 16px;
+  color:var(--muted-2);font-size:13.5px;font-weight:500;
+}
+.spinner{
+  width:28px;height:28px;margin:0 auto 12px;
+  border:3px solid var(--border);border-top-color:var(--brand-2);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+.empty{display:none;text-align:center;padding:48px 16px;color:var(--muted-2);font-size:13.5px}
+.empty.show{display:block}
+.emptyIcon{
+  display:grid;place-items:center;
+  width:52px;height:52px;margin:0 auto 12px;
+  border-radius:var(--radius-sm);
+  background:var(--bg-subtle);border:1px solid var(--border);
+  color:var(--muted-3);
+}
+
+/* ---------- Promo ---------- */
+.promo{
+  margin:16px 14px 0;padding:14px 16px;
+  border-radius:var(--radius);
+  background:var(--yellow-soft);border:1px solid #f0dfa0;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+}
+.promo b{
+  font-size:13.5px;display:flex;align-items:center;gap:7px;
+  color:#7a5c00;font-weight:700;
+}
+.promo b .icon{color:#a87a00}
+.promo small{color:#8a6a15;font-size:11.5px;display:block;margin-top:3px;line-height:1.45}
+.promoTag{
+  padding:4px 10px;border-radius:999px;
+  background:var(--yellow);color:#000;
+  font-size:10.5px;font-weight:700;letter-spacing:.3px;flex-shrink:0;
+}
+.promoClose{
+  color:#7a5c00;padding:4px 6px;flex-shrink:0;
+  display:grid;place-items:center;
+}
+
+/* ---------- Footer ---------- */
+.footer{
+  text-align:center;color:var(--muted-3);
+  padding:28px 20px 120px;font-size:11.5px;line-height:1.9;
+}
+.footer strong{color:var(--muted);font-weight:600}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;left:12px;right:12px;
+  bottom:calc(90px + env(safe-area-inset-bottom));
+  z-index:2000;display:none;
+  padding:13px 16px;
+  background:#1a1a1a;color:#fff;
+  border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-lg);
+  font-size:13px;font-weight:500;text-align:center;
+}
+.toast.show{display:block;animation:toastIn .22s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- RTL ---------- */
+[dir="rtl"] .searchIcon{left:auto;right:14px}
+[dir="rtl"] .searchBox input{padding-left:14px;padding-right:40px}
+[dir="rtl"] .searchClear{right:auto;left:10px}
+[dir="rtl"] .price{right:auto;left:10px}
+[dir="rtl"] .svc b{padding-right:0;padding-left:70px}
+[dir="rtl"] .progressStep{transform:scaleX(-1)}
+[dir="rtl"] .soldOut{right:auto;left:12px}
+[dir="rtl"] .help-btn .arrow{margin-left:0;margin-right:auto;transform:scaleX(-1)}
+
+/* ---------- Responsive ---------- */
+@media(min-width:650px){
+  body{max-width:800px;margin:auto;border-inline:1px solid var(--border);min-height:100vh}
+  .bottomNav{max-width:800px;left:50%;transform:translateX(-50%)}
+  .cartBar{max-width:776px;left:50%;transform:translateX(-50%)}
+  .cartSheet{max-width:800px;left:50%;transform:translateX(-50%) translateY(102%)}
+  .cartSheet.open{transform:translateX(-50%) translateY(0)}
+  .modal{place-items:center}
+}
+
+@media (max-width:380px){
+  body{font-size:14px}
+  .progressLabels span,.status,.miTag{font-size:10.5px}
+  .navBtn{font-size:11px}
+  .menuCard .body small,
+  .svc small,
+  .popCard small,
+  .ctxPanel small{font-size:12px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .activeOrder.flash{border-left-color:var(--green)}
+  .liveDot.on{box-shadow:0 0 0 3px rgba(0,128,9,.25)}
+}
+</style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════════════════════════
+     SVG ICON SPRITE — one source of truth for all UI icons
+     Lucide-derived, 24x24, currentColor, 1.75 stroke
+════════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-bed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>
+    </symbol>
+    <symbol id="i-utensils" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+    </symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+    </symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+      <path d="M21 3v5h-5"/>
+      <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+      <path d="M8 16H3v5"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+    </symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/>
+      <line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>
+    </symbol>
+    <symbol id="i-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+      <path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>
+    </symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+    </symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+    </symbol>
+    <symbol id="i-droplet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+    </symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+      <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>
+    </symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+    </symbol>
+    <symbol id="i-credit-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+    </symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m9 18 6-6-6-6"/>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/><path d="M12 5v14"/>
+    </symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14"/>
+    </symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </symbol>
+    <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+      <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+    </symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+    </symbol>
+    <symbol id="i-landmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" x2="21" y1="22" y2="22"/>
+      <line x1="6" x2="6" y1="18" y2="11"/>
+      <line x1="10" x2="10" y1="18" y2="11"/>
+      <line x1="14" x2="14" y1="18" y2="11"/>
+      <line x1="18" x2="18" y1="18" y2="11"/>
+      <polygon points="12 2 20 7 4 7"/>
+    </symbol>
+    <symbol id="i-shirt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
+    </symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+    </symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
+      <path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>
+    </symbol>
+    <symbol id="i-stethoscope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/>
+      <path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>
+    </symbol>
+    <symbol id="i-party" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5.8 11.3 2 22l10.7-3.79"/>
+      <path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/>
+      <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/>
+      <path d="m22 13-1.2-.4a2.9 2.9 0 0 0-3.11 1.06l-3.09 4.12c-.5.66-1.4.79-2.05.29L9.5 17"/>
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+      <path d="M12 9v4"/><path d="M12 17h.01"/>
+    </symbol>
+    <symbol id="i-wifi-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="2" x2="22" y1="2" y2="22"/>
+      <path d="M8.5 16.5a5 5 0 0 1 7 0"/>
+      <path d="M2 8.82a15 15 0 0 1 4.17-2.65"/>
+      <path d="M10.66 5c4.01-.36 8.14.9 11.34 3.76"/>
+      <path d="M16.85 11.25a10 10 0 0 1 2.22 1.68"/>
+      <path d="M5 13a10 10 0 0 1 5.24-2.76"/>
+      <line x1="12" x2="12.01" y1="20" y2="20"/>
+    </symbol>
+    <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/>
+      <path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/><path d="M9 18v.01"/>
+    </symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+      <circle cx="9" cy="9" r="2"/>
+      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+    </symbol>
+    <symbol id="i-service" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
+    </symbol>
+  </defs>
+</svg>
+
 <div id="offlineBar" class="offlineBar" role="status" aria-live="polite">
-  <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-wifi-off"/></svg>
+  <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-wifi-off"/></svg>
   <span data-i18n="t_offline">You're offline — we'll reconnect automatically</span>
 </div>
 
@@ -34,14 +1258,14 @@
   </div>
   <div class="topActions">
     <div class="ctxChip" id="ctxChip">
-      <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+      <svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-bed"/></svg>
       <b>—</b>
     </div>
     <button class="iconBtn" id="langBtn" aria-label="Change language" title="Change language">
-      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-globe"/></svg>
+      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-globe"/></svg>
     </button>
     <button class="iconBtn" id="bellBtn" aria-label="Contact hotel / Info" title="Contact hotel">
-      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-info"/></svg>
+      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-info"/></svg>
     </button>
   </div>
 </header>
@@ -72,12 +1296,12 @@
     <p id="hotelTagline">Room service • Restaurant • Transport • Tours • Spa</p>
     <div class="heroBottom">
       <div class="verified">
-        <svg class="icon" width="13" height="13" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-lock"/></svg>
+        <svg class="icon" width="13" height="13" aria-hidden="true"><use href="#i-lock"/></svg>
         <span data-i18n="footer_secure_short">GuestHub Verified</span>
       </div>
       <div class="heroMeta">
         <span id="heroCtx">
-          <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+          <svg class="icon" width="12" height="12" aria-hidden="true"><use href="#i-bed"/></svg>
           <span>—</span>
         </span>
         <span id="heroStay">Ready</span>
@@ -89,7 +1313,7 @@
 <!-- ═══════ CONTEXT PANEL ═══════ -->
 <div class="ctxPanel" id="ctxPanel">
   <div class="ctxIcon" id="ctxIcon">
-    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-bed"/></svg>
   </div>
   <div style="min-width:0">
     <b id="ctxTitle">—</b>
@@ -101,15 +1325,15 @@
 <!-- ═══════ QUICK REQUESTS (table mode) ═══════ -->
 <div class="quickReq" id="quickReq" style="display:none">
   <button class="quickReqBtn" data-quick-req="waiter">
-    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bell"/></svg>
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-bell"/></svg>
     <span data-i18n="qa_waiter">Call Waiter</span>
   </button>
   <button class="quickReqBtn" data-quick-req="water">
-    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-droplet"/></svg>
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-droplet"/></svg>
     <span data-i18n="qa_water">Water</span>
   </button>
   <button class="quickReqBtn" data-quick-req="bill">
-    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-receipt"/></svg>
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-receipt"/></svg>
     <span data-i18n="qa_bill">Request Bill</span>
   </button>
 </div>
@@ -124,7 +1348,7 @@
     <div class="orderActions">
       <span class="liveDot" id="liveDot"></span>
       <button class="refreshBtn" id="refreshActive" aria-label="Refresh">
-        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-refresh"/></svg>
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-refresh"/></svg>
       </button>
       <span class="status pending" id="activeStatus">Pending</span>
     </div>
@@ -146,11 +1370,11 @@
     <span><strong id="activeAmount">—</strong></span>
   </div>
   <div class="orderEta" id="orderEta" style="display:none">
-    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clock"/></svg>
+    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>
     <span id="orderEtaText"></span>
   </div>
   <button class="payNowBtn" id="payNowBtn" style="display:none">
-    <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-credit-card"/></svg>
+    <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-credit-card"/></svg>
     <span id="payNowText">Pay now</span>
   </button>
 </section>
@@ -159,11 +1383,11 @@
 <div class="menuSticky" id="menuSticky">
   <div class="searchBox">
     <span class="searchIcon">
-      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-search"/></svg>
+      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-search"/></svg>
     </span>
     <input id="searchService" data-i18n="search_placeholder" placeholder="Search dishes, drinks, services…" autocomplete="off">
     <button class="searchClear" id="searchClear" aria-label="Clear search">
-      <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      <svg class="icon" width="12" height="12" aria-hidden="true"><use href="#i-x"/></svg>
     </button>
   </div>
   <div class="catTabs" id="catTabs" role="tablist"></div>
@@ -173,7 +1397,7 @@
 <section class="popularSection" id="popularSection" style="display:none">
   <div class="popularHead">
     <h2>
-      <svg class="icon fire" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-flame"/></svg>
+      <svg class="icon fire" width="15" height="15" aria-hidden="true"><use href="#i-flame"/></svg>
       <span data-i18n="popular_today">Popular today</span>
     </h2>
     <small id="popularSub"></small>
@@ -190,7 +1414,7 @@
 
 <div id="emptySearch" class="empty" style="margin:0 14px">
   <div class="emptyIcon">
-    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-search"/></svg>
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="#i-search"/></svg>
   </div>
   <strong data-i18n="empty_search">Nothing found</strong><br>
   <span data-i18n="empty_search_sub">Try another search.</span>
@@ -200,20 +1424,20 @@
 <div class="promo" id="promoBanner">
   <div>
     <b id="promoTitle">
-      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-sparkles"/></svg>
+      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-sparkles"/></svg>
       <span>Welcome to GuestHub</span>
     </b>
     <small id="promoText">Scan · Order · Enjoy — everything from one place.</small>
   </div>
   <span class="promoTag">LIVE</span>
   <button class="promoClose" id="promoClose" aria-label="Dismiss">
-    <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+    <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
   </button>
 </div>
 
 <!-- ═══════ FOOTER ═══════ -->
 <footer class="footer">
-  <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-lock"/></svg>
+  <svg class="icon" width="12" height="12" aria-hidden="true"><use href="#i-lock"/></svg>
   <strong data-i18n="footer_secure">GuestHub Verified</strong><br>
   <span data-i18n="footer_line1">Your hotel coordinates your requested service.</span><br>
   <span data-i18n="footer_line2">GuestHub • Hospitality made simple</span>
@@ -227,7 +1451,7 @@
   </div>
   <button id="cartOpen">
     <span data-i18n="view_cart_short">View Cart</span>
-    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-arrow-right"/></svg>
+    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="#i-arrow-right"/></svg>
   </button>
 </div>
 
@@ -237,13 +1461,13 @@
   <div class="head">
     <div>
       <h3 id="cartTitle">
-        <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-receipt"/></svg>
+        <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-receipt"/></svg>
         <span data-i18n="your_order_short">Your Order</span>
       </h3>
       <small id="cartSubtitle"></small>
     </div>
     <button class="closeSheet" id="cartClose" aria-label="Close">
-      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
     </button>
   </div>
   <div class="body">
@@ -258,7 +1482,7 @@
     <div class="twoButtons">
       <button class="btn secondary" id="cartClear" data-i18n="clear_cart">Clear</button>
       <button class="btn" id="cartCheckout">
-        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg>
         <span data-i18n="checkout">Send Order</span>
       </button>
     </div>
@@ -268,20 +1492,20 @@
 <!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
   <button class="navBtn active" data-tab="home">
-    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-home"/></svg>
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-home"/></svg>
     <span data-i18n="nav_home">Home</span>
   </button>
   <button class="navBtn" data-tab="menu">
-    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-list"/></svg>
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-list"/></svg>
     <span data-i18n="nav_menu">Menu</span>
   </button>
   <button class="navBtn" data-tab="orders">
-    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clipboard"/></svg>
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-clipboard"/></svg>
     <span data-i18n="nav_orders">Orders</span>
     <span class="navBadge" id="ordersBadge" style="display:none">0</span>
   </button>
   <button class="navBtn" data-tab="help">
-    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-message"/></svg>
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="#i-message"/></svg>
     <span data-i18n="nav_help">Help</span>
   </button>
 </nav>
@@ -295,16 +1519,16 @@
         <div class="modalDesc" data-i18n="ctx_desc">Choose your room or restaurant table.</div>
       </div>
       <button class="close" data-close="ctxModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <div class="twoButtons" style="margin-top:18px">
       <button class="btn secondary" id="ctxPickRoom" style="margin-top:0">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-bed"/></svg>
         <span data-i18n="scan_room">Room</span>
       </button>
       <button class="btn secondary" id="ctxPickTable" style="margin-top:0">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-utensils"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-utensils"/></svg>
         <span data-i18n="scan_table">Table</span>
       </button>
     </div>
@@ -322,7 +1546,7 @@
         <div id="mDesc" class="modalDesc"></div>
       </div>
       <button class="close" data-close="orderModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <label class="label" for="guestPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
@@ -332,7 +1556,7 @@
     <div class="twoButtons">
       <button class="btn secondary" data-close="orderModal" data-i18n="cancel">Cancel</button>
       <button class="btn" id="confirmOrder">
-        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-check"/></svg>
         <span data-i18n="place_order_short">Place Order</span>
       </button>
     </div>
@@ -343,7 +1567,7 @@
 <div class="modal" id="successModal" role="dialog" aria-modal="true">
   <div class="modalBox success">
     <div class="successIcon">
-      <svg class="icon" width="34" height="34" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+      <svg class="icon" width="34" height="34" aria-hidden="true"><use href="#i-check"/></svg>
     </div>
     <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center;justify-content:center">Request Received!</h3>
     <p id="successText" class="modalDesc" style="text-align:center;margin-top:8px"></p>
@@ -353,7 +1577,7 @@
     </div>
     <div id="payMount"></div>
     <button class="btn" id="successDone">
-      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-arrow-right"/></svg>
+      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="#i-arrow-right"/></svg>
       <span data-i18n="track_order_short">Track My Order</span>
     </button>
   </div>
@@ -364,13 +1588,13 @@
     <div class="modalHead">
       <div>
         <h3 class="modalTitle" id="ordersTitle">
-          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clipboard"/></svg>
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-clipboard"/></svg>
           <span data-i18n="orders_title_short">My Orders</span>
         </h3>
         <div class="modalDesc" data-i18n="orders_desc">Track your GuestHub requests.</div>
       </div>
       <button class="close" data-close="ordersModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <div id="ordersList" style="margin-top:14px"></div>
@@ -382,13 +1606,13 @@
     <div class="modalHead">
       <div>
         <h3 class="modalTitle" id="helpTitle">
-          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-message"/></svg>
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-message"/></svg>
           <span data-i18n="help_title_short">Talk to the Hotel</span>
         </h3>
         <div class="modalDesc" data-i18n="help_desc">Direct WhatsApp — fastest response.</div>
       </div>
       <button class="close" data-close="helpModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <div id="helpList" style="margin-top:14px"></div>
@@ -400,13 +1624,13 @@
     <div class="modalHead">
       <div>
         <h3 class="modalTitle" id="infoTitle">
-          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-info"/></svg>
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-info"/></svg>
           <span data-i18n="info_title_short">How It Works</span>
         </h3>
         <div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div>
       </div>
       <button class="close" data-close="infoModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <div style="margin-top:14px" id="infoBody"></div>
@@ -418,13 +1642,13 @@
     <div class="modalHead">
       <div>
         <h3 class="modalTitle" id="langTitle">
-          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-globe"/></svg>
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="#i-globe"/></svg>
           <span data-i18n="lang_title_short">Language</span>
         </h3>
         <div class="modalDesc" id="langDesc">Choose your preferred language.</div>
       </div>
       <button class="close" data-close="langModal" aria-label="Close">
-        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="#i-x"/></svg>
       </button>
     </div>
     <div class="langGrid" id="langGrid"></div>
@@ -445,7 +1669,6 @@ const POLL_IDLE_MS      = 60000;
 const ORDER_COOLDOWN_MS = 20000;
 const SOUND_ENABLED     = true;
 
-const ICON_BASE = "/assets/guesthub-icons.svg";
 const SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || "";
 const SUPA_KEY = (typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || "";
 
@@ -454,9 +1677,9 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? (STATE.currency || "Ksh") + " " + n.toLocaleString("en-KE") : null; };
 const priceLabel = v => money(v) || t("ask_hotel");
 
-/* SVG helper — references the shared external sprite */
+/* SVG helper — returns markup that references the sprite above */
 function icon(name, size = 16, cls = ""){
-  return `<svg class="icon ${cls}" width="${size}" height="${size}" aria-hidden="true"><use href="${ICON_BASE}#i-${name}"/></svg>`;
+  return `<svg class="icon ${cls}" width="${size}" height="${size}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -504,7 +1727,7 @@ function ctxLabel(){
 function ctxNumber(){ return CONTEXT.mode === "table" ? CONTEXT.table : CONTEXT.room; }
 
 /* ═══════════════════════════════════════════════════════════════
-   3. I18N — emoji-free labels (icons via sprite)
+   3. I18N — emoji-free labels (icons are rendered via sprite)
 ═══════════════════════════════════════════════════════════════ */
 const I18N = {
   en:{dir:"ltr",flag:"🇬🇧",name:"English",native:"English",
@@ -562,6 +1785,7 @@ const I18N = {
     sold_out:"Sold out",popular_badge:"Popular",
     pay_now:"Pay now",pay_title:"Payment",pay_no_config:"Your hotel hasn't set up M-Pesa yet. Please pay at the reception or ask the front desk.",
     pay_tap_copy:"Tap to copy",
+    /* payment steps — icon-free */
     pay_mpesa_open:"Open M-Pesa on your phone",
     pay_mpesa_lnm:"Choose Lipa na M-Pesa",
     pay_mpesa_paybill:"Pay Bill",
@@ -838,6 +2062,8 @@ const DEMO_ITEMS = [
   { id:"d11",cat:"cold",      emoji:"🥤", name:"Passion Juice",     desc:"Freshly squeezed",                    price:400,  tags:["veg"] },
   { id:"d12",cat:"cold",      emoji:"💧", name:"Still Water",       desc:"750ml chilled bottle",                price:200,  tags:["veg"] }
 ];
+/* Service data uses iconName so rendering uses the SVG sprite.
+   `emoji` is kept as a mapping fallback for API responses that still send emoji. */
 const DEFAULT_SERVICES = [
   { id:"s1",  title:"Room Service",         iconName:"utensils",     category:"food",     price:0, description:"Full menu delivered to your room" },
   { id:"s2",  title:"Airport Transfer",     iconName:"car",          category:"taxi",     price:0, description:"Meet & greet, fixed rate" },
@@ -868,7 +2094,7 @@ const QUICK_SERVICES = {
   bill:  { id:"qs_bill",   title:"Request the Bill", iconName:"receipt",  category:"services", price:0, description:"We'll bring your bill to the table",       cta:"Request Bill" }
 };
 
-/* Emoji → icon name map — for API responses that still send emoji */
+/* Emoji → icon name map, for API responses that still send emoji */
 const EMOJI_ICON_MAP = {
   "🍽️":"utensils","🍴":"utensils","🍳":"utensils","🥗":"utensils","🍛":"utensils","🍲":"utensils",
   "🍰":"utensils","🍩":"utensils","🥞":"utensils",
@@ -1189,6 +2415,8 @@ function scheduleMidnightRefresh(){
 /* ═══════════════════════════════════════════════════════════════
    13. RENDER — tabs, popular, menu, services
 ═══════════════════════════════════════════════════════════════ */
+
+/* Category-level icon */
 function getCategoryIconName(category){
   const c = String(category || "").toLowerCase();
   if(c === "tour" || /safari/.test(c))            return "compass";
@@ -1202,6 +2430,7 @@ function getCategoryIconName(category){
   return "service";
 }
 
+/* Dynamic CTA per service */
 function serviceCTA(s){
   const cat   = String(s.category || "").toLowerCase();
   const title = String(s.title || "").toLowerCase();
@@ -1218,6 +2447,7 @@ function serviceCTA(s){
   return "Ask Hotel";
 }
 
+/* Smart pre-fill templates */
 function serviceNoteTemplate(s){
   const cat   = String(s.category || "").toLowerCase();
   const title = String(s.title || "").toLowerCase();
@@ -1583,7 +2813,7 @@ function renderCart(){
     : `${t("deliver_to")} ${t("room_number")} ${ctxNumber() || "—"}`;
 
   if(!STATE.cart.length){
-    wrap.innerHTML = `<div style="text-align:center;padding:30px 12px;color:var(--gh-text-4);font-size:13px">${esc(t("empty_cart"))}</div>`;
+    wrap.innerHTML = `<div style="text-align:center;padding:30px 12px;color:var(--muted-3);font-size:13px">${esc(t("empty_cart"))}</div>`;
     $("cartTotals").innerHTML = "";
     return;
   }
@@ -1953,7 +3183,7 @@ async function viewOrders(){
 
   if(!orders.length){
     $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#6f6f6f">
-      <div style="display:grid;place-items:center;width:52px;height:52px;margin:0 auto 10px;border-radius:8px;background:var(--gh-bg-subtle);border:1px solid var(--gh-border);color:var(--gh-text-4)">${icon("clipboard", 22)}</div>
+      <div style="display:grid;place-items:center;width:52px;height:52px;margin:0 auto 10px;border-radius:8px;background:var(--bg-subtle);border:1px solid var(--border);color:var(--muted-3)">${icon("clipboard", 22)}</div>
       <strong style="color:#1a1a1a;font-size:13.5px">${esc(t("no_orders_title"))}</strong>
       <div style="font-size:12.5px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
     return;
@@ -1981,7 +3211,7 @@ async function viewOrders(){
   $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
     btn.addEventListener("click", () => {
       toast(t("t_rate_thanks"));
-      btn.parentElement.innerHTML = `<span style="color:var(--gh-green);display:inline-flex;align-items:center;gap:5px">${icon("check", 13)}${esc(t("thanks_rating"))}</span>`;
+      btn.parentElement.innerHTML = `<span style="color:var(--green);display:inline-flex;align-items:center;gap:5px">${icon("check", 13)}${esc(t("thanks_rating"))}</span>`;
     });
   });
 }
@@ -2033,10 +3263,10 @@ function openCtxModal(){
   setTimeout(() => $("ctxField").focus(), 100);
 }
 function highlightCtxButtons(){
-  $("ctxPickRoom").style.borderColor  = CONTEXT.mode === "room"  ? "var(--gh-brand-2)" : "var(--gh-border-2)";
-  $("ctxPickRoom").style.color        = CONTEXT.mode === "room"  ? "var(--gh-brand-2)" : "var(--gh-text)";
-  $("ctxPickTable").style.borderColor = CONTEXT.mode === "table" ? "var(--gh-brand-2)" : "var(--gh-border-2)";
-  $("ctxPickTable").style.color       = CONTEXT.mode === "table" ? "var(--gh-brand-2)" : "var(--gh-text)";
+  $("ctxPickRoom").style.borderColor  = CONTEXT.mode === "room"  ? "var(--brand-2)" : "var(--border-2)";
+  $("ctxPickRoom").style.color        = CONTEXT.mode === "room"  ? "var(--brand-2)" : "var(--text)";
+  $("ctxPickTable").style.borderColor = CONTEXT.mode === "table" ? "var(--brand-2)" : "var(--border-2)";
+  $("ctxPickTable").style.color       = CONTEXT.mode === "table" ? "var(--brand-2)" : "var(--text)";
 }
 $("ctxPickRoom").addEventListener("click", () => {
   CONTEXT.mode = "room";
@@ -2148,7 +3378,7 @@ function renderInfo(){
       ];
   $("infoBody").innerHTML = steps.map(([a, b], i) =>
     `<div class="orderItem" style="display:flex;gap:12px;align-items:flex-start">
-      <span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--gh-brand-soft);color:var(--gh-brand-2);font-weight:700;font-size:12px;flex-shrink:0">${i+1}</span>
+      <span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--brand-soft);color:var(--brand-2);font-weight:700;font-size:12px;flex-shrink:0">${i+1}</span>
       <div><strong>${esc(a)}</strong><small>${esc(b)}</small></div>
     </div>`).join("");
 }
@@ -2220,7 +3450,7 @@ function renderPaymentCard(amount, reference){
     mount.innerHTML = `
       <div class="payCard warn">
         <div class="ptitle">${icon("credit-card", 16)}<span>${esc(t("pay_title"))}</span></div>
-        <p style="margin:0;font-size:13px;color:var(--gh-text-2);line-height:1.6">
+        <p style="margin:0;font-size:13px;color:var(--muted);line-height:1.6">
           ${esc(t("pay_no_config"))}
         </p>
       </div>`;
@@ -2312,7 +3542,7 @@ function renderPaymentCard(amount, reference){
     mount.innerHTML = `
       <div class="payCard warn">
         <div class="ptitle">${icon("credit-card", 16)}<span>${esc(t("pay_title"))}</span></div>
-        <p style="margin:0;font-size:13px;color:var(--gh-text-2);line-height:1.6">
+        <p style="margin:0;font-size:13px;color:var(--muted);line-height:1.6">
           ${esc(t("pay_no_config"))}
         </p>
       </div>`;
@@ -2362,6 +3592,7 @@ async function init(){
 
   if(localStorage.getItem(`promo_closed_${HOTEL_ID}`) === "1") $("promoBanner").style.display = "none";
 
+  /* Hotel info */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
     if(r.ok){
@@ -2375,6 +3606,7 @@ async function init(){
     }
   }catch(_){}
 
+  /* Menu */
   let menuLoaded = false;
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/menu`);
@@ -2417,6 +3649,7 @@ async function init(){
     };
   }
 
+  /* Services & departments */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
     if(r.ok){
@@ -2435,8 +3668,10 @@ async function init(){
   if(!SERVICES.length) SERVICES = DEFAULT_SERVICES.map(s => ({ ...s }));
   if(!DEPARTMENTS.length) DEPARTMENTS = DEFAULT_DEPARTMENTS.map(d => ({ ...d }));
 
+  /* Prefetch hotel payment info */
   fetchHotelPayment();
 
+  /* Branding */
   $("hotelName").innerText   = (STATE.hotelName || t("hotel_fallback")).toUpperCase();
   $("hotelTagline").innerText = STATE.tagline || t("tagline_fallback");
 
