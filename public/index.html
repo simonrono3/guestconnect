@@ -7,6 +7,9 @@
 <meta name="description" content="GuestHub — the operating system for modern hotels in Kenya. One QR per room for food, taxis, safaris and spa.">
 <title>GuestHub — The operating system for modern hotels</title>
 
+<!-- Favicon — Concept 1 "OpenQR" (inlined so no extra file needed on Render) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23003580'/%3E%3Crect x='13' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='34' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='13' y='34' width='17' height='17' rx='3' fill='%23fff'/%3E%3Cpath d='M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43' stroke='%23febb02' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
@@ -175,18 +178,16 @@ ul { list-style: none; }
 
 .brand { display: flex; align-items: center; gap: 10px; }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: #fff;
-  color: var(--brand);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+/* GuestHub logo mark — Concept 1 "OpenQR"
+   On the blue header, the mark's own blue container blends into the bar,
+   so what reads is: three white finder squares + the yellow launch arrow. */
+.brand-logo {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 }
+
 .brand-name {
   font-size: 15px;
   font-weight: 600;
@@ -891,9 +892,9 @@ ul { list-style: none; }
   gap: 10px;
   margin-bottom: 12px;
 }
-.footer-brand .brand-mark {
-  background: var(--brand);
-  color: #fff;
+.footer-brand .brand-logo {
+  width: 32px;
+  height: 32px;
 }
 .footer-brand .brand-name { color: var(--text); }
 
@@ -954,7 +955,18 @@ ul { list-style: none; }
 <header class="header">
   <div class="container header-inner">
     <a href="/" class="brand" aria-label="GuestHub home">
-      <span class="brand-mark" aria-hidden="true">G</span>
+      <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect width="64" height="64" rx="14" fill="#003580"/>
+        <rect x="13" y="13" width="17" height="17" rx="3" fill="#ffffff"/>
+        <rect x="18.5" y="18.5" width="6" height="6" rx="1.5" fill="#003580"/>
+        <rect x="34" y="13" width="17" height="17" rx="3" fill="#ffffff"/>
+        <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#003580"/>
+        <rect x="13" y="34" width="17" height="17" rx="3" fill="#ffffff"/>
+        <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#003580"/>
+        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
+              stroke="#febb02" stroke-width="3.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
       <span class="brand-name">GuestHub</span>
     </a>
 
@@ -1335,7 +1347,18 @@ ul { list-style: none; }
 
       <div>
         <div class="footer-brand">
-          <span class="brand-mark" aria-hidden="true">G</span>
+          <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <rect width="64" height="64" rx="14" fill="#003580"/>
+            <rect x="13" y="13" width="17" height="17" rx="3" fill="#ffffff"/>
+            <rect x="18.5" y="18.5" width="6" height="6" rx="1.5" fill="#003580"/>
+            <rect x="34" y="13" width="17" height="17" rx="3" fill="#ffffff"/>
+            <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#003580"/>
+            <rect x="13" y="34" width="17" height="17" rx="3" fill="#ffffff"/>
+            <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#003580"/>
+            <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
+                  stroke="#febb02" stroke-width="3.5"
+                  stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
           <span class="brand-name">GuestHub</span>
         </div>
         <p class="footer-tagline">
