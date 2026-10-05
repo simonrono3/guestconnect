@@ -3,412 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#060606">
+<meta name="theme-color" content="#003580">
 <meta name="description" content="GuestHub — scan, order and enjoy. Room service, restaurant menu, tours, transport and concierge in one place.">
 <title>GuestHub — Scan · Order · Enjoy</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Design system — shared across guest app, hotel dashboard, vendor portal -->
+<link rel="stylesheet" href="/assets/guesthub-ui.css">
+<!-- Guest-app surface -->
+<link rel="stylesheet" href="/assets/guest.css">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js" onerror="console.warn('config.js not found — realtime disabled')"></script>
-<style>
-:root{
-  --lime:#c6ff00;--lime-soft:rgba(198,255,0,.12);--lime-line:rgba(198,255,0,.28);
-  --gold:#fbbf24;--gold-soft:rgba(251,191,36,.12);--gold-line:rgba(251,191,36,.32);
-  --blue:#38bdf8;--green:#22c55e;--red:#ef4444;--purple:#a78bfa;
-  --bg:#060606;--surface:#0d0d0d;--card:#121212;--card-2:#171717;
-  --border:#232323;--border-2:#2f2f2f;
-  --muted:#b4b4b4;--muted-2:#9a9a9a;--muted-3:#6b6b6b;
-  --radius:20px;--radius-sm:14px;--radius-lg:26px;
-  --shadow:0 18px 50px rgba(0,0,0,.45);
-  --topbar-h:60px;
-  color-scheme:dark;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;min-height:100vh;background:
-  radial-gradient(circle at 50% -10%,rgba(198,255,0,.09),transparent 34%),
-  radial-gradient(circle at 100% 100%,rgba(56,189,248,.04),transparent 30%),
-  var(--bg);
-  color:#fff;font-family:Inter,system-ui,Arial,sans-serif;font-size:14.5px;line-height:1.5;
-  padding-bottom:calc(96px + env(safe-area-inset-bottom));
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
-body.tableMode{background:
-  radial-gradient(circle at 50% -10%,rgba(251,191,36,.10),transparent 34%),
-  radial-gradient(circle at 100% 100%,rgba(198,255,0,.05),transparent 30%),
-  var(--bg);}
-button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-input,textarea,select{font:inherit}
-button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-img{max-width:100%;display:block}
-
-/* Offline */
-.offlineBar{position:fixed;top:0;left:0;right:0;z-index:1500;background:linear-gradient(90deg,#b91c1c,#ef4444);color:#fff;text-align:center;padding:9px 12px;font-size:12.5px;font-weight:800;letter-spacing:.3px;transform:translateY(-120%);transition:transform .3s ease;box-shadow:0 4px 20px rgba(239,68,68,.35)}
-.offlineBar.show{transform:translateY(0)}
-
-/* ── TOP BAR ─────────────────────────────── */
-.topbar{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:rgba(6,6,6,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
-.brand{display:flex;align-items:center;gap:9px;min-width:0;user-select:none}
-.brandMark{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(135deg,var(--lime),#a3d100);color:#000;font-family:'Space Grotesk';font-weight:800;font-size:17px;box-shadow:0 6px 22px rgba(198,255,0,.18)}
-.brandText{font-family:'Space Grotesk';font-size:14.5px;font-weight:800;letter-spacing:.3px}
-.brandText span{color:var(--lime)}
-.topActions{display:flex;align-items:center;gap:8px}
-.ctxChip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:#141414;border:1px solid var(--lime-line);font-size:11.5px;font-weight:900;color:var(--lime);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
-.ctxChip.table{border-color:var(--gold-line);color:var(--gold)}
-.iconBtn{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:#141414;border:1px solid #2a2a2a;color:#cfcfcf;font-size:16px;transition:border-color .15s,color .15s}
-.iconBtn:active{border-color:var(--lime);color:var(--lime)}
-
-/* ── HOTEL STRIP (table mode) ─────────────── */
-.hotelStrip{padding:14px 16px 10px;display:flex;align-items:center;gap:12px}
-.hotelStrip .avatar{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#f59e0b);display:grid;place-items:center;font-family:'Space Grotesk';font-weight:800;font-size:18px;color:#000;flex-shrink:0;box-shadow:0 6px 18px rgba(251,191,36,.22)}
-.hotelStrip .info{min-width:0;flex:1}
-.hotelStrip .info b{font-family:'Space Grotesk';font-size:16px;font-weight:800;display:block;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hotelStrip .info small{color:var(--muted-2);font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;margin-top:2px}
-.hotelStrip .info small .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
-.hotelStrip .info small .sep{opacity:.4}
-
-/* ── HERO (room mode) ─────────────────────── */
-.hero{position:relative;overflow:hidden;padding:22px 16px 26px;background:
-  radial-gradient(circle at 88% 10%,rgba(255,255,255,.22),transparent 22%),
-  linear-gradient(135deg,#c6ff00 0%,#e6ff66 45%,#fbbf24 100%);
-  color:#000;border-radius:0 0 32px 32px}
-.hero:before{content:"";position:absolute;width:240px;height:240px;right:-120px;bottom:-130px;border:1px solid rgba(0,0,0,.14);border-radius:50%}
-.hero:after{content:"";position:absolute;width:140px;height:140px;right:-40px;bottom:-70px;border:1px solid rgba(0,0,0,.10);border-radius:50%}
-.heroContent{position:relative;z-index:2}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;background:#000;color:var(--lime);padding:6px 11px;border-radius:999px;font-size:10.5px;font-weight:900;letter-spacing:.7px;margin-bottom:12px}
-.hero h1{margin:0;font-family:'Space Grotesk';font-size:clamp(25px,7vw,34px);line-height:1.02;letter-spacing:-1.1px;font-weight:800}
-.hero h1 span{display:block;color:rgba(0,0,0,.62);font-size:.55em;letter-spacing:-.4px;margin-top:5px;font-weight:800}
-.hero p{margin:10px 0 0;max-width:360px;font-size:13px;font-weight:700;opacity:.78;line-height:1.45}
-.heroBottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
-.verified{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:#000;color:#fff;font-size:11px;font-weight:900}
-.heroMeta{display:flex;gap:6px;flex-wrap:wrap}
-.heroMeta span{padding:7px 11px;border-radius:999px;background:rgba(0,0,0,.09);color:#000;font-size:11px;font-weight:900}
-
-/* ── CONTEXT PANEL ────────────────────────── */
-.ctxPanel{margin:12px 12px 0;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:linear-gradient(135deg,rgba(198,255,0,.09),rgba(255,255,255,.015));border:1px solid var(--lime-line)}
-body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),rgba(255,255,255,.015));border-color:var(--gold-line)}
-.ctxIcon{width:42px;height:42px;flex-shrink:0;display:grid;place-items:center;border-radius:13px;background:#0b0b0b;border:1px solid #2a2a2a;font-size:20px}
-.ctxPanel b{display:block;font-family:'Space Grotesk';font-size:14.5px;font-weight:800}
-.ctxPanel small{display:block;color:var(--muted-2);font-size:12px;margin-top:2px;font-weight:600}
-.ctxChange{margin-left:auto;padding:8px 13px;border-radius:10px;background:#1b1b1b;border:1px solid #303030;color:#fff;font-size:12px;font-weight:800;flex-shrink:0}
-
-/* ── QUICK REQUESTS (dine-in) ─────────────── */
-.quickReq{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 12px 4px}
-.quickReqBtn{padding:12px 8px;background:linear-gradient(145deg,#141414,#0a0a0a);border:1px solid #262626;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11.5px;font-weight:800;transition:border-color .15s,transform .15s;color:#fff}
-.quickReqBtn:active{transform:scale(.95);border-color:var(--gold)}
-.quickReqBtn i{font-style:normal;font-size:22px;line-height:1}
-
-/* ── STICKY MENU BAR ──────────────────────── */
-.menuSticky{position:sticky;top:var(--topbar-h);z-index:150;background:rgba(6,6,6,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:10px 12px 8px;border-bottom:1px solid rgba(255,255,255,.06)}
-.searchBox{position:relative;margin-bottom:9px}
-.searchIcon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:14px;opacity:.65}
-.searchBox input{width:100%;padding:12px 14px 12px 42px;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:13px;color:#fff;font-size:14px;font-weight:600;transition:border-color .18s,background .18s;outline:none}
-.searchBox input::placeholder{color:#6a6a6a;font-weight:500}
-.searchBox input:focus{border-color:var(--lime);background:#111}
-.searchClear{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;background:#202020;color:#888;font-size:14px;display:none;place-items:center;line-height:1}
-.searchClear.show{display:grid}
-
-/* ✅ Fade mask on the right edge of the horizontal scroll */
-.catTabs{display:flex;gap:7px;overflow-x:auto;padding:2px 24px 4px 2px;scrollbar-width:none;-ms-overflow-style:none;
-  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);
-  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent 100%);}
-.catTabs::-webkit-scrollbar{display:none}
-.catTab{flex-shrink:0;padding:9px 14px;border-radius:999px;background:#141414;border:1px solid #262626;color:var(--muted);font-size:12.5px;font-weight:800;white-space:nowrap;transition:all .18s;letter-spacing:.1px}
-.catTab.active{background:var(--lime);border-color:var(--lime);color:#000;box-shadow:0 4px 14px rgba(198,255,0,.28)}
-.catTab .cnt{opacity:.55;margin-left:5px;font-size:11px;font-weight:900}
-.catTab.active .cnt{opacity:.8}
-
-/* ── POPULAR CAROUSEL ─────────────────────── */
-.popularSection{padding:16px 0 4px}
-.popularHead{display:flex;align-items:center;justify-content:space-between;padding:0 16px 12px;gap:10px}
-.popularHead h2{margin:0;font-family:'Space Grotesk';font-size:16.5px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:7px}
-.popularHead .fire{font-size:16px}
-.popularHead small{color:var(--muted-3);font-size:12px;font-weight:700}
-.popularScroll{display:flex;gap:11px;overflow-x:auto;padding:0 12px 8px;scroll-snap-type:x mandatory;scrollbar-width:none}
-.popularScroll::-webkit-scrollbar{display:none}
-.popCard{flex:0 0 185px;scroll-snap-align:start;background:linear-gradient(155deg,#171717,#0d0d0d);border:1px solid #262626;border-radius:18px;overflow:hidden;text-align:left;position:relative;transition:transform .18s,border-color .18s}
-.popCard:active{transform:scale(.97);border-color:var(--lime)}
-.popCard .img{height:112px;background:linear-gradient(135deg,#202020,#0a0a0a);display:grid;place-items:center;font-size:44px;overflow:hidden;position:relative}
-.popCard .img img{width:100%;height:100%;object-fit:cover}
-.popCard .badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#000;font-size:10px;font-weight:900;letter-spacing:.5px;padding:3px 8px;border-radius:999px;box-shadow:0 4px 12px rgba(251,191,36,.3)}
-.popCard .body{padding:11px 12px 12px}
-.popCard b{font-size:13.5px;display:block;line-height:1.25;font-weight:800;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.popCard small{color:var(--muted-2);font-size:12px;display:block;line-height:1.4;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
-.popCard .price{font-family:'Space Grotesk';color:var(--lime);font-weight:900;font-size:14.5px;margin-top:8px;display:inline-block}
-.popCard .addMini{position:absolute;bottom:10px;right:10px;width:32px;height:32px;border-radius:10px;background:var(--lime);color:#000;font-size:17px;font-weight:900;display:grid;place-items:center;line-height:1;transition:transform .15s;box-shadow:0 6px 16px rgba(198,255,0,.25)}
-.popCard .addMini:active{transform:scale(.85)}
-.popCard .addMini.hasQty{width:auto;padding:0 11px;background:var(--gold);font-size:12.5px;display:inline-flex;align-items:center;gap:5px}
-
-/* ── MENU LIST ────────────────────────────── */
-.menuWrap{padding:0 12px}
-.menuSection{margin-top:18px;scroll-margin-top:150px}
-.menuSectionHead{display:flex;align-items:center;justify-content:space-between;padding:0 4px 10px;gap:10px}
-.menuSectionHead h3{margin:0;font-family:'Space Grotesk';font-size:17.5px;font-weight:800;letter-spacing:-.2px;display:flex;align-items:center;gap:9px}
-.menuSectionHead h3 .emoji{font-size:18px}
-.menuSectionHead .count{color:var(--muted-3);font-size:11.5px;font-weight:700}
-.menuList{display:flex;flex-direction:column;gap:10px}
-
-.menuCard{display:flex;gap:13px;padding:12px;background:linear-gradient(145deg,#151515,#0c0c0c);border:1px solid #242424;border-radius:18px;position:relative;transition:border-color .18s,transform .12s}
-.menuCard:active{transform:scale(.99)}
-.menuCard:hover{border-color:#333}
-.menuCard.out{opacity:.55}
-.menuCard .img{width:88px;height:88px;border-radius:14px;background:linear-gradient(135deg,#1f1f1f,#101010);display:grid;place-items:center;font-size:36px;flex-shrink:0;overflow:hidden;border:1px solid #2a2a2a;position:relative}
-.menuCard .img img{width:100%;height:100%;object-fit:cover}
-.menuCard .body{flex:1;min-width:0;display:flex;flex-direction:column}
-.menuCard .body > b{font-size:15px;font-weight:800;line-height:1.25;display:block}
-.menuCard .body small{color:var(--muted-2);font-size:12.5px;margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.menuCard .tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
-.miTag{font-size:10px;font-weight:900;padding:3px 7px;border-radius:999px;background:#1e1e1e;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
-.miTag.veg{background:rgba(34,197,94,.14);color:#4ade80}
-.miTag.spicy{background:rgba(239,68,68,.14);color:#f87171}
-.miTag.popular{background:rgba(251,191,36,.16);color:var(--gold)}
-.miTag.new{background:rgba(56,189,248,.14);color:var(--blue)}
-.menuCard .foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;gap:8px}
-.menuCard .price{font-family:'Space Grotesk';font-weight:900;font-size:15.5px;color:var(--lime)}
-.menuCard .addBtn{width:38px;height:38px;border-radius:12px;background:var(--lime);color:#000;font-size:20px;font-weight:900;display:grid;place-items:center;line-height:1;transition:transform .15s,background .15s;box-shadow:0 6px 18px rgba(198,255,0,.22)}
-.menuCard .addBtn:active{transform:scale(.88)}
-.menuCard .addBtn.hasQty{width:auto;min-width:38px;padding:0 12px;background:var(--gold);color:#000;font-size:13.5px;gap:6px;display:inline-flex;align-items:center}
-.menuCard .addBtn:disabled{background:#242424;color:#666;box-shadow:none}
-.soldOut{position:absolute;top:12px;right:12px;font-size:10px;font-weight:900;background:#2a2a2a;color:#999;padding:3px 8px;border-radius:999px;letter-spacing:.4px}
-
-/* ── SERVICE CARDS (room mode) ────────────── */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(min-width:520px){.grid2{grid-template-columns:repeat(3,1fr)}}
-.svc{position:relative;text-align:left;background:linear-gradient(145deg,#111,#0a0a0a);border:1px solid #222;border-radius:16px;padding:13px;transition:transform .15s,border-color .15s;min-height:160px;display:flex;flex-direction:column;overflow:hidden}
-.svc:hover{border-color:#3a3a3a;transform:translateY(-2px)}
-.svc:active{transform:scale(.98);border-color:var(--lime)}
-.svc i{font-style:normal;font-size:24px;display:block;margin-bottom:8px;line-height:1}
-.svc b{font-size:13.5px;display:block;line-height:1.25;padding-right:70px;font-weight:800}
-.svc small{color:var(--muted-2);font-size:12px;display:block;margin-top:6px;line-height:1.4;flex:1;margin-bottom:10px}
-.svc .price{position:absolute;top:10px;right:10px;background:var(--lime);color:#000;font-size:10.5px;font-weight:900;padding:4px 9px;border-radius:999px;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.svcVendor{display:inline-block;margin-top:8px;font-size:10.5px;color:var(--muted-3);font-weight:700}
-
-/* ✅ Dynamic CTA button inside service cards */
-.svc .svcCta{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:auto;padding:8px 12px;border-radius:10px;background:var(--lime);color:#000;font-size:11.5px;font-weight:900;letter-spacing:.2px;border:0;align-self:flex-start;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 12px rgba(198,255,0,.18)}
-.svc:hover .svcCta{transform:translateY(-1px);box-shadow:0 6px 16px rgba(198,255,0,.28)}
-.svc:active .svcCta{transform:scale(.96)}
-
-/* ── ACTIVE ORDER ─────────────────────────── */
-.activeOrder{display:none;margin:14px 12px 0;padding:15px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(255,255,255,.015));border:1px solid var(--lime-line);border-radius:var(--radius);transition:border-color .3s}
-.activeOrder.show{display:block}
-.activeOrder.flash{animation:bannerFlash 1s ease 3;border-color:var(--lime)}
-@keyframes bannerFlash{0%,100%{box-shadow:0 0 0 0 rgba(198,255,0,.55)}50%{box-shadow:0 0 0 12px rgba(198,255,0,0)}}
-.orderTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.orderService{font-family:'Space Grotesk';font-weight:800;font-size:15px}
-.orderRef{color:var(--muted-3);font-size:11px;margin-top:3px;letter-spacing:.5px;font-weight:800}
-.orderActions{display:flex;gap:8px;align-items:center;flex-shrink:0}
-.liveDot{width:8px;height:8px;border-radius:50%;background:#3a3a3a;flex-shrink:0;transition:background .3s}
-.liveDot.on{background:var(--green);animation:pulseDot 2s infinite}
-@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-.refreshBtn{width:34px;height:34px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;color:#9a9a9a;font-size:15px;line-height:1;display:grid;place-items:center;transition:color .18s,border-color .18s}
-.refreshBtn:active{color:var(--lime);border-color:var(--lime)}
-.refreshBtn.spinning{animation:spin .8s linear infinite;color:var(--lime)}
-@keyframes spin{to{transform:rotate(360deg)}}
-.status{display:inline-block;height:max-content;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.4px;background:#202020;color:var(--muted);white-space:nowrap}
-.status.pending,.status.new{color:var(--blue);background:rgba(56,189,248,.12)}
-.status.accepted{color:var(--lime);background:var(--lime-soft)}
-.status.preparing{color:var(--gold);background:var(--gold-soft)}
-.status.on_the_way,.status.ontheway{color:var(--purple);background:rgba(167,139,250,.12)}
-.status.completed{color:var(--green);background:rgba(34,197,94,.12)}
-.status.cancelled,.status.rejected{color:var(--red);background:rgba(239,68,68,.12)}
-.progress{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:16px}
-.progressStep{height:5px;border-radius:999px;background:#2a2a2a;transition:background .35s}
-.progressStep.active{background:var(--lime)}
-.progressStep.cancelled{background:var(--red)}
-.progressLabels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}
-.progressLabels span{font-size:11px;font-weight:800;color:var(--muted-3);text-align:center;line-height:1.2;letter-spacing:.2px}
-.progressLabels span.active{color:var(--lime)}
-.orderDetails{display:flex;justify-content:space-between;gap:10px;margin-top:13px;color:var(--muted-3);font-size:12px;font-weight:700}
-.orderDetails strong{color:#fff;font-weight:800}
-.orderEta{margin-top:10px;padding:9px 12px;background:rgba(198,255,0,.06);border:1px dashed var(--lime-line);border-radius:12px;font-size:12px;color:var(--lime);font-weight:800;display:flex;align-items:center;gap:7px}
-
-/* ── CART BAR (floating) ─────────────────── */
-.cartBar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:480;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 16px;border-radius:18px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;box-shadow:0 14px 40px rgba(198,255,0,.32);animation:fadeUp .22s ease}
-.cartBar.show{display:flex}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.cartBar b{display:block;font-family:'Space Grotesk';font-size:14px;font-weight:900}
-.cartBar small{display:block;font-size:11.5px;font-weight:800;opacity:.72}
-.cartBar button{padding:11px 18px;border-radius:12px;background:#000;color:var(--lime);font-weight:900;font-size:13px;white-space:nowrap}
-
-/* ── CART BOTTOM SHEET ───────────────────── */
-.cartSheet{position:fixed;left:0;right:0;bottom:0;z-index:900;background:linear-gradient(180deg,#0e0e0e,#060606);border-top:1px solid #2a2a2a;border-radius:24px 24px 0 0;padding:8px 0 max(16px,env(safe-area-inset-bottom));transform:translateY(102%);transition:transform .32s cubic-bezier(.2,.85,.3,1);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 -20px 60px rgba(0,0,0,.55)}
-.cartSheet.open{transform:translateY(0)}
-.cartSheet .handle{width:42px;height:4px;background:#333;border-radius:999px;margin:6px auto 12px;flex-shrink:0}
-.cartSheet .head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 14px;border-bottom:1px solid #1e1e1e;flex-shrink:0}
-.cartSheet .head h3{margin:0;font-family:'Space Grotesk';font-size:18px;font-weight:800;letter-spacing:-.2px}
-.cartSheet .head small{display:block;color:var(--muted-2);font-size:12px;font-weight:700;margin-top:3px}
-.cartSheet .closeSheet{width:36px;height:36px;border-radius:50%;border:1px solid #333;background:#111;font-size:18px;display:grid;place-items:center;line-height:1}
-.cartSheet .body{flex:1;overflow-y:auto;padding:14px 20px 8px}
-.cartSheet .foot{padding:14px 20px 4px;border-top:1px solid #1e1e1e;background:#0a0a0a;flex-shrink:0}
-.cartRow{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #1c1c1c}
-.cartRow:last-of-type{border-bottom:0}
-.cartRow .ci{width:46px;height:46px;border-radius:12px;background:#181818;display:grid;place-items:center;font-size:20px;flex-shrink:0;overflow:hidden;border:1px solid #242424}
-.cartRow .ci img{width:100%;height:100%;object-fit:cover}
-.cartRow .cb{flex:1;min-width:0}
-.cartRow .cb b{font-size:13.5px;font-weight:800;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cartRow .cb small{color:var(--muted-2);font-size:12px;font-weight:700;margin-top:2px}
-.qty{display:inline-flex;align-items:center;gap:2px;background:#111;border:1px solid #2a2a2a;border-radius:11px;padding:3px}
-.qty button{width:28px;height:28px;border-radius:8px;background:#1e1e1e;color:#fff;font-size:16px;font-weight:900;display:grid;place-items:center;line-height:1}
-.qty button:active{background:var(--lime);color:#000}
-.qty span{min-width:22px;text-align:center;font-weight:900;font-size:13.5px}
-.totals{margin-top:6px;padding:13px;border-radius:14px;background:#0b0b0b;border:1px dashed #303030}
-.totalsRow{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--muted);padding:4px 0}
-.totalsRow.grand{color:#fff;font-family:'Space Grotesk';font-size:16.5px;font-weight:900;padding-top:9px;margin-top:6px;border-top:1px solid #232323}
-.totalsRow.grand span:last-child{color:var(--lime)}
-
-/* ── INPUT ────────────────────────────────── */
-.input{width:100%;padding:13px 14px;background:#0a0a0a;border:1px solid #2a2a2a;border-radius:12px;color:#fff;font-size:14.5px;font-weight:600;transition:border-color .18s}
-.input::placeholder{color:#6a6a6a;font-weight:500}
-.input:focus{outline:none;border-color:var(--lime);background:#0d0d0d}
-.label{display:block;color:var(--muted-2);font-size:10.5px;font-weight:800;margin-top:14px;margin-bottom:6px;letter-spacing:.8px;text-transform:uppercase}
-
-/* ── BOTTOM NAV ───────────────────────────── */
-.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:500;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 8px max(8px,env(safe-area-inset-bottom));background:rgba(8,8,8,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid #242424}
-.navBtn{min-height:52px;font-size:11.5px;font-weight:900;border-radius:13px;letter-spacing:.3px;transition:color .15s,background .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#7a7a7a;position:relative}
-.navBtn span:first-child{font-size:19px;line-height:1}
-.navBtn.active{color:var(--lime);background:rgba(198,255,0,.06)}
-.navBadge{position:absolute;top:4px;right:calc(50% - 22px);min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--lime);color:#000;font-size:10px;font-weight:900;display:grid;place-items:center}
-
-/* ── MODAL ────────────────────────────────── */
-.modal{position:fixed;inset:0;z-index:1000;display:none;place-items:end center;padding:12px;background:rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.modal.active{display:grid}
-.modalBox{width:100%;max-width:470px;max-height:90vh;overflow:auto;padding:20px;border:1px solid #303030;border-radius:26px;background:linear-gradient(145deg,#191919,#0f0f0f);box-shadow:var(--shadow);animation:up .22s ease}
-@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-.modalHead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.modalTitle{margin:0;font-family:'Space Grotesk';font-size:20px;font-weight:900;letter-spacing:-.3px}
-.modalDesc{margin-top:6px;color:var(--muted-2);font-size:12.5px;line-height:1.5}
-.close{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid #333;background:#111;font-size:20px;line-height:1;transition:border-color .15s;display:grid;place-items:center}
-.btn{width:100%;margin-top:12px;padding:15px;border-radius:13px;background:var(--lime);color:#000;font-size:14.5px;font-weight:900;transition:opacity .15s,transform .15s;letter-spacing:.2px}
-.btn:active{transform:scale(.98)}
-.btn:disabled{opacity:.6;cursor:wait}
-.btn.secondary{background:#202020;border:1px solid #333;color:#fff}
-.twoButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
-
-/* ── SUCCESS ──────────────────────────────── */
-.success{text-align:center;padding:6px}
-.successIcon{width:76px;height:76px;display:grid;place-items:center;margin:0 auto 16px;border-radius:50%;background:var(--lime-soft);font-size:38px;color:var(--lime);animation:pop .4s cubic-bezier(.3,1.5,.5,1)}
-@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-.reference{margin:18px 0;padding:15px;background:#0a0a0a;border:1px dashed #3c3c3c;border-radius:14px}
-.reference small{display:block;color:var(--muted-3);font-size:11px;letter-spacing:.9px;font-weight:800}
-.reference strong{display:block;color:var(--lime);font-family:'Space Grotesk';font-size:18px;margin-top:5px;letter-spacing:1.2px}
-
-/* ── PAYMENT CARD ─────────────────────────── */
-.payCard{margin:16px 0;padding:16px;border-radius:16px;background:linear-gradient(155deg,#0f1a0f,#0a0a0a);border:1px solid var(--lime-line);text-align:left}
-.payCard .ptitle{font-family:'Space Grotesk';font-size:13.5px;font-weight:900;color:var(--lime);letter-spacing:.5px;display:flex;align-items:center;gap:7px;margin-bottom:12px}
-.payCard .ptitle .amt{margin-left:auto;color:#fff;background:rgba(198,255,0,.12);padding:4px 10px;border-radius:999px;font-size:12.5px;font-family:'Space Grotesk'}
-.payBox{background:#050505;border:1px dashed #2f2f2f;border-radius:13px;padding:13px;margin-bottom:12px}
-.payBox .row{display:flex;align-items:center;gap:10px;padding:5px 0}
-.payBox .row + .row{border-top:1px solid #181818;padding-top:11px;margin-top:6px}
-.payBox .lbl{font-size:10.5px;font-weight:900;color:var(--muted-3);letter-spacing:.8px;text-transform:uppercase;flex:1}
-.payBox .val{font-family:'Space Grotesk';font-size:19px;font-weight:900;color:#fff;letter-spacing:1px}
-.payCopy{width:32px;height:32px;border-radius:9px;background:#1b1b1b;border:1px solid #2a2a2a;color:var(--lime);font-size:14px;display:grid;place-items:center;flex-shrink:0;transition:background .15s}
-.payCopy:active{background:var(--lime);color:#000}
-.paySteps{list-style:none;padding:0;margin:0 0 12px;counter-reset:s}
-.paySteps li{position:relative;padding-left:28px;font-size:12.5px;color:var(--muted);line-height:1.6;font-weight:600;margin-bottom:4px;counter-increment:s}
-.paySteps li:before{content:counter(s);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:var(--lime);color:#000;font-size:10px;font-weight:900;display:grid;place-items:center;margin-top:1px}
-.payCard .payActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
-.payCard .payActions a{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:11px;background:var(--lime);color:#000;font-size:13px;font-weight:900;text-decoration:none;text-align:center}
-.payCard .payActions a.ghost{background:#1e1e1e;border:1px solid #303030;color:#fff}
-.payCard.warn{background:linear-gradient(155deg,#1a1408,#0a0a0a);border-color:var(--gold-line)}
-.payCard.warn .ptitle{color:var(--gold)}
-.payCard.warn .ptitle .amt{background:rgba(251,191,36,.12)}
-.payCard.warn .paySteps li:before{background:var(--gold)}
-
-/* Pay button on active order */
-.payNowBtn{margin-top:12px;width:100%;padding:13px;border-radius:13px;background:linear-gradient(135deg,var(--lime),#a8dc00);color:#000;font-family:'Space Grotesk';font-weight:900;font-size:14px;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 22px rgba(198,255,0,.22)}
-.payNowBtn:active{transform:scale(.98)}
-
-/* ── ORDER HISTORY ────────────────────────── */
-.orderItem{background:#0d0d0d;border:1px solid #242424;border-radius:14px;padding:13px;margin-bottom:8px}
-.orderItem strong{font-size:13.5px;display:block;font-weight:800}
-.orderItem small{color:var(--muted-2);font-size:12px;display:block;margin-top:4px;line-height:1.45}
-.orderAmount{color:var(--lime)!important;font-weight:900}
-.rateRow{margin-top:10px;display:flex;gap:6px;align-items:center;color:var(--muted-2);font-size:11.5px;font-weight:700;flex-wrap:wrap}
-.rateRow button{border:1px solid #2a2a2a;border-radius:8px;padding:4px 7px;font-size:14px;transition:border-color .15s,transform .15s}
-.rateRow button:hover{border-color:var(--lime);transform:scale(1.1)}
-
-/* ── HELP / LANG / INFO ───────────────────── */
-.help-btn{width:100%;margin-bottom:8px;background:#0f0f0f;border:1px solid #282828;border-radius:14px;padding:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;align-items:center;gap:12px}
-.help-btn:active{transform:scale(.98);border-color:var(--gold)}
-.help-btn span.hi{font-size:21px;line-height:1}
-.help-btn b{display:block;font-size:13px;font-weight:800}
-.help-btn small{display:block;color:var(--muted-3);font-size:11px;margin-top:2px}
-.help-btn .arrow{margin-left:auto;color:var(--muted-3);font-size:15px}
-.langGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
-.langCard{padding:14px;border:1px solid #2a2a2a;background:#0f0f0f;border-radius:14px;text-align:left;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:4px;position:relative}
-.langCard:active{transform:scale(.97)}
-.langCard.active{border-color:var(--lime);background:var(--lime-soft)}
-.langCard .flag{font-size:22px;line-height:1}
-.langCard b{font-size:13.5px;font-weight:800}
-.langCard small{font-size:11px;color:var(--muted-2);font-weight:700}
-.langCard .check{position:absolute;top:10px;right:12px;color:var(--lime);font-weight:900;font-size:14px}
-
-/* ── LOADING / EMPTY ──────────────────────── */
-.loading{text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13.5px}
-.spinner{width:28px;height:28px;margin:0 auto 12px;border:3px solid #292929;border-top-color:var(--lime);border-radius:50%;animation:spin .8s linear infinite}
-.empty{display:none;text-align:center;padding:40px 16px;color:var(--muted-2);font-size:13.5px}
-.empty.show{display:block}
-.emptyIcon{font-size:36px;margin-bottom:10px;opacity:.85}
-
-/* ── PROMO ────────────────────────────────── */
-.promo{margin:14px 12px 0;padding:13px 15px;border-radius:16px;background:linear-gradient(135deg,rgba(198,255,0,.10),rgba(251,191,36,.06));border:1px solid var(--lime-line);display:flex;justify-content:space-between;align-items:center;gap:12px}
-.promo b{font-family:'Space Grotesk';font-size:13.5px;display:block}
-.promo small{color:var(--muted);font-size:11.5px;display:block;margin-top:3px;line-height:1.4}
-.promoTag{padding:5px 10px;border-radius:999px;background:var(--lime);color:#000;font-size:10.5px;font-weight:900;letter-spacing:.4px;flex-shrink:0}
-.promoClose{color:var(--muted);font-size:18px;padding:4px 6px;line-height:1;flex-shrink:0}
-
-/* ── FOOTER ───────────────────────────────── */
-.footer{text-align:center;color:var(--muted-3);padding:26px 20px 120px;font-size:11.5px;line-height:1.8}
-.footer strong{color:var(--muted)}
-
-/* ── TOAST ────────────────────────────────── */
-.toast{position:fixed;left:12px;right:12px;bottom:calc(90px + env(safe-area-inset-bottom));z-index:2000;display:none;padding:14px 16px;background:#202020;border:1px solid #3a3a3a;border-radius:14px;box-shadow:var(--shadow);font-size:13.5px;font-weight:700;text-align:center}
-.toast.show{display:block;animation:toastIn .22s ease}
-@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-/* ── RTL ──────────────────────────────────── */
-[dir="rtl"] .searchIcon{left:auto;right:15px}
-[dir="rtl"] .searchBox input{padding-left:14px;padding-right:42px}
-[dir="rtl"] .searchClear{right:auto;left:10px}
-[dir="rtl"] .price{right:auto;left:10px}
-[dir="rtl"] .svc b{padding-right:0;padding-left:70px}
-[dir="rtl"] .progressStep{transform:scaleX(-1)}
-[dir="rtl"] .soldOut{right:auto;left:12px}
-[dir="rtl"] .help-btn .arrow{margin-left:0;margin-right:auto;transform:scaleX(-1)}
-
-/* ── RESPONSIVE ───────────────────────────── */
-@media(min-width:650px){
-  body{max-width:800px;margin:auto}
-  .bottomNav{max-width:800px;left:50%;transform:translateX(-50%)}
-  .cartBar{max-width:776px;left:50%;transform:translateX(-50%)}
-  .cartSheet{max-width:800px;left:50%;transform:translateX(-50%) translateY(102%)}
-  .cartSheet.open{transform:translateX(-50%) translateY(0)}
-  .modal{place-items:center}
-}
-
-/* ✅ Scale up on very small phones (iPhone SE, older Androids) */
-@media (max-width:380px){
-  body{font-size:14.5px}
-  .progressLabels span,
-  .status,
-  .miTag{font-size:11px}
-  .navBtn{font-size:12px}
-  .menuCard .body small,
-  .svc small,
-  .popCard small,
-  .ctxPanel small{font-size:12.5px}
-}
-
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important}
-  .activeOrder.flash{animation:none!important;border-color:var(--lime)}
-  .liveDot.on{animation:none!important;box-shadow:0 0 0 3px rgba(34,197,94,.35)}
-}
-</style>
 </head>
 <body>
 
-<div id="offlineBar" class="offlineBar" role="status" aria-live="polite" data-i18n="t_offline">📶 You're offline — we'll reconnect automatically</div>
+<div id="offlineBar" class="offlineBar" role="status" aria-live="polite">
+  <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-wifi-off"/></svg>
+  <span data-i18n="t_offline">You're offline — we'll reconnect automatically</span>
+</div>
 
 <!-- ═══════ TOP BAR ═══════ -->
 <header class="topbar">
@@ -417,15 +33,22 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <div class="brandText">GUEST<span>HUB</span></div>
   </div>
   <div class="topActions">
-    <div class="ctxChip" id="ctxChip">🛏️ <b>—</b></div>
-    <button class="iconBtn" id="langBtn" aria-label="Change language" title="Change language">🌐</button>
-    <button class="iconBtn" id="bellBtn" aria-label="Contact hotel / Info" title="Contact hotel">ℹ️</button>
+    <div class="ctxChip" id="ctxChip">
+      <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+      <b>—</b>
+    </div>
+    <button class="iconBtn" id="langBtn" aria-label="Change language" title="Change language">
+      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-globe"/></svg>
+    </button>
+    <button class="iconBtn" id="bellBtn" aria-label="Contact hotel / Info" title="Contact hotel">
+      <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-info"/></svg>
+    </button>
   </div>
 </header>
 
 <!-- ═══════ HOTEL STRIP (table mode) ═══════ -->
 <div class="hotelStrip" id="hotelStrip" style="display:none">
-  <div class="avatar" id="hotelAvatar">B</div>
+  <div class="avatar"><span id="hotelAvatar">B</span></div>
   <div class="info">
     <b id="hotelStripName">YOUR HOTEL</b>
     <small>
@@ -440,15 +63,24 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <!-- ═══════ HERO (room mode) ═══════ -->
 <section class="hero" id="heroSection">
   <div class="heroContent">
-    <div class="eyebrow" id="heroEyebrow">✦ GUESTHUB OS</div>
+    <div class="eyebrow" id="heroEyebrow">
+      <span class="dot"></span>
+      <span>GuestHub OS</span>
+    </div>
     <h1 id="greeting">Welcome</h1>
     <h1><span id="hotelName">YOUR HOTEL</span></h1>
     <p id="hotelTagline">Room service • Restaurant • Transport • Tours • Spa</p>
     <div class="heroBottom">
-      <div class="verified" data-i18n="footer_secure">🔒 GuestHub Verified</div>
+      <div class="verified">
+        <svg class="icon" width="13" height="13" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-lock"/></svg>
+        <span data-i18n="footer_secure_short">GuestHub Verified</span>
+      </div>
       <div class="heroMeta">
-        <span id="heroCtx">🛏️ —</span>
-        <span id="heroStay">✨ Ready</span>
+        <span id="heroCtx">
+          <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+          <span>—</span>
+        </span>
+        <span id="heroStay">Ready</span>
       </div>
     </div>
   </div>
@@ -456,7 +88,9 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 
 <!-- ═══════ CONTEXT PANEL ═══════ -->
 <div class="ctxPanel" id="ctxPanel">
-  <div class="ctxIcon" id="ctxIcon">🛏️</div>
+  <div class="ctxIcon" id="ctxIcon">
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+  </div>
   <div style="min-width:0">
     <b id="ctxTitle">—</b>
     <small id="ctxSub">—</small>
@@ -466,9 +100,18 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 
 <!-- ═══════ QUICK REQUESTS (table mode) ═══════ -->
 <div class="quickReq" id="quickReq" style="display:none">
-  <button class="quickReqBtn" data-quick-req="waiter"><i>🛎️</i><span data-i18n="qa_waiter">Call Waiter</span></button>
-  <button class="quickReqBtn" data-quick-req="water"><i>💧</i><span data-i18n="qa_water">Water</span></button>
-  <button class="quickReqBtn" data-quick-req="bill"><i>🧾</i><span data-i18n="qa_bill">Request Bill</span></button>
+  <button class="quickReqBtn" data-quick-req="waiter">
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bell"/></svg>
+    <span data-i18n="qa_waiter">Call Waiter</span>
+  </button>
+  <button class="quickReqBtn" data-quick-req="water">
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-droplet"/></svg>
+    <span data-i18n="qa_water">Water</span>
+  </button>
+  <button class="quickReqBtn" data-quick-req="bill">
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-receipt"/></svg>
+    <span data-i18n="qa_bill">Request Bill</span>
+  </button>
 </div>
 
 <!-- ═══════ ACTIVE ORDER ═══════ -->
@@ -480,7 +123,9 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     </div>
     <div class="orderActions">
       <span class="liveDot" id="liveDot"></span>
-      <button class="refreshBtn" id="refreshActive" aria-label="Refresh">⟳</button>
+      <button class="refreshBtn" id="refreshActive" aria-label="Refresh">
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-refresh"/></svg>
+      </button>
       <span class="status pending" id="activeStatus">Pending</span>
     </div>
   </div>
@@ -500,16 +145,26 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <span><span id="activeLocLabel" data-i18n="room_number">Room</span> <strong id="activeRoom">—</strong></span>
     <span><strong id="activeAmount">—</strong></span>
   </div>
-  <div class="orderEta" id="orderEta" style="display:none">⏱️ <span id="orderEtaText"></span></div>
-  <button class="payNowBtn" id="payNowBtn" style="display:none">💳 <span id="payNowText">Pay now</span></button>
+  <div class="orderEta" id="orderEta" style="display:none">
+    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clock"/></svg>
+    <span id="orderEtaText"></span>
+  </div>
+  <button class="payNowBtn" id="payNowBtn" style="display:none">
+    <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-credit-card"/></svg>
+    <span id="payNowText">Pay now</span>
+  </button>
 </section>
 
 <!-- ═══════ MENU STICKY BAR ═══════ -->
 <div class="menuSticky" id="menuSticky">
   <div class="searchBox">
-    <span class="searchIcon">🔎</span>
+    <span class="searchIcon">
+      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-search"/></svg>
+    </span>
     <input id="searchService" data-i18n="search_placeholder" placeholder="Search dishes, drinks, services…" autocomplete="off">
-    <button class="searchClear" id="searchClear" aria-label="Clear search">✕</button>
+    <button class="searchClear" id="searchClear" aria-label="Clear search">
+      <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+    </button>
   </div>
   <div class="catTabs" id="catTabs" role="tablist"></div>
 </div>
@@ -517,18 +172,26 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <!-- ═══════ POPULAR CAROUSEL ═══════ -->
 <section class="popularSection" id="popularSection" style="display:none">
   <div class="popularHead">
-    <h2><span class="fire">🔥</span> <span data-i18n="popular_today">Popular today</span></h2>
+    <h2>
+      <svg class="icon fire" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-flame"/></svg>
+      <span data-i18n="popular_today">Popular today</span>
+    </h2>
     <small id="popularSub"></small>
   </div>
   <div class="popularScroll" id="popularScroll"></div>
 </section>
 
 <!-- ═══════ MAIN MENU / CATALOG ═══════ -->
-<div id="loading" class="loading"><div class="spinner"></div><span data-i18n="loading_text">Loading your hotel's menu & services…</span></div>
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <span data-i18n="loading_text">Loading your hotel's menu & services…</span>
+</div>
 <main id="serviceArea" class="menuWrap" style="display:none"></main>
 
-<div id="emptySearch" class="empty" style="margin:0 12px">
-  <div class="emptyIcon">🔎</div>
+<div id="emptySearch" class="empty" style="margin:0 14px">
+  <div class="emptyIcon">
+    <svg class="icon" width="22" height="22" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-search"/></svg>
+  </div>
   <strong data-i18n="empty_search">Nothing found</strong><br>
   <span data-i18n="empty_search_sub">Try another search.</span>
 </div>
@@ -536,18 +199,24 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <!-- ═══════ PROMO ═══════ -->
 <div class="promo" id="promoBanner">
   <div>
-    <b id="promoTitle">🎉 Welcome to GuestHub</b>
+    <b id="promoTitle">
+      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-sparkles"/></svg>
+      <span>Welcome to GuestHub</span>
+    </b>
     <small id="promoText">Scan · Order · Enjoy — everything from one place.</small>
   </div>
   <span class="promoTag">LIVE</span>
-  <button class="promoClose" id="promoClose" aria-label="Dismiss">×</button>
+  <button class="promoClose" id="promoClose" aria-label="Dismiss">
+    <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+  </button>
 </div>
 
 <!-- ═══════ FOOTER ═══════ -->
 <footer class="footer">
-  🔒 <strong data-i18n="footer_secure">GuestHub Verified</strong><br>
+  <svg class="icon" width="12" height="12" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-lock"/></svg>
+  <strong data-i18n="footer_secure">GuestHub Verified</strong><br>
   <span data-i18n="footer_line1">Your hotel coordinates your requested service.</span><br>
-  <span data-i18n="footer_line2">GuestHub • Hospitality made simple ✨</span>
+  <span data-i18n="footer_line2">GuestHub • Hospitality made simple</span>
 </footer>
 
 <!-- ═══════ CART BAR ═══════ -->
@@ -556,7 +225,10 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <b id="cartCount">0 items</b>
     <small id="cartTotal">Ksh 0</small>
   </div>
-  <button id="cartOpen" data-i18n="view_cart">View Cart →</button>
+  <button id="cartOpen">
+    <span data-i18n="view_cart_short">View Cart</span>
+    <svg class="icon" width="14" height="14" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-arrow-right"/></svg>
+  </button>
 </div>
 
 <!-- ═══════ CART BOTTOM SHEET ═══════ -->
@@ -564,10 +236,15 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
   <div class="handle"></div>
   <div class="head">
     <div>
-      <h3 id="cartTitle" data-i18n="your_order">🧾 Your Order</h3>
+      <h3 id="cartTitle">
+        <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-receipt"/></svg>
+        <span data-i18n="your_order_short">Your Order</span>
+      </h3>
       <small id="cartSubtitle"></small>
     </div>
-    <button class="closeSheet" id="cartClose" aria-label="Close">×</button>
+    <button class="closeSheet" id="cartClose" aria-label="Close">
+      <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+    </button>
   </div>
   <div class="body">
     <div id="cartItems"></div>
@@ -580,29 +257,56 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <input id="cartPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
     <div class="twoButtons">
       <button class="btn secondary" id="cartClear" data-i18n="clear_cart">Clear</button>
-      <button class="btn" id="cartCheckout" data-i18n="checkout">✅ Send Order</button>
+      <button class="btn" id="cartCheckout">
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+        <span data-i18n="checkout">Send Order</span>
+      </button>
     </div>
   </div>
 </div>
 
 <!-- ═══════ BOTTOM NAV ═══════ -->
 <nav class="bottomNav" aria-label="Main navigation">
-  <button class="navBtn active" data-tab="home"><span>🏠</span><span data-i18n="nav_home">Home</span></button>
-  <button class="navBtn" data-tab="menu"><span>☰</span><span data-i18n="nav_menu">Menu</span></button>
-  <button class="navBtn" data-tab="orders"><span>📋</span><span data-i18n="nav_orders">Orders</span><span class="navBadge" id="ordersBadge" style="display:none">0</span></button>
-  <button class="navBtn" data-tab="help"><span>💬</span><span data-i18n="nav_help">Help</span></button>
+  <button class="navBtn active" data-tab="home">
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-home"/></svg>
+    <span data-i18n="nav_home">Home</span>
+  </button>
+  <button class="navBtn" data-tab="menu">
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-list"/></svg>
+    <span data-i18n="nav_menu">Menu</span>
+  </button>
+  <button class="navBtn" data-tab="orders">
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clipboard"/></svg>
+    <span data-i18n="nav_orders">Orders</span>
+    <span class="navBadge" id="ordersBadge" style="display:none">0</span>
+  </button>
+  <button class="navBtn" data-tab="help">
+    <svg class="icon" width="20" height="20" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-message"/></svg>
+    <span data-i18n="nav_help">Help</span>
+  </button>
 </nav>
 
 <!-- ═══════ MODALS ═══════ -->
 <div class="modal" id="ctxModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="ctxTitleM" data-i18n="ctx_title">Where are you?</h3><div class="modalDesc" data-i18n="ctx_desc">Choose your room or restaurant table.</div></div>
-      <button class="close" data-close="ctxModal" aria-label="Close">×</button>
+      <div>
+        <h3 class="modalTitle" id="ctxTitleM" data-i18n="ctx_title">Where are you?</h3>
+        <div class="modalDesc" data-i18n="ctx_desc">Choose your room or restaurant table.</div>
+      </div>
+      <button class="close" data-close="ctxModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <div class="twoButtons" style="margin-top:18px">
-      <button class="btn secondary" id="ctxPickRoom" style="margin-top:0">🛏️ <span data-i18n="scan_room">Room</span></button>
-      <button class="btn secondary" id="ctxPickTable" style="margin-top:0">🍽️ <span data-i18n="scan_table">Table</span></button>
+      <button class="btn secondary" id="ctxPickRoom" style="margin-top:0">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-bed"/></svg>
+        <span data-i18n="scan_room">Room</span>
+      </button>
+      <button class="btn secondary" id="ctxPickTable" style="margin-top:0">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-utensils"/></svg>
+        <span data-i18n="scan_table">Table</span>
+      </button>
     </div>
     <label class="label" id="ctxFieldLabel" data-i18n="room_number">Room number</label>
     <input id="ctxField" class="input" placeholder="101" autocomplete="off">
@@ -613,8 +317,13 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <div class="modal" id="orderModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 id="mTitle" class="modalTitle" data-i18n="confirm_request">Confirm Request</h3><div id="mDesc" class="modalDesc"></div></div>
-      <button class="close" data-close="orderModal" aria-label="Close">×</button>
+      <div>
+        <h3 id="mTitle" class="modalTitle" data-i18n="confirm_request">Confirm Request</h3>
+        <div id="mDesc" class="modalDesc"></div>
+      </div>
+      <button class="close" data-close="orderModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <label class="label" for="guestPhone" data-i18n="your_whatsapp">Your WhatsApp number</label>
     <input id="guestPhone" class="input" placeholder="254712345678" inputmode="tel" autocomplete="tel">
@@ -622,28 +331,47 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
     <input id="orderNote" class="input" data-i18n="note_placeholder" placeholder="Time, preference, or request">
     <div class="twoButtons">
       <button class="btn secondary" data-close="orderModal" data-i18n="cancel">Cancel</button>
-      <button class="btn" id="confirmOrder" data-i18n="place_order">✅ Place Order</button>
+      <button class="btn" id="confirmOrder">
+        <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+        <span data-i18n="place_order_short">Place Order</span>
+      </button>
     </div>
-    <small style="display:block;text-align:center;color:#6a6a6a;font-size:11.5px;margin-top:10px;line-height:1.5" data-i18n="order_note">Your request is sent directly to the hotel team.</small>
+    <small style="display:block;text-align:center;color:#8a8a8a;font-size:11.5px;margin-top:10px;line-height:1.5" data-i18n="order_note">Your request is sent directly to the hotel team.</small>
   </div>
 </div>
 
 <div class="modal" id="successModal" role="dialog" aria-modal="true">
   <div class="modalBox success">
-    <div class="successIcon">✓</div>
-    <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center">Request Received!</h3>
+    <div class="successIcon">
+      <svg class="icon" width="34" height="34" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-check"/></svg>
+    </div>
+    <h3 class="modalTitle" id="successTitle" data-i18n="success_title" style="text-align:center;justify-content:center">Request Received!</h3>
     <p id="successText" class="modalDesc" style="text-align:center;margin-top:8px"></p>
-    <div class="reference"><small data-i18n="reference_label">GUESTHUB REFERENCE</small><strong id="orderRef">GH-XXXX</strong></div>
+    <div class="reference">
+      <small data-i18n="reference_label">GUESTHUB REFERENCE</small>
+      <strong id="orderRef">GH-XXXX</strong>
+    </div>
     <div id="payMount"></div>
-    <button class="btn" id="successDone" data-i18n="track_order">Great — Track My Order</button>
+    <button class="btn" id="successDone">
+      <svg class="icon" width="15" height="15" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-arrow-right"/></svg>
+      <span data-i18n="track_order_short">Track My Order</span>
+    </button>
   </div>
 </div>
 
 <div class="modal" id="ordersModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="ordersTitle" data-i18n="orders_title">📋 My Orders</h3><div class="modalDesc" data-i18n="orders_desc">Track your GuestHub requests.</div></div>
-      <button class="close" data-close="ordersModal" aria-label="Close">×</button>
+      <div>
+        <h3 class="modalTitle" id="ordersTitle">
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-clipboard"/></svg>
+          <span data-i18n="orders_title_short">My Orders</span>
+        </h3>
+        <div class="modalDesc" data-i18n="orders_desc">Track your GuestHub requests.</div>
+      </div>
+      <button class="close" data-close="ordersModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <div id="ordersList" style="margin-top:14px"></div>
   </div>
@@ -652,8 +380,16 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <div class="modal" id="helpModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="helpTitle" data-i18n="help_title">💬 Talk to the Hotel</h3><div class="modalDesc" data-i18n="help_desc">Direct WhatsApp — fastest response.</div></div>
-      <button class="close" data-close="helpModal" aria-label="Close">×</button>
+      <div>
+        <h3 class="modalTitle" id="helpTitle">
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-message"/></svg>
+          <span data-i18n="help_title_short">Talk to the Hotel</span>
+        </h3>
+        <div class="modalDesc" data-i18n="help_desc">Direct WhatsApp — fastest response.</div>
+      </div>
+      <button class="close" data-close="helpModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <div id="helpList" style="margin-top:14px"></div>
   </div>
@@ -662,8 +398,16 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <div class="modal" id="infoModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="infoTitle" data-i18n="info_title">ℹ️ How It Works</h3><div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div></div>
-      <button class="close" data-close="infoModal" aria-label="Close">×</button>
+      <div>
+        <h3 class="modalTitle" id="infoTitle">
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-info"/></svg>
+          <span data-i18n="info_title_short">How It Works</span>
+        </h3>
+        <div class="modalDesc" data-i18n="info_desc">Your hotel experience in one place.</div>
+      </div>
+      <button class="close" data-close="infoModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <div style="margin-top:14px" id="infoBody"></div>
   </div>
@@ -672,8 +416,16 @@ body.tableMode .ctxPanel{background:linear-gradient(135deg,rgba(251,191,36,.10),
 <div class="modal" id="langModal" role="dialog" aria-modal="true">
   <div class="modalBox">
     <div class="modalHead">
-      <div><h3 class="modalTitle" id="langTitle">🌐 Language</h3><div class="modalDesc" id="langDesc">Choose your preferred language.</div></div>
-      <button class="close" data-close="langModal" aria-label="Close">×</button>
+      <div>
+        <h3 class="modalTitle" id="langTitle">
+          <svg class="icon" width="17" height="17" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-globe"/></svg>
+          <span data-i18n="lang_title_short">Language</span>
+        </h3>
+        <div class="modalDesc" id="langDesc">Choose your preferred language.</div>
+      </div>
+      <button class="close" data-close="langModal" aria-label="Close">
+        <svg class="icon" width="16" height="16" aria-hidden="true"><use href="/assets/guesthub-icons.svg#i-x"/></svg>
+      </button>
     </div>
     <div class="langGrid" id="langGrid"></div>
   </div>
@@ -693,6 +445,7 @@ const POLL_IDLE_MS      = 60000;
 const ORDER_COOLDOWN_MS = 20000;
 const SOUND_ENABLED     = true;
 
+const ICON_BASE = "/assets/guesthub-icons.svg";
 const SUPA_URL = (typeof SUPABASE_URL !== "undefined" && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || "";
 const SUPA_KEY = (typeof SUPABASE_KEY !== "undefined" && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || "";
 
@@ -700,6 +453,11 @@ const $   = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = v => { const n = Number(v); return Number.isFinite(n) && n > 0 ? (STATE.currency || "Ksh") + " " + n.toLocaleString("en-KE") : null; };
 const priceLabel = v => money(v) || t("ask_hotel");
+
+/* SVG helper — references the shared external sprite */
+function icon(name, size = 16, cls = ""){
+  return `<svg class="icon ${cls}" width="${size}" height="${size}" aria-hidden="true"><use href="${ICON_BASE}#i-${name}"/></svg>`;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    2. SCAN CONTEXT
@@ -746,11 +504,11 @@ function ctxLabel(){
 function ctxNumber(){ return CONTEXT.mode === "table" ? CONTEXT.table : CONTEXT.room; }
 
 /* ═══════════════════════════════════════════════════════════════
-   3. I18N (EN · SW · FR · AR)
+   3. I18N — emoji-free labels (icons via sprite)
 ═══════════════════════════════════════════════════════════════ */
 const I18N = {
   en:{dir:"ltr",flag:"🇬🇧",name:"English",native:"English",
-    welcome:"✦ GUESTHUB OS",room_number:"Room",table_number:"Table",
+    welcome:"GUESTHUB OS",room_number:"Room",table_number:"Table",
     search_placeholder:"Search dishes, drinks, services…",loading_text:"Loading your hotel's menu…",
     scan_room:"Room",scan_table:"Table",change:"Change",
     ctx_title:"Where are you?",ctx_desc:"Choose your room or restaurant table.",ctx_save:"Confirm",
@@ -761,8 +519,8 @@ const I18N = {
     qa_services:"Housekeeping",qa_orders:"My Orders",qa_help:"Help",qa_concierge:"Concierge",
     popular_today:"Popular today",popular_sub:"Guest favourites",
     menu_tab:"Menu",services_tab:"Services",cat_all:"All",cat_services_only:"Restaurant Services",
-    cat_food:"🍽️ Food & Room Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Tours & Safari",
-    cat_spa:"🧖 Spa & Wellness",cat_services:"🏪 Hotel Services",cat_other:"✨ More",
+    cat_food:"Food & Room Service",cat_taxi:"Transport",cat_tour:"Tours & Safari",
+    cat_spa:"Spa & Wellness",cat_services:"Hotel Services",cat_other:"More",
     live_updates:"Live updates active",polling_mode:"Polling every 15s",
     step_sent:"Sent",step_accepted:"Accepted",step_progress:"In Progress",step_done:"Done",
     status_pending:"Pending",status_new:"New",status_accepted:"Accepted",status_preparing:"Preparing",
@@ -770,42 +528,61 @@ const I18N = {
     eta_accepted:"Accepted — preparing shortly",eta_preparing:"Being prepared — arriving soon",eta_on_the_way:"On the way now",
     nav_home:"Home",nav_menu:"Menu",nav_orders:"Orders",nav_help:"Help",
     confirm_request:"Confirm Request",your_whatsapp:"Your WhatsApp number",special_instructions:"Special instructions",
-    note_placeholder:"Time, preference, or request",cancel:"Cancel",place_order:"✅ Place Order",sending:"⏳ Sending…",
+    note_placeholder:"Time, preference, or request",cancel:"Cancel",place_order:"Place Order",place_order_short:"Place Order",sending:"Sending…",
     order_note:"Your request is sent directly to the hotel team.",
-    success_title:"Request Received!",reference_label:"GUESTHUB REFERENCE",track_order:"Great — Track My Order",
-    orders_title:"📋 My Orders",orders_desc:"Track your GuestHub requests.",
+    success_title:"Request Received!",reference_label:"GUESTHUB REFERENCE",track_order:"Track My Order",track_order_short:"Track My Order",
+    orders_title:"My Orders",orders_title_short:"My Orders",orders_desc:"Track your GuestHub requests.",
     no_orders_title:"No orders yet",no_orders_desc:"Your requests will appear here.",
-    rate_prompt:"Rate:",thanks_rating:"✓ Thanks for rating",
-    help_title:"💬 Talk to the Hotel",help_desc:"Direct WhatsApp — fastest response.",whatsapp_now:"WhatsApp instantly",
-    info_title:"ℹ️ How It Works",info_desc:"Your hotel experience in one place.",
+    rate_prompt:"Rate:",thanks_rating:"Thanks for rating",
+    help_title:"Talk to the Hotel",help_title_short:"Talk to the Hotel",help_desc:"Direct WhatsApp — fastest response.",whatsapp_now:"WhatsApp instantly",
+    info_title:"How It Works",info_title_short:"How It Works",info_desc:"Your hotel experience in one place.",
     t_enter_name:"Please enter your name",t_enter_room:"Please enter your room number",
     t_enter_table:"Please enter your table number",
     t_valid_phone:"Enter a valid phone number (e.g. 0712 345 678)",
     t_wait:"Please wait {s}s before placing another order",
-    t_offline:"📶 You're offline — we'll reconnect automatically",
+    t_offline:"You're offline — we'll reconnect automatically",
     t_dept_no_wa:"This department has no WhatsApp yet",
-    t_rate_thanks:"Thanks for the feedback! ✨",t_order_fail:"Something went wrong. Please try again.",
+    t_rate_thanks:"Thanks for the feedback!",t_order_fail:"Something went wrong. Please try again.",
     t_order_failed:"Order failed",t_item_added:"Added to your order",t_cart_empty:"Your order is empty",
     hotel_fallback:"YOUR HOTEL",tagline_fallback:"Room service • Restaurant • Transport • Tours • Spa",
     no_services_title:"Nothing here yet",no_services_body:"Your hotel hasn't published a menu yet. Please ask the front desk.",
     empty_search:"Nothing found",empty_search_sub:"Try another search.",
-    footer_secure:"🔒 GuestHub Verified",footer_line1:"Your hotel coordinates your requested service.",
-    footer_line2:"GuestHub • Hospitality made simple ✨",
+    footer_secure:"GuestHub Verified",footer_secure_short:"GuestHub Verified",
+    footer_line1:"Your hotel coordinates your requested service.",
+    footer_line2:"GuestHub • Hospitality made simple",
     stay_day:"Day {d} of {t}",stay_arriving:"Arriving in {d}d",stay_last_day:"Last day — checkout tomorrow",
-    stay_checked_out:"Thanks for staying ✨",stay_ready:"✨ Ready",stay_checkin_today:"Checking in today ✨",
-    lang_title:"🌐 Language",lang_desc:"Choose your preferred language.",
+    stay_checked_out:"Thanks for staying",stay_ready:"Ready",stay_checkin_today:"Checking in today",
+    lang_title:"Language",lang_title_short:"Language",lang_desc:"Choose your preferred language.",
     good_morning:"Good morning",good_afternoon:"Good afternoon",good_evening:"Good evening",
-    ask_hotel:"Ask hotel",sent_to:"sent to",your_order:"🧾 Your Order",subtotal:"Subtotal",
-    service_charge:"Service charge",total:"Total",view_cart:"View Cart →",checkout:"✅ Send Order",
+    ask_hotel:"Ask hotel",sent_to:"sent to",your_order:"Your Order",your_order_short:"Your Order",subtotal:"Subtotal",
+    service_charge:"Service charge",total:"Total",view_cart:"View Cart",view_cart_short:"View Cart",checkout:"Send Order",
     clear_cart:"Clear",items:"items",item:"item",empty_cart:"Your order is empty",add:"Add",
     table_label:"Table",dine_in:"Dine-in",deliver_to:"Deliver to",
     front_desk:"Ask the front desk",front_desk_body:"No WhatsApp departments are set up yet. Please call reception directly.",
-    sold_out:"Sold out",popular_badge:"★ Popular",
+    sold_out:"Sold out",popular_badge:"Popular",
     pay_now:"Pay now",pay_title:"Payment",pay_no_config:"Your hotel hasn't set up M-Pesa yet. Please pay at the reception or ask the front desk.",
-    pay_tap_copy:"Tap to copy"
+    pay_tap_copy:"Tap to copy",
+    pay_mpesa_open:"Open M-Pesa on your phone",
+    pay_mpesa_lnm:"Choose Lipa na M-Pesa",
+    pay_mpesa_paybill:"Pay Bill",
+    pay_mpesa_till:"Buy Goods & Services",
+    pay_mpesa_send:"Send Money",
+    pay_mpesa_amount:"Amount",
+    pay_mpesa_pin:"Enter your PIN and confirm",
+    pay_open_mpesa:"Open M-Pesa",
+    pay_copy_paybill:"Copy Paybill",
+    pay_copy_till:"Copy Till",
+    pay_copy_number:"Copy Number",
+    pay_business_no:"Business No",
+    pay_account:"Account",
+    pay_send_to:"Send to",
+    pay_name:"Name",
+    pay_till_number:"Till number",
+    pay_paybill_number:"Paybill number",
+    pay_account_number:"Account number"
   },
   sw:{dir:"ltr",flag:"🇰🇪",name:"Kiswahili",native:"Kiswahili",
-    welcome:"✦ GUESTHUB",room_number:"Chumba",table_number:"Meza",
+    welcome:"GUESTHUB",room_number:"Chumba",table_number:"Meza",
     search_placeholder:"Tafuta vyakula, vinywaji, huduma…",loading_text:"Inapakia menyu…",
     scan_room:"Chumba",scan_table:"Meza",change:"Badilisha",
     ctx_title:"Uko wapi?",ctx_desc:"Chagua chumba au meza yako.",ctx_save:"Thibitisha",
@@ -815,8 +592,8 @@ const I18N = {
     qa_services:"Usafi",qa_orders:"Oda Zangu",qa_help:"Msaada",qa_concierge:"Concierge",
     popular_today:"Maarufu leo",popular_sub:"Vipendwa na wageni",
     menu_tab:"Menyu",services_tab:"Huduma",cat_all:"Zote",cat_services_only:"Huduma za Mkahawa",
-    cat_food:"🍽️ Chakula & Huduma ya Chumba",cat_taxi:"🚕 Usafiri",cat_tour:"🌍 Safari na Ziara",
-    cat_spa:"🧖 Spa na Afya",cat_services:"🏪 Huduma za Hoteli",cat_other:"✨ Zaidi",
+    cat_food:"Chakula & Huduma ya Chumba",cat_taxi:"Usafiri",cat_tour:"Safari na Ziara",
+    cat_spa:"Spa na Afya",cat_services:"Huduma za Hoteli",cat_other:"Zaidi",
     live_updates:"Sasisho za moja kwa moja",polling_mode:"Inaangalia kila sekunde 15",
     step_sent:"Imetumwa",step_accepted:"Imepokelewa",step_progress:"Inaendelea",step_done:"Imekamilika",
     status_pending:"Inasubiri",status_new:"Mpya",status_accepted:"Imepokelewa",status_preparing:"Inaandaliwa",
@@ -824,38 +601,56 @@ const I18N = {
     eta_accepted:"Imepokelewa",eta_preparing:"Inaandaliwa",eta_on_the_way:"Ipo njiani sasa",
     nav_home:"Nyumbani",nav_menu:"Menyu",nav_orders:"Oda",nav_help:"Msaada",
     confirm_request:"Thibitisha Ombi",your_whatsapp:"Namba yako ya WhatsApp",special_instructions:"Maelezo maalum",
-    note_placeholder:"Muda, upendeleo, au ombi",cancel:"Ghairi",place_order:"✅ Tuma Ombi",sending:"⏳ Inatuma…",
+    note_placeholder:"Muda, upendeleo, au ombi",cancel:"Ghairi",place_order:"Tuma Ombi",place_order_short:"Tuma Ombi",sending:"Inatuma…",
     order_note:"Ombi lako linatumwa moja kwa moja kwa timu ya hoteli.",
-    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Fuatilia Ombi",
-    orders_title:"📋 Oda Zangu",orders_desc:"Fuatilia maombi yako.",
+    success_title:"Ombi Limepokelewa!",reference_label:"KUMBUKUMBU YA GUESTHUB",track_order:"Fuatilia Ombi",track_order_short:"Fuatilia Ombi",
+    orders_title:"Oda Zangu",orders_title_short:"Oda Zangu",orders_desc:"Fuatilia maombi yako.",
     no_orders_title:"Hakuna oda bado",no_orders_desc:"Maombi yako yataonekana hapa.",
-    rate_prompt:"Kadiria:",thanks_rating:"✓ Asante",
-    help_title:"💬 Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja.",whatsapp_now:"WhatsApp papo hapo",
-    info_title:"ℹ️ Inavyofanya Kazi",info_desc:"Uzoefu wako mahali pamoja.",
+    rate_prompt:"Kadiria:",thanks_rating:"Asante",
+    help_title:"Zungumza na Hoteli",help_title_short:"Zungumza na Hoteli",help_desc:"WhatsApp ya moja kwa moja.",whatsapp_now:"WhatsApp papo hapo",
+    info_title:"Inavyofanya Kazi",info_title_short:"Inavyofanya Kazi",info_desc:"Uzoefu wako mahali pamoja.",
     t_enter_name:"Ingiza jina lako",t_enter_room:"Ingiza namba ya chumba",t_enter_table:"Ingiza namba ya meza",
     t_valid_phone:"Ingiza namba sahihi",t_wait:"Subiri sekunde {s}",
-    t_offline:"📶 Huna mtandao",t_dept_no_wa:"Idara hii haina WhatsApp",
-    t_rate_thanks:"Asante! ✨",t_order_fail:"Kitu kilienda vibaya.",
+    t_offline:"Huna mtandao",t_dept_no_wa:"Idara hii haina WhatsApp",
+    t_rate_thanks:"Asante!",t_order_fail:"Kitu kilienda vibaya.",
     t_order_failed:"Ombi limeshindikana",t_item_added:"Imeongezwa",t_cart_empty:"Oda yako ni tupu",
     hotel_fallback:"HOTELI YAKO",tagline_fallback:"Huduma ya chumba • Mkahawa • Usafiri • Safari • Spa",
     no_services_title:"Hakuna kitu bado",no_services_body:"Hoteli hii bado haijatoa menyu.",
     empty_search:"Hakuna kilichopatikana",empty_search_sub:"Jaribu utafutaji mwingine.",
-    footer_secure:"🔒 GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma.",
-    footer_line2:"GuestHub • Ukarimu rahisi ✨",
+    footer_secure:"GuestHub Salama",footer_secure_short:"GuestHub Salama",footer_line1:"Hoteli yako inaratibu huduma.",
+    footer_line2:"GuestHub • Ukarimu rahisi",
     stay_day:"Siku {d} kati ya {t}",stay_arriving:"Kuwasili baada ya siku {d}",stay_last_day:"Siku ya mwisho",
-    stay_checked_out:"Asante ✨",stay_ready:"✨ Tayari",stay_checkin_today:"Unaingia leo ✨",
-    lang_title:"🌐 Lugha",lang_desc:"Chagua lugha.",
+    stay_checked_out:"Asante",stay_ready:"Tayari",stay_checkin_today:"Unaingia leo",
+    lang_title:"Lugha",lang_title_short:"Lugha",lang_desc:"Chagua lugha.",
     good_morning:"Habari ya asubuhi",good_afternoon:"Habari ya mchana",good_evening:"Habari ya jioni",
-    ask_hotel:"Uliza hoteli",sent_to:"imetumwa kwa",your_order:"🧾 Oda Yako",subtotal:"Jumla ndogo",
-    service_charge:"Ada ya huduma",total:"Jumla",view_cart:"Angalia Oda →",checkout:"✅ Tuma Oda",
+    ask_hotel:"Uliza hoteli",sent_to:"imetumwa kwa",your_order:"Oda Yako",your_order_short:"Oda Yako",subtotal:"Jumla ndogo",
+    service_charge:"Ada ya huduma",total:"Jumla",view_cart:"Angalia Oda",view_cart_short:"Angalia Oda",checkout:"Tuma Oda",
     clear_cart:"Futa",items:"vitu",item:"kitu",empty_cart:"Oda yako ni tupu",add:"Ongeza",
     table_label:"Meza",dine_in:"Kula hapa",deliver_to:"Peleka",
-    front_desk:"Uliza mapokezi",front_desk_body:"Piga simu mapokezi.",sold_out:"Imeisha",popular_badge:"★ Maarufu",
+    front_desk:"Uliza mapokezi",front_desk_body:"Piga simu mapokezi.",sold_out:"Imeisha",popular_badge:"Maarufu",
     pay_now:"Lipa sasa",pay_title:"Malipo",pay_no_config:"Hoteli yako bado haijaweka M-Pesa. Tafadhali lipa mapokezi.",
-    pay_tap_copy:"Gusa kunakili"
+    pay_tap_copy:"Gusa kunakili",
+    pay_mpesa_open:"Fungua M-Pesa kwenye simu yako",
+    pay_mpesa_lnm:"Chagua Lipa na M-Pesa",
+    pay_mpesa_paybill:"Pay Bill",
+    pay_mpesa_till:"Buy Goods & Services",
+    pay_mpesa_send:"Send Money",
+    pay_mpesa_amount:"Kiasi",
+    pay_mpesa_pin:"Weka PIN yako na uthibitishe",
+    pay_open_mpesa:"Fungua M-Pesa",
+    pay_copy_paybill:"Nakili Paybill",
+    pay_copy_till:"Nakili Till",
+    pay_copy_number:"Nakili Namba",
+    pay_business_no:"Namba ya Biashara",
+    pay_account:"Akaunti",
+    pay_send_to:"Tuma kwa",
+    pay_name:"Jina",
+    pay_till_number:"Namba ya Till",
+    pay_paybill_number:"Namba ya Paybill",
+    pay_account_number:"Namba ya Akaunti"
   },
   fr:{dir:"ltr",flag:"🇫🇷",name:"Français",native:"Français",
-    welcome:"✦ GUESTHUB",room_number:"Chambre",table_number:"Table",
+    welcome:"GUESTHUB",room_number:"Chambre",table_number:"Table",
     search_placeholder:"Rechercher plats, boissons, services…",loading_text:"Chargement du menu…",
     scan_room:"Chambre",scan_table:"Table",change:"Changer",
     ctx_title:"Où êtes-vous ?",ctx_desc:"Choisissez votre chambre ou table.",ctx_save:"Confirmer",
@@ -865,8 +660,8 @@ const I18N = {
     qa_services:"Ménage",qa_orders:"Mes Commandes",qa_help:"Aide",qa_concierge:"Concierge",
     popular_today:"Populaire aujourd'hui",popular_sub:"Coups de cœur",
     menu_tab:"Menu",services_tab:"Services",cat_all:"Tout",cat_services_only:"Services du Restaurant",
-    cat_food:"🍽️ Nourriture & Service",cat_taxi:"🚕 Transport",cat_tour:"🌍 Excursions",
-    cat_spa:"🧖 Spa & Bien-être",cat_services:"🏪 Services",cat_other:"✨ Plus",
+    cat_food:"Nourriture & Service",cat_taxi:"Transport",cat_tour:"Excursions",
+    cat_spa:"Spa & Bien-être",cat_services:"Services",cat_other:"Plus",
     live_updates:"Mises à jour en direct",polling_mode:"Actualisation toutes les 15s",
     step_sent:"Envoyé",step_accepted:"Accepté",step_progress:"En Cours",step_done:"Terminé",
     status_pending:"En attente",status_new:"Nouveau",status_accepted:"Accepté",status_preparing:"En préparation",
@@ -874,37 +669,55 @@ const I18N = {
     eta_accepted:"Accepté",eta_preparing:"En préparation",eta_on_the_way:"En route",
     nav_home:"Accueil",nav_menu:"Menu",nav_orders:"Commandes",nav_help:"Aide",
     confirm_request:"Confirmer",your_whatsapp:"Votre WhatsApp",special_instructions:"Instructions spéciales",
-    note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"✅ Commander",sending:"⏳ Envoi…",
+    note_placeholder:"Heure, préférence ou demande",cancel:"Annuler",place_order:"Commander",place_order_short:"Commander",sending:"Envoi…",
     order_note:"Votre demande est envoyée directement à l'équipe.",
-    success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Suivre",
-    orders_title:"📋 Mes Commandes",orders_desc:"Suivez vos demandes.",
+    success_title:"Demande Reçue !",reference_label:"RÉFÉRENCE GUESTHUB",track_order:"Suivre",track_order_short:"Suivre",
+    orders_title:"Mes Commandes",orders_title_short:"Mes Commandes",orders_desc:"Suivez vos demandes.",
     no_orders_title:"Aucune commande",no_orders_desc:"Vos demandes apparaîtront ici.",
-    rate_prompt:"Note :",thanks_rating:"✓ Merci",
-    help_title:"💬 Parler à l'Hôtel",help_desc:"WhatsApp direct.",whatsapp_now:"WhatsApp",
-    info_title:"ℹ️ Comment ça Marche",info_desc:"Votre expérience en un endroit.",
+    rate_prompt:"Note :",thanks_rating:"Merci",
+    help_title:"Parler à l'Hôtel",help_title_short:"Parler à l'Hôtel",help_desc:"WhatsApp direct.",whatsapp_now:"WhatsApp",
+    info_title:"Comment ça Marche",info_title_short:"Comment ça Marche",info_desc:"Votre expérience en un endroit.",
     t_enter_name:"Entrez votre nom",t_enter_room:"Entrez votre chambre",t_enter_table:"Entrez votre table",
-    t_valid_phone:"Numéro invalide",t_wait:"Patientez {s}s",t_offline:"📶 Hors ligne",
-    t_dept_no_wa:"Pas de WhatsApp",t_rate_thanks:"Merci ! ✨",t_order_fail:"Erreur.",
+    t_valid_phone:"Numéro invalide",t_wait:"Patientez {s}s",t_offline:"Hors ligne",
+    t_dept_no_wa:"Pas de WhatsApp",t_rate_thanks:"Merci !",t_order_fail:"Erreur.",
     t_order_failed:"Échec",t_item_added:"Ajouté",t_cart_empty:"Commande vide",
     hotel_fallback:"VOTRE HÔTEL",tagline_fallback:"Service en chambre • Restaurant • Transport • Excursions • Spa",
     no_services_title:"Rien pour l'instant",no_services_body:"Menu non publié.",
     empty_search:"Aucun résultat",empty_search_sub:"Essayez autre chose.",
-    footer_secure:"🔒 GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service.",
-    footer_line2:"GuestHub • L'hospitalité simplifiée ✨",
+    footer_secure:"GuestHub Sécurisé",footer_secure_short:"GuestHub Sécurisé",footer_line1:"Votre hôtel coordonne votre service.",
+    footer_line2:"GuestHub • L'hospitalité simplifiée",
     stay_day:"Jour {d} sur {t}",stay_arriving:"Arrivée dans {d}j",stay_last_day:"Dernier jour",
-    stay_checked_out:"Merci ✨",stay_ready:"✨ Prêt",stay_checkin_today:"Arrivée aujourd'hui ✨",
-    lang_title:"🌐 Langue",lang_desc:"Choisissez votre langue.",
+    stay_checked_out:"Merci",stay_ready:"Prêt",stay_checkin_today:"Arrivée aujourd'hui",
+    lang_title:"Langue",lang_title_short:"Langue",lang_desc:"Choisissez votre langue.",
     good_morning:"Bonjour",good_afternoon:"Bon après-midi",good_evening:"Bonsoir",
-    ask_hotel:"Demander",sent_to:"envoyé à",your_order:"🧾 Votre Commande",subtotal:"Sous-total",
-    service_charge:"Frais de service",total:"Total",view_cart:"Voir le Panier →",checkout:"✅ Envoyer",
+    ask_hotel:"Demander",sent_to:"envoyé à",your_order:"Votre Commande",your_order_short:"Votre Commande",subtotal:"Sous-total",
+    service_charge:"Frais de service",total:"Total",view_cart:"Voir le Panier",view_cart_short:"Voir le Panier",checkout:"Envoyer",
     clear_cart:"Vider",items:"articles",item:"article",empty_cart:"Commande vide",add:"Ajouter",
     table_label:"Table",dine_in:"Sur place",deliver_to:"Livrer à",
-    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception.",sold_out:"Épuisé",popular_badge:"★ Populaire",
+    front_desk:"Demander à la réception",front_desk_body:"Appelez la réception.",sold_out:"Épuisé",popular_badge:"Populaire",
     pay_now:"Payer",pay_title:"Paiement",pay_no_config:"L'hôtel n'a pas configuré M-Pesa. Payez à la réception.",
-    pay_tap_copy:"Appuyez pour copier"
+    pay_tap_copy:"Appuyez pour copier",
+    pay_mpesa_open:"Ouvrez M-Pesa",
+    pay_mpesa_lnm:"Choisissez Lipa na M-Pesa",
+    pay_mpesa_paybill:"Pay Bill",
+    pay_mpesa_till:"Buy Goods & Services",
+    pay_mpesa_send:"Send Money",
+    pay_mpesa_amount:"Montant",
+    pay_mpesa_pin:"Saisissez votre PIN",
+    pay_open_mpesa:"Ouvrir M-Pesa",
+    pay_copy_paybill:"Copier Paybill",
+    pay_copy_till:"Copier Till",
+    pay_copy_number:"Copier le numéro",
+    pay_business_no:"N° d'entreprise",
+    pay_account:"Compte",
+    pay_send_to:"Envoyer à",
+    pay_name:"Nom",
+    pay_till_number:"Numéro de Till",
+    pay_paybill_number:"Numéro de Paybill",
+    pay_account_number:"Numéro de compte"
   },
   ar:{dir:"rtl",flag:"🇸🇦",name:"العربية",native:"العربية",
-    welcome:"✦ GUESTHUB",room_number:"الغرفة",table_number:"الطاولة",
+    welcome:"GUESTHUB",room_number:"الغرفة",table_number:"الطاولة",
     search_placeholder:"ابحث عن الأطباق والمشروبات…",loading_text:"جارٍ تحميل القائمة…",
     scan_room:"غرفة",scan_table:"طاولة",change:"تغيير",
     ctx_title:"أين أنت؟",ctx_desc:"اختر غرفتك أو طاولتك.",ctx_save:"تأكيد",
@@ -914,8 +727,8 @@ const I18N = {
     qa_services:"التدبير المنزلي",qa_orders:"طلباتي",qa_help:"مساعدة",qa_concierge:"الكونسيرج",
     popular_today:"الأكثر رواجاً اليوم",popular_sub:"المفضلة لدى الضيوف",
     menu_tab:"القائمة",services_tab:"الخدمات",cat_all:"الكل",cat_services_only:"خدمات المطعم",
-    cat_food:"🍽️ الطعام وخدمة الغرف",cat_taxi:"🚕 النقل",cat_tour:"🌍 الجولات",
-    cat_spa:"🧖 السبا والعافية",cat_services:"🏪 خدمات الفندق",cat_other:"✨ المزيد",
+    cat_food:"الطعام وخدمة الغرف",cat_taxi:"النقل",cat_tour:"الجولات",
+    cat_spa:"السبا والعافية",cat_services:"خدمات الفندق",cat_other:"المزيد",
     live_updates:"تحديثات مباشرة",polling_mode:"تحديث كل 15 ثانية",
     step_sent:"تم الإرسال",step_accepted:"تم القبول",step_progress:"قيد التنفيذ",step_done:"مكتمل",
     status_pending:"قيد الانتظار",status_new:"جديد",status_accepted:"مقبول",status_preparing:"قيد التحضير",
@@ -923,34 +736,52 @@ const I18N = {
     eta_accepted:"تم القبول",eta_preparing:"قيد التحضير",eta_on_the_way:"في الطريق الآن",
     nav_home:"الرئيسية",nav_menu:"القائمة",nav_orders:"الطلبات",nav_help:"مساعدة",
     confirm_request:"تأكيد الطلب",your_whatsapp:"رقم واتساب",special_instructions:"تعليمات خاصة",
-    note_placeholder:"الوقت أو التفضيل",cancel:"إلغاء",place_order:"✅ إرسال الطلب",sending:"⏳ جاري الإرسال…",
+    note_placeholder:"الوقت أو التفضيل",cancel:"إلغاء",place_order:"إرسال الطلب",place_order_short:"إرسال الطلب",sending:"جاري الإرسال…",
     order_note:"يُرسل طلبك مباشرة إلى فريق الفندق.",
-    success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"تتبع طلبي",
-    orders_title:"📋 طلباتي",orders_desc:"تابع طلباتك.",
+    success_title:"تم استلام الطلب!",reference_label:"مرجع GUESTHUB",track_order:"تتبع طلبي",track_order_short:"تتبع طلبي",
+    orders_title:"طلباتي",orders_title_short:"طلباتي",orders_desc:"تابع طلباتك.",
     no_orders_title:"لا توجد طلبات بعد",no_orders_desc:"ستظهر طلباتك هنا.",
-    rate_prompt:"التقييم:",thanks_rating:"✓ شكراً",
-    help_title:"💬 التحدث مع الفندق",help_desc:"واتساب مباشر.",whatsapp_now:"واتساب فوري",
-    info_title:"ℹ️ كيف يعمل",info_desc:"تجربة فندقك في مكان واحد.",
+    rate_prompt:"التقييم:",thanks_rating:"شكراً",
+    help_title:"التحدث مع الفندق",help_title_short:"التحدث مع الفندق",help_desc:"واتساب مباشر.",whatsapp_now:"واتساب فوري",
+    info_title:"كيف يعمل",info_title_short:"كيف يعمل",info_desc:"تجربة فندقك في مكان واحد.",
     t_enter_name:"أدخل اسمك",t_enter_room:"أدخل رقم الغرفة",t_enter_table:"أدخل رقم الطاولة",
-    t_valid_phone:"رقم غير صحيح",t_wait:"انتظر {s} ثانية",t_offline:"📶 غير متصل",
-    t_dept_no_wa:"لا يوجد واتساب",t_rate_thanks:"شكراً! ✨",t_order_fail:"حدث خطأ.",
+    t_valid_phone:"رقم غير صحيح",t_wait:"انتظر {s} ثانية",t_offline:"غير متصل",
+    t_dept_no_wa:"لا يوجد واتساب",t_rate_thanks:"شكراً!",t_order_fail:"حدث خطأ.",
     t_order_failed:"فشل الطلب",t_item_added:"أُضيف",t_cart_empty:"طلبك فارغ",
     hotel_fallback:"فندقك",tagline_fallback:"خدمة الغرف • المطعم • النقل • الجولات • السبا",
     no_services_title:"لا يوجد شيء بعد",no_services_body:"لم تُنشر القائمة بعد.",
     empty_search:"لا نتائج",empty_search_sub:"جرب بحثاً آخر.",
-    footer_secure:"🔒 GuestHub آمن",footer_line1:"ينسق فندقك الخدمة.",
-    footer_line2:"GuestHub • الضيافة ببساطة ✨",
+    footer_secure:"GuestHub آمن",footer_secure_short:"GuestHub آمن",footer_line1:"ينسق فندقك الخدمة.",
+    footer_line2:"GuestHub • الضيافة ببساطة",
     stay_day:"اليوم {d} من {t}",stay_arriving:"الوصول خلال {d} أيام",stay_last_day:"اليوم الأخير",
-    stay_checked_out:"شكراً ✨",stay_ready:"✨ جاهز",stay_checkin_today:"تسجيل الوصول اليوم ✨",
-    lang_title:"🌐 اللغة",lang_desc:"اختر لغتك.",
+    stay_checked_out:"شكراً",stay_ready:"جاهز",stay_checkin_today:"تسجيل الوصول اليوم",
+    lang_title:"اللغة",lang_title_short:"اللغة",lang_desc:"اختر لغتك.",
     good_morning:"صباح الخير",good_afternoon:"مساء الخير",good_evening:"مساء الخير",
-    ask_hotel:"اسأل الفندق",sent_to:"أُرسل إلى",your_order:"🧾 طلبك",subtotal:"المجموع الفرعي",
-    service_charge:"رسوم الخدمة",total:"الإجمالي",view_cart:"عرض السلة →",checkout:"✅ إرسال الطلب",
+    ask_hotel:"اسأل الفندق",sent_to:"أُرسل إلى",your_order:"طلبك",your_order_short:"طلبك",subtotal:"المجموع الفرعي",
+    service_charge:"رسوم الخدمة",total:"الإجمالي",view_cart:"عرض السلة",view_cart_short:"عرض السلة",checkout:"إرسال الطلب",
     clear_cart:"مسح",items:"عناصر",item:"عنصر",empty_cart:"طلبك فارغ",add:"أضف",
     table_label:"طاولة",dine_in:"تناول هنا",deliver_to:"التوصيل إلى",
-    front_desk:"اسأل الاستقبال",front_desk_body:"اتصل بالاستقبال.",sold_out:"نفذ",popular_badge:"★ شائع",
+    front_desk:"اسأل الاستقبال",front_desk_body:"اتصل بالاستقبال.",sold_out:"نفذ",popular_badge:"شائع",
     pay_now:"ادفع الآن",pay_title:"الدفع",pay_no_config:"الفندق لم يقم بإعداد M-Pesa. ادفع في الاستقبال.",
-    pay_tap_copy:"اضغط للنسخ"
+    pay_tap_copy:"اضغط للنسخ",
+    pay_mpesa_open:"افتح M-Pesa",
+    pay_mpesa_lnm:"اختر Lipa na M-Pesa",
+    pay_mpesa_paybill:"Pay Bill",
+    pay_mpesa_till:"Buy Goods & Services",
+    pay_mpesa_send:"Send Money",
+    pay_mpesa_amount:"المبلغ",
+    pay_mpesa_pin:"أدخل رقمك السري",
+    pay_open_mpesa:"افتح M-Pesa",
+    pay_copy_paybill:"نسخ Paybill",
+    pay_copy_till:"نسخ Till",
+    pay_copy_number:"نسخ الرقم",
+    pay_business_no:"رقم العمل",
+    pay_account:"الحساب",
+    pay_send_to:"إرسال إلى",
+    pay_name:"الاسم",
+    pay_till_number:"رقم Till",
+    pay_paybill_number:"رقم Paybill",
+    pay_account_number:"رقم الحساب"
   }
 };
 
@@ -981,16 +812,17 @@ let HOTEL_PAYMENT = null;
 const STATE = { currency:"Ksh", serviceCharge:0, hotelName:"", tagline:"", cart:[] };
 
 /* ═══════════════════════════════════════════════════════════════
-   5. FALLBACK DEMO MENU
+   5. FALLBACK DEMO DATA
+   Note: `emoji` on menu items is a placeholder for a real image URL.
 ═══════════════════════════════════════════════════════════════ */
 const DEMO_CATEGORIES = [
-  { id:"breakfast", name:"Breakfast",         emoji:"🍳", order:1 },
-  { id:"starters",  name:"Starters & Salads", emoji:"🥗", order:2 },
-  { id:"mains",     name:"Main Dishes",       emoji:"🍛", order:3 },
-  { id:"grill",     name:"From the Grill",    emoji:"🔥", order:4 },
-  { id:"desserts",  name:"Desserts",          emoji:"🍰", order:5 },
-  { id:"hot",       name:"Hot Drinks",        emoji:"☕", order:6 },
-  { id:"cold",      name:"Cold Drinks",       emoji:"🥤", order:7 }
+  { id:"breakfast", name:"Breakfast",         iconName:"utensils", order:1 },
+  { id:"starters",  name:"Starters & Salads", iconName:"utensils", order:2 },
+  { id:"mains",     name:"Main Dishes",       iconName:"utensils", order:3 },
+  { id:"grill",     name:"From the Grill",    iconName:"flame",    order:4 },
+  { id:"desserts",  name:"Desserts",          iconName:"utensils", order:5 },
+  { id:"hot",       name:"Hot Drinks",        iconName:"utensils", order:6 },
+  { id:"cold",      name:"Cold Drinks",       iconName:"droplet",  order:7 }
 ];
 const DEMO_ITEMS = [
   { id:"d1", cat:"breakfast", emoji:"🍳", name:"Full Breakfast",    desc:"Eggs, sausage, toast & coffee",      price:1200, tags:["popular"] },
@@ -1007,34 +839,57 @@ const DEMO_ITEMS = [
   { id:"d12",cat:"cold",      emoji:"💧", name:"Still Water",       desc:"750ml chilled bottle",                price:200,  tags:["veg"] }
 ];
 const DEFAULT_SERVICES = [
-  { id:"s1",  title:"Room Service",         icon:"🍽️", category:"food",     price:0, description:"Full menu delivered to your room" },
-  { id:"s2",  title:"Airport Transfer",     icon:"🚕", category:"taxi",     price:0, description:"Meet & greet, fixed rate" },
-  { id:"s3",  title:"City Taxi",            icon:"🚗", category:"taxi",     price:0, description:"On-demand rides around town" },
-  { id:"s4",  title:"Game Drive / Safari",  icon:"🦁", category:"tour",     price:0, description:"Half-day or full-day safari" },
-  { id:"s5",  title:"City & Cultural Tour", icon:"🏛️", category:"tour",     price:0, description:"Guided local experience" },
-  { id:"s6",  title:"Massage & Spa",        icon:"💆", category:"spa",      price:0, description:"In-room or at the spa" },
-  { id:"s7",  title:"Laundry & Pressing",   icon:"🧺", category:"spa",      price:0, description:"Same-day return available" },
-  { id:"s8",  title:"Housekeeping",         icon:"🧹", category:"services", price:0, description:"Clean, towels, amenities" },
-  { id:"s9",  title:"Maintenance Request",  icon:"🔧", category:"services", price:0, description:"AC, plumbing, electrics" },
-  { id:"s10", title:"Wake-up Call",         icon:"⏰", category:"services", price:0, description:"Set a precise time" },
-  { id:"s11", title:"Express Checkout",     icon:"💳", category:"services", price:0, description:"Skip the queue" },
-  { id:"s12", title:"Concierge",            icon:"🛎️", category:"services", price:0, description:"Anything you need, arranged" },
-  { id:"s13", title:"Doctor / First Aid",   icon:"🩺", category:"other",    price:0, description:"Medical assistance" },
-  { id:"s14", title:"Room Celebration",     icon:"🎉", category:"other",    price:0, description:"Birthdays, anniversaries" }
+  { id:"s1",  title:"Room Service",         iconName:"utensils",     category:"food",     price:0, description:"Full menu delivered to your room" },
+  { id:"s2",  title:"Airport Transfer",     iconName:"car",          category:"taxi",     price:0, description:"Meet & greet, fixed rate" },
+  { id:"s3",  title:"City Taxi",            iconName:"car",          category:"taxi",     price:0, description:"On-demand rides around town" },
+  { id:"s4",  title:"Game Drive / Safari",  iconName:"compass",      category:"tour",     price:0, description:"Half-day or full-day safari" },
+  { id:"s5",  title:"City & Cultural Tour", iconName:"landmark",     category:"tour",     price:0, description:"Guided local experience" },
+  { id:"s6",  title:"Massage & Spa",        iconName:"sparkles",     category:"spa",      price:0, description:"In-room or at the spa" },
+  { id:"s7",  title:"Laundry & Pressing",   iconName:"shirt",        category:"spa",      price:0, description:"Same-day return available" },
+  { id:"s8",  title:"Housekeeping",         iconName:"brush",        category:"services", price:0, description:"Clean, towels, amenities" },
+  { id:"s9",  title:"Maintenance Request",  iconName:"wrench",       category:"services", price:0, description:"AC, plumbing, electrics" },
+  { id:"s10", title:"Wake-up Call",         iconName:"clock",        category:"services", price:0, description:"Set a precise time" },
+  { id:"s11", title:"Express Checkout",     iconName:"credit-card",  category:"services", price:0, description:"Skip the queue" },
+  { id:"s12", title:"Concierge",            iconName:"bell",         category:"services", price:0, description:"Anything you need, arranged" },
+  { id:"s13", title:"Doctor / First Aid",   iconName:"stethoscope",  category:"other",    price:0, description:"Medical assistance" },
+  { id:"s14", title:"Room Celebration",     iconName:"party",        category:"other",    price:0, description:"Birthdays, anniversaries" }
 ];
 const DEFAULT_DEPARTMENTS = [
-  { name:"reception",    whatsapp:"254700000001", icon:"🛎️" },
-  { name:"housekeeping", whatsapp:"254700000002", icon:"🧹" },
-  { name:"kitchen",      whatsapp:"254700000003", icon:"👨‍🍳" },
-  { name:"restaurant",   whatsapp:"254700000004", icon:"🍽️" },
-  { name:"concierge",    whatsapp:"254700000006", icon:"🎩" },
-  { name:"transport",    whatsapp:"254700000007", icon:"🚕" }
+  { name:"reception",    whatsapp:"254700000001", iconName:"bell" },
+  { name:"housekeeping", whatsapp:"254700000002", iconName:"brush" },
+  { name:"kitchen",      whatsapp:"254700000003", iconName:"utensils" },
+  { name:"restaurant",   whatsapp:"254700000004", iconName:"utensils" },
+  { name:"concierge",    whatsapp:"254700000006", iconName:"bell" },
+  { name:"transport",    whatsapp:"254700000007", iconName:"car" }
 ];
 const QUICK_SERVICES = {
-  waiter:{ id:"qs_waiter", title:"Call Waiter",      icon:"🛎️", category:"services", price:0, description:"A member of staff will come to your table", cta:"Call Waiter" },
-  water: { id:"qs_water",  title:"Drinking Water",   icon:"💧", category:"food",     price:0, description:"Chilled still water for the table",       cta:"Request Water" },
-  bill:  { id:"qs_bill",   title:"Request the Bill", icon:"🧾", category:"services", price:0, description:"We'll bring your bill to the table",       cta:"Request Bill" }
+  waiter:{ id:"qs_waiter", title:"Call Waiter",      iconName:"bell",     category:"services", price:0, description:"A member of staff will come to your table", cta:"Call Waiter" },
+  water: { id:"qs_water",  title:"Drinking Water",   iconName:"droplet",  category:"food",     price:0, description:"Chilled still water for the table",       cta:"Request Water" },
+  bill:  { id:"qs_bill",   title:"Request the Bill", iconName:"receipt",  category:"services", price:0, description:"We'll bring your bill to the table",       cta:"Request Bill" }
 };
+
+/* Emoji → icon name map — for API responses that still send emoji */
+const EMOJI_ICON_MAP = {
+  "🍽️":"utensils","🍴":"utensils","🍳":"utensils","🥗":"utensils","🍛":"utensils","🍲":"utensils",
+  "🍰":"utensils","🍩":"utensils","🥞":"utensils",
+  "🚕":"car","🚗":"car","🚙":"car","🚐":"car","🚌":"car","✈️":"car",
+  "🦁":"compass","🐘":"compass","🦒":"compass","🏛️":"landmark","🗺️":"compass","🧭":"compass",
+  "💆":"sparkles","💅":"sparkles","🧖":"sparkles","🛀":"sparkles","🌿":"sparkles",
+  "🧺":"shirt","👕":"shirt","👔":"shirt",
+  "🧹":"brush","🧽":"brush",
+  "🔧":"wrench","🔨":"wrench","🛠️":"wrench",
+  "⏰":"clock","⏱️":"clock","🕐":"clock",
+  "💳":"credit-card",
+  "🛎️":"bell","🔔":"bell",
+  "🩺":"stethoscope","💊":"stethoscope",
+  "🎉":"party","🎂":"party","🎈":"party",
+  "☕":"utensils","🥤":"droplet","💧":"droplet","🍷":"utensils","🍺":"utensils"
+};
+function emojiToIcon(em){
+  if(!em) return "service";
+  const s = String(em).trim();
+  return EMOJI_ICON_MAP[s] || "service";
+}
 
 /* ═══════════════════════════════════════════════════════════════
    6. PERSISTENCE
@@ -1149,12 +1004,12 @@ function normalizeCategory(value){
   return "other";
 }
 const CATEGORY_META = {
-  food:     { titleKey:"cat_food",     order:1 },
-  taxi:     { titleKey:"cat_taxi",     order:2 },
-  tour:     { titleKey:"cat_tour",     order:3 },
-  spa:      { titleKey:"cat_spa",      order:4 },
-  services: { titleKey:"cat_services", order:5 },
-  other:    { titleKey:"cat_other",    order:6 }
+  food:     { titleKey:"cat_food",     icon:"utensils",    order:1 },
+  taxi:     { titleKey:"cat_taxi",     icon:"car",         order:2 },
+  tour:     { titleKey:"cat_tour",     icon:"compass",     order:3 },
+  spa:      { titleKey:"cat_spa",      icon:"sparkles",    order:4 },
+  services: { titleKey:"cat_services", icon:"bell",        order:5 },
+  other:    { titleKey:"cat_other",    icon:"sparkles",    order:6 }
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1163,6 +1018,7 @@ const CATEGORY_META = {
 function sortedCategories(){ return [...MENU.categories].sort((a,b) => (a.order ?? 99) - (b.order ?? 99)); }
 function itemsInCategory(id){ return MENU.items.filter(i => i.cat === id); }
 function findMenuItem(id){ return MENU.items.find(i => String(i.id) === String(id)); }
+function categoryIcon(cat){ return cat.iconName || emojiToIcon(cat.emoji) || "utensils"; }
 
 /* ═══════════════════════════════════════════════════════════════
    10. CART
@@ -1182,9 +1038,9 @@ function addToCart(itemId){
   if(item.available === false){ toast(t("sold_out")); return; }
   const line = STATE.cart.find(l => String(l.id) === String(itemId));
   if(line) line.qty += 1;
-  else STATE.cart.push({ id:item.id, name:item.name, price:Number(item.price) || 0, emoji:item.emoji || "🍽️", qty:1 });
+  else STATE.cart.push({ id:item.id, name:item.name, price:Number(item.price) || 0, emoji:item.emoji || "", image:item.image || "", qty:1 });
   saveCart();
-  toast(`✓ ${item.name}`);
+  toast(t("t_item_added"));
   if(navigator.vibrate) navigator.vibrate(25);
   beep(1, 720);
 }
@@ -1222,7 +1078,7 @@ function updateQtyBadges(){
       btn.innerHTML = `×${q}`;
     } else {
       btn.classList.remove("hasQty");
-      btn.innerHTML = "+";
+      btn.innerHTML = icon("plus", 16);
     }
   });
 }
@@ -1234,7 +1090,7 @@ function setGreeting(){
   const h = new Date().getHours();
   const name = localStorage.getItem("guest_name") || "";
   const key = h < 12 ? "good_morning" : h < 17 ? "good_afternoon" : "good_evening";
-  $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]} ✨` : `${t(key)} 👋`;
+  $("greeting").textContent = name ? `${t(key)}, ${name.split(" ")[0]}` : t(key);
 }
 
 function updateContextUI(){
@@ -1243,7 +1099,9 @@ function updateContextUI(){
 
   const chip = $("ctxChip");
   chip.className = "ctxChip" + (isTable ? " table" : "");
-  chip.innerHTML = isTable ? `🍽️ <b>${esc(CONTEXT.table || "—")}</b>` : `🛏️ <b>${esc(CONTEXT.room || "—")}</b>`;
+  chip.innerHTML = isTable
+    ? `${icon("utensils", 14)}<b>${esc(CONTEXT.table || "—")}</b>`
+    : `${icon("bed", 14)}<b>${esc(CONTEXT.room || "—")}</b>`;
 
   $("heroSection").style.display = isTable ? "none" : "block";
   $("hotelStrip").style.display  = isTable ? "flex"  : "none";
@@ -1256,17 +1114,22 @@ function updateContextUI(){
     $("hotelStripMode").textContent = t("dine_in");
     $("hotelStripTable").textContent = `${t("table_label")} ${CONTEXT.table || "—"}`;
   }else{
-    $("heroCtx").textContent = `🛏️ ${t("room_number")} ${CONTEXT.room || "—"}`;
+    const heroCtx = $("heroCtx");
+    heroCtx.innerHTML = `${icon("bed", 12)}<span>${esc(CONTEXT.room || "—")}</span>`;
   }
 
-  $("ctxIcon").textContent = isTable ? "🍽️" : "🛏️";
+  const ctxIconEl = $("ctxIcon");
+  ctxIconEl.innerHTML = isTable ? icon("utensils", 20) : icon("bed", 20);
+
   $("ctxTitle").textContent = isTable
     ? `${t("scan_table")} ${CONTEXT.table || "—"}`
     : `${t("scan_room")} ${CONTEXT.room || "—"}`;
   $("ctxSub").textContent = isTable ? t("ctx_table_sub") : t("ctx_room_sub");
 
   $("activeLocLabel").textContent = isTable ? t("table_label") : t("room_number");
-  $("heroEyebrow").textContent = isTable ? "✦ DINE IN" : "✦ GUESTHUB OS";
+
+  const heroEyebrow = $("heroEyebrow");
+  heroEyebrow.innerHTML = `<span class="dot"></span><span>${isTable ? "DINE IN" : "GUESTHUB OS"}</span>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -1324,73 +1187,49 @@ function scheduleMidnightRefresh(){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   13. RENDER — category tabs, popular, menu, services
+   13. RENDER — tabs, popular, menu, services
 ═══════════════════════════════════════════════════════════════ */
-
-/* ✅ Centralised icon mapping */
-function getCategoryIcon(category, fallback){
+function getCategoryIconName(category){
   const c = String(category || "").toLowerCase();
-  if(c === "tour" || /safari/.test(c))     return "🦁";
-  if(c === "spa"  || /massage|wellness/.test(c)) return "💆";
-  if(c === "taxi" || /transport/.test(c))  return "🚕";
-  if(c === "food" || /room service|menu|restaurant/.test(c)) return "🍽️";
-  if(/laundry|pressing/.test(c))           return "🧺";
-  if(/housekeep/.test(c))                  return "🧹";
-  if(/maintenance/.test(c))                return "🔧";
-  if(/concierge/.test(c))                  return "🛎️";
-  return fallback || "🛎️";
+  if(c === "tour" || /safari/.test(c))            return "compass";
+  if(c === "spa"  || /massage|wellness/.test(c))  return "sparkles";
+  if(c === "taxi" || /transport/.test(c))         return "car";
+  if(c === "food" || /room service|menu|restaurant/.test(c)) return "utensils";
+  if(/laundry|pressing/.test(c))                  return "shirt";
+  if(/housekeep/.test(c))                         return "brush";
+  if(/maintenance/.test(c))                       return "wrench";
+  if(/concierge/.test(c))                         return "bell";
+  return "service";
 }
 
-/* ✅ Dynamic CTA text per service category */
 function serviceCTA(s){
   const cat   = String(s.category || "").toLowerCase();
   const title = String(s.title || "").toLowerCase();
-
-  if(cat === "tour"  || /safari|tour|excursion/.test(title))   return "Book Safari";
-  if(cat === "spa"   || /massage|spa|wellness/.test(title))    return "Book Treatment";
-  if(/laundry|pressing/.test(title))                           return "Schedule Pickup";
+  if(cat === "tour"  || /safari|tour|excursion/.test(title))     return "Book Safari";
+  if(cat === "spa"   || /massage|spa|wellness/.test(title))      return "Book Treatment";
+  if(/laundry|pressing/.test(title))                             return "Schedule Pickup";
   if(cat === "taxi"  || /taxi|transfer|ride|driver/.test(title)) return "Book Ride";
-  if(cat === "food"  || /room service|menu/.test(title))       return "Order Now";
-  if(/maintenance|repair|fix/.test(title))                     return "Report Issue";
-  if(/housekeep|clean|towel/.test(title))                      return "Request Service";
-  if(/wake|alarm/.test(title))                                 return "Set Time";
-  if(/checkout|check-out/.test(title))                         return "Request";
-  if(cat === "services")                                       return "Request Service";
+  if(cat === "food"  || /room service|menu/.test(title))         return "Order Now";
+  if(/maintenance|repair|fix/.test(title))                       return "Report Issue";
+  if(/housekeep|clean|towel/.test(title))                        return "Request Service";
+  if(/wake|alarm/.test(title))                                   return "Set Time";
+  if(/checkout|check-out/.test(title))                           return "Request";
+  if(cat === "services")                                         return "Request Service";
   return "Ask Hotel";
 }
 
-/* ✅ Smart pre-fill templates based on service type */
 function serviceNoteTemplate(s){
   const cat   = String(s.category || "").toLowerCase();
   const title = String(s.title || "").toLowerCase();
-
-  if(/maintenance|repair|fix|issue/.test(title) || /maintenance/.test(cat)){
-    return "Issue: \nLocation: \nBest time to visit: ";
-  }
-  if(cat === "taxi" || /taxi|transfer|ride|driver|airport/.test(title)){
-    return "Pickup: \nDrop-off: \nTime: \nPassengers: ";
-  }
-  if(cat === "tour" || /safari|tour|excursion/.test(title)){
-    return "Date: \nGuests: \nPreference (half/full day): ";
-  }
-  if(cat === "spa" || /massage|spa|wellness|treatment/.test(title)){
-    return "Preferred time: \nDuration: \nType: ";
-  }
-  if(/laundry|pressing/.test(title)){
-    return "Items to wash: \nPickup time: \nReturn by: ";
-  }
-  if(/housekeep|clean|towel|amenity/.test(title)){
-    return "What do you need: \nBest time: ";
-  }
-  if(/wake|alarm/.test(title)){
-    return "Wake-up time: ";
-  }
-  if(/checkout|check-out/.test(title)){
-    return "Preferred time: ";
-  }
-  if(/concierge/.test(title)){
-    return "Request: ";
-  }
+  if(/maintenance|repair|fix|issue/.test(title) || /maintenance/.test(cat)) return "Issue: \nLocation: \nBest time to visit: ";
+  if(cat === "taxi" || /taxi|transfer|ride|driver|airport/.test(title))     return "Pickup: \nDrop-off: \nTime: \nPassengers: ";
+  if(cat === "tour" || /safari|tour|excursion/.test(title))                 return "Date: \nGuests: \nPreference (half/full day): ";
+  if(cat === "spa" || /massage|spa|wellness|treatment/.test(title))         return "Preferred time: \nDuration: \nType: ";
+  if(/laundry|pressing/.test(title))                                        return "Items to wash: \nPickup time: \nReturn by: ";
+  if(/housekeep|clean|towel|amenity/.test(title))                           return "What do you need: \nBest time: ";
+  if(/wake|alarm/.test(title))                                              return "Wake-up time: ";
+  if(/checkout|check-out/.test(title))                                      return "Preferred time: ";
+  if(/concierge/.test(title))                                               return "Request: ";
   return null;
 }
 
@@ -1402,7 +1241,8 @@ function renderCategoryTabs(){
   if(menuCats.length){
     html.push(`<button class="catTab ${activeCategory === "all" ? "active" : ""}" data-cat="all">${esc(t("cat_all"))}<span class="cnt">${MENU.items.length}</span></button>`);
     menuCats.forEach(c => {
-      html.push(`<button class="catTab ${activeCategory === "menu:" + c.id ? "active" : ""}" data-cat="menu:${esc(c.id)}">${esc(c.emoji || "🍽️")} ${esc(c.name)}<span class="cnt">${itemsInCategory(c.id).length}</span></button>`);
+      const ic = categoryIcon(c);
+      html.push(`<button class="catTab ${activeCategory === "menu:" + c.id ? "active" : ""}" data-cat="menu:${esc(c.id)}">${icon(ic, 14)}${esc(c.name)}<span class="cnt">${itemsInCategory(c.id).length}</span></button>`);
     });
   }
 
@@ -1412,8 +1252,7 @@ function renderCategoryTabs(){
   svcOrdered.forEach(c => {
     const title = c === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[c].titleKey);
     const count = SERVICES.filter(s => s.category === c).length;
-    const ico = getCategoryIcon(c, "");
-    html.push(`<button class="catTab ${activeCategory === "svc:" + c ? "active" : ""}" data-cat="svc:${esc(c)}">${esc(ico ? ico + " " : "")}${esc(title)}<span class="cnt">${count}</span></button>`);
+    html.push(`<button class="catTab ${activeCategory === "svc:" + c ? "active" : ""}" data-cat="svc:${esc(c)}">${icon(CATEGORY_META[c].icon, 14)}${esc(title)}<span class="cnt">${count}</span></button>`);
   });
 
   tabs.innerHTML = html.join("");
@@ -1441,18 +1280,20 @@ function renderPopular(){
   $("popularSub").textContent = t("popular_sub");
 
   scroll.innerHTML = picks.map(i => {
-    const thumb = /^https?:\/\//i.test(i.emoji || "")
-      ? `<img src="${esc(i.emoji)}" alt="" loading="lazy">`
-      : esc(i.emoji || "🍽️");
+    const img = i.image || (/^https?:\/\//i.test(i.emoji || "") ? i.emoji : "");
+    const thumb = img
+      ? `<img src="${esc(img)}" alt="" loading="lazy">`
+      : icon("image", 34);
     const q = qtyOf(i.id);
+    const isPopular = (i.tags || []).includes("popular");
     return `<button class="popCard" data-pop="${esc(i.id)}">
-      <div class="img">${thumb}${(i.tags || []).includes("popular") ? `<span class="badge">${esc(t("popular_badge"))}</span>` : ""}</div>
+      <div class="img">${thumb}${isPopular ? `<span class="badge">${icon("star", 10)}${esc(t("popular_badge"))}</span>` : ""}</div>
       <div class="body">
         <b>${esc(i.name)}</b>
         <small>${esc(i.desc || "")}</small>
         <span class="price">${esc(priceLabel(i.price))}</span>
       </div>
-      <button class="addMini ${q > 0 ? "hasQty" : ""}" data-pop-add="${esc(i.id)}" aria-label="Add">${q > 0 ? "×" + q : "+"}</button>
+      <button class="addMini ${q > 0 ? "hasQty" : ""}" data-pop-add="${esc(i.id)}" aria-label="Add">${q > 0 ? "×" + q : icon("plus", 15)}</button>
     </button>`;
   }).join("");
 
@@ -1481,7 +1322,7 @@ function renderAll(){
     html.push(`
       <section class="menuSection" data-filter="menu:${esc(c.id)}" data-kind="menu">
         <div class="menuSectionHead">
-          <h3><span class="emoji">${esc(c.emoji || "🍽️")}</span> ${esc(c.name)}</h3>
+          <h3>${icon(categoryIcon(c), 18)} ${esc(c.name)}</h3>
           <span class="count">${items.length} ${items.length === 1 ? t("item") : t("items")}</span>
         </div>
         <div class="menuList">${items.map(menuCardHTML).join("")}</div>
@@ -1495,11 +1336,10 @@ function renderAll(){
       .sort((a,b) => CATEGORY_META[a].order - CATEGORY_META[b].order);
     ordered.forEach(cat => {
       const title = cat === "food" && CONTEXT.mode === "table" ? t("cat_services_only") : t(CATEGORY_META[cat].titleKey);
-      const catIcon = getCategoryIcon(cat, "🛎️");
       html.push(`
         <section class="menuSection" data-filter="svc:${esc(cat)}" data-kind="svc">
           <div class="menuSectionHead">
-            <h3><span class="emoji">${esc(catIcon)}</span> ${esc(title)}</h3>
+            <h3>${icon(CATEGORY_META[cat].icon, 18)} ${esc(title)}</h3>
             <span class="count">${groups[cat].length}</span>
           </div>
           <div class="grid2">${groups[cat].map(serviceCardHTML).join("")}</div>
@@ -1509,7 +1349,7 @@ function renderAll(){
 
   if(!html.length){
     area.innerHTML = `<div class="menuSection"><div class="menuSectionHead"><h3>${esc(t("no_services_title"))}</h3></div>
-      <p style="color:#a8a8a8;font-size:13.5px;line-height:1.6;margin:0">${esc(t("no_services_body"))}</p></div>`;
+      <p style="color:#6f6f6f;font-size:13.5px;line-height:1.6;margin:0">${esc(t("no_services_body"))}</p></div>`;
     return;
   }
 
@@ -1525,12 +1365,13 @@ function renderAll(){
 
 function menuCardHTML(i){
   const out = i.available === false;
-  const thumb = /^https?:\/\//i.test(i.emoji || "")
-    ? `<img src="${esc(i.emoji)}" alt="" loading="lazy">`
-    : esc(i.emoji || "🍽️");
+  const img = i.image || (/^https?:\/\//i.test(i.emoji || "") ? i.emoji : "");
+  const thumb = img
+    ? `<img src="${esc(img)}" alt="" loading="lazy">`
+    : (/^\p{Emoji}/u.test(i.emoji || "") ? `<span style="font-size:34px;line-height:1">${esc(i.emoji)}</span>` : icon("image", 34));
   const tags = (i.tags || []).map(tag => {
     const cls = ["veg","spicy","popular","new"].includes(tag) ? tag : "";
-    const label = tag === "popular" ? "★ popular" : tag;
+    const label = tag === "popular" ? t("popular_badge") : tag;
     return `<span class="miTag ${cls}">${esc(label)}</span>`;
   }).join("");
   const searchBlob = `${i.name || ""} ${i.desc || ""} ${(i.tags || []).join(" ")}`.toLowerCase();
@@ -1545,7 +1386,7 @@ function menuCardHTML(i){
         <div class="foot">
           <span class="price">${esc(priceLabel(i.price))}</span>
           <button class="addBtn ${q > 0 ? "hasQty" : ""}" data-add="${esc(i.id)}" ${out ? "disabled" : ""} aria-label="Add">
-            ${out ? "—" : (q > 0 ? "×" + q : "+")}
+            ${out ? "—" : (q > 0 ? "×" + q : icon("plus", 16))}
           </button>
         </div>
       </div>
@@ -1553,12 +1394,11 @@ function menuCardHTML(i){
     </div>`;
 }
 
-/* ✅ Dynamic CTA + smart icon + optional price badge */
 function serviceCardHTML(s){
   const vendorLine = s.vendor_name ? `<span class="svcVendor">• ${esc(s.vendor_name)}</span>` : "";
   const searchBlob = `${s.title || ""} ${s.description || ""} ${s.category || ""} ${s.vendor_name || ""}`.toLowerCase();
-  const icon = s.icon || getCategoryIcon(s.category, "🛎️");
-  const cta  = s.cta  || serviceCTA(s);
+  const iconName = s.iconName || emojiToIcon(s.icon) || getCategoryIconName(s.category);
+  const cta = s.cta || serviceCTA(s);
 
   const priceBadge = Number(s.price) > 0
     ? `<div class="price">${esc(money(s.price))}</div>`
@@ -1566,10 +1406,10 @@ function serviceCardHTML(s){
 
   return `<button class="svc" data-id="${esc(s.id)}" data-search="${esc(searchBlob)}">
     ${priceBadge}
-    <i>${esc(icon)}</i>
+    <i class="svc-icon">${icon(iconName, 18)}</i>
     <b>${esc(s.title || "Service")}</b>
     <small>${esc(s.description || "")}${vendorLine}</small>
-    <span class="svcCta">${esc(cta)} →</span>
+    <span class="svcCta">${esc(cta)} ${icon("arrow-right", 12)}</span>
   </button>`;
 }
 
@@ -1643,7 +1483,6 @@ function openServiceOrder(s){
   $("mDesc").innerText = bits.join(" • ");
   $("guestPhone").value = localStorage.getItem("guest_phone") || "";
 
-  /* ✅ Auto-prefill a helpful template for context-rich services */
   const template = serviceNoteTemplate(s);
   const noteInput = $("orderNote");
   if(template && !noteInput.value.trim()){
@@ -1680,8 +1519,8 @@ $("confirmOrder").addEventListener("click", async () => {
 
   const btn = $("confirmOrder");
   btn.disabled = true;
-  const original = btn.innerText;
-  btn.innerText = t("sending");
+  const original = btn.innerHTML;
+  btn.innerHTML = t("sending");
 
   try{
     const payload = {
@@ -1716,7 +1555,7 @@ $("confirmOrder").addEventListener("click", async () => {
     toast(e.message || t("t_order_fail"));
   }finally{
     btn.disabled = false;
-    btn.innerText = original || t("place_order");
+    btn.innerHTML = original || t("place_order_short");
   }
 });
 $("successDone").addEventListener("click", () => { closeAllModals(); viewOrders(); });
@@ -1744,12 +1583,13 @@ function renderCart(){
     : `${t("deliver_to")} ${t("room_number")} ${ctxNumber() || "—"}`;
 
   if(!STATE.cart.length){
-    wrap.innerHTML = `<div style="text-align:center;padding:30px 12px;color:var(--muted-3);font-size:13px">${esc(t("empty_cart"))}</div>`;
+    wrap.innerHTML = `<div style="text-align:center;padding:30px 12px;color:var(--gh-text-4);font-size:13px">${esc(t("empty_cart"))}</div>`;
     $("cartTotals").innerHTML = "";
     return;
   }
   wrap.innerHTML = STATE.cart.map(l => {
-    const thumb = /^https?:\/\//i.test(l.emoji || "") ? `<img src="${esc(l.emoji)}" alt="">` : esc(l.emoji || "🍽️");
+    const img = l.image || (/^https?:\/\//i.test(l.emoji || "") ? l.emoji : "");
+    const thumb = img ? `<img src="${esc(img)}" alt="">` : icon("image", 20);
     return `<div class="cartRow">
       <div class="ci">${thumb}</div>
       <div class="cb">
@@ -1757,9 +1597,9 @@ function renderCart(){
         <small>${esc(money(l.price) || t("ask_hotel"))}</small>
       </div>
       <div class="qty">
-        <button data-dec="${esc(l.id)}" aria-label="Less">−</button>
+        <button data-dec="${esc(l.id)}" aria-label="Less">${icon("minus", 14)}</button>
         <span>${l.qty}</span>
-        <button data-inc="${esc(l.id)}" aria-label="More">+</button>
+        <button data-inc="${esc(l.id)}" aria-label="More">${icon("plus", 14)}</button>
       </div>
     </div>`;
   }).join("");
@@ -1796,8 +1636,8 @@ $("cartCheckout").addEventListener("click", async () => {
 
   const btn = $("cartCheckout");
   btn.disabled = true;
-  const original = btn.innerText;
-  btn.innerText = t("sending");
+  const original = btn.innerHTML;
+  btn.innerHTML = t("sending");
 
   try{
     const n = cartCount();
@@ -1840,7 +1680,7 @@ $("cartCheckout").addEventListener("click", async () => {
     toast(e.message || t("t_order_fail"));
   }finally{
     btn.disabled = false;
-    btn.innerText = original || t("checkout");
+    btn.innerHTML = original || t("checkout");
   }
 });
 
@@ -2112,9 +1952,9 @@ async function viewOrders(){
   }catch(_){}
 
   if(!orders.length){
-    $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#a8a8a8">
-      <div style="font-size:34px;margin-bottom:8px">📋</div>
-      <strong style="color:#fff;font-size:13.5px">${esc(t("no_orders_title"))}</strong>
+    $("ordersList").innerHTML = `<div style="text-align:center;padding:30px 16px;color:#6f6f6f">
+      <div style="display:grid;place-items:center;width:52px;height:52px;margin:0 auto 10px;border-radius:8px;background:var(--gh-bg-subtle);border:1px solid var(--gh-border);color:var(--gh-text-4)">${icon("clipboard", 22)}</div>
+      <strong style="color:#1a1a1a;font-size:13.5px">${esc(t("no_orders_title"))}</strong>
       <div style="font-size:12.5px;margin-top:6px">${esc(t("no_orders_desc"))}</div></div>`;
     return;
   }
@@ -2128,17 +1968,20 @@ async function viewOrders(){
     return `<div class="orderItem">
       <strong>${esc(o.service_title || "Request")}<span class="orderAmount" style="float:right">${amount}</span></strong>
       <small>${esc(CONTEXT.mode === "table" ? t("table_label") : t("room_number"))} ${esc(o.table_number || o.room_number || o.room || "—")}${when ? " • " + esc(when) : ""}</small>
-      ${itemSummary ? `<small style="color:#c9c9c9">${esc(itemSummary)}</small>` : ""}
+      ${itemSummary ? `<small style="color:#3a3a3a">${esc(itemSummary)}</small>` : ""}
       <div class="status ${esc(status)}" style="margin-top:8px">${esc((t("status_" + status) || status.replace(/_/g, " ")).toUpperCase())}</div>
       ${canRate ? `<div class="rateRow">${esc(t("rate_prompt"))}
-        <button data-rate="5">⭐</button><button data-rate="4">👍</button>
-        <button data-rate="3">🙂</button><button data-rate="2">😐</button><button data-rate="1">👎</button></div>` : ""}
+        <button data-rate="5">${icon("star", 13)}</button>
+        <button data-rate="4">${icon("star", 13)}</button>
+        <button data-rate="3">${icon("star", 13)}</button>
+        <button data-rate="2">${icon("star", 13)}</button>
+        <button data-rate="1">${icon("star", 13)}</button></div>` : ""}
     </div>`;
   }).join("");
   $("ordersList").querySelectorAll("[data-rate]").forEach(btn => {
     btn.addEventListener("click", () => {
       toast(t("t_rate_thanks"));
-      btn.parentElement.innerHTML = `<span style="color:var(--lime)">${esc(t("thanks_rating"))}</span>`;
+      btn.parentElement.innerHTML = `<span style="color:var(--gh-green);display:inline-flex;align-items:center;gap:5px">${icon("check", 13)}${esc(t("thanks_rating"))}</span>`;
     });
   });
 }
@@ -2149,21 +1992,21 @@ async function viewOrders(){
 function renderHelp(){
   const list = $("helpList");
   if(!DEPARTMENTS.length){
-    list.innerHTML = `<div class="orderItem"><strong>${esc(t("help_title"))}</strong>
+    list.innerHTML = `<div class="orderItem"><strong>${esc(t("front_desk"))}</strong>
       <small>${esc(t("front_desk_body"))}</small></div>`;
     return;
   }
   list.innerHTML = DEPARTMENTS.map(d => {
     const name = String(d.name || "").trim();
     const display = name.charAt(0).toUpperCase() + name.slice(1);
-    const icon = d.icon || "💬";
+    const ic = d.iconName || emojiToIcon(d.icon) || "message";
     return `<button class="help-btn" data-dept="${esc(name)}">
-      <span class="hi">${esc(icon)}</span>
+      <span class="hi">${icon(ic, 18)}</span>
       <span style="flex:1">
         <b>${esc(display)}</b>
         <small>${esc(t("whatsapp_now"))}</small>
       </span>
-      <span class="arrow">›</span>
+      <span class="arrow">${icon("chevron-right", 16)}</span>
     </button>`;
   }).join("");
   list.querySelectorAll(".help-btn").forEach(el => el.addEventListener("click", () => whatsapp(el.dataset.dept)));
@@ -2190,10 +2033,10 @@ function openCtxModal(){
   setTimeout(() => $("ctxField").focus(), 100);
 }
 function highlightCtxButtons(){
-  $("ctxPickRoom").style.borderColor  = CONTEXT.mode === "room"  ? "var(--lime)" : "#333";
-  $("ctxPickRoom").style.color        = CONTEXT.mode === "room"  ? "var(--lime)" : "#fff";
-  $("ctxPickTable").style.borderColor = CONTEXT.mode === "table" ? "var(--gold)" : "#333";
-  $("ctxPickTable").style.color       = CONTEXT.mode === "table" ? "var(--gold)" : "#fff";
+  $("ctxPickRoom").style.borderColor  = CONTEXT.mode === "room"  ? "var(--gh-brand-2)" : "var(--gh-border-2)";
+  $("ctxPickRoom").style.color        = CONTEXT.mode === "room"  ? "var(--gh-brand-2)" : "var(--gh-text)";
+  $("ctxPickTable").style.borderColor = CONTEXT.mode === "table" ? "var(--gh-brand-2)" : "var(--gh-border-2)";
+  $("ctxPickTable").style.color       = CONTEXT.mode === "table" ? "var(--gh-brand-2)" : "var(--gh-text)";
 }
 $("ctxPickRoom").addEventListener("click", () => {
   CONTEXT.mode = "room";
@@ -2245,9 +2088,6 @@ function applyI18n(){
     else el.textContent = t(key);
   });
 
-  $("langTitle").textContent = t("lang_title");
-  $("langDesc").textContent  = t("lang_desc");
-
   setGreeting();
   updateContextUI();
   updateHeroStay();
@@ -2269,7 +2109,7 @@ function setLanguage(code){
   localStorage.setItem("guesthub_lang", code);
   applyI18n();
   closeModal("langModal");
-  toast(I18N[code].flag + "  " + I18N[code].native);
+  toast(`${I18N[code].flag}  ${I18N[code].native}`);
 }
 function renderLangGrid(){
   const grid = $("langGrid");
@@ -2280,7 +2120,7 @@ function renderLangGrid(){
       <span class="flag">${L.flag}</span>
       <b>${esc(L.native)}</b>
       <small>${esc(L.name)}</small>
-      ${active ? '<span class="check">✓</span>' : ""}
+      ${active ? `<span class="check">${icon("check", 15)}</span>` : ""}
     </button>`;
   }).join("");
   grid.querySelectorAll("[data-lang]").forEach(b => b.addEventListener("click", () => setLanguage(b.dataset.lang)));
@@ -2293,21 +2133,24 @@ function renderInfo(){
   const isTable = CONTEXT.mode === "table";
   const steps = isTable
     ? [
-        ["1️⃣ Scan the table QR", "You're connected instantly — no app, no signup."],
-        ["2️⃣ Browse the menu",   "Add dishes and drinks — tap the + on any item."],
-        ["3️⃣ Send to the kitchen","Your order lands with the team in real time."],
-        ["4️⃣ Track it live",     "Watch each status update as it happens."],
-        ["5️⃣ Enjoy ✨",           "Need anything? Tap Call Waiter or Help."]
+        ["Scan the table QR",   "You're connected instantly — no app, no signup."],
+        ["Browse the menu",     "Add dishes and drinks — tap + on any item."],
+        ["Send to the kitchen", "Your order lands with the team in real time."],
+        ["Track it live",       "Watch each status update as it happens."],
+        ["Enjoy",               "Need anything? Tap Call Waiter or Help."]
       ]
     : [
-        ["1️⃣ Scan your room QR", "You're connected instantly — no app, no signup."],
-        ["2️⃣ Choose a service",  "Food, taxi, safari, spa, housekeeping — all in one place."],
-        ["3️⃣ Confirm your details","Your name, room number and WhatsApp."],
-        ["4️⃣ Track it live",     "Status updates appear here in real time."],
-        ["5️⃣ Enjoy your stay ✨",  "One GuestHub experience for your entire stay."]
+        ["Scan your room QR",       "You're connected instantly — no app, no signup."],
+        ["Choose a service",        "Food, taxi, safari, spa, housekeeping — all in one place."],
+        ["Confirm your details",    "Your name, room number and WhatsApp."],
+        ["Track it live",           "Status updates appear here in real time."],
+        ["Enjoy your stay",         "One GuestHub experience for your entire stay."]
       ];
-  $("infoBody").innerHTML = steps.map(([a, b]) =>
-    `<div class="orderItem"><strong>${esc(a)}</strong><small>${esc(b)}</small></div>`).join("");
+  $("infoBody").innerHTML = steps.map(([a, b], i) =>
+    `<div class="orderItem" style="display:flex;gap:12px;align-items:flex-start">
+      <span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--gh-brand-soft);color:var(--gh-brand-2);font-weight:700;font-size:12px;flex-shrink:0">${i+1}</span>
+      <div><strong>${esc(a)}</strong><small>${esc(b)}</small></div>
+    </div>`).join("");
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2360,9 +2203,9 @@ async function fetchHotelPayment(){
 async function copyText(text, btn){
   try{
     await navigator.clipboard.writeText(String(text));
-    const old = btn.textContent;
-    btn.textContent = "✓";
-    setTimeout(() => { btn.textContent = old; }, 1200);
+    const old = btn.innerHTML;
+    btn.innerHTML = icon("check", 14);
+    setTimeout(() => { btn.innerHTML = old; }, 1200);
     if(navigator.vibrate) navigator.vibrate(20);
   }catch(_){
     toast("Copy failed — please copy manually");
@@ -2376,8 +2219,8 @@ function renderPaymentCard(amount, reference){
   if(!p || !p.configured){
     mount.innerHTML = `
       <div class="payCard warn">
-        <div class="ptitle">💳 <span>${esc(t("pay_title"))}</span></div>
-        <p style="margin:0;font-size:13px;color:var(--muted);line-height:1.6">
+        <div class="ptitle">${icon("credit-card", 16)}<span>${esc(t("pay_title"))}</span></div>
+        <p style="margin:0;font-size:13px;color:var(--gh-text-2);line-height:1.6">
           ${esc(t("pay_no_config"))}
         </p>
       </div>`;
@@ -2387,92 +2230,89 @@ function renderPaymentCard(amount, reference){
   const amt = Number(amount) > 0 ? money(amount) : "";
   const ch = (p.channel || "").toLowerCase();
 
+  const payActions = (href, copyVal, copyLabel) => `
+    <div class="payActions">
+      <a href="${esc(href)}">${icon("phone", 14)}${esc(t("pay_open_mpesa"))}</a>
+      <a class="ghost" href="#" data-copy="${esc(copyVal)}">${icon("copy", 14)}${esc(copyLabel)}</a>
+    </div>`;
+
   if(ch === "paybill" && p.paybill_number){
     const acc = p.paybill_account || reference;
     mount.innerHTML = `
       <div class="payCard">
-        <div class="ptitle">💳 <span>Pay via M-Pesa Paybill</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="ptitle">${icon("credit-card", 16)}<span>Pay via M-Pesa Paybill</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
         <div class="payBox">
           <div class="row">
-            <span class="lbl">Paybill number</span>
+            <span class="lbl">${esc(t("pay_paybill_number"))}</span>
             <span class="val">${esc(p.paybill_number)}</span>
-            <button class="payCopy" data-copy="${esc(p.paybill_number)}" aria-label="Copy">📋</button>
+            <button class="payCopy" data-copy="${esc(p.paybill_number)}" aria-label="Copy">${icon("copy", 13)}</button>
           </div>
           <div class="row">
-            <span class="lbl">Account number</span>
+            <span class="lbl">${esc(t("pay_account_number"))}</span>
             <span class="val" style="font-size:15px">${esc(acc)}</span>
-            <button class="payCopy" data-copy="${esc(acc)}" aria-label="Copy">📋</button>
+            <button class="payCopy" data-copy="${esc(acc)}" aria-label="Copy">${icon("copy", 13)}</button>
           </div>
         </div>
         <ol class="paySteps">
-          <li>Open M-Pesa on your phone</li>
-          <li>Choose <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
-          <li>Business No: <b>${esc(p.paybill_number)}</b></li>
-          <li>Account: <b>${esc(acc)}</b></li>
-          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
-          <li>Enter your PIN and confirm</li>
+          <li>${esc(t("pay_mpesa_open"))}</li>
+          <li>${esc(t("pay_mpesa_lnm"))} → <b>${esc(t("pay_mpesa_paybill"))}</b></li>
+          <li>${esc(t("pay_business_no"))}: <b>${esc(p.paybill_number)}</b></li>
+          <li>${esc(t("pay_account"))}: <b>${esc(acc)}</b></li>
+          ${amt ? `<li>${esc(t("pay_mpesa_amount"))}: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>${esc(t("pay_mpesa_pin"))}</li>
         </ol>
-        <div class="payActions">
-          <a href="tel:*334*${esc(p.paybill_number)}*${esc(acc)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
-          <a class="ghost" href="#" data-copy="${esc(p.paybill_number)}">📋 Copy Paybill</a>
-        </div>
+        ${payActions(`tel:*334*${p.paybill_number}*${acc}${amount ? "*" + Number(amount) : ""}%23`, p.paybill_number, t("pay_copy_paybill"))}
       </div>`;
   }
   else if(ch === "till" && p.till_number){
     mount.innerHTML = `
       <div class="payCard">
-        <div class="ptitle">💳 <span>Pay via M-Pesa Till</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="ptitle">${icon("credit-card", 16)}<span>Pay via M-Pesa Till</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
         <div class="payBox">
           <div class="row">
-            <span class="lbl">Till number</span>
+            <span class="lbl">${esc(t("pay_till_number"))}</span>
             <span class="val">${esc(p.till_number)}</span>
-            <button class="payCopy" data-copy="${esc(p.till_number)}" aria-label="Copy">📋</button>
+            <button class="payCopy" data-copy="${esc(p.till_number)}" aria-label="Copy">${icon("copy", 13)}</button>
           </div>
         </div>
         <ol class="paySteps">
-          <li>Open M-Pesa on your phone</li>
-          <li>Choose <b>Lipa na M-Pesa</b> → <b>Buy Goods &amp; Services</b></li>
-          <li>Till No: <b>${esc(p.till_number)}</b></li>
-          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
-          <li>Enter your PIN and confirm</li>
+          <li>${esc(t("pay_mpesa_open"))}</li>
+          <li>${esc(t("pay_mpesa_lnm"))} → <b>${esc(t("pay_mpesa_till"))}</b></li>
+          <li>${esc(t("pay_till_number"))}: <b>${esc(p.till_number)}</b></li>
+          ${amt ? `<li>${esc(t("pay_mpesa_amount"))}: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>${esc(t("pay_mpesa_pin"))}</li>
         </ol>
-        <div class="payActions">
-          <a href="tel:*334*${esc(p.till_number)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
-          <a class="ghost" href="#" data-copy="${esc(p.till_number)}">📋 Copy Till</a>
-        </div>
+        ${payActions(`tel:*334*${p.till_number}${amount ? "*" + Number(amount) : ""}%23`, p.till_number, t("pay_copy_till"))}
       </div>`;
   }
   else if(ch === "send_money" && p.mpesa_phone){
     const phone = String(p.mpesa_phone).replace(/\D/g, "");
     mount.innerHTML = `
       <div class="payCard">
-        <div class="ptitle">💳 <span>Send Money via M-Pesa</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
+        <div class="ptitle">${icon("credit-card", 16)}<span>Send Money via M-Pesa</span>${amt ? `<span class="amt">${esc(amt)}</span>` : ""}</div>
         <div class="payBox">
           <div class="row">
-            <span class="lbl">Send to</span>
+            <span class="lbl">${esc(t("pay_send_to"))}</span>
             <span class="val" style="font-size:15px">${esc(phone)}</span>
-            <button class="payCopy" data-copy="${esc(phone)}" aria-label="Copy">📋</button>
+            <button class="payCopy" data-copy="${esc(phone)}" aria-label="Copy">${icon("copy", 13)}</button>
           </div>
-          ${p.mpesa_name ? `<div class="row"><span class="lbl">Name</span><span class="val" style="font-size:14px">${esc(p.mpesa_name)}</span></div>` : ""}
+          ${p.mpesa_name ? `<div class="row"><span class="lbl">${esc(t("pay_name"))}</span><span class="val" style="font-size:14px">${esc(p.mpesa_name)}</span></div>` : ""}
         </div>
         <ol class="paySteps">
-          <li>Open M-Pesa on your phone</li>
-          <li>Choose <b>Send Money</b></li>
-          <li>Enter number: <b>${esc(phone)}</b></li>
-          ${amt ? `<li>Amount: <b>${esc(String(Number(amount)))}</b></li>` : ""}
-          <li>Enter your PIN and confirm</li>
+          <li>${esc(t("pay_mpesa_open"))}</li>
+          <li><b>${esc(t("pay_mpesa_send"))}</b></li>
+          <li>${esc(t("pay_send_to"))}: <b>${esc(phone)}</b></li>
+          ${amt ? `<li>${esc(t("pay_mpesa_amount"))}: <b>${esc(String(Number(amount)))}</b></li>` : ""}
+          <li>${esc(t("pay_mpesa_pin"))}</li>
         </ol>
-        <div class="payActions">
-          <a href="tel:*334*${esc(phone)}${amount ? "*" + Number(amount) : ""}%23">📱 Open M-Pesa</a>
-          <a class="ghost" href="#" data-copy="${esc(phone)}">📋 Copy Number</a>
-        </div>
+        ${payActions(`tel:*334*${phone}${amount ? "*" + Number(amount) : ""}%23`, phone, t("pay_copy_number"))}
       </div>`;
   }
   else {
     mount.innerHTML = `
       <div class="payCard warn">
-        <div class="ptitle">💳 <span>${esc(t("pay_title"))}</span></div>
-        <p style="margin:0;font-size:13px;color:var(--muted);line-height:1.6">
+        <div class="ptitle">${icon("credit-card", 16)}<span>${esc(t("pay_title"))}</span></div>
+        <p style="margin:0;font-size:13px;color:var(--gh-text-2);line-height:1.6">
           ${esc(t("pay_no_config"))}
         </p>
       </div>`;
@@ -2522,7 +2362,6 @@ async function init(){
 
   if(localStorage.getItem(`promo_closed_${HOTEL_ID}`) === "1") $("promoBanner").style.display = "none";
 
-  /* Hotel info */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
     if(r.ok){
@@ -2536,7 +2375,6 @@ async function init(){
     }
   }catch(_){}
 
-  /* Menu */
   let menuLoaded = false;
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/menu`);
@@ -2548,7 +2386,7 @@ async function init(){
           categories: menu.categories.map((c, idx) => ({
             id: c.id || ("cat_" + idx),
             name: c.name || "Menu",
-            emoji: c.emoji || "🍽️",
+            iconName: c.iconName || (c.emoji ? emojiToIcon(c.emoji) : "utensils"),
             order: c.order ?? (idx + 1)
           })),
           items: menu.items.map((i, idx) => ({
@@ -2557,7 +2395,8 @@ async function init(){
             name: i.name || i.title || "Item",
             desc: i.desc || i.description || "",
             price: Number(i.price) || 0,
-            emoji: i.emoji || i.icon || "🍽️",
+            image: i.image || i.image_url || "",
+            emoji: i.emoji || i.icon || "",
             tags: Array.isArray(i.tags) ? i.tags : String(i.tags || "").split(",").map(x => x.trim()).filter(Boolean),
             available: i.available !== false
           }))
@@ -2578,22 +2417,26 @@ async function init(){
     };
   }
 
-  /* Services & departments */
   try{
     const r = await fetch(`${API_BASE}/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/services`);
     if(r.ok){
       const j = await r.json();
-      SERVICES = (j.services || []).map(s => ({ ...s, category: normalizeCategory(s.category || s.type || s.title) }));
-      DEPARTMENTS = j.departments || [];
+      SERVICES = (j.services || []).map(s => ({
+        ...s,
+        category: normalizeCategory(s.category || s.type || s.title),
+        iconName: s.iconName || (s.icon ? emojiToIcon(s.icon) : getCategoryIconName(s.category || s.type || s.title))
+      }));
+      DEPARTMENTS = (j.departments || []).map(d => ({
+        ...d,
+        iconName: d.iconName || (d.icon ? emojiToIcon(d.icon) : "message")
+      }));
     }
   }catch(_){}
   if(!SERVICES.length) SERVICES = DEFAULT_SERVICES.map(s => ({ ...s }));
   if(!DEPARTMENTS.length) DEPARTMENTS = DEFAULT_DEPARTMENTS.map(d => ({ ...d }));
 
-  /* Prefetch hotel payment info */
   fetchHotelPayment();
 
-  /* Branding */
   $("hotelName").innerText   = (STATE.hotelName || t("hotel_fallback")).toUpperCase();
   $("hotelTagline").innerText = STATE.tagline || t("tagline_fallback");
 
@@ -2608,11 +2451,13 @@ async function init(){
   if(supa) subscribeRealtime(); else schedulePoll();
 
   if(HOTEL && HOTEL.promo_text){
-    $("promoTitle").textContent = "🎉 " + (HOTEL.promo_title || "Special offer");
-    $("promoText").textContent  = HOTEL.promo_text;
+    const titleEl = $("promoTitle");
+    titleEl.innerHTML = `${icon("sparkles", 15)}<span>${esc(HOTEL.promo_title || "Special offer")}</span>`;
+    $("promoText").textContent = HOTEL.promo_text;
   }else if(CONTEXT.mode === "table"){
-    $("promoTitle").textContent = "🍽️ " + (STATE.hotelName || HOTEL_ID);
-    $("promoText").textContent  = "Welcome — tap any dish to add it to your order.";
+    const titleEl = $("promoTitle");
+    titleEl.innerHTML = `${icon("utensils", 15)}<span>${esc(STATE.hotelName || HOTEL_ID)}</span>`;
+    $("promoText").textContent = "Welcome — tap any dish to add it to your order.";
   }
 }
 
