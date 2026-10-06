@@ -1054,6 +1054,21 @@ window.addEventListener('unhandledrejection', e => showBootError('Promise reject
    3. CONFIG + AUTH
    ═══════════════════════════════════════════════════════════════ */
 const GUEST_APP_PATH = '/guest.html';
+
+/* ───────────────────────────────────────────────────────────────
+   ⚙️  DEEP LINK CONFIG — edit these two values to match your app
+   ───────────────────────────────────────────────────────────────
+   GUEST_DEEP_LINK_SCHEME   : custom URI scheme your native app registers
+                              e.g. "guesthub://guest"
+   GUEST_UNIVERSAL_HOST     : https domain registered as a Universal/App Link
+                              e.g. "https://guesthub.app/guest"
+   GUEST_QR_MODE            : 'deeplink' | 'universal' | 'web'
+                              Controls what QR codes encode.
+   ─────────────────────────────────────────────────────────────── */
+const GUEST_DEEP_LINK_SCHEME = 'guesthub://guest';
+const GUEST_UNIVERSAL_HOST   = 'https://guesthub.app/guest';
+const GUEST_QR_MODE          = 'deeplink';   // ← switch to 'universal' once you've registered the domain
+
 const POLL_MS = 20000;
 const ORDERS_LIMIT = 500;
 const SEARCH_DEBOUNCE_MS = 150;
@@ -1389,11 +1404,28 @@ async function api(path, opts = {}){
   return res;
 }
 
-function guestLink(room){
+/* ───────────────────────────────────────────────────────────────
+   🔗 LINK BUILDERS  (this is the part that was changed)
+   ─────────────────────────────────────────────────────────────── */
+
+/** Browser URL — used by the "Guest view" button and web fallback. */
+function guestWebLink(room){
   const base = location.origin + GUEST_APP_PATH;
   const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room || '') });
   return base + '?' + q.toString();
 }
+
+/** Payload encoded inside QR codes — deep link / universal link / web. */
+function guestQRPayload(room){
+  const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room || '') });
+  if(GUEST_QR_MODE === 'deeplink')  return GUEST_DEEP_LINK_SCHEME + '?' + q.toString();
+  if(GUEST_QR_MODE === 'universal') return GUEST_UNIVERSAL_HOST   + '?' + q.toString();
+  return guestWebLink(room);
+}
+
+/** Kept for backwards-compatibility with any other callers (defaults to web). */
+function guestLink(room){ return guestWebLink(room); }
+
 function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
 function orderItemsText(o){
   if(o.service_title) return o.service_title;
@@ -2243,6 +2275,8 @@ function qrReady(){
   }
   return true;
 }
+
+/* 🔗 These two use guestQRPayload() → deep link / universal link / web */
 function genSingle(){
   if(!qrReady()) return;
   const room = ($('qrRoom').value.trim() || '101');
@@ -2251,7 +2285,7 @@ function genSingle(){
   setTimeout(() => {
     const el = $('qrSingleCanvas');
     if(!el) return;
-    try{ new QRCode(el, { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
+    try{ new QRCode(el, { text: guestQRPayload(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
     catch(e){ toast('QR generation failed: ' + e.message, 'error'); }
   }, 60);
 }
@@ -2264,7 +2298,7 @@ function genBatch(){
   raw.forEach((room, i) => {
     setTimeout(() => {
       const el = $('qrBatch-' + i);
-      if(el) try{ new QRCode(el, { text: guestLink(room), width: 160, height: 160, colorDark:'#000', colorLight:'#fff' }); }catch(_){}
+      if(el) try{ new QRCode(el, { text: guestQRPayload(room), width: 160, height: 160, colorDark:'#000', colorLight:'#fff' }); }catch(_){}
     }, 60 + i * 20);
   });
   toast(`Generated ${raw.length} QR codes`);
@@ -2497,7 +2531,8 @@ function tickTimes(){
    22. HEADER ACTIONS
    ═══════════════════════════════════════════════════════════════ */
 $('refreshBtn').addEventListener('click', () => { refreshAll(); toast(t('refresh_done')); });
-$('guestBtn').addEventListener('click', () => window.open(guestLink('101'), '_blank'));
+/* 🔗 Guest view button → stays a browser URL, not a deep link. */
+$('guestBtn').addEventListener('click', () => window.open(guestWebLink('101'), '_blank'));
 $('langBtn').addEventListener('click', () => { renderLangGrid(); openModal('langModal'); });
 $('logoutBtn').addEventListener('click', () => {
   ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
@@ -2559,7 +2594,7 @@ function renderLangGrid(){
    ═══════════════════════════════════════════════════════════════ */
 (async function boot(){
   try{
-    console.log('[GuestHub GM] Booting…', { HOTEL_ID, hasSupa:!!supa, hasToken:!!AUTH_TOKEN });
+    console.log('[GuestHub GM] Booting…', { HOTEL_ID, hasSupa:!!supa, hasToken:!!AUTH_TOKEN, qrMode: GUEST_QR_MODE });
     updateNotifUI();
     applyI18n();
     $('hotelSub').textContent = HOTEL_ID + ' · GM OS';
