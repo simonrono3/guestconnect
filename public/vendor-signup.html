@@ -2,408 +2,1209 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Become a GuestHub Vendor — Diani · Wasini · SGR · World</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#003580">
+<meta name="description" content="Become a GuestHub vendor. Earn with direct-to-M-Pesa payments and reach guests at every partner hotel.">
+<title>Become a vendor — GuestHub</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23003580'/%3E%3Crect x='13' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='34' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='13' y='34' width='17' height='17' rx='3' fill='%23fff'/%3E%3Cpath d='M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43' stroke='%23febb02' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/device.css">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GuestHub">
+<meta name="mobile-web-app-capable" content="yes">
+
 <style>
-  :root{
-    --lime:#C6FF00; --gold:#FFC61A; --bg:#060709; --card:#121318;
-    --line:rgba(255,255,255,.08); --muted:#8B95A5;
+/* =====================================================================
+   Tokens — matched to guesthub.app homepage
+   ===================================================================== */
+:root{
+  --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
+  --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
+  --yellow:#febb02; --yellow-soft:#fff6e0; --yellow-line:#f0dfa0; --yellow-ink:#7a5c00;
+  --green:#008009; --green-soft:#e8f5e9; --green-line:#c3e6c4;
+  --red:#d32f2f; --red-soft:#fdeaea; --red-line:#f4c5c5;
+  --purple:#7c3aed; --purple-soft:#f3e8ff;
+  --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
+  --surface:#fff;
+  --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
+  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --r-sm:6px; --r:8px; --r-lg:12px;
+  --shadow-xs:0 1px 2px rgb(0 0 0/4%);
+  --shadow-sm:0 1px 3px rgb(0 0 0/6%),0 1px 2px rgb(0 0 0/4%);
+  --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
+  --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
+  --header-h:62px;
+  color-scheme:light;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+*{ margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+
+body{
+  font-family:var(--font);
+  font-size:14.5px; line-height:1.5; color:var(--text);
+  background:var(--bg-subtle);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv02','cv03','cv04','cv11';
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+img,svg{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select,textarea{ font:inherit; color:inherit; }
+ul{ list-style:none; }
+::selection{ background:var(--yellow); color:var(--text); }
+:focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
+
+/* =====================================================================
+   Header
+   ===================================================================== */
+.header{
+  position:sticky; top:0; z-index:100;
+  background:var(--brand); color:#fff;
+  border-bottom:1px solid rgb(255 255 255 / 10%);
+}
+.header-inner{
+  max-width:1500px; margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:10px 20px; min-height:var(--header-h);
+}
+.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+.brand-logo{ display:block; width:32px; height:32px; flex-shrink:0; }
+.brand-text{ min-width:0; }
+.brand-title{
+  font-size:15px; font-weight:600; letter-spacing:-.02em; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.brand-title .tag{ color:var(--yellow); }
+.brand-sub{
+  color:rgba(255,255,255,.7); font-size:11px; font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  letter-spacing:.02em; margin-top:1px;
+}
+.header-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+/* =====================================================================
+   Buttons
+   ===================================================================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; height:40px; padding:0 16px;
+  font-size:14px; font-weight:500; letter-spacing:-.01em;
+  border-radius:var(--r-sm); border:1px solid transparent;
+  white-space:nowrap; cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease,
+              color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+.btn:active:not(:disabled){ transform:scale(.99); }
+.btn:disabled{ opacity:.6; cursor:wait; }
+.btn-primary{ background:var(--brand-2); color:#fff; box-shadow:var(--shadow-xs); }
+.btn-primary:hover:not(:disabled){ background:var(--brand-3); }
+.btn-secondary{ background:#fff; color:var(--text); border-color:var(--border-2); box-shadow:var(--shadow-xs); }
+.btn-secondary:hover:not(:disabled){ background:var(--bg-subtle); border-color:var(--border-3); }
+.btn-ghost{ background:transparent; color:rgba(255,255,255,.9); border-color:rgba(255,255,255,.35); }
+.btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.5); }
+.btn-lg{ height:52px; padding:0 20px; font-size:15px; border-radius:var(--r); font-weight:600; }
+.btn-sm{ height:34px; padding:0 12px; font-size:13px; }
+.btn .icon{ width:14px; height:14px; }
+
+/* =====================================================================
+   Layout
+   ===================================================================== */
+.container{ max-width:1500px; margin:auto; padding:0 20px; }
+.vendor-shell{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:32px;
+  padding:40px 0 96px;
+}
+@media (min-width:1024px){
+  .vendor-shell{
+    grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+    gap:48px;
+    padding:48px 0 96px;
   }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    font-family:Inter,system-ui,-apple-system,sans-serif;
-    background:var(--bg);color:#fff;padding-bottom:48px;
-    -webkit-font-smoothing:antialiased;
+}
+
+/* =====================================================================
+   Left column — form
+   ===================================================================== */
+.form-header{ margin-bottom:24px; }
+.form-header .eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:5px 12px; border-radius:999px;
+  background:var(--brand-soft); color:var(--brand-2);
+  border:1px solid var(--brand-line);
+  font-size:11px; font-weight:600; letter-spacing:.3px;
+  margin-bottom:16px;
+}
+.form-header .eyebrow .dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green); display:inline-block;
+}
+.form-header h1{
+  font-size:clamp(28px,4.4vw,44px);
+  font-weight:700;
+  line-height:1.05;
+  letter-spacing:-.035em;
+  color:var(--text);
+  margin:0;
+}
+.form-header h1 .hl{ color:var(--brand-2); }
+.form-header p{
+  margin:14px 0 0;
+  max-width:620px;
+  color:var(--text-2);
+  font-size:15px;
+  line-height:1.6;
+}
+.form-header p strong{ color:var(--text); font-weight:600; }
+
+/* Progress bar */
+.progress{
+  height:5px; background:var(--border);
+  border-radius:999px;
+  overflow:hidden;
+  margin:24px 0;
+  max-width:720px;
+}
+.progress > i{
+  display:block; height:100%;
+  background:var(--brand-2);
+  width:0;
+  transition:width .35s ease;
+}
+
+/* Notice */
+.notice{
+  display:none;
+  margin:16px 0;
+  padding:14px 16px;
+  border-radius:var(--r);
+  font-size:13px;
+  line-height:1.55;
+  font-weight:500;
+  border:1px solid transparent;
+  align-items:flex-start;
+  gap:10px;
+}
+.notice.show{ display:flex; }
+.notice.success{ background:var(--green-soft); color:var(--green); border-color:var(--green-line); }
+.notice.error{ background:var(--red-soft); color:var(--red); border-color:var(--red-line); }
+.notice svg{ flex-shrink:0; margin-top:2px; width:16px; height:16px; }
+
+/* Card / section */
+.section{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:24px;
+  margin-bottom:16px;
+  box-shadow:var(--shadow-xs);
+  max-width:760px;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.section-icon{
+  display:grid; place-items:center;
+  width:34px; height:34px;
+  border-radius:var(--r-sm);
+  background:var(--brand-soft);
+  color:var(--brand-2);
+  flex-shrink:0;
+}
+.section-icon svg{ width:17px; height:17px; }
+.section-head h2{
+  margin:0;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:var(--text);
+}
+.section-head .count{
+  margin-left:auto;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--text-3);
+  background:var(--bg-subtle);
+  padding:4px 10px;
+  border-radius:999px;
+}
+.section-hint{
+  font-size:12.5px;
+  color:var(--text-3);
+  line-height:1.55;
+  margin-bottom:16px;
+}
+.section-hint strong{ color:var(--text); font-weight:600; }
+
+/* Labels & inputs */
+label.field{
+  display:block;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--text-2);
+  margin-bottom:6px;
+  margin-top:16px;
+}
+label.field:first-of-type{ margin-top:0; }
+label.field .req{ color:var(--red); font-weight:700; }
+label.field .opt{ color:var(--text-4); font-weight:500; font-size:12px; margin-left:6px; }
+
+.input,.select,.textarea{
+  width:100%;
+  padding:12px 14px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  color:var(--text);
+  font-size:14px;
+  font-weight:500;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.input::placeholder,.textarea::placeholder{ color:var(--text-4); font-weight:400; }
+.input:focus,.select:focus,.textarea:focus{
+  border-color:var(--brand-2);
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+.select{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23595959' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  background-size:14px;
+  padding-right:36px;
+}
+.textarea{ min-height:90px; resize:vertical; font-family:inherit; }
+
+.grid-2{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:16px; }
+@media (min-width:640px){ .grid-2{ grid-template-columns:1fr 1fr; } }
+.grid-2 > *{ margin-top:0; }
+.grid-2 .field{ margin-top:0; }
+
+/* Service option cards */
+.svc-grid{
+  display:grid; grid-template-columns:1fr; gap:10px;
+}
+@media (min-width:560px){ .svc-grid{ grid-template-columns:1fr 1fr; } }
+
+.opt{
+  position:relative;
+  padding:13px 14px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:var(--r);
+  cursor:pointer;
+  user-select:none;
+  text-align:left;
+  transition:border-color .15s ease, background .15s ease, transform .12s ease;
+  font-family:inherit;
+  width:100%;
+}
+.opt:hover{ border-color:var(--border-3); }
+.opt:active{ transform:scale(.99); }
+.opt.on{ border-color:var(--brand-2); background:var(--brand-soft); }
+.opt b{ font-size:13.5px; font-weight:600; display:block; padding-right:24px; color:var(--text); }
+.opt small{ font-size:12px; color:var(--text-3); display:block; margin-top:3px; line-height:1.4; }
+.opt .check{
+  position:absolute; top:11px; right:11px;
+  width:20px; height:20px;
+  border-radius:50%;
+  border:1.5px solid var(--border-2);
+  display:grid; place-items:center;
+  color:transparent;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.opt.on .check{
+  background:var(--brand-2);
+  border-color:var(--brand-2);
+  color:#fff;
+}
+.opt .check svg{ width:12px; height:12px; }
+
+/* Hotel list */
+.hotel-box{
+  max-height:220px;
+  overflow:auto;
+  padding:14px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-top:12px;
+}
+.hotel-list{ display:grid; grid-template-columns:1fr; gap:8px; }
+@media (min-width:520px){ .hotel-list{ grid-template-columns:1fr 1fr; } }
+.hotel-item{
+  display:flex; align-items:center; gap:9px;
+  font-size:13px;
+  cursor:pointer;
+  padding:8px 10px;
+  border-radius:var(--r-sm);
+  transition:background .15s ease;
+  user-select:none;
+}
+.hotel-item:hover{ background:#fff; }
+.hotel-item input{
+  width:16px; height:16px;
+  accent-color:var(--brand-2);
+  flex-shrink:0;
+  cursor:pointer;
+}
+.hotel-empty{
+  grid-column:1 / -1;
+  text-align:center;
+  padding:20px 12px;
+  color:var(--text-3);
+  font-size:12.5px;
+  line-height:1.55;
+}
+
+.checkbox-all{
+  display:flex; align-items:center; gap:9px;
+  margin-top:12px;
+  padding:10px 12px;
+  background:var(--brand-soft);
+  border:1px solid var(--brand-line);
+  border-radius:var(--r-sm);
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--brand);
+  cursor:pointer;
+  user-select:none;
+}
+.checkbox-all input{ width:16px; height:16px; accent-color:var(--brand-2); flex-shrink:0; cursor:pointer; }
+
+.hint{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--green);
+  font-weight:500;
+  display:flex; align-items:center; gap:6px;
+}
+.hint svg{ width:13px; height:13px; flex-shrink:0; }
+
+/* Payment tabs */
+.pay-tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px;
+}
+.pay-tab{
+  padding:12px 10px;
+  background:#fff;
+  border:1.5px solid var(--border-2);
+  border-radius:var(--r);
+  color:var(--text-2);
+  font-size:12px;
+  font-weight:600;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all .15s ease;
+  text-align:center;
+  letter-spacing:-.01em;
+}
+.pay-tab .icon{ width:18px; height:18px; }
+.pay-tab:hover{ border-color:var(--border-3); color:var(--text); }
+.pay-tab.on{
+  border-color:var(--brand-2);
+  background:var(--brand-soft);
+  color:var(--brand-2);
+  box-shadow:0 4px 12px rgba(0,113,194,.1);
+}
+
+/* Payment preview box */
+.pay-preview{
+  margin-top:18px;
+  padding:16px;
+  border-radius:var(--r);
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+}
+.pay-preview-head{
+  display:flex; align-items:center; gap:7px;
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  color:var(--brand);
+  margin-bottom:12px;
+}
+.pay-preview-head svg{ width:14px; height:14px; }
+.pay-preview-body{
+  background:#fff;
+  border:1px dashed var(--border-2);
+  border-radius:var(--r-sm);
+  padding:14px;
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.7;
+  color:var(--text-2);
+  white-space:pre-line;
+  overflow-x:auto;
+}
+
+.info-box{
+  margin-top:14px;
+  padding:13px 14px;
+  border-radius:var(--r-sm);
+  background:var(--yellow-soft);
+  border:1px solid var(--yellow-line);
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--yellow-ink);
+}
+.info-box strong{ color:#5a4300; }
+
+.terms{
+  display:flex; align-items:flex-start; gap:10px;
+  margin-top:18px;
+  padding:12px 14px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  cursor:pointer;
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--text-2);
+  user-select:none;
+}
+.terms input{
+  width:16px; height:16px;
+  margin-top:2px;
+  accent-color:var(--brand-2);
+  flex-shrink:0;
+  cursor:pointer;
+}
+
+.submit-btn{
+  width:100%;
+  margin-top:18px;
+}
+.submit-note{
+  margin-top:10px;
+  text-align:center;
+  font-size:11.5px;
+  color:var(--text-3);
+}
+
+/* =====================================================================
+   Right column — preview
+   ===================================================================== */
+.preview-col{
+  display:none;
+}
+@media (min-width:1024px){
+  .preview-col{ display:block; }
+  .preview-sticky{ position:sticky; top:calc(var(--header-h) + 24px); }
+}
+
+.preview-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px;
+  margin-bottom:16px;
+}
+.preview-head .label{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-3);
+}
+.preview-head .live{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  background:var(--green-soft);
+  color:var(--green);
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+.preview-head .live::before{
+  content:""; width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:.5; transform:scale(.85); }
+}
+
+.preview-card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:20px;
+  box-shadow:var(--shadow-xs);
+}
+.preview-card-head{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--text-3);
+  margin-bottom:14px;
+}
+.preview-body{ display:flex; flex-direction:column; gap:9px; }
+.preview-empty{
+  text-align:center;
+  padding:40px 16px;
+  color:var(--text-3);
+  font-size:12.5px;
+  line-height:1.55;
+}
+.preview-vendor{
+  font-size:10.5px;
+  font-weight:700;
+  letter-spacing:.4px;
+  color:var(--brand-2);
+  margin-bottom:10px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.pv-row{
+  display:flex; gap:12px;
+  padding:12px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  align-items:center;
+}
+.pv-ico{
+  width:40px; height:40px;
+  border-radius:var(--r-sm);
+  background:#fff;
+  border:1px solid var(--border);
+  display:grid; place-items:center;
+  font-size:16px;
+  flex-shrink:0;
+  color:var(--brand-2);
+}
+.pv-ico svg{ width:20px; height:20px; }
+.pv-mid{ flex:1; min-width:0; }
+.pv-title{
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+  line-height:1.3;
+}
+.pv-sub{
+  font-size:11.5px;
+  color:var(--text-3);
+  margin-top:3px;
+  line-height:1.4;
+}
+.pv-price{
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--brand-2);
+  margin-top:5px;
+}
+.pv-add{
+  font-size:11px;
+  font-weight:600;
+  padding:5px 12px;
+  border-radius:999px;
+  background:var(--brand-2);
+  color:#fff;
+  flex-shrink:0;
+  align-self:center;
+}
+
+.info-card{
+  margin-top:16px;
+  padding:16px;
+  border-radius:var(--r);
+  background:var(--brand-soft);
+  border:1px solid var(--brand-line);
+  font-size:12.5px;
+  line-height:1.6;
+  color:var(--brand);
+}
+.info-card strong{ color:var(--text); font-weight:700; }
+
+.stats-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px;
+  margin-top:16px;
+}
+.stat-box{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:16px 12px;
+  text-align:center;
+  box-shadow:var(--shadow-xs);
+}
+.stat-box .val{
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:-.03em;
+  color:var(--brand-2);
+  line-height:1;
+}
+.stat-box .lbl{
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  color:var(--text-3);
+  margin-top:7px;
+}
+
+.preview-cta{
+  display:block;
+  margin-top:16px;
+  padding:14px;
+  text-align:center;
+  background:var(--brand-2);
+  color:#fff;
+  border-radius:var(--r);
+  font-size:13.5px;
+  font-weight:600;
+  transition:background .15s ease;
+}
+.preview-cta:hover{ background:var(--brand-3); }
+
+/* =====================================================================
+   Toast
+   ===================================================================== */
+.toast{
+  position:fixed;
+  left:16px; right:16px;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  z-index:2000;
+  max-width:480px;
+  margin-left:auto;
+  background:#1a1a1a;
+  color:#fff;
+  border-radius:var(--r);
+  padding:14px 16px;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.5;
+  box-shadow:var(--shadow-lg);
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  transform:translateY(140%);
+  opacity:0;
+  transition:all .28s cubic-bezier(.3,1.3,.5,1);
+}
+@media (min-width:640px){ .toast{ left:auto; } }
+.toast.show{ transform:translateY(0); opacity:1; }
+.toast svg{ flex-shrink:0; margin-top:2px; width:16px; height:16px; }
+
+/* =====================================================================
+   Footer
+   ===================================================================== */
+.footer{
+  padding:28px 20px;
+  background:#fff;
+  border-top:1px solid var(--border);
+  text-align:center;
+  font-size:12.5px;
+  color:var(--text-3);
+}
+.footer strong{ color:var(--text-2); font-weight:600; }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
   }
-  .font-boss{font-family:Anton,sans-serif;letter-spacing:.01em}
-  .glass{background:rgba(18,19,24,.85);backdrop-filter:blur(20px);border:1px solid var(--line);border-radius:16px}
-  .input{width:100%;background:#0A0A0A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:13px 14px;color:#fff;font-size:13px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit}
-  .input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(198,255,0,.14)}
-  .input::placeholder{color:#5b6473}
-  .label{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:14px;display:block}
-  .label:first-child{margin-top:0}
-  .opt{position:relative;border:1px solid #2A2A2A;background:#0A0A0A;border-radius:14px;padding:11px 12px;cursor:pointer;transition:border-color .15s,background .15s,transform .1s;user-select:none}
-  .opt:hover{border-color:#3a3a3a}
-  .opt:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-  .opt:active{transform:scale(.98)}
-  .opt.on{border-color:var(--lime);background:rgba(198,255,0,.10)}
-  .opt b{font-size:12px;font-weight:700;display:block;padding-right:22px}
-  .opt small{font-size:10px;color:#888;display:block;margin-top:2px}
-  .opt .check{position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;border:1px solid #444;display:grid;place-items:center;font-size:10px;font-weight:900;color:transparent;transition:background .15s,color .15s,border-color .15s}
-  .opt.on .check{background:var(--lime);border-color:var(--lime);color:#000}
-  .paychip{padding:8px 12px;border-radius:999px;background:#0A0A0A;border:1px solid #2A2A2A;font-size:11px;font-weight:800;cursor:pointer;color:#fff;font-family:inherit;transition:background .15s,color .15s,border-color .15s}
-  .paychip:hover{border-color:#3a3a3a}
-  .paychip:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
-  .paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
-  .prog{height:5px;background:#1A1A1A;border-radius:999px;overflow:hidden;margin:14px 0}
-  .prog i{display:block;height:100%;background:var(--lime);width:0;transition:width .35s ease}
-  .notice{display:none;margin:12px 0;padding:12px 14px;border-radius:12px;font-size:12.5px;line-height:1.5;border:1px solid transparent}
-  .notice.success{display:block;background:rgba(198,255,0,.10);border-color:rgba(198,255,0,.35);color:#E8FFB0}
-  .notice.error{display:block;background:rgba(255,90,95,.10);border-color:rgba(255,90,95,.35);color:#FFD0D0}
-  .pv-row{display:flex;gap:12px;padding:10px 12px;border-radius:12px;background:#0A0A0A;border:1px solid var(--line)}
-  .pv-ico{width:38px;height:38px;border-radius:10px;background:#1A1C1F;display:grid;place-items:center;font-size:14px;flex-shrink:0}
-  .pv-add{font-size:10px;font-weight:800;background:#fff;color:#000;padding:4px 9px;border-radius:999px;height:fit-content;align-self:center;flex-shrink:0}
-  .badge{padding:4px 10px;border-radius:999px;font-size:9.5px;font-weight:800;letter-spacing:.06em;background:rgba(255,255,255,.08);border:1px solid var(--line);color:#fff}
-  .badge.ok{background:var(--lime);color:#000;border-color:var(--lime)}
-  .badge.warn{background:rgba(255,198,26,.15);color:var(--gold);border-color:rgba(255,198,26,.3)}
-  .ussd{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;white-space:pre-line}
-  @media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+}
 </style>
 </head>
 <body>
 
-<div class="min-h-screen lg:grid lg:grid-cols-[1.15fr_0.85fr]">
-
-  <!-- ===================== LEFT: FORM ===================== -->
-  <div class="px-5 sm:px-6 md:px-10 lg:px-14 py-7">
-
-    <div class="flex justify-between items-center mb-6 gap-3 flex-wrap">
-      <div class="flex items-center gap-3 flex-wrap">
-        <div class="font-boss text-[22px] text-[#FFD400]">GUESTHUB</div>
-        <span class="text-[10px] tracking-widest text-white/40 font-bold">VENDOR ONBOARDING</span>
-        <span id="apiBadge" class="badge">CONNECTING…</span>
+<!-- ============================= Header ============================= -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="brand" aria-label="GuestHub home">
+      <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect width="64" height="64" rx="14" fill="#ffffff"/>
+        <rect x="13" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="34" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="13" y="34" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
+              stroke="#febb02" stroke-width="4.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-title">GuestHub <span class="tag">Vendors</span></div>
+        <div class="brand-sub">Diani · Wasini · SGR · World</div>
       </div>
-      <a href="/" class="text-[11px] font-bold bg-white/10 hover:bg-white/15 px-4 py-2 rounded-full border border-white/10 no-underline text-white">← Home</a>
-    </div>
+    </a>
 
-    <div class="inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-[#C6FF00] border border-[#C6FF00]/30 rounded-full px-4 py-2 mb-4">
-      <span class="w-2 h-2 rounded-full bg-[#C6FF00] animate-pulse"></span>
-      DIANI → WASINI → SGR MOMBASA → WORLD
-    </div>
-
-    <h1 class="font-boss text-[34px] sm:text-[42px] md:text-[48px] leading-[0.92] uppercase m-0">
-      Earn with<br><span class="text-[#FFC61A]">GuestHub World</span>
-    </h1>
-    <p class="text-[12.5px] text-white/55 mt-3 max-w-[600px] leading-relaxed">
-      Global vendors · Diani hub · Wasini boat · SGR transfer.
-      Guests pay <strong class="text-white">direct to your M-Pesa</strong> —
-      you keep <strong class="text-[#C6FF00]">100%</strong>, settle 15% hotel commission monthly.
-    </p>
-
-    <div class="prog" aria-hidden="true"><i id="pbar"></i></div>
-    <div id="notice" class="notice" role="status" aria-live="polite"></div>
-
-    <form id="f" novalidate class="max-w-[680px]">
-
-      <!-- ========== BASIC INFO ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">👤 Basic info — Diani hub</h2>
-
-        <label class="label" for="full_name">Full name / Business name *</label>
-        <input id="full_name" name="full_name" class="input" required autocomplete="name"
-               placeholder="Kevin Kipchumba / Diani Taxi John">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
-          <div>
-            <label class="label" for="phone">Phone / WhatsApp *</label>
-            <input id="phone" name="phone" class="input" type="tel" inputmode="tel"
-                   autocomplete="tel" required placeholder="0722 000 000">
-          </div>
-          <div>
-            <label class="label" for="id_number">ID / Passport no. *</label>
-            <input id="id_number" name="id_number" class="input" required
-                   inputmode="numeric" autocomplete="off" placeholder="12345678">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
-          <div>
-            <label class="label" for="email">Email (login) *</label>
-            <input id="email" name="email" type="email" class="input" required
-                   autocomplete="email" inputmode="email" placeholder="you@gmail.com">
-          </div>
-          <div>
-            <label class="label" for="password">Password (min 8) *</label>
-            <input id="password" name="password" type="password" class="input" required
-                   autocomplete="new-password" minlength="8" placeholder="Choose a strong password">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
-          <div>
-            <label class="label" for="country">Country</label>
-            <select id="country" name="country" class="input" autocomplete="country-name">
-              <option value="Kenya" selected>🇰🇪 Kenya</option>
-              <option value="Tanzania">🇹🇿 Tanzania</option>
-              <option value="Uganda">🇺🇬 Uganda</option>
-              <option value="UAE">🇦🇪 UAE — Dubai</option>
-              <option value="USA">🇺🇸 USA</option>
-              <option value="UK">🇬🇧 UK</option>
-              <option value="Other">🌍 Other</option>
-            </select>
-          </div>
-          <div>
-            <label class="label" for="city">Base city</label>
-            <select id="city" name="city" class="input" autocomplete="address-level2">
-              <option>Diani</option>
-              <option>Wasini Island</option>
-              <option>Shimoni — Wasini Jetty</option>
-              <option>SGR Mombasa Terminus</option>
-              <option>SGR Mariakani</option>
-              <option>Mombasa Town</option>
-              <option>Watamu</option>
-              <option>Ukunda Airstrip</option>
-              <option>Moi Airport</option>
-              <option>Nairobi</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
-          <div>
-            <label class="label" for="location_hub">Your hub location *</label>
-            <select id="location_hub" name="location_hub" class="input" required>
-              <option value="Diani Beach" selected>Diani Beach (Main hub)</option>
-              <option value="Wasini Island">Wasini Island — Dolphin hub</option>
-              <option value="Shimoni Jetty">Shimoni Jetty — Wasini boats</option>
-              <option value="SGR Mombasa Terminus">SGR Mombasa Terminus (Miritini)</option>
-              <option value="SGR Mariakani">SGR Mariakani Station</option>
-              <option value="Moi Airport">Moi Airport Mombasa</option>
-              <option value="Ukunda Airstrip">Ukunda Airstrip</option>
-              <option value="Watamu / Malindi">Watamu / Malindi</option>
-              <option value="Mombasa Town">Mombasa Town / Nyali</option>
-            </select>
-          </div>
-          <div>
-            <label class="label" for="radius">Service radius</label>
-            <select id="radius" name="radius" class="input">
-              <option>5km — Diani only</option>
-              <option selected>15km — Diani + Wasini + Ukunda</option>
-              <option>40km — Up to SGR Mombasa</option>
-              <option>100km — Whole South Coast</option>
-              <option>Countrywide — Kenya</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========== HOTELS ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">🏨 Hotels you want to serve *</h2>
-        <p class="text-[11px] text-white/50 mt-2 leading-relaxed">
-          Your services appear in these hotels' guest dashboards after approval.
-          <strong class="text-white">Room 101 at Baobab</strong> will see you.
-        </p>
-
-        <div id="hotelList"
-             class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[200px] overflow-auto p-3 rounded-xl bg-[#0A0A0A] border border-white/10 text-[11.5px]"
-             role="group" aria-label="Hotels">
-          <div class="text-white/40 col-span-full py-3 text-center">Loading hotels…</div>
-        </div>
-
-        <label class="flex items-center gap-2 mt-3 cursor-pointer text-[11.5px] font-bold text-[#C6FF00]">
-          <input type="checkbox" id="hotelAll" value="ALL">
-          <span>Serve ALL approved hotels — scale to 1,000</span>
-        </label>
-
-        <p id="hotelHint" class="mt-2 text-[10.5px] text-[#C6FF00]">✓ Will appear live in the hotels you select.</p>
-      </div>
-
-      <!-- ========== SERVICES ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🚕 1. Transport &amp; taxi</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g1" role="group" aria-label="Transport services"></div>
-      </div>
-
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🌍 2. Tours — Wasini + safari</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g2" role="group" aria-label="Tour services"></div>
-      </div>
-
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">🧖 3. Wellness &amp; hotel services</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g3" role="group" aria-label="Wellness services"></div>
-      </div>
-
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#C6FF00] m-0">📸 4. Media &amp; concierge</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3" id="g4" role="group" aria-label="Media services"></div>
-      </div>
-
-      <!-- ========== SERVICE DETAILS ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] m-0">
-          ⚙️ Service details
-          <span id="selCount" class="text-white/40 text-[11px] font-normal">0 selected</span>
-        </h2>
-
-        <label class="label" for="vehicle">Vehicle / equipment *</label>
-        <select id="vehicle" name="vehicle" class="input" required>
-          <option value="">— Select —</option>
-          <option>Sedan — Premio / Axio</option>
-          <option>SUV — Prado / TX / Landcruiser</option>
-          <option>Van — Alphard / Hiace (7–14 seater)</option>
-          <option>Boat — Wasini Dolphin Dhow</option>
-          <option>SGR Transfer Van</option>
-          <option>Safari Landcruiser (open roof)</option>
-          <option>Boda / TukTuk</option>
-          <option>Massage bed + oils</option>
-          <option>Camera kit + drone</option>
-        </select>
-
-        <label class="label" for="plate">Number plate / license</label>
-        <input id="plate" name="plate" class="input" placeholder="KDA 123A — or boat license no.">
-
-        <label class="label" for="price">Your base price (guest sees) *</label>
-        <input id="price" name="price" type="number" inputmode="numeric" min="0" step="50"
-               class="input" value="2500" required>
-
-        <label class="label" for="bio">
-          Bio — Diani style
-          <span id="bioCount" class="text-white/35 font-normal normal-case tracking-normal ml-1">0 / 120</span>
-        </label>
-        <textarea id="bio" name="bio" maxlength="120" rows="3" class="input"
-                  placeholder="e.g. 5 yrs Diani–Wasini expert. SGR transfers. English / Swahili."></textarea>
-      </div>
-
-      <!-- ========== DIRECT PAYMENT ========== -->
-      <div class="glass p-5 mt-4">
-        <h2 class="font-boss text-[14px] text-[#FFC61A] m-0">💳 How guests pay you — direct</h2>
-        <p class="text-[11.5px] text-white/55 mt-2 leading-relaxed">
-          No wallet. No waiting. Guest pays <strong class="text-white">straight to your M-Pesa</strong>.
-          You receive 100%. Settle the 15% hotel commission on your monthly statement.
-        </p>
-
-        <!-- Channel picker -->
-        <div class="flex gap-2 flex-wrap mt-3" role="radiogroup" aria-label="Payment channel">
-          <button type="button" class="paychip on" data-channel="paybill"
-                  role="radio" aria-checked="true">🏢 Paybill</button>
-          <button type="button" class="paychip" data-channel="till"
-                  role="radio" aria-checked="false">🛒 Till (Buy Goods)</button>
-          <button type="button" class="paychip" data-channel="send_money"
-                  role="radio" aria-checked="false">📱 Send Money</button>
-        </div>
-        <input type="hidden" id="payment_channel" name="payment_channel" value="paybill">
-
-        <!-- Paybill fields -->
-        <div id="pay-paybill" class="mt-3">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label class="label" for="paybill_number">Paybill number *</label>
-              <input id="paybill_number" class="input" inputmode="numeric" maxlength="10"
-                     placeholder="e.g. 400200 or 247247">
-            </div>
-            <div>
-              <label class="label" for="paybill_account">Account number / name *</label>
-              <input id="paybill_account" class="input" maxlength="40"
-                     placeholder="e.g. DIANI001 or your phone">
-            </div>
-          </div>
-        </div>
-
-        <!-- Till fields -->
-        <div id="pay-till" class="mt-3" style="display:none">
-          <label class="label" for="till_number">Till number (Buy Goods) *</label>
-          <input id="till_number" class="input" inputmode="numeric" maxlength="10"
-                 placeholder="e.g. 5123456">
-        </div>
-
-        <!-- Send Money fields -->
-        <div id="pay-send_money" class="mt-3" style="display:none">
-          <label class="label" for="send_money_phone">M-Pesa phone *</label>
-          <input id="send_money_phone" class="input" type="tel" inputmode="tel"
-                 placeholder="0712 345 678">
-        </div>
-
-        <label class="label" for="mpesa_name">Business / account holder name</label>
-        <input id="mpesa_name" class="input" autocomplete="name" maxlength="100"
-               placeholder="As registered with Safaricom">
-
-        <!-- Live preview -->
-        <div class="mt-4 p-4 rounded-xl bg-[#0A0A0A] border border-[#C6FF00]/25">
-          <div class="text-[10px] font-bold tracking-widest text-[#C6FF00] mb-2">
-            👀 WHAT THE GUEST SEES AT CHECKOUT
-          </div>
-          <div id="guestPayPreview" class="text-[12.5px] leading-relaxed text-white/85 ussd"></div>
-        </div>
-
-        <div class="mt-3 p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-white/65 leading-relaxed">
-          <strong class="text-white">About the 15% hotel cut:</strong> you keep 100% of what the guest
-          sends you. At month-end you forward 15% of completed orders to the hotel's Paybill — GuestHub
-          shows you a monthly statement so it's one transfer, not many.
-        </div>
-
-        <label class="flex items-start gap-2 mt-4 cursor-pointer">
-          <input id="terms" name="terms" type="checkbox" required class="mt-0.5 w-4 h-4 accent-[#C6FF00]">
-          <span class="text-[11.5px] text-white/75 leading-relaxed">
-            I confirm the Paybill / Till / Phone above belongs to me or my business, and I will settle
-            the 15% hotel commission monthly.
-          </span>
-        </label>
-
-        <button class="w-full h-[54px] rounded-full bg-gradient-to-r from-[#C6FF00] to-[#A6E22E] text-black font-black text-[15px] mt-4 cursor-pointer border-0 hover:brightness-105 active:scale-[.99] transition disabled:opacity-60 disabled:cursor-wait"
-                type="submit" id="btn">
-          🚀 Submit — get reviewed in 24h
-        </button>
-        <p class="text-[10px] text-center text-white/30 mt-2 m-0">
-          No card required · Approval usually within 24h · Direct-to-M-Pesa
-        </p>
-      </div>
-
-    </form>
-  </div>
-
-  <!-- ===================== RIGHT: PREVIEW ===================== -->
-  <aside class="hidden lg:block bg-[#0A0A0A] border-l border-white/10 p-8">
-    <div class="sticky top-8">
-
-      <div class="flex justify-between items-center mb-4">
-        <span class="text-[11px] font-bold tracking-widest text-white/40">GUEST VIEW — LIVE PREVIEW</span>
-        <span class="text-[10px] px-2.5 py-1 rounded-full bg-[#C6FF00] text-black font-bold">● LIVE</span>
-      </div>
-
-      <div class="bg-[#121318] border border-white/10 rounded-[20px] p-5">
-        <div class="text-[10px] font-bold tracking-widest text-white/40">GUEST IN ROOM 101 AT BAOBAB SEES THIS</div>
-        <div id="guestPreview" class="mt-4 space-y-2" aria-live="polite">
-          <div class="text-center py-10 text-[12px] text-white/30">
-            Select services on the left — they appear here instantly.
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-4 p-4 rounded-xl bg-[#C6FF00]/10 border border-[#C6FF00]/20 text-[11.5px] leading-relaxed">
-        <b class="text-[#C6FF00]">The magic:</b><br>
-        Vendor picks <b class="text-white">Baobab + Wasini</b> → a guest scanning the QR at Baobab Room 101
-        sees the <b class="text-white">Wasini Dolphin Tour</b> instantly.<br><br>
-        Guest taps <b>+ Add</b> → pays you directly via M-Pesa → you get a WhatsApp ping.
-      </div>
-
-      <div class="mt-4 grid grid-cols-2 gap-2">
-        <div class="glass p-3 text-center">
-          <div class="font-boss text-[18px] text-[#C6FF00]">100%</div>
-          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">DIRECT TO YOU</div>
-        </div>
-        <div class="glass p-3 text-center">
-          <div class="font-boss text-[18px] text-white">15%</div>
-          <div class="text-[9.5px] text-white/45 tracking-wider mt-0.5">MONTHLY TO HOTEL</div>
-        </div>
-      </div>
-
-      <a href="/guest.html?hotel=BAOBAB&room=101"
-         class="mt-4 block text-center h-10 rounded-full bg-white text-black font-bold text-[12px] leading-10 no-underline hover:bg-white/90">
-        → View real guest app
+    <div class="header-actions">
+      <span id="apiBadge" class="btn btn-ghost btn-sm" style="pointer-events:none">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>
+        <span id="apiBadgeText">Connecting…</span>
+      </span>
+      <a href="/" class="btn btn-ghost btn-sm">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Home
       </a>
     </div>
-  </aside>
+  </div>
+</header>
 
-</div>
+<!-- ============================= Main ============================= -->
+<main class="container">
+  <div class="vendor-shell">
+
+    <!-- ============ LEFT: FORM ============ -->
+    <div class="form-col">
+
+      <div class="form-header">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Now onboarding vendors across Kenya
+        </div>
+        <h1>Earn with <span class="hl">GuestHub World</span></h1>
+        <p>
+          Global vendors · Diani hub · Wasini boat · SGR transfer.
+          Guests pay <strong>direct to your M-Pesa</strong> — you keep <strong>100%</strong>,
+          settle 15% hotel commission monthly.
+        </p>
+      </div>
+
+      <div class="progress" aria-hidden="true"><i id="pbar"></i></div>
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+      <form id="f" novalidate>
+
+        <!-- ========== BASIC INFO ========== -->
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </span>
+            <h2>Basic info — Diani hub</h2>
+          </div>
+
+          <label class="field" for="full_name">Full name / Business name <span class="req">*</span></label>
+          <input id="full_name" name="full_name" class="input" required autocomplete="name"
+                 placeholder="Kevin Kipchumba / Diani Taxi John">
+
+          <div class="grid-2">
+            <div>
+              <label class="field" for="phone">Phone / WhatsApp <span class="req">*</span></label>
+              <input id="phone" name="phone" class="input" type="tel" inputmode="tel"
+                     autocomplete="tel" required placeholder="0722 000 000">
+            </div>
+            <div>
+              <label class="field" for="id_number">ID / Passport no. <span class="req">*</span></label>
+              <input id="id_number" name="id_number" class="input" required
+                     inputmode="numeric" autocomplete="off" placeholder="12345678">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field" for="email">Email (login) <span class="req">*</span></label>
+              <input id="email" name="email" type="email" class="input" required
+                     autocomplete="email" inputmode="email" placeholder="you@gmail.com">
+            </div>
+            <div>
+              <label class="field" for="password">Password (min 8) <span class="req">*</span></label>
+              <input id="password" name="password" type="password" class="input" required
+                     autocomplete="new-password" minlength="8" placeholder="Choose a strong password">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field" for="country">Country</label>
+              <select id="country" name="country" class="select" autocomplete="country-name">
+                <option value="Kenya" selected>Kenya</option>
+                <option value="Tanzania">Tanzania</option>
+                <option value="Uganda">Uganda</option>
+                <option value="UAE">UAE — Dubai</option>
+                <option value="USA">USA</option>
+                <option value="UK">UK</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="field" for="city">Base city</label>
+              <select id="city" name="city" class="select" autocomplete="address-level2">
+                <option>Diani</option>
+                <option>Wasini Island</option>
+                <option>Shimoni — Wasini Jetty</option>
+                <option>SGR Mombasa Terminus</option>
+                <option>SGR Mariakani</option>
+                <option>Mombasa Town</option>
+                <option>Watamu</option>
+                <option>Ukunda Airstrip</option>
+                <option>Moi Airport</option>
+                <option>Nairobi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <label class="field" for="location_hub">Your hub location <span class="req">*</span></label>
+              <select id="location_hub" name="location_hub" class="select" required>
+                <option value="Diani Beach" selected>Diani Beach (Main hub)</option>
+                <option value="Wasini Island">Wasini Island — Dolphin hub</option>
+                <option value="Shimoni Jetty">Shimoni Jetty — Wasini boats</option>
+                <option value="SGR Mombasa Terminus">SGR Mombasa Terminus (Miritini)</option>
+                <option value="SGR Mariakani">SGR Mariakani Station</option>
+                <option value="Moi Airport">Moi Airport Mombasa</option>
+                <option value="Ukunda Airstrip">Ukunda Airstrip</option>
+                <option value="Watamu / Malindi">Watamu / Malindi</option>
+                <option value="Mombasa Town">Mombasa Town / Nyali</option>
+              </select>
+            </div>
+            <div>
+              <label class="field" for="radius">Service radius</label>
+              <select id="radius" name="radius" class="select">
+                <option>5km — Diani only</option>
+                <option selected>15km — Diani + Wasini + Ukunda</option>
+                <option>40km — Up to SGR Mombasa</option>
+                <option>100km — Whole South Coast</option>
+                <option>Countrywide — Kenya</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========== HOTELS ========== -->
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/>
+                <path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>
+              </svg>
+            </span>
+            <h2>Hotels you want to serve <span class="req" style="color:var(--red)">*</span></h2>
+          </div>
+
+          <p class="section-hint">
+            Your services appear in these hotels' guest dashboards after approval.
+            <strong>Room 101 at Baobab</strong> will see you.
+          </p>
+
+          <div id="hotelList" class="hotel-box hotel-list" role="group" aria-label="Hotels">
+            <div class="hotel-empty">Loading hotels…</div>
+          </div>
+
+          <label class="checkbox-all">
+            <input type="checkbox" id="hotelAll" value="ALL">
+            <span>Serve ALL approved hotels — scale to 1,000</span>
+          </label>
+
+          <p id="hotelHint" class="hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Will appear live in the hotels you select.
+          </p>
+        </section>
+
+        <!-- ========== SERVICES ========== -->
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+              </svg>
+            </span>
+            <h2>1. Transport &amp; taxi</h2>
+          </div>
+          <div class="svc-grid" id="g1" role="group" aria-label="Transport services"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+              </svg>
+            </span>
+            <h2>2. Tours — Wasini + safari</h2>
+          </div>
+          <div class="svc-grid" id="g2" role="group" aria-label="Tour services"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              </svg>
+            </span>
+            <h2>3. Wellness &amp; hotel services</h2>
+          </div>
+          <div class="svc-grid" id="g3" role="group" aria-label="Wellness services"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                <circle cx="9" cy="9" r="2"/>
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+              </svg>
+            </span>
+            <h2>4. Media &amp; concierge</h2>
+          </div>
+          <div class="svc-grid" id="g4" role="group" aria-label="Media services"></div>
+        </section>
+
+        <!-- ========== SERVICE DETAILS ========== -->
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </span>
+            <h2>Service details</h2>
+            <span id="selCount" class="count">0 selected</span>
+          </div>
+
+          <label class="field" for="vehicle">Vehicle / equipment <span class="req">*</span></label>
+          <select id="vehicle" name="vehicle" class="select" required>
+            <option value="">— Select —</option>
+            <option>Sedan — Premio / Axio</option>
+            <option>SUV — Prado / TX / Landcruiser</option>
+            <option>Van — Alphard / Hiace (7–14 seater)</option>
+            <option>Boat — Wasini Dolphin Dhow</option>
+            <option>SGR Transfer Van</option>
+            <option>Safari Landcruiser (open roof)</option>
+            <option>Boda / TukTuk</option>
+            <option>Massage bed + oils</option>
+            <option>Camera kit + drone</option>
+          </select>
+
+          <label class="field" for="plate">Number plate / license <span class="opt">optional</span></label>
+          <input id="plate" name="plate" class="input" placeholder="KDA 123A — or boat license no.">
+
+          <label class="field" for="price">Your base price (guest sees) <span class="req">*</span></label>
+          <input id="price" name="price" type="number" inputmode="numeric" min="0" step="50"
+                 class="input" value="2500" required>
+
+          <label class="field" for="bio">
+            Bio — Diani style
+            <span id="bioCount" class="opt" style="margin-left:6px">0 / 120</span>
+          </label>
+          <textarea id="bio" name="bio" maxlength="120" rows="3" class="textarea"
+                    placeholder="e.g. 5 yrs Diani–Wasini expert. SGR transfers. English / Swahili."></textarea>
+        </section>
+
+        <!-- ========== DIRECT PAYMENT ========== -->
+        <section class="section">
+          <div class="section-head">
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="14" x="2" y="5" rx="2"/>
+                <line x1="2" x2="22" y1="10" y2="10"/>
+              </svg>
+            </span>
+            <h2>How guests pay you — direct</h2>
+          </div>
+
+          <p class="section-hint">
+            No wallet. No waiting. Guest pays <strong>straight to your M-Pesa</strong>.
+            You receive 100%. Settle the 15% hotel commission on your monthly statement.
+          </p>
+
+          <div class="pay-tabs" role="radiogroup" aria-label="Payment channel">
+            <button type="button" class="pay-tab on" data-channel="paybill" role="radio" aria-checked="true">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+              <span>Paybill</span>
+            </button>
+            <button type="button" class="pay-tab" data-channel="till" role="radio" aria-checked="false">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+              <span>Till</span>
+            </button>
+            <button type="button" class="pay-tab" data-channel="send_money" role="radio" aria-checked="false">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>Send Money</span>
+            </button>
+          </div>
+          <input type="hidden" id="payment_channel" name="payment_channel" value="paybill">
+
+          <div id="pay-paybill" style="margin-top:16px">
+            <div class="grid-2">
+              <div>
+                <label class="field" for="paybill_number">Paybill number <span class="req">*</span></label>
+                <input id="paybill_number" class="input" inputmode="numeric" maxlength="10"
+                       placeholder="e.g. 400200 or 247247">
+              </div>
+              <div>
+                <label class="field" for="paybill_account">Account number / name <span class="req">*</span></label>
+                <input id="paybill_account" class="input" maxlength="40"
+                       placeholder="e.g. DIANI001 or your phone">
+              </div>
+            </div>
+          </div>
+
+          <div id="pay-till" style="margin-top:16px;display:none">
+            <label class="field" for="till_number">Till number (Buy Goods) <span class="req">*</span></label>
+            <input id="till_number" class="input" inputmode="numeric" maxlength="10"
+                   placeholder="e.g. 5123456">
+          </div>
+
+          <div id="pay-send_money" style="margin-top:16px;display:none">
+            <label class="field" for="send_money_phone">M-Pesa phone <span class="req">*</span></label>
+            <input id="send_money_phone" class="input" type="tel" inputmode="tel"
+                   placeholder="0712 345 678">
+          </div>
+
+          <label class="field" for="mpesa_name">Business / account holder name <span class="opt">optional</span></label>
+          <input id="mpesa_name" class="input" autocomplete="name" maxlength="100"
+                 placeholder="As registered with Safaricom">
+
+          <!-- Live preview -->
+          <div class="pay-preview">
+            <div class="pay-preview-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              What the guest sees at checkout
+            </div>
+            <div id="guestPayPreview" class="pay-preview-body"></div>
+          </div>
+
+          <div class="info-box">
+            <strong>About the 15% hotel cut:</strong> you keep 100% of what the guest
+            sends you. At month-end you forward 15% of completed orders to the hotel's Paybill — GuestHub
+            shows you a monthly statement so it's one transfer, not many.
+          </div>
+
+          <label class="terms">
+            <input id="terms" name="terms" type="checkbox" required>
+            <span>
+              I confirm the Paybill / Till / Phone above belongs to me or my business, and I will settle
+              the 15% hotel commission monthly.
+            </span>
+          </label>
+
+          <button class="btn btn-primary btn-lg submit-btn" type="submit" id="btn">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            Submit — get reviewed in 24h
+          </button>
+          <p class="submit-note">
+            No card required · Approval usually within 24h · Direct-to-M-Pesa
+          </p>
+        </section>
+
+      </form>
+    </div>
+
+    <!-- ============ RIGHT: PREVIEW ============ -->
+    <aside class="preview-col">
+      <div class="preview-sticky">
+
+        <div class="preview-head">
+          <span class="label">Guest view — live preview</span>
+          <span class="live">Live</span>
+        </div>
+
+        <div class="preview-card">
+          <div class="preview-card-head">Guest in Room 101 at Baobab sees this</div>
+          <div id="guestPreview" class="preview-body" aria-live="polite">
+            <div class="preview-empty">
+              Select services on the left — they appear here instantly.
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <strong>The magic:</strong><br>
+          Vendor picks <strong>Baobab + Wasini</strong> → a guest scanning the QR at Baobab Room 101
+          sees the <strong>Wasini Dolphin Tour</strong> instantly.<br><br>
+          Guest taps <strong>+ Add</strong> → pays you directly via M-Pesa → you get a WhatsApp ping.
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="val">100%</div>
+            <div class="lbl">Direct to you</div>
+          </div>
+          <div class="stat-box">
+            <div class="val" style="color:var(--text)">15%</div>
+            <div class="lbl">Monthly to hotel</div>
+          </div>
+        </div>
+
+        <a href="/guest.html?hotel=BAOBAB&room=101" class="preview-cta">
+          View real guest app
+          <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-left:4px">
+            <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<footer class="footer">
+  © <span id="year"></span> <strong>GuestHub</strong> · Made in Kenya
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 (() => {
   'use strict';
 
   const API = '/api';
-  const $  = id => document.getElementById(id);
+  const $ = id => document.getElementById(id);
 
-  // ---------- Services catalogue (matches dashboard) ----------
+  const ICONS = {
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+    alert: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
+    compass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+    sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
+    image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>'
+  };
+
+  /* Services catalogue (matches dashboard) */
   const SERVICES = {
     g1: {
       label: 'transport',
+      icon: 'car',
       items: [
         { id:'airport_taxi',  t:'Airport Taxi',        d:'Moi / Ukunda / JKIA' },
         { id:'sgr_taxi',      t:'SGR Transfer',        d:'Miritini → Diani' },
@@ -415,6 +1216,7 @@
     },
     g2: {
       label: 'tours',
+      icon: 'compass',
       items: [
         { id:'wasini_dolphin', t:'Wasini Dolphin Tour',  d:'Full day + lunch' },
         { id:'shimba_hills',   t:'Shimba Hills Safari',  d:'Half day' },
@@ -426,6 +1228,7 @@
     },
     g3: {
       label: 'wellness',
+      icon: 'sparkles',
       items: [
         { id:'massage',       t:'In-Room Massage',   d:'Swedish, Deep tissue' },
         { id:'spa_nails',     t:'Spa / Nails / Hair',d:'In-room beauty' },
@@ -435,6 +1238,7 @@
     },
     g4: {
       label: 'media',
+      icon: 'image',
       items: [
         { id:'photography', t:'Photography',         d:'Diani shots' },
         { id:'drone',       t:'Drone + Videography', d:'Hotel & beach' },
@@ -451,28 +1255,37 @@
   let selected = [];
   let approvedHotels = [];
 
-  const escape = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
   })[c]);
-
   const isValidEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').trim());
   const cleanPhone   = v => String(v || '').replace(/\D/g, '');
 
+  /* Toast */
+  let toastTimer = null;
+  function toast(msg, kind = 'success') {
+    const el = $('toast'); if (!el) return;
+    el.innerHTML = (kind === 'error' ? ICONS.alert : ICONS.check) + '<span>' + escapeHtml(msg) + '</span>';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3600);
+  }
+
   function showNotice(msg, type = 'success') {
     const n = $('notice');
-    n.className = 'notice ' + (type === 'error' ? 'error' : 'success');
-    n.textContent = msg;
+    n.className = 'notice show ' + (type === 'error' ? 'error' : 'success');
+    n.innerHTML = (type === 'error' ? ICONS.alert : ICONS.check) + '<span>' + escapeHtml(msg) + '</span>';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function clearNotice() {
     const n = $('notice');
     n.className = 'notice';
-    n.textContent = '';
+    n.innerHTML = '';
   }
 
-  // ============================================================
-  // SERVICE CARDS
-  // ============================================================
+  /* ============================================================
+     SERVICE CARDS
+     ============================================================ */
   function renderCategories() {
     Object.entries(SERVICES).forEach(([groupId, group]) => {
       const box = $(groupId);
@@ -480,17 +1293,17 @@
       box.replaceChildren();
 
       group.items.forEach(item => {
-        const card = document.createElement('div');
+        const card = document.createElement('button');
+        card.type = 'button';
         card.className = 'opt';
         card.setAttribute('role', 'checkbox');
-        card.setAttribute('tabindex', '0');
         card.setAttribute('aria-checked', 'false');
         card.dataset.serviceId = item.id;
 
-        const check = document.createElement('div');
+        const check = document.createElement('span');
         check.className = 'check';
         check.setAttribute('aria-hidden', 'true');
-        check.textContent = '✓';
+        check.innerHTML = ICONS.check;
 
         const title = document.createElement('b');
         title.textContent = item.t;
@@ -500,11 +1313,7 @@
 
         card.append(check, title, desc);
 
-        const activate = () => toggleService(item.id, card);
-        card.addEventListener('click', activate);
-        card.addEventListener('keydown', e => {
-          if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); activate(); }
-        });
+        card.addEventListener('click', () => toggleService(item.id, card));
 
         box.appendChild(card);
       });
@@ -527,9 +1336,9 @@
     updateProgress();
   }
 
-  // ============================================================
-  // HOTELS
-  // ============================================================
+  /* ============================================================
+     HOTELS
+     ============================================================ */
   async function loadHotels() {
     try {
       const res = await fetch(`${API}/data`, { cache: 'no-store' });
@@ -547,7 +1356,7 @@
 
     if (!approvedHotels.length) {
       const msg = document.createElement('div');
-      msg.className = 'text-white/45 col-span-full py-4 text-center text-[11px] leading-relaxed';
+      msg.className = 'hotel-empty';
       msg.textContent = 'No approved hotels yet. Choose "Serve ALL" below — you will be linked as they come online.';
       list.appendChild(msg);
       return;
@@ -556,12 +1365,12 @@
     approvedHotels.slice(0, 40).forEach(h => {
       const hotelId = h.hotel_id || h.id;
       const label = document.createElement('label');
-      label.className = 'flex items-center gap-2 cursor-pointer py-1';
+      label.className = 'hotel-item';
 
       const cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.value = hotelId;
-      cb.className = 'hotel-cb accent-[#C6FF00]';
+      cb.className = 'hotel-cb';
       cb.addEventListener('change', () => {
         if (cb.checked) $('hotelAll').checked = false;
         updatePreview();
@@ -581,9 +1390,9 @@
     return [...document.querySelectorAll('.hotel-cb:checked')].map(i => i.value);
   }
 
-  // ============================================================
-  // PREVIEW
-  // ============================================================
+  /* ============================================================
+     PREVIEW
+     ============================================================ */
   function updatePreview() {
     const wrap = $('guestPreview');
     wrap.replaceChildren();
@@ -598,41 +1407,43 @@
 
     if (selected.length === 0) {
       const empty = document.createElement('div');
-      empty.className = 'text-[11px] text-white/30 text-center py-6';
+      empty.className = 'preview-empty';
       empty.textContent = 'Select services — they appear here like the guest app.';
       wrap.appendChild(empty);
       return;
     }
 
     const header = document.createElement('div');
-    header.className = 'text-[10px] text-[#C6FF00] font-bold mb-2';
-    header.textContent = `${vendor.toUpperCase()} • ${hub.toUpperCase()} • LIVE IN ${hotelLabel}`;
+    header.className = 'preview-vendor';
+    header.textContent = `${vendor.toUpperCase()} · ${hub.toUpperCase()} · LIVE IN ${hotelLabel}`;
     wrap.appendChild(header);
 
     selected.forEach(id => {
       const svc = serviceById(id);
       if (!svc) return;
+      const group = groupOf(id);
+      const iconName = SERVICES[group]?.icon || 'sparkles';
 
       const row = document.createElement('div');
       row.className = 'pv-row';
 
       const ico = document.createElement('div');
       ico.className = 'pv-ico';
-      ico.textContent = '✨';
+      ico.innerHTML = ICONS[iconName] || ICONS.sparkles;
 
       const mid = document.createElement('div');
-      mid.className = 'flex-1 min-w-0';
+      mid.className = 'pv-mid';
 
       const title = document.createElement('div');
-      title.className = 'font-bold text-[12px]';
+      title.className = 'pv-title';
       title.textContent = svc.t;
 
       const sub = document.createElement('div');
-      sub.className = 'text-[10px] text-white/45 mt-0.5';
-      sub.textContent = `${svc.d} • ${hub}`;
+      sub.className = 'pv-sub';
+      sub.textContent = `${svc.d} · ${hub}`;
 
       const pr = document.createElement('div');
-      pr.className = 'text-[11px] font-black text-[#C6FF00] mt-1';
+      pr.className = 'pv-price';
       pr.textContent = `KSh ${price.toLocaleString()}`;
 
       mid.append(title, sub, pr);
@@ -646,9 +1457,9 @@
     });
   }
 
-  // ============================================================
-  // PROGRESS
-  // ============================================================
+  /* ============================================================
+     PROGRESS
+     ============================================================ */
   function updateProgress() {
     const ch = currentChannel();
     const payOk = (ch === 'paybill'
@@ -675,9 +1486,9 @@
     $('pbar').style.width = Math.round((done / total) * 100) + '%';
   }
 
-  // ============================================================
-  // PAYMENT CHANNEL
-  // ============================================================
+  /* ============================================================
+     PAYMENT CHANNEL
+     ============================================================ */
   function currentChannel() {
     return $('payment_channel').value || 'paybill';
   }
@@ -735,7 +1546,7 @@ Name: ${bizName}`;
   }
 
   function wirePaymentChannel() {
-    const chips = document.querySelectorAll('.paychip[data-channel]');
+    const tabs = document.querySelectorAll('.pay-tab[data-channel]');
     const panels = {
       paybill: $('pay-paybill'),
       till: $('pay-till'),
@@ -744,7 +1555,7 @@ Name: ${bizName}`;
 
     function apply(ch) {
       $('payment_channel').value = ch;
-      chips.forEach(c => {
+      tabs.forEach(c => {
         const on = c.dataset.channel === ch;
         c.classList.toggle('on', on);
         c.setAttribute('aria-checked', String(on));
@@ -752,10 +1563,8 @@ Name: ${bizName}`;
       Object.entries(panels).forEach(([k, el]) => {
         if (el) el.style.display = (k === ch) ? '' : 'none';
       });
-      // Clear hidden channel fields so we don't submit stale data
       if (ch !== 'paybill')    { $('paybill_number').value = ''; $('paybill_account').value = ''; }
       if (ch !== 'till')       { $('till_number').value = ''; }
-      // For send_money, prefill phone from the contact phone if empty
       if (ch === 'send_money' && !$('send_money_phone').value && $('phone').value) {
         $('send_money_phone').value = $('phone').value;
       }
@@ -763,7 +1572,7 @@ Name: ${bizName}`;
       updateProgress();
     }
 
-    chips.forEach(c => c.addEventListener('click', () => apply(c.dataset.channel)));
+    tabs.forEach(c => c.addEventListener('click', () => apply(c.dataset.channel)));
     apply('paybill');
 
     ['paybill_number','paybill_account','till_number','send_money_phone','mpesa_name','price']
@@ -772,7 +1581,6 @@ Name: ${bizName}`;
         if (el) el.addEventListener('input', () => { updatePaymentPreview(); updateProgress(); });
       });
 
-    // Keep send_money in sync with contact phone if user hasn't touched it
     $('phone').addEventListener('input', () => {
       if (currentChannel() === 'send_money' && !$('send_money_phone').dataset.touched) {
         $('send_money_phone').value = $('phone').value;
@@ -784,33 +1592,33 @@ Name: ${bizName}`;
     });
   }
 
-  // ============================================================
-  // HEALTH
-  // ============================================================
+  /* ============================================================
+     HEALTH
+     ============================================================ */
   async function checkHealth(attempt = 1) {
     const badge = $('apiBadge');
+    const text = $('apiBadgeText');
     try {
       const res = await fetch(`${API}/health`, { cache: 'no-store' });
       if (!res.ok) throw new Error('bad status');
       const json = await res.json();
       const os = json.os || 'GuestHub';
-      badge.textContent = `${os} • LIVE`;
-      badge.className = 'badge ok';
+      text.textContent = `${os} · Live`;
+      badge.style.borderColor = 'rgba(254,187,2,.5)';
+      badge.style.color = '#febb02';
     } catch {
       if (attempt < 6) {
-        badge.textContent = `WAKING… (${attempt})`;
-        badge.className = 'badge warn';
+        text.textContent = `Waking… (${attempt})`;
         setTimeout(() => checkHealth(attempt + 1), 1200 * attempt);
       } else {
-        badge.textContent = 'OFFLINE';
-        badge.className = 'badge warn';
+        text.textContent = 'Offline';
       }
     }
   }
 
-  // ============================================================
-  // SUBMIT
-  // ============================================================
+  /* ============================================================
+     SUBMIT
+     ============================================================ */
   async function handleSubmit(e) {
     e.preventDefault();
     clearNotice();
@@ -821,8 +1629,9 @@ Name: ${bizName}`;
 
     function fail(msg) {
       showNotice(msg, 'error');
+      toast(msg, 'error');
       btn.disabled = false;
-      btn.textContent = '🚀 Submit — get reviewed in 24h';
+      btn.innerHTML = 'Submit — get reviewed in 24h';
     }
 
     if (!$('full_name').value.trim() || $('full_name').value.trim().length < 2)
@@ -840,7 +1649,6 @@ Name: ${bizName}`;
     if (!(Number($('price').value) > 0))
       return fail('Base price must be greater than 0.');
 
-    // ---- Payment validation ----
     const payment = { payment_channel: channel };
     if (channel === 'paybill') {
       const num = ($('paybill_number').value || '').replace(/\D/g,'');
@@ -866,9 +1674,8 @@ Name: ${bizName}`;
     if (!$('terms').checked)
       return fail('Please accept the terms to continue.');
 
-    // ---- Send ----
     btn.disabled = true;
-    btn.textContent = '⏳ Creating account…';
+    btn.textContent = 'Creating account…';
 
     const firstService = selected[0];
     const category = SERVICES[groupOf(firstService)]?.label || 'services';
@@ -914,14 +1721,15 @@ Name: ${bizName}`;
 
       const linked = json.hotels_linked ?? hotels.length;
       showNotice(
-        `✅ Welcome, ${payload.full_name}! Your application is pending admin approval. ` +
+        `Welcome, ${payload.full_name}! Your application is pending admin approval. ` +
         `${linked} hotel${linked === 1 ? '' : 's'} linked. ` +
         `Payment: ${channel.replace('_',' ').toUpperCase()}. ` +
         `You'll be able to log in at /vendor-login.html once approved.`,
         'success'
       );
+      toast('Submitted — redirecting to login…');
 
-      btn.textContent = '✅ Submitted — redirecting to login…';
+      btn.textContent = 'Submitted — redirecting to login…';
 
       setTimeout(() => {
         window.location.href = '/vendor-login.html';
@@ -929,19 +1737,23 @@ Name: ${bizName}`;
 
     } catch (err) {
       showNotice('Submission failed: ' + (err.message || 'Unknown error'), 'error');
+      toast('Submission failed: ' + (err.message || 'Unknown error'), 'error');
       btn.disabled = false;
-      btn.textContent = '🚀 Submit — get reviewed in 24h';
+      btn.textContent = 'Submit — get reviewed in 24h';
     }
   }
 
-  // ============================================================
-  // BOOT
-  // ============================================================
+  /* ============================================================
+     BOOT
+     ============================================================ */
   function debounce(fn, ms = 120) {
     let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
   }
 
   function init() {
+    const year = $('year');
+    if (year) year.textContent = new Date().getFullYear();
+
     renderCategories();
     wirePaymentChannel();
     loadHotels();
@@ -984,8 +1796,13 @@ Name: ${bizName}`;
     init();
   }
 
+  /* Service worker for PWA/offline */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
 })();
 </script>
-
 </body>
 </html>
