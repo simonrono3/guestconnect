@@ -2,183 +2,481 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#070707">
-<title>Vendor Login — GuestHub</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#003580">
+<meta name="description" content="Sign in to your GuestHub vendor dashboard.">
+<title>Vendor sign in — GuestHub</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23003580'/%3E%3Crect x='13' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='34' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='13' y='34' width='17' height='17' rx='3' fill='%23fff'/%3E%3Cpath d='M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43' stroke='%23febb02' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/device.css">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GuestHub">
+<meta name="mobile-web-app-capable" content="yes">
+
 <style>
-  :root{
-    --lime:#C6FF00; --gold:#FFC61A; --bg:#060709;
-    --line:rgba(255,255,255,.08); --muted:#8B95A5;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%}
-  body{
-    font-family:Inter,system-ui,-apple-system,sans-serif;
-    background:var(--bg);color:#fff;
-    display:grid;place-items:center;padding:18px;
-    -webkit-font-smoothing:antialiased;
-  }
-  .font-boss{font-family:Anton,sans-serif;letter-spacing:.01em}
+/* =====================================================================
+   Tokens — matched to guesthub.app homepage
+   ===================================================================== */
+:root{
+  --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
+  --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
+  --yellow:#febb02; --yellow-soft:#fff6e0; --yellow-line:#f0dfa0; --yellow-ink:#7a5c00;
+  --green:#008009; --green-soft:#e8f5e9; --green-line:#c3e6c4;
+  --red:#d32f2f; --red-soft:#fdeaea; --red-line:#f4c5c5;
+  --purple:#7c3aed; --purple-soft:#f3e8ff;
+  --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
+  --surface:#fff;
+  --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
+  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --r-sm:6px; --r:8px; --r-lg:12px;
+  --shadow-xs:0 1px 2px rgb(0 0 0/4%);
+  --shadow-sm:0 1px 3px rgb(0 0 0/6%),0 1px 2px rgb(0 0 0/4%);
+  --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
+  --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
+  --header-h:62px;
+  color-scheme:light;
+}
 
-  .glass{
-    background:rgba(18,19,24,.88);
-    backdrop-filter:blur(20px);
-    border:1px solid var(--line);
-    border-radius:20px;
-  }
+*,*::before,*::after{ box-sizing:border-box; }
+*{ margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
 
-  .input{
-    width:100%;
-    background:#0A0A0A;
-    border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;
-    padding:13px 14px;
-    color:#fff;font-size:14px;
-    outline:none;
-    transition:border-color .2s,box-shadow .2s;
-    font-family:inherit;
-  }
-  .input:focus{
-    border-color:var(--lime);
-    box-shadow:0 0 0 3px rgba(198,255,0,.14);
-  }
-  .input::placeholder{color:#5b6473}
+body{
+  font-family:var(--font);
+  font-size:14.5px; line-height:1.5; color:var(--text);
+  background:var(--bg-subtle);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv02','cv03','cv04','cv11';
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+img,svg{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select,textarea{ font:inherit; color:inherit; }
+ul{ list-style:none; }
+::selection{ background:var(--yellow); color:var(--text); }
+:focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
 
-  .label{
-    font-size:10px;font-weight:800;
-    letter-spacing:.12em;text-transform:uppercase;
-    color:var(--muted);margin-top:14px;display:block;
-  }
+/* =====================================================================
+   Header
+   ===================================================================== */
+.header{
+  position:sticky; top:0; z-index:100;
+  background:var(--brand); color:#fff;
+  border-bottom:1px solid rgb(255 255 255 / 10%);
+}
+.header-inner{
+  max-width:1500px; margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; padding:10px 20px; min-height:var(--header-h);
+}
+.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+.brand-logo{ display:block; width:32px; height:32px; flex-shrink:0; }
+.brand-text{ min-width:0; }
+.brand-title{
+  font-size:15px; font-weight:600; letter-spacing:-.02em; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.brand-title .tag{ color:var(--yellow); }
+.brand-sub{
+  color:rgba(255,255,255,.7); font-size:11px; font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  letter-spacing:.02em; margin-top:1px;
+}
+.header-actions{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
 
-  .btn-primary{
-    width:100%;
-    height:52px;
-    border:0;border-radius:999px;
-    background:linear-gradient(90deg,#C6FF00,#A6E22E);
-    color:#000;font-weight:900;font-size:14.5px;
-    cursor:pointer;
-    transition:filter .15s,transform .1s;
-    font-family:inherit;
-  }
-  .btn-primary:hover:not(:disabled){filter:brightness(1.06)}
-  .btn-primary:active:not(:disabled){transform:scale(.99)}
-  .btn-primary:disabled{opacity:.6;cursor:wait}
+/* Health badge */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.3px;
+  color:#fff;
+  white-space:nowrap;
+}
+.badge.ok{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+}
+.badge.warn{
+  background:var(--yellow);
+  border-color:var(--yellow);
+  color:#000;
+}
 
-  .btn-ghost{
-    width:100%;height:44px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:rgba(255,255,255,.04);
-    color:#fff;font-weight:800;font-size:12.5px;
-    cursor:pointer;transition:background .15s;
-    font-family:inherit;
-  }
-  .btn-ghost:hover{background:rgba(255,255,255,.08)}
+/* =====================================================================
+   Buttons
+   ===================================================================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:8px; height:40px; padding:0 16px;
+  font-size:14px; font-weight:500; letter-spacing:-.01em;
+  border-radius:var(--r-sm); border:1px solid transparent;
+  white-space:nowrap; cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease,
+              color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+.btn:active:not(:disabled){ transform:scale(.99); }
+.btn:disabled{ opacity:.6; cursor:wait; }
+.btn-primary{ background:var(--brand-2); color:#fff; box-shadow:var(--shadow-xs); }
+.btn-primary:hover:not(:disabled){ background:var(--brand-3); }
+.btn-lg{ height:48px; padding:0 20px; font-size:15px; border-radius:var(--r); font-weight:600; }
+.btn-ghost{
+  background:transparent; color:rgba(255,255,255,.9);
+  border-color:rgba(255,255,255,.35);
+}
+.btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.5); }
+.btn-sm{ height:34px; padding:0 12px; font-size:13px; }
+.btn .icon{ width:14px; height:14px; }
+.btn-spinner{
+  display:none;
+  width:15px; height:15px;
+  border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:btn-spin .7s linear infinite;
+  flex-shrink:0;
+}
+.btn.is-loading .btn-spinner{ display:block; }
+.btn.is-loading .arrow{ display:none; }
+@keyframes btn-spin{ to{ transform:rotate(360deg); } }
 
-  .notice{
-    display:none;
-    margin:14px 0;
-    padding:12px 14px;
-    border-radius:12px;
-    font-size:12.5px;line-height:1.55;
-    border:1px solid transparent;
-  }
-  .notice.success{
-    display:block;
-    background:rgba(198,255,0,.10);
-    border-color:rgba(198,255,0,.35);
-    color:#E8FFB0;
-  }
-  .notice.error{
-    display:block;
-    background:rgba(255,90,95,.10);
-    border-color:rgba(255,90,95,.35);
-    color:#FFD0D0;
-  }
-  .notice.pending{
-    display:block;
-    background:rgba(255,198,26,.10);
-    border-color:rgba(255,198,26,.35);
-    color:#FFE7A8;
-  }
+/* =====================================================================
+   Login page
+   ===================================================================== */
+.login-page{
+  position:relative;
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:56px 20px 72px;
+  background:var(--bg);
+  overflow:hidden;
+}
+.login-page::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgb(0 53 128 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 53 128 / 4%) 1px, transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 900px 500px at 50% 20%, #000 0%, transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 900px 500px at 50% 20%, #000 0%, transparent 78%);
+  pointer-events:none;
+  z-index:0;
+}
+.login-page > .container{ position:relative; z-index:1; width:100%; }
 
-  .badge{
-    padding:4px 10px;border-radius:999px;
-    font-size:9.5px;font-weight:800;letter-spacing:.06em;
-    background:rgba(255,255,255,.08);
-    border:1px solid var(--line);
-    color:#fff;
-  }
-  .badge.ok{background:var(--lime);color:#000;border-color:var(--lime)}
-  .badge.warn{background:rgba(255,198,26,.15);color:var(--gold);border-color:rgba(255,198,26,.3)}
+@media (max-width:640px){ .login-page{ padding:32px 16px 56px; } }
 
-  .divider{height:1px;background:var(--line);margin:18px 0}
+.login-box{ max-width:440px; margin-inline:auto; }
 
-  .hint{
-    font-size:11px;color:#8B95A5;
-    text-align:center;line-height:1.6;
-  }
-  .hint a{color:var(--lime);text-decoration:none;font-weight:800}
-  .hint a:hover{text-decoration:underline}
+/* Head */
+.login-head{ text-align:center; margin-bottom:32px; }
+.section-label{
+  font-size:13px;
+  font-weight:500;
+  color:var(--brand-2);
+}
+.login-title{
+  margin-top:8px;
+  font-size:clamp(26px, 3.6vw, 34px);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-.03em;
+  color:var(--text);
+}
+.login-lead{
+  margin-top:12px;
+  font-size:15px;
+  line-height:1.55;
+  color:var(--text-2);
+  max-width:380px;
+  margin-inline:auto;
+}
+.login-lead strong{ color:var(--text); font-weight:600; }
+@media (max-width:640px){
+  .login-head{ margin-bottom:24px; }
+  .login-lead{ font-size:14.5px; }
+}
 
-  @media (prefers-reduced-motion: reduce){
-    *{transition:none !important;animation:none !important}
+/* Card */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:28px;
+  box-shadow:var(--shadow-xs);
+}
+@media (max-width:640px){ .card{ padding:22px; } }
+
+/* Fields */
+.field{ margin-top:16px; }
+.field:first-of-type{ margin-top:0; }
+
+label{
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--text-2);
+  margin-bottom:6px;
+}
+label .req{ color:var(--red); font-weight:700; }
+
+.input-wrap{ position:relative; }
+
+.input{
+  width:100%;
+  padding:12px 14px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  color:var(--text);
+  font-size:14px;
+  font-weight:500;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.input::placeholder{ color:var(--text-4); font-weight:400; }
+.input:focus{
+  border-color:var(--brand-2);
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+input[type="password"]{ padding-right:44px; }
+
+/* Password reveal */
+.toggle-pw{
+  position:absolute;
+  top:50%; right:10px;
+  transform:translateY(-50%);
+  width:30px; height:30px;
+  display:grid; place-items:center;
+  border-radius:6px;
+  color:var(--text-3);
+  transition:color .15s ease, background .15s ease;
+}
+.toggle-pw:hover{ color:var(--text); background:var(--bg-subtle); }
+.toggle-pw svg{ width:16px; height:16px; }
+
+/* Message */
+.msg{
+  display:none;
+  align-items:flex-start;
+  gap:10px;
+  padding:12px 14px;
+  border-radius:var(--r);
+  font-size:13.5px;
+  font-weight:500;
+  line-height:1.5;
+  margin-top:16px;
+  border:1px solid;
+}
+.msg.err    { display:flex; background:var(--red-soft);    color:var(--red);       border-color:var(--red-line); }
+.msg.ok     { display:flex; background:var(--green-soft);  color:var(--green);     border-color:var(--green-line); }
+.msg.pending{ display:flex; background:var(--yellow-soft); color:var(--yellow-ink); border-color:var(--yellow-line); }
+.msg svg{ flex-shrink:0; margin-top:2px; width:16px; height:16px; }
+
+/* Submit */
+.btn-submit{ width:100%; margin-top:20px; }
+
+/* Footer note */
+.login-foot{
+  text-align:center;
+  margin-top:24px;
+  font-size:13.5px;
+  color:var(--text-2);
+  line-height:1.6;
+}
+.login-foot a{
+  color:var(--brand-2);
+  font-weight:600;
+  transition:color .15s ease;
+}
+.login-foot a:hover{ color:var(--brand-3); }
+.login-foot .sep{
+  display:inline-block;
+  margin:0 8px;
+  color:var(--text-4);
+}
+
+/* Divider */
+.divider{
+  height:1px;
+  background:var(--border);
+  margin:24px 0;
+}
+
+/* =====================================================================
+   Footer
+   ===================================================================== */
+.footer{
+  padding:28px 20px;
+  background:var(--bg-subtle);
+  border-top:1px solid var(--border);
+  text-align:center;
+  font-size:12.5px;
+  color:var(--text-3);
+}
+.footer strong{ color:var(--text-2); font-weight:600; }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
   }
+}
 </style>
 </head>
 <body>
 
-<div class="glass" style="width:100%;max-width:420px;padding:24px">
+<!-- ============================= Header ============================= -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="brand" aria-label="GuestHub home">
+      <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect width="64" height="64" rx="14" fill="#ffffff"/>
+        <rect x="13" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="34" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="13" y="34" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
+              stroke="#febb02" stroke-width="4.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-title">GuestHub <span class="tag">Vendors</span></div>
+        <div class="brand-sub">Diani · Wasini · SGR · World</div>
+      </div>
+    </a>
 
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-4">
-    <div class="flex items-center gap-2 flex-wrap">
-      <span class="font-boss text-[20px] text-[#FFD400]">GUESTHUB</span>
-      <span class="text-[10px] tracking-widest text-white/40 font-bold">VENDOR LOGIN</span>
+    <div class="header-actions">
+      <span id="apiBadge" class="badge">
+        <span id="apiBadgeText">Connecting…</span>
+      </span>
+      <a href="/vendor-signup.html" class="btn btn-ghost btn-sm">
+        Become a vendor
+      </a>
     </div>
-    <span id="apiBadge" class="badge">…</span>
   </div>
+</header>
 
-  <h1 class="font-boss text-[28px] leading-[1.05] m-0 uppercase">
-    Welcome <span class="text-[#C6FF00]">back</span>
-  </h1>
-  <p class="text-[12.5px] text-white/55 mt-2 mb-1 leading-relaxed">
-    Sign in to see new jobs, manage services and update your Paybill / Till.
-    Guests pay <strong class="text-white">direct to your M-Pesa</strong>.
-  </p>
+<!-- ============================= Login ============================= -->
+<main class="login-page">
+  <div class="container">
+    <div class="login-box">
 
-  <div id="notice" class="notice" role="status" aria-live="polite"></div>
+      <div class="login-head">
+        <div class="section-label">Vendor dashboard</div>
+        <h1 class="login-title">Welcome back</h1>
+        <p class="login-lead">
+          Sign in to see new jobs, manage services and update your
+          <strong>Paybill / Till</strong>. Guests pay direct to your M-Pesa.
+        </p>
+      </div>
 
-  <form id="loginForm" novalidate>
+      <section class="card">
+        <form id="loginForm" novalidate>
 
-    <label class="label" for="email">Email</label>
-    <input id="email" name="email" type="email" class="input" required
-           autocomplete="email" inputmode="email" placeholder="you@gmail.com">
+          <div class="field">
+            <label for="email">Email <span class="req">*</span></label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="input"
+              required
+              autocomplete="email"
+              inputmode="email"
+              placeholder="you@gmail.com"
+              spellcheck="false"
+            >
+          </div>
 
-    <label class="label" for="password">Password</label>
-    <input id="password" name="password" type="password" class="input" required
-           autocomplete="current-password" placeholder="Your password">
+          <div class="field">
+            <label for="password">Password <span class="req">*</span></label>
+            <div class="input-wrap">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="input"
+                required
+                autocomplete="current-password"
+                placeholder="Your password"
+              >
+              <button
+                type="button"
+                class="toggle-pw"
+                id="togglePw"
+                aria-label="Show password"
+                aria-pressed="false"
+              >
+                <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
 
-    <button type="submit" class="btn-primary mt-5" id="btn">
-      🔓 Sign in
-    </button>
+          <div id="notice" class="msg" role="status" aria-live="polite"></div>
 
-  </form>
+          <button class="btn btn-primary btn-lg btn-submit" type="submit" id="btn">
+            <span class="btn-spinner" aria-hidden="true"></span>
+            <span class="btn-text">Sign in to dashboard</span>
+            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 5l7 7-7 7"/>
+            </svg>
+          </button>
 
-  <div class="divider"></div>
+        </form>
+      </section>
 
-  <div class="hint">
-    New vendor? <a href="/vendor-signup.html">Create an account →</a><br>
-    <span style="display:block;margin-top:6px;color:#5b6473">
-      Approval usually takes under 24 hours.
-    </span>
+      <p class="login-foot">
+        New vendor? <a href="/vendor-signup.html">Create an account</a>
+        <span class="sep">·</span>
+        <a href="/contact.html">Need help?</a>
+      </p>
+
+      <div class="divider"></div>
+
+      <p class="login-foot" style="font-size:12.5px; color:var(--text-3); margin-top:0">
+        Approval usually takes under 24 hours.
+      </p>
+
+    </div>
   </div>
+</main>
 
-</div>
+<!-- ============================= Footer ============================= -->
+<footer class="footer">
+  © <span id="year"></span> <strong>GuestHub</strong> · Made in Kenya
+</footer>
 
 <script>
 (() => {
@@ -187,50 +485,72 @@
   const API = '/api';
   const $ = id => document.getElementById(id);
   const notice = $('notice');
+  const btn = $('btn');
+  const btnText = btn.querySelector('.btn-text');
+  const emailInput = $('email');
+  const passwordInput = $('password');
+  const togglePw = $('togglePw');
+  const eyeIcon = $('eyeIcon');
 
-  // ============================================================
-  // NOTICE
-  // ============================================================
-  function show(msg, type = 'error') {
-    notice.className = 'notice ' + type;
-    notice.textContent = msg;
+  /* Icons */
+  const ICONS = {
+    ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+    err: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>',
+    pending: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+    eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/>'
+  };
+
+  function show(msg, type = 'err') {
+    const ic = type === 'ok' ? ICONS.ok : type === 'pending' ? ICONS.pending : ICONS.err;
+    notice.className = 'msg ' + type;
+    notice.innerHTML = ic + '<span>' + msg + '</span>';
   }
   function clearNotice() {
-    notice.className = 'notice';
-    notice.textContent = '';
+    notice.className = 'msg';
+    notice.innerHTML = '';
   }
 
-  // ============================================================
-  // HEALTH CHECK (retry for cold starts)
-  // ============================================================
+  /* Password reveal */
+  togglePw.addEventListener('click', () => {
+    const showing = passwordInput.type === 'text';
+    passwordInput.type = showing ? 'password' : 'text';
+    togglePw.setAttribute('aria-pressed', String(!showing));
+    togglePw.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    eyeIcon.innerHTML = showing ? ICONS.eye : ICONS.eyeOff;
+    passwordInput.focus();
+  });
+
+  /* Health check with retry for cold starts */
   async function checkHealth(attempt = 1) {
     const badge = $('apiBadge');
+    const badgeText = $('apiBadgeText');
     try {
       const res = await fetch(`${API}/health`, { cache: 'no-store' });
-      if (!res.ok) throw new Error('bad');
+      if (!res.ok) throw new Error('bad status');
       const json = await res.json();
-      badge.textContent = (json.os || 'GuestHub') + ' • LIVE';
-      badge.className = 'badge ok';
+      badgeText.textContent = (json.os || 'GuestHub') + ' · Live';
+      badge.classList.add('ok');
+      badge.classList.remove('warn');
     } catch {
       if (attempt < 6) {
-        badge.textContent = `WAKING… (${attempt})`;
-        badge.className = 'badge warn';
+        badgeText.textContent = `Waking… (${attempt})`;
+        badge.classList.add('warn');
+        badge.classList.remove('ok');
         setTimeout(() => checkHealth(attempt + 1), 1200 * attempt);
       } else {
-        badge.textContent = 'OFFLINE';
-        badge.className = 'badge warn';
+        badgeText.textContent = 'Offline';
+        badge.classList.add('warn');
+        badge.classList.remove('ok');
       }
     }
   }
 
-  // ============================================================
-  // ALREADY LOGGED IN? (token present → straight to dashboard)
-  // ============================================================
+  /* Already logged in? Verify token then redirect */
   (function redirectIfLoggedIn() {
     const token = localStorage.getItem('vendor_token');
     if (!token) return;
 
-    // Verify the token is still valid before redirecting
     fetch(`${API}/vendor/me`, {
       headers: { Authorization: 'Bearer ' + token }
     })
@@ -238,38 +558,29 @@
         if (r.ok) {
           location.replace('/vendor-dashboard.html');
         } else {
-          // Stale token — clean up
           localStorage.removeItem('vendor_token');
         }
       })
-      .catch(() => { /* offline — let the user sign in manually */ });
+      .catch(() => { /* offline — let user sign in manually */ });
   })();
 
-  // ============================================================
-  // LOGIN
-  // ============================================================
+  /* Login */
   async function handleLogin(e) {
     e.preventDefault();
     clearNotice();
 
-    const btn = $('btn');
-    const email = $('email').value.trim().toLowerCase();
-    const password = $('password').value;
+    const email = emailInput.value.trim().toLowerCase();
+    const password = passwordInput.value;
 
-    // ---- Client-side validation (mirrors server rules) ----
-    if (!email) {
-      return show('Please enter your email.');
-    }
+    if (!email) { show('Please enter your email.'); emailInput.focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return show('That email doesn\'t look right.');
+      show("That email doesn't look right."); emailInput.focus(); return;
     }
-    if (!password) {
-      return show('Please enter your password.');
-    }
+    if (!password) { show('Please enter your password.'); passwordInput.focus(); return; }
 
-    // ---- Send ----
     btn.disabled = true;
-    btn.textContent = '⏳ Signing in…';
+    btn.classList.add('is-loading');
+    btnText.textContent = 'Signing in';
 
     try {
       const res = await fetch(`${API}/vendors/login`, {
@@ -280,63 +591,55 @@
 
       const json = await res.json().catch(() => ({}));
 
-      // ---- Handle each server response explicitly ----
       if (res.status === 401) {
         throw new Error(json.error || 'Wrong email or password.');
       }
       if (res.status === 404) {
-        throw new Error(
-          'No vendor found with that email. ' +
-          'Did you sign up with a different address?'
-        );
+        throw new Error('No vendor found with that email. Did you sign up with a different address?');
       }
       if (res.status === 403) {
-        // Server returns "Vendor not approved. Status: pending" — show nicely
         const raw = json.error || 'Vendor not approved yet.';
-        const statusMatch = raw.match(/Status:\s*(\w+)/i);
-        const status = statusMatch ? statusMatch[1].toLowerCase() : 'pending';
+        const match = raw.match(/Status:\s*(\w+)/i);
+        const status = match ? match[1].toLowerCase() : 'pending';
 
         if (status === 'pending') {
           show(
-            `⏳ Your application is still pending admin approval. ` +
-            `We'll email you the moment it's approved — usually within 24 hours. ` +
-            `Check back soon, or contact support if it's been longer.`,
+            "<strong>Application pending.</strong> We'll email you the moment it's approved — " +
+            "usually within 24 hours. Check back soon, or contact support if it's been longer.",
             'pending'
           );
         } else if (status === 'rejected') {
           show(
-            `❌ Your vendor application was not approved. ` +
-            `If you think this is a mistake, please contact support.`,
-            'error'
+            "<strong>Application not approved.</strong> If you think this is a mistake, please contact support.",
+            'err'
           );
         } else if (status === 'blocked') {
           show(
-            `🚫 This account has been blocked. Contact support if you think this is a mistake.`,
-            'error'
+            "<strong>Account blocked.</strong> Contact support if you think this is a mistake.",
+            'err'
           );
         } else {
           show(raw, 'pending');
         }
         btn.disabled = false;
-        btn.textContent = '🔓 Sign in';
+        btn.classList.remove('is-loading');
+        btnText.textContent = 'Sign in to dashboard';
         return;
       }
       if (!res.ok || json.ok === false) {
         throw new Error(json.error || `Login failed (${res.status})`);
       }
 
-      // ---- Success ----
       const { token, vendor } = json;
       if (!token) throw new Error('Server did not return a session token.');
 
-      // Store ONLY what the dashboard actually reads
       localStorage.setItem('vendor_token', token);
 
       show(
-        `✅ Welcome back, ${vendor?.vendor_name || vendor?.full_name || 'vendor'}!`,
-        'success'
+        'Welcome back, ' + (vendor?.vendor_name || vendor?.full_name || 'vendor') + '. Redirecting…',
+        'ok'
       );
-      btn.textContent = '✅ Redirecting…';
+      btnText.textContent = 'Redirecting';
 
       setTimeout(() => {
         location.href = '/vendor-dashboard.html';
@@ -345,34 +648,41 @@
     } catch (err) {
       show(err.message || 'Login failed. Please try again.');
       btn.disabled = false;
-      btn.textContent = '🔓 Sign in';
+      btn.classList.remove('is-loading');
+      btnText.textContent = 'Sign in to dashboard';
+      passwordInput.focus();
+      passwordInput.select();
     }
   }
 
-  // ============================================================
-  // WIRE UP
-  // ============================================================
+  /* Wire up */
   $('loginForm').addEventListener('submit', handleLogin);
 
-  // Enter key on email should jump to password
-  $('email').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      $('password').focus();
-    }
+  emailInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); passwordInput.focus(); }
   });
 
-  // Auto-fill email if user just came back from signup
+  /* Prefill email if user came from signup */
   const lastEmail = localStorage.getItem('vendor_last_email');
   if (lastEmail) {
-    $('email').value = lastEmail;
-    $('password').focus();
+    emailInput.value = lastEmail;
+    passwordInput.focus();
     localStorage.removeItem('vendor_last_email');
   }
 
+  /* Footer year */
+  const yearEl = $('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
   checkHealth();
+
+  /* Service worker for PWA */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+  }
 })();
 </script>
-
 </body>
 </html>
