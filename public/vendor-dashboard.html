@@ -2,267 +2,1119 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#070707">
-<title>GuestHub Vendor OS</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;800&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#003580">
+<meta name="description" content="GuestHub Vendor OS — manage jobs, services and direct-to-M-Pesa payments.">
+<title>Vendor OS — GuestHub</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23003580'/%3E%3Crect x='13' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='34' y='13' width='17' height='17' rx='3' fill='%23fff'/%3E%3Crect x='13' y='34' width='17' height='17' rx='3' fill='%23fff'/%3E%3Cpath d='M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43' stroke='%23febb02' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+
+<link rel="stylesheet" href="/assets/device.css">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GuestHub">
+<meta name="mobile-web-app-capable" content="yes">
+
 <style>
-  :root{
-    --lime:#c6ff00; --gold:#fbbf24; --bg:#070707; --card:#121212;
-    --card2:#0b0b0b; --border:#242424; --muted:#888;
-    --ok:#22c55e; --danger:#ef4444; --blue:#38bdf8;
+/* =====================================================================
+   Tokens — matched to guesthub.app homepage
+   ===================================================================== */
+:root{
+  --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
+  --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
+  --yellow:#febb02; --yellow-soft:#fff6e0; --yellow-line:#f0dfa0; --yellow-ink:#7a5c00;
+  --green:#008009; --green-soft:#e8f5e9; --green-line:#c3e6c4;
+  --red:#d32f2f; --red-soft:#fdeaea; --red-line:#f4c5c5;
+  --purple:#7c3aed; --purple-soft:#f3e8ff;
+  --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
+  --surface:#fff;
+  --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
+  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --r-sm:6px; --r:8px; --r-lg:12px;
+  --shadow-xs:0 1px 2px rgb(0 0 0/4%);
+  --shadow-sm:0 1px 3px rgb(0 0 0/6%),0 1px 2px rgb(0 0 0/4%);
+  --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
+  --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
+  --header-h:62px;
+  color-scheme:light;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+*{ margin:0; padding:0; }
+html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
+
+body{
+  font-family:var(--font);
+  font-size:14.5px; line-height:1.5; color:var(--text);
+  background:var(--bg-subtle);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv02','cv03','cv04','cv11';
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+img,svg{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select,textarea{ font:inherit; color:inherit; }
+ul{ list-style:none; }
+::selection{ background:var(--yellow); color:var(--text); }
+:focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
+
+.icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
+
+/* =====================================================================
+   Header
+   ===================================================================== */
+.header{
+  position:sticky; top:0; z-index:100;
+  background:var(--brand); color:#fff;
+  border-bottom:1px solid rgb(255 255 255 / 10%);
+}
+.header-inner{
+  max-width:900px; margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:10px 16px; min-height:var(--header-h);
+}
+.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+.brand-logo{ display:block; width:32px; height:32px; flex-shrink:0; }
+.brand-text{ min-width:0; }
+.brand-title{
+  font-size:15px; font-weight:600; letter-spacing:-.02em; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.brand-title .tag{ color:var(--yellow); }
+.brand-sub{
+  color:rgba(255,255,255,.7); font-size:11px; font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  letter-spacing:.02em; margin-top:1px;
+}
+.vendor-mini{ text-align:right; flex-shrink:0; min-width:0; }
+.vendor-mini b{
+  color:#fff; font-weight:600; font-size:13px;
+  display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:160px;
+}
+.vendor-mini small{ color:rgba(255,255,255,.65); font-size:11px; font-weight:500; }
+
+/* =====================================================================
+   Buttons
+   ===================================================================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:6px; height:40px; padding:0 14px;
+  font-size:13px; font-weight:600; letter-spacing:-.01em;
+  border-radius:var(--r-sm); border:1px solid transparent;
+  white-space:nowrap; cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease,
+              color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+.btn:active:not(:disabled){ transform:scale(.99); }
+.btn:disabled{ opacity:.55; cursor:not-allowed; }
+.btn-primary{ background:var(--brand-2); color:#fff; box-shadow:var(--shadow-xs); }
+.btn-primary:hover:not(:disabled){ background:var(--brand-3); }
+.btn-secondary{ background:#fff; color:var(--text); border-color:var(--border-2); box-shadow:var(--shadow-xs); }
+.btn-secondary:hover:not(:disabled){ background:var(--bg-subtle); border-color:var(--border-3); }
+.btn-success{ background:var(--green); color:#fff; }
+.btn-success:hover:not(:disabled){ filter:brightness(.94); }
+.btn-warn{ background:var(--yellow); color:#000; }
+.btn-warn:hover:not(:disabled){ filter:brightness(.96); }
+.btn-danger{ background:#fff; color:var(--red); border-color:var(--red-line); }
+.btn-danger:hover:not(:disabled){ background:var(--red-soft); }
+.btn-dark{ background:#fff; color:var(--text); border-color:var(--border-2); }
+.btn-dark:hover:not(:disabled){ background:var(--bg-subtle); }
+.btn-dark-solid{ background:#1a1a1a; color:#fff; }
+.btn-dark-solid:hover:not(:disabled){ background:#000; }
+.btn-full{ width:100%; margin-top:8px; }
+.btn-sm{ height:32px; padding:0 10px; font-size:12px; }
+.btn .icon{ width:14px; height:14px; }
+
+/* =====================================================================
+   Container + layout
+   ===================================================================== */
+.container{ max-width:900px; margin:0 auto; padding:16px 14px 96px; }
+
+/* =====================================================================
+   Wallet / Payment card
+   ===================================================================== */
+.wallet{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:22px;
+  box-shadow:var(--shadow-xs);
+  margin-bottom:16px;
+}
+.wallet-top{ display:flex; align-items:flex-start; gap:14px; }
+.wallet-icon{
+  display:grid; place-items:center;
+  width:44px; height:44px;
+  border-radius:var(--r);
+  background:var(--brand-soft);
+  color:var(--brand-2);
+  flex-shrink:0;
+}
+.wallet-icon svg{ width:22px; height:22px; }
+.wallet-body{ min-width:0; flex:1; }
+.wallet-label{
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.4px; text-transform:uppercase;
+  color:var(--text-3);
+  display:flex; align-items:center; gap:6px;
+  margin-bottom:6px;
+}
+.wallet h1{
+  margin:0;
+  font-size:clamp(20px, 3.6vw, 26px);
+  font-weight:700;
+  letter-spacing:-.03em;
+  line-height:1.15;
+  color:var(--text);
+  word-break:break-all;
+}
+.wallet-sub{
+  margin-top:4px;
+  font-size:13px;
+  color:var(--text-2);
+  font-weight:500;
+}
+
+.wallet-ussd{
+  margin-top:16px;
+  padding:14px;
+  background:var(--bg-subtle);
+  border:1px dashed var(--border-2);
+  border-radius:var(--r-sm);
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.7;
+  white-space:pre-line;
+  color:var(--text-2);
+}
+.wallet-ussd.empty{ color:var(--yellow-ink); }
+
+.wallet-actions{
+  display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;
+}
+.wallet-actions .btn{ flex:1; min-width:0; }
+
+/* =====================================================================
+   Stats
+   ===================================================================== */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+@media (max-width:520px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+
+.stat{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:16px 12px;
+  text-align:center;
+  box-shadow:var(--shadow-xs);
+}
+.stat b{
+  display:block;
+  font-size:clamp(20px, 3.4vw, 26px);
+  font-weight:700;
+  letter-spacing:-.03em;
+  color:var(--text);
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.stat small{
+  display:block;
+  color:var(--text-3);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  margin-top:8px;
+}
+
+/* =====================================================================
+   Availability row
+   ===================================================================== */
+.availability{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:14px 16px;
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  box-shadow:var(--shadow-xs);
+}
+.availability-left{ min-width:0; flex:1; }
+.availability-left b{
+  display:flex; align-items:center; gap:7px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--text);
+}
+.availability-left .dot{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--green);
+  flex-shrink:0;
+  animation:pulse 2s ease-in-out infinite;
+}
+.availability.off .availability-left .dot{ background:var(--text-4); animation:none; }
+.availability-left small{
+  display:block;
+  color:var(--text-3);
+  font-size:12px;
+  margin-top:4px;
+  font-weight:500;
+}
+@keyframes pulse{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%    { opacity:.5; transform:scale(.85); }
+}
+
+.toggle{
+  width:50px; height:28px;
+  background:var(--border-3);
+  border-radius:999px;
+  position:relative;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:background .2s ease;
+  border:0;
+  padding:0;
+}
+.toggle::after{
+  content:"";
+  position:absolute;
+  width:22px; height:22px;
+  left:3px; top:3px;
+  border-radius:50%;
+  background:#fff;
+  transition:left .2s ease;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on{ background:var(--green); }
+.toggle.on::after{ left:25px; }
+.toggle.busy{ opacity:.5; pointer-events:none; }
+
+/* =====================================================================
+   Tabs
+   ===================================================================== */
+.tabs-wrap{
+  position:sticky;
+  top:var(--header-h);
+  z-index:80;
+  background:var(--bg-subtle);
+  padding:10px 0 12px;
+  margin:0 -14px 4px;
+  padding-left:14px;
+  padding-right:14px;
+}
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  -ms-overflow-style:none;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:2px;
+}
+.tabs::-webkit-scrollbar{ display:none; }
+.tab{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 14px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:999px;
+  color:var(--text-2);
+  font-size:12.5px;
+  font-weight:600;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:all .15s ease;
+  letter-spacing:-.01em;
+}
+.tab:hover{ border-color:var(--border-3); color:var(--text); }
+.tab.active{
+  background:var(--brand-2);
+  border-color:var(--brand-2);
+  color:#fff;
+  box-shadow:var(--shadow-xs);
+}
+.tab .icon{ width:14px; height:14px; opacity:.9; }
+.tab.active .icon{ opacity:1; }
+
+/* =====================================================================
+   Cards
+   ===================================================================== */
+.view{ padding-top:6px; }
+.view.hidden{ display:none; }
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:18px;
+  margin-bottom:12px;
+  box-shadow:var(--shadow-xs);
+}
+.card-title{
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:var(--text);
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:6px;
+}
+.card-title .icon{ color:var(--brand-2); width:16px; height:16px; }
+.card-sub{
+  font-size:12.5px;
+  color:var(--text-3);
+  line-height:1.55;
+}
+
+/* =====================================================================
+   Job card
+   ===================================================================== */
+.job{ border-left:3px solid var(--brand-2); }
+.job-new{ border-left-color:var(--yellow); }
+
+.job-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:12px;
+}
+.job-heading{ min-width:0; flex:1; }
+.job-title{
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:var(--text);
+  line-height:1.3;
+}
+.job-ref{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.3px;
+  color:var(--brand-2);
+  margin-top:4px;
+}
+.job-hotel{
+  display:block;
+  font-size:12px;
+  color:var(--text-3);
+  margin-top:4px;
+  font-weight:500;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:3px 9px;
+  border-radius:999px;
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.2px;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.badge-new      { background:var(--yellow-soft); color:var(--yellow-ink); border-color:var(--yellow-line); }
+.badge-active   { background:var(--brand-soft);  color:var(--brand-2);     border-color:var(--brand-line); }
+.badge-done     { background:var(--green-soft);  color:var(--green);       border-color:var(--green-line); }
+.badge-danger   { background:var(--red-soft);    color:var(--red);         border-color:var(--red-line); }
+.badge-neutral  { background:var(--bg-subtle);   color:var(--text-3);      border-color:var(--border); }
+
+.job-meta{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:6px;
+  font-size:12.5px;
+  color:var(--text-2);
+  line-height:1.6;
+  margin-bottom:14px;
+}
+@media (min-width:520px){
+  .job-meta{ grid-template-columns:1fr 1fr; }
+}
+.job-meta-row{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  min-width:0;
+}
+.job-meta-row .k{
+  color:var(--text-3);
+  font-weight:500;
+  flex-shrink:0;
+}
+.job-meta-row .v{
+  color:var(--text);
+  font-weight:600;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.job-meta-row .v.lime{ color:var(--brand-2); }
+
+.job-notes{
+  margin-top:8px;
+  padding:10px 12px;
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:12.5px;
+  color:var(--text-2);
+  line-height:1.55;
+}
+
+.job-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:6px;
+}
+@media (max-width:400px){
+  .job-actions{ grid-template-columns:1fr; }
+}
+
+/* =====================================================================
+   Service card
+   ===================================================================== */
+.service{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:8px;
+  box-shadow:var(--shadow-xs);
+}
+.service-left{ min-width:0; flex:1; }
+.service-name{
+  font-weight:600;
+  font-size:13.5px;
+  color:var(--text);
+  line-height:1.3;
+}
+.service-sub{
+  font-size:11.5px;
+  color:var(--text-3);
+  margin-top:2px;
+  font-weight:500;
+}
+.service-price{
+  color:var(--brand-2);
+  font-weight:700;
+  font-size:13.5px;
+  flex-shrink:0;
+  font-variant-numeric:tabular-nums;
+}
+
+/* =====================================================================
+   Hotel row
+   ===================================================================== */
+.hotel-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:8px;
+  box-shadow:var(--shadow-xs);
+}
+.hotel-left{ min-width:0; flex:1; }
+.hotel-name{
+  font-weight:600;
+  font-size:13.5px;
+  color:var(--text);
+  line-height:1.3;
+}
+.hotel-sub{
+  font-size:11.5px;
+  color:var(--text-3);
+  margin-top:2px;
+  font-weight:500;
+}
+.hotel-status{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:3px 9px;
+  border-radius:999px;
+  font-size:10.5px;
+  font-weight:600;
+  background:var(--green-soft);
+  color:var(--green);
+  border:1px solid var(--green-line);
+  flex-shrink:0;
+}
+.hotel-status::before{
+  content:"";
+  width:5px; height:5px;
+  border-radius:50%;
+  background:var(--green);
+}
+
+/* =====================================================================
+   Profile rows
+   ===================================================================== */
+.profile-row{
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.profile-row:last-child{ border-bottom:0; }
+.profile-label{
+  color:var(--text-3);
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.profile-value{
+  margin-top:2px;
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--text);
+  word-break:break-word;
+  line-height:1.5;
+}
+
+/* =====================================================================
+   Empty & loading
+   ===================================================================== */
+.empty{
+  text-align:center;
+  padding:48px 20px;
+  color:var(--text-3);
+  font-size:13.5px;
+  line-height:1.6;
+}
+.empty-icon{
+  display:grid;
+  place-items:center;
+  width:56px; height:56px;
+  margin:0 auto 14px;
+  border-radius:var(--r-sm);
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  color:var(--text-4);
+}
+.empty-icon svg{ width:24px; height:24px; }
+.empty b{
+  display:block;
+  color:var(--text);
+  font-size:15px;
+  font-weight:600;
+  margin-bottom:6px;
+}
+.empty p{ margin:0 0 16px; }
+.empty .btn{ display:inline-flex; }
+
+.loader{
+  text-align:center;
+  padding:48px 20px;
+  color:var(--text-3);
+  font-size:13.5px;
+  font-weight:500;
+}
+.loader::before{
+  content:"";
+  display:block;
+  width:28px; height:28px;
+  margin:0 auto 12px;
+  border:3px solid var(--border);
+  border-top-color:var(--brand-2);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* =====================================================================
+   Forms (modals)
+   ===================================================================== */
+.form-group{ margin-bottom:14px; }
+.form-group label{
+  display:block;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--text-2);
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.input,.textarea{
+  width:100%;
+  padding:12px 14px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  color:var(--text);
+  font-size:13.5px;
+  font-weight:500;
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  font-family:inherit;
+}
+.input::placeholder,.textarea::placeholder{ color:var(--text-4); font-weight:400; }
+.input:focus,.textarea:focus{
+  border-color:var(--brand-2);
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+.textarea{ min-height:80px; resize:vertical; }
+
+/* Checkbox grid */
+.chk-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:4px;
+}
+@media (max-width:520px){ .chk-grid{ grid-template-columns:1fr; } }
+
+.chk{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  background:#fff;
+  border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--text);
+  cursor:pointer;
+  transition:border-color .15s ease, background .15s ease;
+  user-select:none;
+}
+.chk:hover{ border-color:var(--border-3); }
+.chk input{
+  width:16px; height:16px;
+  accent-color:var(--brand-2);
+  flex-shrink:0;
+  cursor:pointer;
+}
+.chk:has(input:checked){
+  border-color:var(--brand-2);
+  background:var(--brand-soft);
+  color:var(--brand);
+}
+
+/* Payment channel chips */
+.pay-tabs{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+  margin-bottom:16px;
+}
+.paychip{
+  padding:12px 10px;
+  background:#fff;
+  border:1.5px solid var(--border-2);
+  border-radius:var(--r);
+  color:var(--text-2);
+  font-size:12px;
+  font-weight:600;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  font-family:inherit;
+  transition:all .15s ease;
+  text-align:center;
+  letter-spacing:-.01em;
+}
+.paychip .icon{ width:18px; height:18px; }
+.paychip:hover{ border-color:var(--border-3); color:var(--text); }
+.paychip.on{
+  border-color:var(--brand-2);
+  background:var(--brand-soft);
+  color:var(--brand-2);
+  box-shadow:0 4px 12px rgba(0,113,194,.1);
+}
+
+/* =====================================================================
+   Modal
+   ===================================================================== */
+.modal{
+  position:fixed; inset:0; z-index:500;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  padding:0;
+}
+.modal.show{ display:flex; }
+.modal-box{
+  width:100%;
+  max-width:600px;
+  max-height:92vh;
+  overflow:auto;
+  padding:22px;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-lg);
+  animation:up .22s ease;
+}
+@keyframes up{
+  from{ opacity:0; transform:translateY(24px); }
+  to{ opacity:1; transform:none; }
+}
+@media (min-width:700px){
+  .modal{ align-items:center; padding:20px; }
+  .modal-box{ border-radius:var(--r-lg); }
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.modal-head b{
+  font-size:17px;
+  font-weight:700;
+  letter-spacing:-.01em;
+  color:var(--text);
+  display:flex; align-items:center; gap:8px;
+}
+.modal-head b .icon{ color:var(--brand-2); width:17px; height:17px; }
+
+/* =====================================================================
+   Toast
+   ===================================================================== */
+.toast{
+  position:fixed;
+  left:50%; bottom:24px;
+  transform:translateX(-50%) translateY(140%);
+  background:#1a1a1a;
+  color:#fff;
+  padding:13px 20px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:500;
+  z-index:999;
+  transition:transform .28s cubic-bezier(.3,1.3,.5,1);
+  box-shadow:var(--shadow-lg);
+  max-width:calc(100vw - 32px);
+  text-align:center;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.toast.show{ transform:translateX(-50%) translateY(0); }
+.toast.err{ background:var(--red); }
+.toast svg{ flex-shrink:0; width:16px; height:16px; }
+
+/* =====================================================================
+   Icons-in-text helper
+   ===================================================================== */
+.icon-inline{
+  display:inline-block;
+  width:14px; height:14px;
+  vertical-align:-2px;
+  margin-right:5px;
+  color:var(--text-3);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
   }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:#fff;font-family:Inter,sans-serif;padding-bottom:90px;-webkit-font-smoothing:antialiased}
-  button,input,textarea,select{font-family:inherit}
-  button{cursor:pointer}
-
-  header{position:sticky;top:0;z-index:100;background:rgba(7,7,7,.94);backdrop-filter:blur(15px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .brand{font-family:Space Grotesk;font-weight:800;font-size:17px}
-  .brand span{color:var(--lime)}
-  .vendor-mini{text-align:right;font-size:10px;color:var(--muted)}
-  .vendor-mini b{color:#fff;font-weight:800;display:block;font-size:12px}
-
-  .container{max-width:900px;margin:auto}
-
-  .wallet{margin:14px;background:linear-gradient(135deg,#c6ff00,#fbbf24);color:#000;border-radius:22px;padding:20px;box-shadow:0 15px 40px rgba(198,255,0,.08)}
-  .wallet-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-  .wallet small{font-weight:800}
-  .wallet h1{margin:5px 0 3px;font-family:Space Grotesk;font-size:26px;line-height:1.1;word-break:break-all}
-  .wallet-sub{font-size:11px;opacity:.75}
-  .wallet-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-
-  .btn{padding:11px 14px;border:0;border-radius:11px;font-weight:800;font-size:12px;transition:.15s}
-  .btn:active{transform:scale(.97)}
-  .btn:disabled{opacity:.55;cursor:not-allowed}
-  .btn-a{background:var(--lime);color:#000}
-  .btn-g{background:var(--gold);color:#000}
-  .btn-d{background:#202020;color:#fff;border:1px solid #333}
-  .btn-red{background:#3a1111;color:#ff7777;border:1px solid #572020}
-  .btn-blue{background:#082c3d;color:#38bdf8;border:1px solid #10465c}
-  .btn-black{background:#000;color:#fff}
-  .btn-full{width:100%}
-
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:0 14px}
-  .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 8px;text-align:center}
-  .stat b{display:block;font-family:Space Grotesk;font-size:20px}
-  .stat small{color:var(--muted);font-size:8px;font-weight:800}
-
-  .availability{margin:12px 14px;padding:13px;background:var(--card);border:1px solid var(--border);border-radius:15px;display:flex;justify-content:space-between;align-items:center}
-  .availability-left b{font-size:13px}
-  .availability-left small{display:block;color:var(--muted);margin-top:3px;font-size:10px}
-
-  .toggle{width:50px;height:28px;background:#333;border-radius:999px;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
-  .toggle::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.2s}
-  .toggle.on{background:var(--ok)}
-  .toggle.on::after{left:25px}
-  .toggle.busy{opacity:.5;pointer-events:none}
-
-  .tabs{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;position:sticky;top:62px;z-index:80;background:var(--bg)}
-  .tabs::-webkit-scrollbar{display:none}
-  .tab{white-space:nowrap;padding:10px 15px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:#fff;font-weight:800;font-size:11px}
-  .tab.active{background:var(--lime);color:#000}
-
-  .view{padding:0 14px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:11px}
-  .card-title{font-family:Space Grotesk;font-size:17px;margin-bottom:5px}
-  .muted{color:var(--muted)}
-  .small{font-size:10px}
-
-  .job{border-left:4px solid var(--lime)}
-  .job-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-  .job-title{font-family:Space Grotesk;font-size:15px}
-  .job-ref{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.06em}
-
-  .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;background:#242424}
-  .badge-new{background:#263500;color:var(--lime)}
-  .badge-active{background:#082c3d;color:var(--blue)}
-  .badge-done{background:#0a2a14;color:var(--ok)}
-  .badge-danger{background:#3a0b0b;color:#ff6666}
-
-  .job-meta{margin-top:8px;line-height:1.75;font-size:11px;color:var(--muted)}
-  .job-meta strong{color:#fff}
-  .job-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-
-  .service{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border);border-radius:13px}
-  .service-name{font-weight:800;font-size:12px}
-  .service-price{color:var(--lime);font-weight:900;font-size:12px}
-
-  .hotel-row{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--card2);border:1px solid var(--border);border-radius:12px;margin-bottom:7px}
-  .hotel-name{font-weight:800;font-size:12px}
-  .hotel-status{font-size:9px;font-weight:900;padding:3px 8px;border-radius:999px}
-  .hotel-status.on{background:rgba(34,197,94,.15);color:var(--ok);border:1px solid rgba(34,197,94,.3)}
-
-  .profile-row{padding:12px 0;border-bottom:1px solid var(--border)}
-  .profile-row:last-child{border-bottom:0}
-  .profile-label{color:var(--muted);font-size:9px;text-transform:uppercase;font-weight:900;letter-spacing:.08em}
-  .profile-value{margin-top:4px;font-size:12px;font-weight:700;word-break:break-word}
-
-  .empty{text-align:center;padding:35px 15px;color:var(--muted)}
-  .empty b{color:#fff;display:block;margin-bottom:6px;font-size:13px}
-  .loader{text-align:center;padding:35px;color:var(--muted)}
-
-  .input{width:100%;background:#080808;color:#fff;border:1px solid #303030;border-radius:11px;padding:12px;outline:none;font-size:13px}
-  .input:focus{border-color:var(--lime)}
-  .form-group{margin-bottom:10px}
-  .form-group label{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.08em;display:block;margin-bottom:5px}
-
-  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(100px);background:#fff;color:#000;padding:12px 18px;border-radius:999px;font-weight:800;font-size:11px;z-index:999;transition:.25s;box-shadow:0 10px 40px #000;max-width:90vw;text-align:center}
-  .toast.show{transform:translateX(-50%) translateY(0)}
-  .toast.err{background:#3a1111;color:#ffb4b4;border:1px solid #572020}
-
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:none;align-items:flex-end;justify-content:center}
-  .modal.show{display:flex}
-  .modal-box{width:100%;max-width:600px;background:#111;border:1px solid #333;border-radius:22px 22px 0 0;padding:20px;max-height:92vh;overflow:auto}
-  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:10px}
-
-  .chk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-  .chk{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--card2);border:1px solid var(--border);border-radius:11px;font-size:11px;font-weight:600;cursor:pointer}
-  .chk input{accent-color:var(--lime);margin:0}
-
-  .paychip{padding:8px 12px;border-radius:999px;background:#0A0A0A;border:1px solid #2A2A2A;font-size:11px;font-weight:800;color:#fff;transition:.15s}
-  .paychip.on{background:var(--lime);color:#000;border-color:var(--lime)}
-
-  .ussd{font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.65;white-space:pre-line}
-
-  @media(min-width:700px){.modal{align-items:center}.modal-box{border-radius:22px}}
-  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.chk-grid{grid-template-columns:1fr}}
-  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">GuestHub <span>Vendor OS</span></div>
-  <div class="vendor-mini">
-    <b id="vendorName">Loading…</b>
-    <div id="vendorCity">—</div>
+<!-- ============================= Header ============================= -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="brand" aria-label="GuestHub home">
+      <svg class="brand-logo" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect width="64" height="64" rx="14" fill="#ffffff"/>
+        <rect x="13" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="34" y="13" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <rect x="13" y="34" width="17" height="17" rx="3" fill="#003580"/>
+        <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
+        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
+              stroke="#febb02" stroke-width="4.5"
+              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <div class="brand-text">
+        <div class="brand-title">GuestHub <span class="tag">Vendor OS</span></div>
+        <div class="brand-sub">Diani · Wasini · SGR · World</div>
+      </div>
+    </a>
+
+    <div class="vendor-mini">
+      <b id="vendorName">Loading…</b>
+      <small id="vendorCity">—</small>
+    </div>
   </div>
 </header>
 
 <main class="container">
 
-  <!-- PAYMENT CARD -->
+  <!-- ============================= Payment card ============================= -->
   <section class="wallet" id="paymentCard">
     <div class="wallet-top">
-      <div style="min-width:0;flex:1">
-        <small>💳 DIRECT PAYMENT • <span id="walletStatus">—</span></small>
+      <div class="wallet-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="20" height="14" x="2" y="5" rx="2"/>
+          <line x1="2" x2="22" y1="10" y2="10"/>
+        </svg>
+      </div>
+      <div class="wallet-body">
+        <div class="wallet-label">
+          Direct payment
+          <span class="badge badge-neutral" id="walletStatus" style="font-size:9.5px;padding:2px 8px">—</span>
+        </div>
         <h1 id="paymentHeadline">Set up your Paybill</h1>
         <div class="wallet-sub" id="paymentSub">Guests pay you directly</div>
       </div>
-      <div style="font-size:30px">💳</div>
     </div>
 
-    <div id="paymentUSSD" class="ussd" style="margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.22);color:#000"></div>
+    <div id="paymentUSSD" class="wallet-ussd empty"></div>
 
     <div class="wallet-actions">
-      <button class="btn btn-black" onclick="openPaymentModal()">✏️ Change payment setup</button>
-      <button class="btn btn-d" onclick="refreshDashboard()">🔄 Refresh</button>
-      <button class="btn btn-d" onclick="logoutVendor()">🚪 Logout</button>
+      <button class="btn btn-primary" onclick="openPaymentModal()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+        Change payment
+      </button>
+      <button class="btn btn-dark" onclick="refreshDashboard()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-danger" onclick="logoutVendor()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        Logout
+      </button>
     </div>
   </section>
 
+  <!-- ============================= Stats ============================= -->
   <section class="stats">
-    <div class="stat"><b id="statServices">0</b><small>SERVICES</small></div>
-    <div class="stat"><b id="statNew">0</b><small>NEW JOBS</small></div>
-    <div class="stat"><b id="statActive">0</b><small>ACTIVE</small></div>
-    <div class="stat"><b id="statCompleted">0</b><small>COMPLETED</small></div>
+    <div class="stat"><b id="statServices">0</b><small>Services</small></div>
+    <div class="stat"><b id="statNew">0</b><small>New jobs</small></div>
+    <div class="stat"><b id="statActive">0</b><small>Active</small></div>
+    <div class="stat"><b id="statCompleted">0</b><small>Completed</small></div>
   </section>
 
-  <section class="availability">
+  <!-- ============================= Availability ============================= -->
+  <section class="availability" id="availabilityBlock">
     <div class="availability-left">
-      <b id="availabilityTitle">🟢 Available for jobs</b>
+      <b>
+        <span class="dot"></span>
+        <span id="availabilityTitle">Available for jobs</span>
+      </b>
       <small id="availabilityText">Hotels can see your services</small>
     </div>
-    <div id="availabilityToggle" class="toggle on" role="switch" aria-checked="true" tabindex="0"
-         onclick="toggleAvailability()"
-         onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleAvailability()}"></div>
+    <button
+      id="availabilityToggle"
+      class="toggle on"
+      role="switch"
+      aria-checked="true"
+      aria-label="Toggle availability"
+      onclick="toggleAvailability()"
+    ></button>
   </section>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-tab="new"      onclick="showTab('new',this)">🔔 New Jobs</button>
-    <button class="tab"        data-tab="active"   onclick="showTab('active',this)">📅 Active</button>
-    <button class="tab"        data-tab="services" onclick="showTab('services',this)">🛠️ Services</button>
-    <button class="tab"        data-tab="hotels"   onclick="showTab('hotels',this)">🏨 Hotels</button>
-    <button class="tab"        data-tab="earnings" onclick="showTab('earnings',this)">💰 Earnings</button>
-    <button class="tab"        data-tab="profile"  onclick="showTab('profile',this)">👤 Profile</button>
-  </nav>
+  <!-- ============================= Tabs ============================= -->
+  <div class="tabs-wrap">
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="new"      onclick="showTab('new', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        New jobs
+      </button>
+      <button class="tab" data-tab="active"   onclick="showTab('active', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        Active
+      </button>
+      <button class="tab" data-tab="services" onclick="showTab('services', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Services
+      </button>
+      <button class="tab" data-tab="hotels"   onclick="showTab('hotels', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+        Hotels
+      </button>
+      <button class="tab" data-tab="earnings" onclick="showTab('earnings', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Earnings
+      </button>
+      <button class="tab" data-tab="profile"  onclick="showTab('profile', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </button>
+    </nav>
+  </div>
 
-  <section id="view-new"      class="view"><div id="newJobs"><div class="loader">Loading new jobs…</div></div></section>
-  <section id="view-active"   class="view" style="display:none"><div id="activeJobs"><div class="loader">Loading…</div></div></section>
-  <section id="view-services" class="view" style="display:none"><div id="servicesContent"><div class="loader">Loading…</div></div></section>
-  <section id="view-hotels"   class="view" style="display:none"><div id="hotelsContent"><div class="loader">Loading…</div></div></section>
-  <section id="view-earnings" class="view" style="display:none"><div id="earningsContent"><div class="loader">Loading…</div></div></section>
-  <section id="view-profile"  class="view" style="display:none"><div id="profileContent"><div class="loader">Loading…</div></div></section>
+  <!-- ============================= Views ============================= -->
+  <section id="view-new" class="view">
+    <div id="newJobs"><div class="loader">Loading new jobs…</div></div>
+  </section>
+
+  <section id="view-active" class="view hidden">
+    <div id="activeJobs"><div class="loader">Loading…</div></div>
+  </section>
+
+  <section id="view-services" class="view hidden">
+    <div id="servicesContent"><div class="loader">Loading…</div></div>
+  </section>
+
+  <section id="view-hotels" class="view hidden">
+    <div id="hotelsContent"><div class="loader">Loading…</div></div>
+  </section>
+
+  <section id="view-earnings" class="view hidden">
+    <div id="earningsContent"><div class="loader">Loading…</div></div>
+  </section>
+
+  <section id="view-profile" class="view hidden">
+    <div id="profileContent"><div class="loader">Loading…</div></div>
+  </section>
 
 </main>
 
-<!-- PAYMENT SETUP MODAL -->
-<div id="paymentModal" class="modal">
+<!-- ============================= Payment modal ============================= -->
+<div id="paymentModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
   <div class="modal-box">
     <div class="modal-head">
-      <b style="font-family:Space Grotesk;font-size:18px">💳 Payment setup</b>
-      <button class="btn btn-d" onclick="closePaymentModal()">✕</button>
+      <b id="paymentModalTitle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+        Payment setup
+      </b>
+      <button class="btn btn-dark btn-sm" onclick="closePaymentModal()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </div>
 
-    <p class="small muted" style="margin:0 0 12px 0;line-height:1.6">
-      Guest pays you <b style="color:#fff">direct</b>. We just show them your
+    <p class="card-sub" style="margin-bottom:16px">
+      Guest pays you <strong style="color:var(--text)">direct</strong>. We just show them your
       Paybill / Till / number at checkout.
     </p>
 
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" role="radiogroup">
-      <button type="button" class="paychip" data-channel="paybill">🏢 Paybill</button>
-      <button type="button" class="paychip" data-channel="till">🛒 Till</button>
-      <button type="button" class="paychip" data-channel="send_money">📱 Send Money</button>
+    <div class="pay-tabs" role="radiogroup" aria-label="Payment channel">
+      <button type="button" class="paychip" data-channel="paybill" role="radio" aria-checked="false">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+        <span>Paybill</span>
+      </button>
+      <button type="button" class="paychip" data-channel="till" role="radio" aria-checked="false">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+        <span>Till</span>
+      </button>
+      <button type="button" class="paychip" data-channel="send_money" role="radio" aria-checked="false">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Send Money</span>
+      </button>
     </div>
 
-    <div id="pm-paybill" class="form-group">
-      <label>PAYBILL NUMBER</label>
-      <input id="pm_paybill_number" class="input" inputmode="numeric" maxlength="10" placeholder="400200">
-      <label style="margin-top:8px">ACCOUNT NUMBER / NAME</label>
-      <input id="pm_paybill_account" class="input" maxlength="40" placeholder="DIANI001">
+    <div id="pm-paybill">
+      <div class="form-group">
+        <label for="pm_paybill_number">Paybill number</label>
+        <input id="pm_paybill_number" class="input" inputmode="numeric" maxlength="10" placeholder="400200">
+      </div>
+      <div class="form-group">
+        <label for="pm_paybill_account">Account number / name</label>
+        <input id="pm_paybill_account" class="input" maxlength="40" placeholder="DIANI001">
+      </div>
     </div>
 
-    <div id="pm-till" class="form-group" style="display:none">
-      <label>TILL NUMBER (BUY GOODS)</label>
-      <input id="pm_till_number" class="input" inputmode="numeric" maxlength="10" placeholder="5123456">
+    <div id="pm-till" style="display:none">
+      <div class="form-group">
+        <label for="pm_till_number">Till number (Buy Goods)</label>
+        <input id="pm_till_number" class="input" inputmode="numeric" maxlength="10" placeholder="5123456">
+      </div>
     </div>
 
-    <div id="pm-send_money" class="form-group" style="display:none">
-      <label>M-PESA PHONE</label>
-      <input id="pm_phone" class="input" type="tel" inputmode="tel" placeholder="254712345678">
+    <div id="pm-send_money" style="display:none">
+      <div class="form-group">
+        <label for="pm_phone">M-Pesa phone</label>
+        <input id="pm_phone" class="input" type="tel" inputmode="tel" placeholder="254712345678">
+      </div>
     </div>
 
     <div class="form-group">
-      <label>BUSINESS / ACCOUNT HOLDER NAME</label>
+      <label for="pm_name">Business / account holder name</label>
       <input id="pm_name" class="input" maxlength="100" placeholder="As registered with Safaricom">
     </div>
 
-    <button class="btn btn-a btn-full" id="btnPaymentSave" onclick="savePaymentSetup()">Save</button>
+    <button class="btn btn-primary btn-full" id="btnPaymentSave" onclick="savePaymentSetup()">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+      Save payment setup
+    </button>
   </div>
 </div>
 
-<!-- SERVICES EDIT MODAL -->
-<div id="servicesModal" class="modal">
+<!-- ============================= Services modal ============================= -->
+<div id="servicesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="servicesModalTitle">
   <div class="modal-box">
     <div class="modal-head">
-      <b style="font-family:Space Grotesk;font-size:18px">🛠️ Edit Services</b>
-      <button class="btn btn-d" onclick="closeServicesModal()">✕</button>
+      <b id="servicesModalTitle">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Edit services
+      </b>
+      <button class="btn btn-dark btn-sm" onclick="closeServicesModal()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
     </div>
+
     <div class="form-group">
-      <label>BASE PRICE (KSH)</label>
+      <label for="editPrice">Base price (KSh)</label>
       <input id="editPrice" class="input" type="number" min="0" step="50">
     </div>
+
     <div class="form-group">
-      <label>BIO (max 300)</label>
-      <textarea id="editBio" class="input" rows="3" maxlength="300"></textarea>
+      <label for="editBio">Bio (max 300 chars)</label>
+      <textarea id="editBio" class="textarea" rows="3" maxlength="300"></textarea>
     </div>
+
     <div class="form-group">
-      <label>SELECT YOUR SERVICES</label>
+      <label>Your services</label>
       <div id="serviceCheckboxes" class="chk-grid"></div>
     </div>
-    <button class="btn btn-a btn-full" id="btnServicesSubmit" onclick="saveServices()">Save Changes</button>
+
+    <button class="btn btn-primary btn-full" id="btnServicesSubmit" onclick="saveServices()">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+      Save changes
+    </button>
   </div>
 </div>
 
@@ -276,7 +1128,9 @@
   const TOKEN_KEY = 'vendor_token';
   const $ = id => document.getElementById(id);
 
-  // ---------- Services catalogue (same as signup) ----------
+  /* ============================================================
+     SERVICE CATALOGUE
+     ============================================================ */
   const SERVICES = {
     g1: { label: 'transport', items: [
       { id:'airport_taxi', t:'Airport Taxi' },
@@ -307,6 +1161,7 @@
       { id:'concierge',   t:'Concierge / Errands' }
     ]}
   };
+
   const SERVICE_LABELS = Object.fromEntries(
     Object.values(SERVICES).flatMap(g => g.items).map(s => [s.id, s.t])
   );
@@ -319,7 +1174,24 @@
   };
   const statusIn = (s, list) => list.includes(String(s || '').toLowerCase());
 
-  // ---------- State ----------
+  /* ============================================================
+     ICONS
+     ============================================================ */
+  const ICONS = {
+    check:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
+    alert:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    bell:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
+    wrench:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    hotel:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>',
+    wallet:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>',
+    user:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    lock:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+  };
+
+  /* ============================================================
+     STATE
+     ============================================================ */
   let currentVendor = null;
   let allOrders = [];
   let myHotels = [];
@@ -327,31 +1199,37 @@
   let busy = false;
   let editChannel = 'paybill';
 
-  // ---------- Helpers ----------
+  /* ============================================================
+     HELPERS
+     ============================================================ */
   const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
 
   const escapeHtml = v => String(v ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 
+  let toastTimer = null;
   function toast(msg, isErr = false) {
     const el = $('toast');
-    el.textContent = msg;
     el.className = 'toast' + (isErr ? ' err' : '');
+    el.innerHTML = (isErr ? ICONS.alert : ICONS.check) + '<span>' + escapeHtml(msg) + '</span>';
     void el.offsetWidth;
     el.classList.add('show');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('show'), 3000);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
   }
 
   function statusBadge(status) {
     const s = String(status || '').toLowerCase();
-    if (s === 'pending' || s === 'new')    return '<span class="badge badge-new">NEW</span>';
+    if (s === 'pending' || s === 'new')
+      return '<span class="badge badge-new">NEW</span>';
     if (s === 'accepted' || s === 'preparing' || s === 'on_the_way')
       return '<span class="badge badge-active">' + s.replace('_',' ').toUpperCase() + '</span>';
-    if (s === 'completed')  return '<span class="badge badge-done">COMPLETED</span>';
-    if (s === 'cancelled')  return '<span class="badge badge-danger">CANCELLED</span>';
-    return '<span class="badge">' + escapeHtml(status || 'UNKNOWN') + '</span>';
+    if (s === 'completed')
+      return '<span class="badge badge-done">COMPLETED</span>';
+    if (s === 'cancelled')
+      return '<span class="badge badge-danger">CANCELLED</span>';
+    return '<span class="badge badge-neutral">' + escapeHtml(status || 'UNKNOWN').toUpperCase() + '</span>';
   }
 
   const fmtDate = iso => {
@@ -360,7 +1238,9 @@
     catch { return ''; }
   };
 
-  // ---------- API client ----------
+  /* ============================================================
+     API CLIENT
+     ============================================================ */
   const getToken = () => localStorage.getItem(TOKEN_KEY);
 
   async function api(path, opts = {}) {
@@ -381,24 +1261,25 @@
     return json;
   }
 
-  // ============================================================
-  // AUTH GATE
-  // ============================================================
+  /* ============================================================
+     AUTH GATE
+     ============================================================ */
   function renderLoginRequired() {
     $('vendorName').textContent = 'Not logged in';
     $('vendorCity').textContent = 'Please log in';
     $('newJobs').innerHTML = `
       <div class="card empty">
-        <div style="font-size:38px">🔐</div>
+        <div class="empty-icon">${ICONS.lock}</div>
         <b>Vendor login required</b>
-        <p class="small">Please log in to access your GuestHub Vendor OS.</p>
-        <button class="btn btn-a" onclick="location.href='/vendor-login.html'">Go to Vendor Login</button>
+        <p>Please log in to access your GuestHub Vendor OS.</p>
+        <button class="btn btn-primary" onclick="location.href='/vendor-login.html'">Go to vendor login</button>
       </div>
     `;
     ['statServices','statNew','statActive','statCompleted'].forEach(id => $(id).textContent = '0');
     $('paymentHeadline').textContent = 'Not logged in';
     $('paymentSub').textContent = 'Log in to see your payment setup';
     $('paymentUSSD').textContent = '';
+    $('paymentUSSD').classList.add('empty');
     $('availabilityToggle').classList.add('busy');
   }
 
@@ -414,9 +1295,9 @@
     }
   }
 
-  // ============================================================
-  // INIT
-  // ============================================================
+  /* ============================================================
+     INIT
+     ============================================================ */
   async function init() {
     if (!getToken()) return renderLoginRequired();
 
@@ -455,24 +1336,24 @@
     }
   }
 
-  // ============================================================
-  // HEADER
-  // ============================================================
+  /* ============================================================
+     HEADER
+     ============================================================ */
   function renderVendorHeader() {
     const v = currentVendor || {};
     $('vendorName').textContent = v.vendor_name || v.full_name || 'Vendor';
     $('vendorCity').textContent = v.city || v.hub_location || 'Kenya';
   }
 
-  // ============================================================
-  // PAYMENT CARD
-  // ============================================================
+  /* ============================================================
+     PAYMENT CARD
+     ============================================================ */
   function paymentCopy(v) {
     const ch = String(v.payment_channel || 'send_money').toLowerCase();
     if (ch === 'paybill' && v.paybill_number) {
       return {
-        headline: `Paybill ${v.paybill_number}`,
-        sub: `Account: ${v.paybill_account || '—'}`,
+        headline: 'Paybill ' + v.paybill_number,
+        sub: 'Account: ' + (v.paybill_account || '—'),
         ussd:
 `Dial *334#
 → Lipa na M-Pesa
@@ -484,7 +1365,7 @@
     }
     if (ch === 'till' && v.till_number) {
       return {
-        headline: `Till ${v.till_number}`,
+        headline: 'Till ' + v.till_number,
         sub: 'Buy Goods — no account needed',
         ussd:
 `Dial *334#
@@ -508,7 +1389,8 @@
     return {
       headline: 'Set up your Paybill',
       sub: "Guests can't pay you yet",
-      ussd: '⚠️ No payment method configured. Click "Change payment setup" to add your Paybill, Till, or phone number.'
+      ussd: 'No payment method configured. Tap "Change payment" to add your Paybill, Till, or phone number.',
+      empty: true
     };
   }
 
@@ -518,12 +1400,15 @@
     $('paymentHeadline').textContent = c.headline;
     $('paymentSub').textContent      = c.sub;
     $('paymentUSSD').textContent     = c.ussd;
-    $('walletStatus').textContent    = String(v.status || 'pending').toUpperCase();
+    $('paymentUSSD').classList.toggle('empty', !!c.empty);
+    const statusEl = $('walletStatus');
+    statusEl.textContent = String(v.status || 'pending').toUpperCase();
+    statusEl.className = 'badge ' + (String(v.status || '').toLowerCase() === 'approved' ? 'badge-done' : 'badge-new');
   }
 
-  // ============================================================
-  // PAYMENT MODAL
-  // ============================================================
+  /* ============================================================
+     PAYMENT MODAL
+     ============================================================ */
   function openPaymentModal() {
     if (!currentVendor) return;
     const v = currentVendor;
@@ -537,10 +1422,12 @@
     $('pm_name').value            = v.mpesa_name      || v.vendor_name || v.full_name || '';
 
     $('paymentModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
   function closePaymentModal() {
     $('paymentModal').classList.remove('show');
+    if (!document.querySelector('.modal.show')) document.body.style.overflow = '';
   }
 
   function applyPaymentModalChannel(ch) {
@@ -570,7 +1457,8 @@
     }
     body.mpesa_name = $('pm_name').value;
 
-    btn.disabled = true; btn.textContent = 'Saving…';
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
 
     try {
       const res = await api('/vendor/payment', {
@@ -580,27 +1468,29 @@
       currentVendor = res.vendor;
       renderPaymentCard();
       closePaymentModal();
-      toast('✅ Payment setup updated');
+      toast('Payment setup updated');
     } catch (err) {
       toast(err.message || 'Could not save payment setup', true);
     } finally {
-      btn.disabled = false; btn.textContent = 'Save';
+      btn.disabled = false;
+      btn.innerHTML = ICONS.check + ' Save payment setup';
     }
   }
 
-  // ============================================================
-  // AVAILABILITY
-  // ============================================================
+  /* ============================================================
+     AVAILABILITY
+     ============================================================ */
   function renderAvailability() {
     const v = currentVendor || {};
     const available = v.is_available !== false;
     const t = $('availabilityToggle');
     t.classList.toggle('on', available);
     t.setAttribute('aria-checked', String(available));
-    $('availabilityTitle').textContent = available ? '🟢 Available for jobs' : '🔴 Offline';
+    $('availabilityTitle').textContent = available ? 'Available for jobs' : 'Offline';
     $('availabilityText').textContent  = available
       ? 'Hotels can see your services'
       : 'You are currently hidden from hotels';
+    $('availabilityBlock').classList.toggle('off', !available);
   }
 
   async function toggleAvailability() {
@@ -608,13 +1498,13 @@
     const t = $('availabilityToggle');
     const next = !t.classList.contains('on');
 
-    // Optimistic
     t.classList.toggle('on', next);
     t.setAttribute('aria-checked', String(next));
-    $('availabilityTitle').textContent = next ? '🟢 Available for jobs' : '🔴 Offline';
+    $('availabilityTitle').textContent = next ? 'Available for jobs' : 'Offline';
     $('availabilityText').textContent  = next
       ? 'Hotels can see your services'
       : 'You are currently hidden from hotels';
+    $('availabilityBlock').classList.toggle('off', !next);
     t.classList.add('busy');
 
     try {
@@ -624,9 +1514,8 @@
       });
       currentVendor.is_available = res.available;
       if (res.warning) console.warn(res.warning);
-      toast(next ? '🟢 You are now available' : '🔴 You are now offline');
+      toast(next ? 'You are now available' : 'You are now offline');
     } catch (err) {
-      // Revert
       renderAvailability();
       toast(err.message || 'Could not save availability', true);
     } finally {
@@ -634,9 +1523,9 @@
     }
   }
 
-  // ============================================================
-  // HOTELS
-  // ============================================================
+  /* ============================================================
+     HOTELS
+     ============================================================ */
   async function loadMyHotels() {
     try {
       const [linked, all] = await Promise.all([
@@ -658,9 +1547,9 @@
     if (!myHotels.length) {
       box.innerHTML = `
         <div class="card empty">
-          <div style="font-size:34px">🏨</div>
+          <div class="empty-icon">${ICONS.hotel}</div>
           <b>No hotels linked</b>
-          <p class="small">Once admin approves your account, the hotels you chose at signup will appear here.</p>
+          <p>Once admin approves your account, the hotels you chose at signup will appear here.</p>
         </div>
       `;
       return;
@@ -674,27 +1563,27 @@
       const city = meta ? (meta.location || meta.city || '') : '';
       return `
         <div class="hotel-row">
-          <div>
+          <div class="hotel-left">
             <div class="hotel-name">${escapeHtml(name)}</div>
-            <div class="small muted">${escapeHtml(city || hid)}</div>
+            <div class="hotel-sub">${escapeHtml(city || hid)}</div>
           </div>
-          <span class="hotel-status on">● LIVE</span>
+          <span class="hotel-status">Live</span>
         </div>
       `;
     }).join('');
 
     box.innerHTML = `
       <div class="card">
-        <div class="card-title">🏨 Hotels you serve</div>
-        <div class="small muted">Guests in these hotels can book you directly.</div>
+        <div class="card-title">${ICONS.hotel} Hotels you serve</div>
+        <div class="card-sub">Guests in these hotels can book you directly.</div>
       </div>
       ${rows}
     `;
   }
 
-  // ============================================================
-  // ORDERS
-  // ============================================================
+  /* ============================================================
+     ORDERS
+     ============================================================ */
   async function loadOrders() {
     if (!currentVendor) return;
     const box = $('newJobs');
@@ -707,9 +1596,10 @@
     } catch (err) {
       box.innerHTML = `
         <div class="card empty">
+          <div class="empty-icon">${ICONS.alert}</div>
           <b>Unable to load jobs</b>
-          <p class="small">${escapeHtml(err.message)}</p>
-          <button class="btn btn-a" onclick="refreshDashboard()">Try Again</button>
+          <p>${escapeHtml(err.message)}</p>
+          <button class="btn btn-primary" onclick="refreshDashboard()">Try again</button>
         </div>
       `;
     }
@@ -743,9 +1633,9 @@
     if (!orders.length) {
       box.innerHTML = `
         <div class="card empty">
-          <div style="font-size:40px">🔔</div>
+          <div class="empty-icon">${ICONS.bell}</div>
           <b>No new jobs right now</b>
-          <p class="small">Keep your availability ON. New hotel guest requests will appear here.</p>
+          <p>Keep your availability ON. New hotel guest requests will appear here.</p>
         </div>
       `;
       return;
@@ -754,28 +1644,32 @@
     box.innerHTML = orders.map(order => {
       const service = order.service_title || 'Guest Service';
       return `
-        <div class="card job">
+        <div class="card job job-new">
           <div class="job-top">
-            <div>
+            <div class="job-heading">
               <div class="job-title">${escapeHtml(service)}</div>
-              <div class="job-ref">${escapeHtml(order.reference || '')}</div>
-              <small class="muted">${escapeHtml(order.hotel_id || 'Partner Hotel')}</small>
+              <span class="job-ref">${escapeHtml(order.reference || '')}</span>
+              <span class="job-hotel">${escapeHtml(order.hotel_id || 'Partner Hotel')}</span>
             </div>
             ${statusBadge(order.status)}
           </div>
 
           <div class="job-meta">
-            🏨 Hotel: <strong>${escapeHtml(order.hotel_id || '—')}</strong><br>
-            🚪 Room: <strong>${escapeHtml(order.room_number || '—')}</strong><br>
-            👤 Guest: <strong>${escapeHtml(order.guest_name || 'Guest')}</strong><br>
-            📞 Phone: <strong>${escapeHtml(order.guest_phone || '—')}</strong><br>
-            💰 Job value: <strong style="color:var(--lime)">${money(order.amount)}</strong>
-            ${order.details ? '<br>📝 ' + escapeHtml(order.details) : ''}
+            <div class="job-meta-row"><span class="k">Room</span><span class="v">${escapeHtml(order.room_number || '—')}</span></div>
+            <div class="job-meta-row"><span class="k">Guest</span><span class="v">${escapeHtml(order.guest_name || 'Guest')}</span></div>
+            <div class="job-meta-row"><span class="k">Phone</span><span class="v">${escapeHtml(order.guest_phone || '—')}</span></div>
+            <div class="job-meta-row"><span class="k">Value</span><span class="v lime">${money(order.amount)}</span></div>
           </div>
 
+          ${order.details ? `<div class="job-notes">${escapeHtml(order.details)}</div>` : ''}
+
           <div class="job-actions">
-            <button class="btn btn-a" onclick="acceptOrder('${escapeHtml(order.id)}')">✅ Accept</button>
-            <button class="btn btn-red" onclick="cancelOrder('${escapeHtml(order.id)}','decline')">✕ Decline</button>
+            <button class="btn btn-success" onclick="acceptOrder('${escapeHtml(order.id)}')">
+              ${ICONS.check} Accept
+            </button>
+            <button class="btn btn-danger" onclick="cancelOrder('${escapeHtml(order.id)}','decline')">
+              Decline
+            </button>
           </div>
         </div>
       `;
@@ -787,9 +1681,9 @@
     if (!orders.length) {
       box.innerHTML = `
         <div class="card empty">
-          <div style="font-size:38px">📅</div>
+          <div class="empty-icon">${ICONS.calendar}</div>
           <b>No active jobs</b>
-          <p class="small">Accepted jobs will appear here.</p>
+          <p>Accepted jobs will appear here.</p>
         </div>
       `;
       return;
@@ -804,30 +1698,30 @@
       return `
         <div class="card job">
           <div class="job-top">
-            <div>
+            <div class="job-heading">
               <div class="job-title">${escapeHtml(service)}</div>
-              <div class="job-ref">${escapeHtml(order.reference || '')}</div>
-              <small class="muted">${escapeHtml(order.hotel_id || 'Hotel')}</small>
+              <span class="job-ref">${escapeHtml(order.reference || '')}</span>
+              <span class="job-hotel">${escapeHtml(order.hotel_id || 'Hotel')}</span>
             </div>
             ${statusBadge(order.status)}
           </div>
 
           <div class="job-meta">
-            🚪 Room: <strong>${escapeHtml(order.room_number || '—')}</strong><br>
-            👤 Guest: <strong>${escapeHtml(order.guest_name || 'Guest')}</strong><br>
-            📞 Phone: <strong>${escapeHtml(order.guest_phone || '—')}</strong><br>
-            💰 Value: <strong style="color:var(--lime)">${money(order.amount)}</strong><br>
-            🕐 Accepted: ${escapeHtml(fmtDate(order.accepted_at || order.updated_at))}
+            <div class="job-meta-row"><span class="k">Room</span><span class="v">${escapeHtml(order.room_number || '—')}</span></div>
+            <div class="job-meta-row"><span class="k">Guest</span><span class="v">${escapeHtml(order.guest_name || 'Guest')}</span></div>
+            <div class="job-meta-row"><span class="k">Phone</span><span class="v">${escapeHtml(order.guest_phone || '—')}</span></div>
+            <div class="job-meta-row"><span class="k">Value</span><span class="v lime">${money(order.amount)}</span></div>
+            <div class="job-meta-row" style="grid-column:1 / -1"><span class="k">Accepted</span><span class="v">${escapeHtml(fmtDate(order.accepted_at || order.updated_at))}</span></div>
           </div>
 
           <div class="job-actions">
             ${canStart
-              ? `<button class="btn btn-blue" onclick="updateOrderStatus('${escapeHtml(order.id)}','on_the_way')">▶ On the way</button>`
-              : `<button class="btn btn-d" disabled>▶ In progress</button>`
+              ? `<button class="btn btn-secondary" onclick="updateOrderStatus('${escapeHtml(order.id)}','on_the_way')">On the way</button>`
+              : `<button class="btn btn-dark" disabled>In progress</button>`
             }
             ${canFinish
-              ? `<button class="btn btn-a" onclick="updateOrderStatus('${escapeHtml(order.id)}','completed')">✓ Complete</button>`
-              : `<button class="btn btn-d" disabled>✓ Done</button>`
+              ? `<button class="btn btn-success" onclick="updateOrderStatus('${escapeHtml(order.id)}','completed')">${ICONS.check} Complete</button>`
+              : `<button class="btn btn-dark" disabled>Done</button>`
             }
           </div>
         </div>
@@ -835,9 +1729,9 @@
     }).join('');
   }
 
-  // ============================================================
-  // ORDER ACTIONS
-  // ============================================================
+  /* ============================================================
+     ORDER ACTIONS
+     ============================================================ */
   async function acceptOrder(id) {
     if (busy) return;
     if (!confirm('Accept this guest job?')) return;
@@ -848,7 +1742,7 @@
         method: 'PATCH',
         body: JSON.stringify({ status: 'accepted' })
       });
-      toast('✅ Job accepted');
+      toast('Job accepted');
       await loadOrders();
       showTab('active', document.querySelector('.tab[data-tab="active"]'));
     } catch (err) {
@@ -873,7 +1767,7 @@
         method: 'PATCH',
         body: JSON.stringify({ status })
       });
-      toast(status === 'completed' ? '🎉 Job completed' : '▶ Status updated');
+      toast(status === 'completed' ? 'Job completed' : 'Status updated');
       await loadOrders();
     } catch (err) {
       toast(err.message || 'Could not update job', true);
@@ -904,9 +1798,9 @@
     }
   }
 
-  // ============================================================
-  // SERVICES
-  // ============================================================
+  /* ============================================================
+     SERVICES
+     ============================================================ */
   function renderServices() {
     const v = currentVendor || {};
     const services = Array.isArray(v.services) ? v.services : [];
@@ -914,18 +1808,18 @@
 
     let html = `
       <div class="card">
-        <div class="card-title">🛠️ My Services</div>
-        <div class="small muted">These services decide which guest requests reach you.</div>
+        <div class="card-title">${ICONS.wrench} My services</div>
+        <div class="card-sub">These services decide which guest requests reach you.</div>
       </div>
     `;
 
     if (!services.length) {
       html += `
         <div class="card empty">
-          <div style="font-size:34px">🛠️</div>
+          <div class="empty-icon">${ICONS.wrench}</div>
           <b>No services added</b>
-          <p class="small">Add services so hotels can route guest requests to you.</p>
-          <button class="btn btn-a" onclick="openServicesModal()">Add Services</button>
+          <p>Add services so hotels can route guest requests to you.</p>
+          <button class="btn btn-primary" onclick="openServicesModal()">Add services</button>
         </div>
       `;
     } else {
@@ -934,17 +1828,17 @@
           String(id).replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
         html += `
           <div class="service">
-            <div>
+            <div class="service-left">
               <div class="service-name">${escapeHtml(label)}</div>
-              <small class="muted">Active service</small>
+              <div class="service-sub">Active service</div>
             </div>
             <div class="service-price">${money(v.price || 0)}</div>
           </div>
         `;
       });
       html += `
-        <button class="btn btn-d btn-full" style="margin-top:5px" onclick="openServicesModal()">
-          ✏️ Edit Services
+        <button class="btn btn-primary btn-full" onclick="openServicesModal()">
+          ${ICONS.wrench} Edit services
         </button>
       `;
     }
@@ -969,10 +1863,12 @@
     `).join('');
 
     $('servicesModal').classList.add('show');
+    document.body.style.overflow = 'hidden';
   }
 
   function closeServicesModal() {
     $('servicesModal').classList.remove('show');
+    if (!document.querySelector('.modal.show')) document.body.style.overflow = '';
   }
 
   async function saveServices() {
@@ -997,18 +1893,18 @@
       renderServices();
       renderProfile();
       closeServicesModal();
-      toast('✅ Services updated');
+      toast('Services updated');
     } catch (err) {
       toast(err.message || 'Save failed', true);
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Save Changes';
+      btn.innerHTML = ICONS.check + ' Save changes';
     }
   }
 
-  // ============================================================
-  // EARNINGS
-  // ============================================================
+  /* ============================================================
+     EARNINGS
+     ============================================================ */
   function renderEarnings(myOrders, completed) {
     const total = completed.reduce((s, o) => s + Number(o.amount || 0), 0);
     const commission = Math.floor(total * 0.15);
@@ -1016,15 +1912,16 @@
 
     const payLabel = (() => {
       const ch = String(v.payment_channel || '').toLowerCase();
-      if (ch === 'paybill') return `Paybill ${v.paybill_number || '—'} · Account ${v.paybill_account || '—'}`;
-      if (ch === 'till')    return `Till ${v.till_number || '—'}`;
-      if (v.mpesa)          return `Send Money · ${v.mpesa}`;
+      if (ch === 'paybill') return 'Paybill ' + (v.paybill_number || '—') + ' · Account ' + (v.paybill_account || '—');
+      if (ch === 'till')    return 'Till ' + (v.till_number || '—');
+      if (v.mpesa)          return 'Send Money · ' + v.mpesa;
       return 'Not set up';
     })();
 
     $('earningsContent').innerHTML = `
       <div class="card">
-        <div class="card-title">💰 Earnings Overview</div>
+        <div class="card-title">${ICONS.wallet} Earnings overview</div>
+
         <div class="profile-row">
           <div class="profile-label">Payment method</div>
           <div class="profile-value">${escapeHtml(payLabel)}</div>
@@ -1035,11 +1932,11 @@
         </div>
         <div class="profile-row">
           <div class="profile-label">Hotel commission you owe (15%)</div>
-          <div class="profile-value" style="color:var(--gold)">${money(commission)}</div>
+          <div class="profile-value" style="color:var(--yellow-ink)">${money(commission)}</div>
         </div>
         <div class="profile-row">
           <div class="profile-label">Your net (85%)</div>
-          <div class="profile-value" style="color:var(--lime)">${money(total - commission)}</div>
+          <div class="profile-value" style="color:var(--brand-2); font-weight:700">${money(total - commission)}</div>
         </div>
         <div class="profile-row">
           <div class="profile-label">Completed jobs</div>
@@ -1048,13 +1945,13 @@
       </div>
 
       <div class="card">
-        <div class="card-title">🧾 Recent completed jobs</div>
+        <div class="card-title">Recent completed jobs</div>
         ${completed.length
           ? completed.slice(0, 20).map(o => `
               <div class="service">
-                <div>
+                <div class="service-left">
                   <div class="service-name">${escapeHtml(o.service_title || 'Service')}</div>
-                  <small class="muted">Room ${escapeHtml(o.room_number || '—')} • ${escapeHtml(fmtDate(o.completed_at || o.updated_at))}</small>
+                  <div class="service-sub">Room ${escapeHtml(o.room_number || '—')} · ${escapeHtml(fmtDate(o.completed_at || o.updated_at))}</div>
                 </div>
                 <div class="service-price">${money(o.amount)}</div>
               </div>
@@ -1064,26 +1961,26 @@
       </div>
 
       <div class="card">
-        <div class="card-title">📤 Monthly settlement to hotel</div>
-        <p class="small muted" style="margin:0 0 10px 0;line-height:1.6">
-          Guest paid you the full amount. You owe <b style="color:#fff">${money(commission)}</b>
+        <div class="card-title">Monthly settlement to hotel</div>
+        <p class="card-sub" style="margin:0">
+          Guest paid you the full amount. You owe <strong style="color:var(--text)">${money(commission)}</strong>
           in 15% hotel commission for this month. Send it to the hotel's Paybill before month-end.
         </p>
       </div>
     `;
   }
 
-  // ============================================================
-  // PROFILE
-  // ============================================================
+  /* ============================================================
+     PROFILE
+     ============================================================ */
   function renderProfile() {
     const v = currentVendor || {};
     $('profileContent').innerHTML = `
       <div class="card">
-        <div class="card-title">👤 Vendor Profile</div>
+        <div class="card-title">${ICONS.user} Vendor profile</div>
 
         <div class="profile-row">
-          <div class="profile-label">Vendor Name</div>
+          <div class="profile-label">Vendor name</div>
           <div class="profile-value">${escapeHtml(v.vendor_name || v.full_name || '—')}</div>
         </div>
 
@@ -1098,7 +1995,7 @@
         </div>
 
         <div class="profile-row">
-          <div class="profile-label">Hub Location</div>
+          <div class="profile-label">Hub location</div>
           <div class="profile-value">${escapeHtml(v.hub_location || v.city || '—')}</div>
         </div>
 
@@ -1119,45 +2016,70 @@
       </div>
 
       <div class="card">
-        <button class="btn btn-d btn-full" onclick="openServicesModal()">✏️ Edit Services &amp; Bio</button>
-        <button class="btn btn-a btn-full" style="margin-top:8px" onclick="openPaymentModal()">💳 Edit Payment Setup</button>
-        <button class="btn btn-red btn-full" style="margin-top:8px" onclick="logoutVendor()">🚪 Logout</button>
+        <button class="btn btn-primary btn-full" onclick="openServicesModal()">
+          ${ICONS.wrench} Edit services &amp; bio
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="openPaymentModal()">
+          ${ICONS.wallet} Edit payment setup
+        </button>
+        <button class="btn btn-danger btn-full" onclick="logoutVendor()">
+          Logout
+        </button>
       </div>
     `;
   }
 
-  // ============================================================
-  // TABS
-  // ============================================================
+  /* ============================================================
+     TABS
+     ============================================================ */
   function showTab(name, element) {
-    document.querySelectorAll('[id^="view-"]').forEach(s => s.style.display = 'none');
+    document.querySelectorAll('.view').forEach(s => s.classList.add('hidden'));
     const target = document.getElementById('view-' + name);
-    if (target) target.style.display = 'block';
+    if (target) target.classList.remove('hidden');
 
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     if (element) element.classList.add('active');
   }
 
-  // ============================================================
-  // FATAL
-  // ============================================================
+  /* ============================================================
+     FATAL
+     ============================================================ */
   function showFatal(message) {
     $('vendorName').textContent = 'Error';
     $('vendorCity').textContent = 'GuestHub';
     $('newJobs').innerHTML = `
       <div class="card empty">
-        <div style="font-size:40px">⚠️</div>
+        <div class="empty-icon">${ICONS.alert}</div>
         <b>${escapeHtml(message)}</b>
-        <br><br>
-        <button class="btn btn-a" onclick="location.reload()">Try Again</button>
-        <button class="btn btn-d" style="margin-left:6px" onclick="logoutVendor()">Logout</button>
+        <p></p>
+        <button class="btn btn-primary" onclick="location.reload()">Try again</button>
+        <button class="btn btn-secondary" style="margin-left:6px" onclick="logoutVendor()">Logout</button>
       </div>
     `;
   }
 
-  // ============================================================
-  // EXPOSE
-  // ============================================================
+  /* ============================================================
+     MODAL CLOSE ON BACKDROP
+     ============================================================ */
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+      document.body.style.overflow = '';
+    }
+  });
+
+  /* Payment modal chips */
+  document.addEventListener('click', e => {
+    const chip = e.target.closest('#paymentModal .paychip');
+    if (chip) applyPaymentModalChannel(chip.dataset.channel);
+  });
+
+  /* ============================================================
+     EXPOSE FOR INLINE HANDLERS
+     ============================================================ */
   Object.assign(window, {
     showTab, refreshDashboard, logoutVendor,
     toggleAvailability,
@@ -1166,19 +2088,20 @@
     openServicesModal, closeServicesModal, saveServices
   });
 
-  // Wire payment modal chips
-  document.addEventListener('click', e => {
-    const chip = e.target.closest('#paymentModal .paychip');
-    if (chip) applyPaymentModalChannel(chip.dataset.channel);
-  });
-
-  // ============================================================
-  // BOOT
-  // ============================================================
+  /* ============================================================
+     BOOT
+     ============================================================ */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
+  }
+
+  /* Service worker for PWA */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
   }
 })();
 </script>
