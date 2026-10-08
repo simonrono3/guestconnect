@@ -1,1094 +1,933 @@
-Gmail	Simon rono <simonrono3@gmail.com>
-Guest
-Simon rono <simonrono3@gmail.com>	Thu, Oct 8, 2026 at 8:47 AM
-To: Simon rono <simonrono3@gmail.com>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0A2F44">
-  <title>GuestHub · Scan & Order</title>
-  <!-- Google Font & simple icon font (Material Icons) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <style>
-    /* ---------- DESIGN TOKENS ---------- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#003580">
+<title>GuestHub</title>
 
-    :root {
-      --brand-deep: #0A2F44;
-      --brand-teal: #1A6B7A;
-      --brand-gold: #D4AF37;
-      --brand-cream: #FCF9F2;
-      --brand-sand: #F2EDE4;
-      --brand-white: #FFFFFF;
-      --text-dark: #1C2A32;
-      --text-muted: #5B6F7A;
-      --text-light: #8F9EA8;
-      --border-light: #E6E3DC;
-      --shadow-sm: 0 6px 18px rgba(0, 20, 30, 0.06);
-      --shadow-md: 0 12px 32px rgba(0, 20, 30, 0.10);
-      --radius-card: 20px;
-      --radius-btn: 14px;
-      --radius-pill: 40px;
-      --font: 'Inter', system-ui, -apple-system, sans-serif;
-      --transition: all 0.2s ease;
-    }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 
-    body {
-      font-family: var(--font);
-      background: var(--brand-cream);
-      color: var(--text-dark);
-      padding-bottom: 110px;
-      -webkit-font-smoothing: antialiased;
-      line-height: 1.4;
-    }
+<style>
+/* =====================================================================
+   Tokens — light blue Booking.com palette (matches hotel dashboard)
+   ===================================================================== */
+:root{
+  --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
+  --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
+  --yellow:#febb02; --yellow-soft:#fff6e0; --yellow-line:#f0dfa0; --yellow-ink:#7a5c00;
+  --green:#008009; --green-soft:#e8f5e9; --green-line:#c3e6c4;
+  --red:#d32f2f; --red-soft:#fdeaea; --red-line:#f4c5c5;
+  --purple:#7c3aed; --purple-soft:#f3e8ff;
+  --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
+  --surface:#fff;
+  --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
+  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
+  --r-sm:6px; --r:8px; --r-lg:12px;
+  --shadow-xs:0 1px 2px rgb(0 0 0/4%);
+  --shadow-sm:0 1px 3px rgb(0 0 0/6%),0 1px 2px rgb(0 0 0/4%);
+  --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
+  --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
 
-    /* ---------- OFFLINE BAR ---------- */
-    .offline-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 999;
-      background: #B33A3A;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transform: translateY(-100%);
-      transition: transform 0.3s ease;
-      pointer-events: none;
-    }
-    .offline-bar.show {
-      transform: translateY(0);
-      pointer-events: auto;
-    }
+*,*::before,*::after{ box-sizing:border-box; }
+*{ margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--font);
+  font-size:14.5px; line-height:1.5; color:var(--text);
+  background:var(--bg-subtle);
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:'cv02','cv03','cv04','cv11';
+  min-height:100vh;
+  padding-bottom:calc(84px + var(--safe-b));
+}
+img,svg{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+input,select,textarea{ font:inherit; color:inherit; }
+ul{ list-style:none; }
+::selection{ background:var(--yellow); color:var(--text); }
+:focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
+.icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
+.hidden{ display:none !important; }
 
-    /* ---------- APP HEADER ---------- */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px 12px;
-      background: var(--brand-cream);
-      border-bottom: 1px solid var(--border-light);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(8px);
-      background: rgba(252, 249, 242, 0.92);
-    }
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-mark {
-      background: var(--brand-deep);
-      color: var(--brand-gold);
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1.6rem;
-      box-shadow: 0 4px 10px rgba(10, 47, 68, 0.2);
-      letter-spacing: -1px;
-    }
-    .logo-text {
-      font-weight: 700;
-      font-size: 1.4rem;
-      letter-spacing: -0.5px;
-      color: var(--brand-deep);
-    }
-    .logo-text span {
-      color: var(--brand-gold);
-      font-weight: 500;
-    }
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-    .icon-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--brand-white);
-      border: 1px solid var(--border-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-dark);
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-    }
-    .icon-btn:hover {
-      background: var(--brand-sand);
-      border-color: var(--brand-gold);
-    }
-    .icon-btn .material-icons-round {
-      font-size: 22px;
-    }
+/* =====================================================================
+   Header
+   ===================================================================== */
+.app-header{
+  position:sticky; top:0; z-index:100;
+  background:var(--brand); color:#fff;
+  border-bottom:1px solid rgb(255 255 255 / 10%);
+}
+.app-header-inner{
+  max-width:720px; margin:auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:10px 16px; min-height:56px;
+}
+.brand{ display:flex; align-items:center; gap:9px; min-width:0; }
+.brand-logo{
+  display:grid; place-items:center;
+  width:32px; height:32px; border-radius:8px;
+  background:#fff; color:var(--brand);
+  font-weight:800; font-size:15px;
+  flex-shrink:0;
+}
+.brand-text{ min-width:0; }
+.brand-title{
+  font-size:14px; font-weight:600; letter-spacing:-.01em;
+  color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.brand-sub{
+  font-size:11px; color:rgba(255,255,255,.7);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  margin-top:1px;
+}
+.header-actions{ display:flex; gap:6px; align-items:center; flex-shrink:0; }
+.icon-btn{
+  width:34px; height:34px; border-radius:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff; display:grid; place-items:center;
+  position:relative;
+}
+.icon-btn:hover{ background:rgba(255,255,255,.18); }
+.icon-btn .dot{
+  position:absolute; top:6px; right:6px;
+  width:7px; height:7px; border-radius:50%;
+  background:var(--yellow); border:1.5px solid var(--brand);
+  display:none;
+}
+.icon-btn.has-dot .dot{ display:block; }
 
-    /* ---------- CONTEXT PANEL ---------- */
-    .context-panel {
-      margin: 12px 20px 8px;
-      background: linear-gradient(135deg, var(--brand-deep) 0%, #123e52 100%);
-      border-radius: 24px;
-      padding: 16px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      color: white;
-      box-shadow: var(--shadow-md);
-      position: relative;
-      overflow: hidden;
-    }
-    .context-panel::after {
-      content: '';
-      position: absolute;
-      top: -30px;
-      right: -30px;
-      width: 120px;
-      height: 120px;
-      background: rgba(212, 175, 55, 0.12);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .context-icon {
-      width: 48px;
-      height: 48px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--brand-gold);
-      font-size: 26px;
-      flex-shrink: 0;
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-    .context-info {
-      flex: 1;
-    }
-    .context-info h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .context-info p {
-      font-size: 0.82rem;
-      color: rgba(255, 255, 255, 0.75);
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .context-info p .material-icons-round {
-      font-size: 16px;
-      color: var(--brand-gold);
-    }
-    .context-change {
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 8px 14px;
-      border-radius: 40px;
-      font-size: 0.78rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: var(--transition);
-      white-space: nowrap;
-    }
-    .context-change:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: var(--brand-gold);
-    }
+/* =====================================================================
+   Buttons
+   ===================================================================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:6px; height:40px; padding:0 14px;
+  font-size:13.5px; font-weight:600; letter-spacing:-.01em;
+  border-radius:var(--r-sm); border:1px solid transparent;
+  white-space:nowrap;
+  transition:all .15s ease;
+}
+.btn:active:not(:disabled){ transform:scale(.98); }
+.btn:disabled{ opacity:.6; cursor:wait; }
+.btn-primary{ background:var(--brand-2); color:#fff; box-shadow:var(--shadow-xs); }
+.btn-primary:hover:not(:disabled){ background:var(--brand-3); }
+.btn-secondary{ background:#fff; color:var(--text); border-color:var(--border-2); box-shadow:var(--shadow-xs); }
+.btn-secondary:hover:not(:disabled){ background:var(--bg-subtle); border-color:var(--border-3); }
+.btn-success{ background:var(--green); color:#fff; }
+.btn-warn{ background:var(--yellow); color:#000; }
+.btn-danger{ background:#fff; color:var(--red); border-color:var(--red-line); }
+.btn-dark{ background:#fff; color:var(--text); border-color:var(--border-2); }
+.btn-full{ width:100%; }
+.btn-lg{ height:48px; padding:0 20px; font-size:15px; border-radius:var(--r); }
+.btn-sm{ height:32px; padding:0 10px; font-size:12px; }
+.btn .icon{ width:14px; height:14px; }
 
-    /* ---------- QUICK REQUESTS ---------- */
-    .quick-requests {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      padding: 16px 20px 0;
-    }
-    .quick-req-btn {
-      background: var(--brand-white);
-      border: 1px solid var(--border-light);
-      border-radius: 18px;
-      padding: 14px 8px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-    }
-    .quick-req-btn .material-icons-round {
-      font-size: 26px;
-      color: var(--brand-teal);
-    }
-    .quick-req-btn:hover {
-      border-color: var(--brand-gold);
-      background: var(--brand-sand);
-      transform: translateY(-2px);
-    }
+/* =====================================================================
+   Container & layout
+   ===================================================================== */
+.container{ max-width:720px; margin:0 auto; padding:14px 14px 40px; }
 
-    /* ---------- SECTION TITLES ---------- */
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      padding: 24px 20px 8px;
-    }
-    .section-title h2 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: -0.3px;
-      color: var(--brand-deep);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title h2 .material-icons-round {
-      color: var(--brand-gold);
-      font-size: 24px;
-    }
-    .section-title a {
-      color: var(--brand-teal);
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-decoration: none;
-    }
+/* =====================================================================
+   Context banner
+   ===================================================================== */
+.context{
+  display:flex; align-items:center; gap:12px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-3));
+  color:#fff; border-radius:var(--r-lg);
+  padding:14px 16px; margin-bottom:14px;
+  box-shadow:var(--shadow-md);
+  position:relative; overflow:hidden;
+}
+.context::after{
+  content:""; position:absolute; top:-40px; right:-40px;
+  width:140px; height:140px; border-radius:50%;
+  background:rgba(254,187,2,.12);
+  pointer-events:none;
+}
+.context-icon{
+  width:42px; height:42px; flex-shrink:0;
+  border-radius:12px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+  display:grid; place-items:center;
+  color:var(--yellow);
+}
+.context-icon .icon{ width:22px; height:22px; }
+.context-body{ flex:1; min-width:0; }
+.context-title{
+  font-size:15px; font-weight:700; color:#fff;
+  letter-spacing:-.01em;
+  display:flex; align-items:center; gap:8px;
+}
+.context-sub{
+  font-size:12px; color:rgba(255,255,255,.75);
+  margin-top:3px; display:flex; align-items:center; gap:6px;
+}
+.context-sub .icon{ width:13px; height:13px; color:var(--yellow); }
+.context-change{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  color:#fff; padding:7px 12px; border-radius:999px;
+  font-size:11.5px; font-weight:600;
+  flex-shrink:0;
+}
+.context-change:hover{ background:rgba(255,255,255,.22); }
 
-    /* ---------- CATEGORY TABS ---------- */
-    .category-tabs {
-      display: flex;
-      gap: 8px;
-      padding: 8px 20px 16px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .category-tabs::-webkit-scrollbar {
-      display: none;
-    }
-    .cat-tab {
-      background: var(--brand-white);
-      border: 1px solid var(--border-light);
-      border-radius: 40px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-dark);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .cat-tab .material-icons-round {
-      font-size: 18px;
-      color: var(--brand-teal);
-    }
-    .cat-tab.active {
-      background: var(--brand-deep);
-      border-color: var(--brand-deep);
-      color: white;
-    }
-    .cat-tab.active .material-icons-round {
-      color: var(--brand-gold);
-    }
+/* =====================================================================
+   Promo banner
+   ===================================================================== */
+.promo{
+  display:none;
+  background:var(--yellow-soft);
+  border:1px solid var(--yellow-line);
+  border-radius:var(--r);
+  padding:12px 14px;
+  margin-bottom:14px;
+  color:var(--yellow-ink);
+}
+.promo.show{ display:block; }
+.promo b{ display:block; font-size:13.5px; font-weight:700; }
+.promo p{ font-size:12.5px; margin-top:3px; line-height:1.5; }
 
-    /* ---------- MENU GRID ---------- */
-    .menu-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      padding: 8px 20px;
-    }
-    @media (min-width: 520px) {
-      .menu-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
+/* =====================================================================
+   Section headers
+   ===================================================================== */
+.section-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  gap:12px; margin:20px 0 10px;
+}
+.section-head:first-child{ margin-top:0; }
+.section-title{
+  font-size:17px; font-weight:700; letter-spacing:-.02em;
+  color:var(--text); display:flex; align-items:center; gap:8px;
+}
+.section-title .icon{ width:18px; height:18px; color:var(--brand-2); }
+.section-link{
+  font-size:12.5px; font-weight:600; color:var(--brand-2);
+  display:inline-flex; align-items:center; gap:4px;
+}
 
-    /* ---------- MENU CARD ---------- */
-    .menu-card {
-      background: var(--brand-white);
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border-light);
-      padding: 16px;
-      display: flex;
-      gap: 16px;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-      position: relative;
-      align-items: center;
-    }
-    .menu-card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--brand-gold);
-      transform: translateY(-2px);
-    }
-    .menu-image {
-      width: 80px;
-      height: 80px;
-      border-radius: 16px;
-      background: var(--brand-sand);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.4rem;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-    .menu-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .menu-info {
-      flex: 1;
-      min-width: 0;
-    }
-    .menu-info h4 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--brand-deep);
-      margin-bottom: 2px;
-    }
-    .menu-info .desc {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      margin-bottom: 6px;
-    }
-    .menu-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 4px;
-    }
-    .price {
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--brand-teal);
-    }
-    .add-btn {
-      background: var(--brand-deep);
-      color: white;
-      border: none;
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 10px rgba(10, 47, 68, 0.2);
-    }
-    .add-btn .material-icons-round {
-      font-size: 20px;
-    }
-    .add-btn:hover {
-      background: var(--brand-teal);
-      transform: scale(1.05);
-    }
-    .add-btn.added {
-      background: var(--brand-gold);
-      color: var(--brand-deep);
-    }
-    .badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: var(--brand-gold);
-      color: var(--brand-deep);
-      font-size: 0.6rem;
-      font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 40px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+/* =====================================================================
+   Active order card
+   ===================================================================== */
+.active-card{
+  display:none;
+  background:#fff;
+  border:1px solid var(--border);
+  border-left:4px solid var(--brand-2);
+  border-radius:var(--r-lg);
+  padding:16px 18px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow-sm);
+  animation:slideDown .3s ease;
+}
+.active-card.show{ display:block; }
+.active-card.status-completed{ border-left-color:var(--green); }
+.active-card.status-cancelled{ border-left-color:var(--red); }
+@keyframes slideDown{
+  from{ opacity:0; transform:translateY(-8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.active-head{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:10px; margin-bottom:8px;
+}
+.active-title{
+  font-size:14.5px; font-weight:700; color:var(--text);
+  letter-spacing:-.01em; line-height:1.35;
+}
+.active-ref{
+  display:inline-block;
+  font-family:var(--mono); font-size:10.5px; font-weight:600;
+  color:var(--brand-2); margin-top:2px;
+  letter-spacing:.3px;
+}
+.badge{
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:999px;
+  font-size:10.5px; font-weight:600;
+  border:1px solid transparent; white-space:nowrap;
+}
+.badge-blue{ background:var(--brand-soft); color:var(--brand-2); border-color:var(--brand-line); }
+.badge-yellow{ background:var(--yellow-soft); color:var(--yellow-ink); border-color:var(--yellow-line); }
+.badge-green{ background:var(--green-soft); color:var(--green); border-color:var(--green-line); }
+.badge-red{ background:var(--red-soft); color:var(--red); border-color:var(--red-line); }
+.badge-gray{ background:var(--bg-subtle); color:var(--text-3); border-color:var(--border); }
+.badge-purple{ background:var(--purple-soft); color:var(--purple); }
 
-    /* ---------- SERVICE GRID ---------- */
-    .service-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 8px 20px;
-    }
-    @media (min-width: 600px) {
-      .service-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    .service-card {
-      background: var(--brand-white);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-card);
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: var(--shadow-sm);
-      text-align: left;
-    }
-    .service-card:hover {
-      border-color: var(--brand-gold);
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-    .service-card .material-icons-round {
-      font-size: 28px;
-      color: var(--brand-teal);
-      background: rgba(26, 107, 122, 0.1);
-      padding: 8px;
-      border-radius: 14px;
-    }
-    .service-card h4 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--brand-deep);
-    }
-    .service-card p {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
+.active-meta{
+  display:flex; justify-content:space-between; gap:12px;
+  padding:10px 0; border-top:1px solid var(--border);
+  font-size:12.5px; color:var(--text-2);
+}
+.active-meta strong{ color:var(--text); font-weight:700; }
 
-    /* ---------- ACTIVE ORDER PANEL ---------- */
-    .active-order {
-      display: none;
-      margin: 16px 20px;
-      background: var(--brand-white);
-      border-radius: 24px;
-      border-left: 6px solid var(--brand-gold);
-      padding: 18px 20px;
-      box-shadow: var(--shadow-md);
-    }
-    .active-order.show {
-      display: block;
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-    .order-header h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--brand-deep);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .order-header .status-badge {
-      background: var(--brand-sand);
-      color: var(--brand-deep);
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .status-badge.preparing {
-      background: #FFF4D6;
-      color: #8A6D1F;
-    }
-    .status-badge.ontheway {
-      background: #E0F0F5;
-      color: #1A6B7A;
-    }
-    .status-badge.delivered {
-      background: #E6F7ED;
-      color: #1A7A4A;
-    }
-    .order-details {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-light);
-    }
-    .order-details strong {
-      color: var(--text-dark);
-    }
-    .progress-steps {
-      display: flex;
-      gap: 6px;
-      margin-top: 8px;
-    }
-    .step {
-      flex: 1;
-      height: 6px;
-      background: var(--border-light);
-      border-radius: 40px;
-      transition: var(--transition);
-    }
-    .step.active {
-      background: var(--brand-teal);
-    }
-    .step.done {
-      background: var(--brand-gold);
-    }
+.progress{
+  display:flex; gap:4px; margin-top:8px;
+}
+.progress .seg{
+  flex:1; height:5px; border-radius:999px;
+  background:var(--border);
+  transition:background .3s ease;
+}
+.progress .seg.on{ background:var(--brand-2); }
+.progress .seg.done{ background:var(--green); }
 
-    /* ---------- CART BAR ---------- */
-    .cart-bar {
-      position: fixed;
-      left: 20px;
-      right: 20px;
-      bottom: 80px;
-      background: var(--brand-deep);
-      color: white;
-      border-radius: 20px;
-      padding: 16px 20px;
-      display: none;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 16px 40px rgba(10, 47, 68, 0.3);
-      z-index: 100;
-      animation: slideUp 0.25s ease;
-    }
-    .cart-bar.show {
-      display: flex;
-    }
-    .cart-bar .info b {
-      font-size: 1rem;
-      display: block;
-      font-weight: 600;
-    }
-    .cart-bar .info small {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    .cart-bar button {
-      background: var(--brand-gold);
-      color: var(--brand-deep);
-      border: none;
-      padding: 12px 22px;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .cart-bar button:hover {
-      background: #E5C04A;
-      transform: scale(1.02);
-    }
+/* =====================================================================
+   Quick actions grid
+   ===================================================================== */
+.quick{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:8px; margin-bottom:8px;
+}
+.quick-btn{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:14px 6px;
+  display:flex; flex-direction:column; align-items:center; gap:7px;
+  font-size:11px; font-weight:600; color:var(--text);
+  box-shadow:var(--shadow-xs);
+  transition:all .15s ease;
+}
+.quick-btn:hover{ border-color:var(--brand-2); background:var(--brand-soft); }
+.quick-btn:active{ transform:scale(.97); }
+.quick-btn .icon{ width:20px; height:20px; color:var(--brand-2); }
 
-    /* ---------- BOTTOM NAV ---------- */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--brand-white);
-      border-top: 1px solid var(--border-light);
-      padding: 10px 16px 14px;
-      display: flex;
-      justify-content: space-around;
-      z-index: 90;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
-    }
-    .nav-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      background: transparent;
-      border: none;
-      color: var(--text-light);
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 40px;
-      transition: var(--transition);
-      min-width: 64px;
-    }
-    .nav-btn .material-icons-round {
-      font-size: 24px;
-    }
-    .nav-btn.active {
-      color: var(--brand-deep);
-      background: rgba(212, 175, 55, 0.12);
-    }
-    .nav-btn.active .material-icons-round {
-      color: var(--brand-deep);
-    }
+/* =====================================================================
+   Menu grid
+   ===================================================================== */
+.grid{
+  display:grid; grid-template-columns:1fr;
+  gap:10px;
+}
+@media(min-width:520px){ .grid{ grid-template-columns:1fr 1fr; } }
 
-    /* ---------- MODALS ---------- */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 47, 68, 0.5);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-    }
-    .modal.active {
-      display: flex;
-    }
-    .modal-box {
-      background: var(--brand-white);
-      border-radius: 28px 28px 20px 20px;
-      width: 100%;
-      max-width: 480px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 24px 22px;
-      animation: slideUp 0.3s ease;
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
-    .modal-header h3 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--brand-deep);
-    }
-    .modal-header p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-    .close-modal {
-      background: var(--brand-sand);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-dark);
-    }
-    .close-modal .material-icons-round {
-      font-size: 22px;
-    }
+/* =====================================================================
+   Category pills
+   ===================================================================== */
+.pills{
+  display:flex; gap:6px; overflow-x:auto;
+  padding-bottom:6px; margin:0 -14px 12px;
+  padding-left:14px; padding-right:14px;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+.pills::-webkit-scrollbar{ display:none; }
+.pill{
+  flex:0 0 auto;
+  padding:7px 14px; border-radius:999px;
+  background:#fff; border:1px solid var(--border-2);
+  font-size:12.5px; font-weight:600; color:var(--text-2);
+  white-space:nowrap;
+  transition:all .15s ease;
+}
+.pill:hover:not(.on){ border-color:var(--border-3); color:var(--text); }
+.pill.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
 
-    /* ---------- CART SHEET ---------- */
-    .cart-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-light);
-    }
-    .cart-item-img {
-      width: 54px;
-      height: 54px;
-      background: var(--brand-sand);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      flex-shrink: 0;
-    }
-    .cart-item-info {
-      flex: 1;
-    }
-    .cart-item-info b {
-      font-size: 0.9rem;
-      display: block;
-    }
-    .cart-item-info small {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-    .qty-control {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--brand-sand);
-      border-radius: 40px;
-      padding: 4px;
-    }
-    .qty-control button {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: none;
-      background: var(--brand-white);
-      color: var(--brand-deep);
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    }
-    .qty-control span {
-      min-width: 24px;
-      text-align: center;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .cart-totals {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 2px dashed var(--border-light);
-    }
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      padding: 6px 0;
-      color: var(--text-muted);
-    }
-    .total-row.grand {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--brand-deep);
-      padding-top: 10px;
-      border-top: 1px solid var(--border-light);
-      margin-top: 6px;
-    }
-    .btn-primary {
-      width: 100%;
-      padding: 16px;
-      background: var(--brand-deep);
-      color: white;
-      border: none;
-      border-radius: 16px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: var(--transition);
-    }
-    .btn-primary:hover {
-      background: var(--brand-teal);
-    }
-    .btn-primary .material-icons-round {
-      font-size: 20px;
-    }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border-light);
-      color: var(--text-dark);
-      padding: 12px 20px;
-      border-radius: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .btn-outline:hover {
-      border-color: var(--brand-gold);
-      background: var(--brand-sand);
-    }
+/* =====================================================================
+   Menu / service / vendor cards
+   ===================================================================== */
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:14px;
+  display:flex; gap:12px;
+  box-shadow:var(--shadow-xs);
+  transition:all .15s ease;
+  position:relative;
+}
+.card:hover{ border-color:var(--border-2); box-shadow:var(--shadow-sm); }
+.card.clickable{ cursor:pointer; }
+.card.clickable:active{ transform:scale(.99); }
 
-    /* ---------- PAYMENT CARD ---------- */
-    .pay-card {
-      background: var(--brand-sand);
-      border-radius: 20px;
-      padding: 20px;
-      margin-top: 18px;
-    }
-    .pay-card .pay-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .pay-card .pay-header .material-icons-round {
-      color: var(--brand-teal);
-      font-size: 28px;
-    }
-    .pay-card .pay-header h4 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--brand-deep);
-    }
-    .pay-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    .pay-row:last-child {
-      border-bottom: none;
-    }
-    .pay-row .label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .pay-row .value {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--brand-deep);
-      font-family: monospace;
-      letter-spacing: 0.5px;
-    }
-    .pay-row .copy-btn {
-      background: var(--brand-white);
-      border: 1px solid var(--border-light);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--brand-teal);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .pay-steps {
-      list-style: none;
-      padding: 0;
-      margin-top: 12px;
-    }
-    .pay-steps li {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      font-size: 0.85rem;
-      color: var(--text-dark);
-      padding: 6px 0;
-    }
-    .pay-steps li .step-num {
-      background: var(--brand-deep);
-      color: white;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
+.card-icon{
+  width:56px; height:56px; flex-shrink:0;
+  border-radius:12px; background:var(--bg-subtle);
+  display:grid; place-items:center;
+  font-size:26px;
+  overflow:hidden;
+}
+.card-icon img{ width:100%; height:100%; object-fit:cover; }
+.card-body{ flex:1; min-width:0; }
+.card-name{
+  font-size:14.5px; font-weight:700; color:var(--text);
+  letter-spacing:-.01em; line-height:1.3;
+}
+.card-desc{
+  font-size:12.5px; color:var(--text-3); margin-top:3px;
+  line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.card-row{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; margin-top:9px;
+}
+.price{
+  font-size:14.5px; font-weight:700; color:var(--brand-2);
+  font-variant-numeric:tabular-nums;
+}
+.price small{ font-size:11px; color:var(--text-3); font-weight:600; margin-left:4px; }
 
-    /* ---------- SUCCESS ---------- */
-    .success-icon {
-      width: 72px;
-      height: 72px;
-      background: #E6F7ED;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-    }
-    .success-icon .material-icons-round {
-      font-size: 40px;
-      color: #1A7A4A;
-    }
+.add-btn{
+  width:36px; height:36px; border-radius:10px;
+  background:var(--brand-2); color:#fff;
+  display:grid; place-items:center;
+  flex-shrink:0; transition:all .15s ease;
+  box-shadow:var(--shadow-xs);
+}
+.add-btn:hover{ background:var(--brand-3); }
+.add-btn:active{ transform:scale(.92); }
+.add-btn.has{ background:var(--brand-soft); color:var(--brand-2); border:1px solid var(--brand-line); }
+.add-btn .icon{ width:18px; height:18px; }
 
-    /* ---------- TOAST ---------- */
-    .toast {
-      position: fixed;
-      bottom: 110px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--brand-deep);
-      color: white;
-      padding: 14px 24px;
-      border-radius: 40px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      opacity: 0;
-      pointer-events: none;
-      transition: all 0.3s ease;
-      z-index: 2000;
-      box-shadow: var(--shadow-md);
-      max-width: 90%;
-      text-align: center;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+.badge-float{
+  position:absolute; top:10px; left:10px;
+  background:var(--yellow); color:#000;
+  font-size:9.5px; font-weight:700;
+  padding:3px 8px; border-radius:999px;
+  text-transform:uppercase; letter-spacing:.3px;
+}
 
-    /* ---------- UTILITY ---------- */
-    .hidden { display: none !important; }
-    .text-center { text-align: center; }
-    .mt-2 { margin-top: 8px; }
-    .mt-4 { margin-top: 16px; }
-    .mb-2 { margin-bottom: 8px; }
-    .flex { display: flex; }
-    .items-center { align-items: center; }
-    .gap-2 { gap: 8px; }
-  </style>
+/* Vendor card */
+.vendor-card{
+  background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:14px;
+  box-shadow:var(--shadow-xs);
+  transition:all .15s ease;
+}
+.vendor-card:hover{ border-color:var(--border-2); box-shadow:var(--shadow-sm); }
+.vendor-head{
+  display:flex; gap:12px; align-items:center;
+  margin-bottom:10px;
+}
+.vendor-logo{
+  width:48px; height:48px; border-radius:12px;
+  background:var(--brand-soft); color:var(--brand-2);
+  display:grid; place-items:center;
+  font-size:22px; font-weight:800;
+  flex-shrink:0;
+}
+.vendor-info{ flex:1; min-width:0; }
+.vendor-name{
+  font-size:14.5px; font-weight:700; color:var(--text);
+  letter-spacing:-.01em;
+}
+.vendor-meta{
+  font-size:11.5px; color:var(--text-3);
+  margin-top:2px;
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.vendor-services{
+  display:flex; flex-wrap:wrap; gap:5px;
+  margin-top:8px;
+}
+.vendor-tag{
+  font-size:11px; padding:3px 9px;
+  background:var(--bg-subtle); border:1px solid var(--border);
+  border-radius:999px; color:var(--text-2); font-weight:500;
+}
+.vendor-actions{ display:flex; gap:6px; margin-top:12px; }
+.vendor-actions .btn{ flex:1; }
+
+/* =====================================================================
+   Cart bar
+   ===================================================================== */
+.cart-bar{
+  position:fixed; left:12px; right:12px;
+  bottom:calc(74px + var(--safe-b));
+  background:var(--brand);
+  color:#fff; border-radius:var(--r-lg);
+  padding:14px 18px;
+  display:none; align-items:center; justify-content:space-between;
+  gap:12px;
+  box-shadow:0 12px 32px rgba(0,53,128,.28);
+  z-index:95;
+  animation:slideUp .25s ease;
+}
+.cart-bar.show{ display:flex; }
+@keyframes slideUp{
+  from{ opacity:0; transform:translateY(12px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.cart-bar .info b{ display:block; font-size:14px; font-weight:700; }
+.cart-bar .info small{ font-size:11.5px; color:rgba(255,255,255,.7); }
+.cart-bar button{
+  background:var(--yellow); color:#000;
+  border:none; padding:10px 18px;
+  border-radius:999px;
+  font-weight:700; font-size:13px;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.cart-bar button:hover{ filter:brightness(.96); }
+
+/* =====================================================================
+   Bottom nav
+   ===================================================================== */
+.bottom-nav{
+  position:fixed; bottom:0; left:0; right:0;
+  background:#fff;
+  border-top:1px solid var(--border);
+  display:flex; justify-content:space-around;
+  padding:8px 4px calc(8px + var(--safe-b));
+  z-index:90;
+  box-shadow:0 -4px 20px rgba(0,0,0,.04);
+}
+.nav-btn{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  color:var(--text-4);
+  font-size:10.5px; font-weight:600;
+  padding:6px 8px;
+  border-radius:var(--r);
+  transition:all .15s ease;
+  position:relative;
+  min-width:56px;
+}
+.nav-btn .icon{ width:22px; height:22px; }
+.nav-btn.on{ color:var(--brand-2); background:var(--brand-soft); }
+.nav-btn .nav-dot{
+  position:absolute; top:4px; right:14px;
+  min-width:16px; height:16px; padding:0 4px;
+  background:var(--red); color:#fff;
+  font-size:9.5px; font-weight:700;
+  border-radius:999px;
+  display:grid; place-items:center;
+  border:1.5px solid #fff;
+}
+
+/* =====================================================================
+   Modals / sheets
+   ===================================================================== */
+.sheet{
+  position:fixed; inset:0; z-index:200;
+  background:rgba(0,0,0,.5);
+  display:none; align-items:flex-end;
+  backdrop-filter:blur(2px);
+  -webkit-backdrop-filter:blur(2px);
+}
+.sheet.show{ display:flex; }
+.sheet-body{
+  background:#fff;
+  width:100%; max-width:600px;
+  margin:0 auto;
+  max-height:92vh; overflow-y:auto;
+  border-radius:20px 20px 0 0;
+  padding:22px 20px calc(22px + var(--safe-b));
+  animation:sheetUp .25s cubic-bezier(.3,1.3,.5,1);
+}
+@media(min-width:700px){
+  .sheet{ align-items:center; padding:20px; }
+  .sheet-body{ border-radius:16px; }
+}
+@keyframes sheetUp{
+  from{ transform:translateY(100%); }
+  to{ transform:translateY(0); }
+}
+.sheet-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:12px; margin-bottom:16px; padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+}
+.sheet-title{
+  font-size:18px; font-weight:700; letter-spacing:-.02em;
+  color:var(--text);
+  display:flex; align-items:center; gap:8px;
+}
+.sheet-title .icon{ width:18px; height:18px; color:var(--brand-2); }
+.sheet-sub{
+  font-size:12.5px; color:var(--text-3); margin-top:4px; line-height:1.5;
+}
+.sheet-close{
+  width:34px; height:34px; flex-shrink:0;
+  border-radius:50%; background:var(--bg-subtle);
+  border:1px solid var(--border);
+  display:grid; place-items:center;
+  color:var(--text-2);
+}
+.sheet-close:hover{ background:var(--bg-muted); }
+.sheet-close .icon{ width:16px; height:16px; }
+
+/* =====================================================================
+   Cart items
+   ===================================================================== */
+.cart-line{
+  display:flex; gap:12px; padding:12px 0;
+  border-bottom:1px solid var(--border);
+  align-items:center;
+}
+.cart-line-icon{
+  width:48px; height:48px; border-radius:10px;
+  background:var(--bg-subtle);
+  display:grid; place-items:center;
+  font-size:22px; flex-shrink:0;
+}
+.cart-line-body{ flex:1; min-width:0; }
+.cart-line-name{ font-size:13.5px; font-weight:600; color:var(--text); }
+.cart-line-price{ font-size:12px; color:var(--text-3); margin-top:2px; }
+.qty{
+  display:flex; align-items:center; gap:0;
+  background:var(--bg-subtle); border:1px solid var(--border);
+  border-radius:999px; padding:2px;
+  flex-shrink:0;
+}
+.qty button{
+  width:28px; height:28px;
+  border-radius:50%; background:transparent;
+  display:grid; place-items:center;
+  color:var(--brand-2); font-weight:700;
+  font-size:16px;
+}
+.qty button:hover{ background:#fff; }
+.qty span{
+  min-width:24px; text-align:center;
+  font-weight:700; font-size:13px;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Totals */
+.totals{
+  padding:14px 0 0;
+  display:flex; flex-direction:column; gap:6px;
+}
+.total-row{
+  display:flex; justify-content:space-between;
+  font-size:13.5px; color:var(--text-2);
+}
+.total-row.grand{
+  font-weight:700; font-size:16px; color:var(--text);
+  padding-top:10px; margin-top:6px;
+  border-top:1px solid var(--border);
+}
+
+/* =====================================================================
+   Payment card
+   ===================================================================== */
+.pay{
+  background:var(--bg-subtle);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:16px;
+  margin-top:16px;
+}
+.pay-head{
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:12px;
+}
+.pay-head .icon{ width:18px; height:18px; color:var(--brand-2); }
+.pay-head b{ font-size:13.5px; font-weight:700; color:var(--text); }
+.pay-rows{
+  background:#fff; border:1px dashed var(--border-2);
+  border-radius:var(--r); padding:12px;
+}
+.pay-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 0; gap:10px;
+}
+.pay-row + .pay-row{ border-top:1px solid var(--border); }
+.pay-row .label{
+  font-size:10.5px; font-weight:600; color:var(--text-3);
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.pay-row .value{
+  font-family:var(--mono); font-size:15px; font-weight:700;
+  color:var(--text); letter-spacing:.3px;
+}
+.pay-copy{
+  background:transparent; border:1px solid var(--border-2);
+  border-radius:6px; padding:4px 8px;
+  font-size:10.5px; font-weight:600; color:var(--brand-2);
+  display:inline-flex; align-items:center; gap:4px;
+}
+.pay-copy:hover{ background:var(--brand-soft); border-color:var(--brand-2); }
+.pay-copy .icon{ width:12px; height:12px; }
+
+.pay-steps{
+  margin-top:14px; padding:0 4px;
+  counter-reset:step;
+}
+.pay-steps li{
+  position:relative; padding-left:28px; margin-bottom:6px;
+  font-size:12.5px; color:var(--text-2); line-height:1.5;
+  counter-increment:step;
+}
+.pay-steps li::before{
+  content:counter(step);
+  position:absolute; left:0; top:0;
+  width:18px; height:18px; border-radius:50%;
+  background:var(--brand-2); color:#fff;
+  font-size:10px; font-weight:700;
+  display:grid; place-items:center;
+}
+.pay-steps li b{ color:var(--text); }
+
+.pay-warn{
+  background:var(--yellow-soft); border:1px solid var(--yellow-line);
+  border-radius:var(--r); padding:12px;
+  font-size:12.5px; color:var(--yellow-ink); line-height:1.5;
+}
+
+/* =====================================================================
+   Form inputs
+   ===================================================================== */
+.field{ margin-bottom:14px; }
+.field label{
+  display:block; font-size:11.5px; font-weight:600;
+  color:var(--text-2); margin-bottom:6px;
+  letter-spacing:.3px; text-transform:uppercase;
+}
+.input, .textarea{
+  width:100%; padding:12px 14px;
+  background:#fff; border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  font-size:14px; font-weight:500;
+  outline:none; transition:all .15s ease;
+}
+.input:focus, .textarea:focus{
+  border-color:var(--brand-2);
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+.input::placeholder, .textarea::placeholder{ color:var(--text-4); }
+.textarea{ min-height:70px; resize:vertical; font-family:inherit; }
+
+.row-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* =====================================================================
+   Slot picker
+   ===================================================================== */
+.slots{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  gap:8px;
+}
+.slot{
+  padding:10px 8px;
+  background:#fff; border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  text-align:center;
+  font-size:12.5px; font-weight:600; color:var(--text-2);
+  transition:all .15s ease;
+}
+.slot:hover:not(:disabled){ border-color:var(--brand-2); color:var(--brand-2); }
+.slot.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
+.slot:disabled{ opacity:.35; cursor:not-allowed; text-decoration:line-through; }
+
+/* =====================================================================
+   Empty states
+   ===================================================================== */
+.empty{
+  text-align:center; padding:48px 20px;
+  color:var(--text-3); font-size:13.5px;
+}
+.empty-icon{
+  width:52px; height:52px; margin:0 auto 12px;
+  border-radius:12px; background:var(--bg-subtle);
+  border:1px solid var(--border);
+  display:grid; place-items:center; color:var(--text-4);
+}
+.empty-icon .icon{ width:22px; height:22px; }
+.empty b{
+  display:block; font-size:14.5px; font-weight:600;
+  color:var(--text); margin-bottom:6px;
+}
+
+/* =====================================================================
+   Skeleton
+   ===================================================================== */
+.skel{
+  height:78px; border-radius:var(--r-lg);
+  background:linear-gradient(90deg,#f0f0f0 0%,#e8e8e8 50%,#f0f0f0 100%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border:1px solid var(--border);
+}
+@keyframes shimmer{
+  0%{ background-position:200% 0; }
+  100%{ background-position:-200% 0; }
+}
+
+/* =====================================================================
+   Toast
+   ===================================================================== */
+.toast{
+  position:fixed; left:50%; bottom:120px;
+  transform:translate(-50%,120%);
+  background:#1a1a1a; color:#fff;
+  padding:12px 18px; border-radius:999px;
+  font-size:13px; font-weight:500;
+  z-index:500;
+  transition:transform .28s cubic-bezier(.3,1.3,.5,1);
+  box-shadow:var(--shadow-lg);
+  max-width:calc(100vw - 32px);
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show{ transform:translate(-50%,0); }
+.toast.error{ background:var(--red); }
+.toast.success{ background:#1a1a1a; }
+.toast .icon{ width:16px; height:16px; flex-shrink:0; }
+
+/* =====================================================================
+   Offline bar
+   ===================================================================== */
+.offline{
+  position:fixed; top:0; left:0; right:0;
+  z-index:400;
+  background:var(--red); color:#fff;
+  text-align:center;
+  padding:8px;
+  font-size:12.5px; font-weight:600;
+  transform:translateY(-100%);
+  transition:transform .3s ease;
+}
+.offline.show{ transform:translateY(0); }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    transition-duration:.01ms !important;
+  }
+}
+</style>
 </head>
 <body>
 
-<!-- Offline bar -->
-<div class="offline-bar" id="offlineBar">
-  <span class="material-icons-round">wifi_off</span>
-  <span>You're offline — reconnecting...</span>
-</div>
+<div class="offline" id="offlineBar">You're offline — reconnecting…</div>
 
-<!-- Header -->
 <header class="app-header">
-  <div class="logo-area">
-    <div class="logo-mark">G</div>
-    <div class="logo-text">GUEST<span>HUB</span></div>
-  </div>
-  <div class="header-actions">
-    <button class="icon-btn" id="langBtn" title="Language">
-      <span class="material-icons-round">language</span>
-    </button>
-    <button class="icon-btn" id="infoBtn" title="Info">
-      <span class="material-icons-round">info</span>
-    </button>
+  <div class="app-header-inner">
+    <div class="brand">
+      <div class="brand-logo" id="brandLogo">G</div>
+      <div class="brand-text">
+        <div class="brand-title" id="headerHotelName">GuestHub</div>
+        <div class="brand-sub" id="headerContext">Loading…</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="langBtn" title="Language" aria-label="Language">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      </button>
+      <button class="icon-btn" id="profileBtn" title="Profile" aria-label="Profile">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- Context panel -->
-<div class="context-panel" id="contextPanel">
-  <div class="context-icon" id="contextIcon">
-    <span class="material-icons-round">table_restaurant</span>
+<main class="container" id="main">
+
+  <!-- CONTEXT BANNER -->
+  <section class="context" id="contextBanner">
+    <div class="context-icon" id="contextIcon">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
+    </div>
+    <div class="context-body">
+      <div class="context-title" id="contextTitle">Set your room</div>
+      <div class="context-sub" id="contextSub">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>—</span>
+      </div>
+    </div>
+    <button class="context-change" id="changeContextBtn">Change</button>
+  </section>
+
+  <!-- PROMO -->
+  <div class="promo" id="promoBanner">
+    <b id="promoTitle"></b>
+    <p id="promoText"></p>
   </div>
-  <div class="context-info">
-    <h3 id="contextTitle">Table 12</h3>
-    <p>
-      <span class="material-icons-round">restaurant</span>
-      <span id="contextSub">Dine-in · The Grand Baobab</span>
-    </p>
-  </div>
-  <button class="context-change" id="changeContextBtn">Change</button>
-</div>
 
-<!-- Quick requests -->
-<div class="quick-requests" id="quickRequests">
-  <button class="quick-req-btn" data-quick="waiter">
-    <span class="material-icons-round">room_service</span>
-    <span>Call Waiter</span>
-  </button>
-  <button class="quick-req-btn" data-quick="water">
-    <span class="material-icons-round">water_drop</span>
-    <span>Water</span>
-  </button>
-  <button class="quick-req-btn" data-quick="bill">
-    <span class="material-icons-round">receipt_long</span>
-    <span>Request Bill</span>
-  </button>
-</div>
+  <!-- ======================================================= -->
+  <!-- TAB: HOME -->
+  <!-- ======================================================= -->
+  <section id="view-home" class="view">
+    <!-- Active order -->
+    <div class="active-card" id="activeCard"></div>
 
-<!-- Active order -->
-<div class="active-order" id="activeOrder">
-  <div class="order-header">
-    <h3>
-      <span class="material-icons-round">local_dining</span>
-      <span id="activeOrderTitle">Your Order</span>
-    </h3>
-    <span class="status-badge" id="activeOrderStatus">Preparing</span>
-  </div>
-  <div class="order-details">
-    <span>Ref: <strong id="activeOrderRef">GH-1234</strong></span>
-    <span>Total: <strong id="activeOrderTotal">Ksh 0</strong></span>
-  </div>
-  <div class="progress-steps" id="progressSteps">
-    <div class="step done"></div>
-    <div class="step active"></div>
-    <div class="step"></div>
-    <div class="step"></div>
-  </div>
-</div>
+    <!-- Quick actions -->
+    <div class="quick" id="quickActions">
+      <button class="quick-btn" data-quick="waiter">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        Call waiter
+      </button>
+      <button class="quick-btn" data-quick="water">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+        Water
+      </button>
+      <button class="quick-btn" data-quick="bill">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+        Request bill
+      </button>
+      <button class="quick-btn" data-quick="housekeeping">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+        Housekeeping
+      </button>
+    </div>
 
-<!-- Popular section -->
-<div class="section-title">
-  <h2><span class="material-icons-round">local_fire_department</span> Popular today</h2>
-  <a href="#" id="viewAllPopular">View all</a>
-</div>
+    <!-- Popular menu items -->
+    <div class="section-head">
+      <h2 class="section-title">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        Popular right now
+      </h2>
+      <a class="section-link" href="#" data-tab="menu">View all →</a>
+    </div>
+    <div class="grid" id="popularGrid"></div>
 
-<!-- Category tabs -->
-<div class="category-tabs" id="categoryTabs">
-  <button class="cat-tab active" data-cat="all">
-    <span class="material-icons-round">apps</span> All
-  </button>
-  <button class="cat-tab" data-cat="food">
-    <span class="material-icons-round">restaurant</span> Food
-  </button>
-  <button class="cat-tab" data-cat="drinks">
-    <span class="material-icons-round">local_bar</span> Drinks
-  </button>
-  <button class="cat-tab" data-cat="services">
-    <span class="material-icons-round">room_service</span> Services
-  </button>
-  <button class="cat-tab" data-cat="taxi">
-    <span class="material-icons-round">local_taxi</span> Taxi
-  </button>
-  <button class="cat-tab" data-cat="tour">
-    <span class="material-icons-round">explore</span> Tours
-  </button>
-  <button class="cat-tab" data-cat="spa">
-    <span class="material-icons-round">spa</span> Spa
-  </button>
-</div>
+    <!-- Vendors teaser -->
+    <div class="section-head">
+      <h2 class="section-title">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+        Nearby vendors
+      </h2>
+      <a class="section-link" href="#" data-tab="vendors">See all →</a>
+    </div>
+    <div class="grid" id="popularVendors"></div>
+  </section>
 
-<!-- Menu grid -->
-<div class="menu-grid" id="menuGrid"></div>
+  <!-- ======================================================= -->
+  <!-- TAB: MENU -->
+  <!-- ======================================================= -->
+  <section id="view-menu" class="view hidden">
+    <div class="pills" id="menuPills"></div>
+    <div class="grid" id="menuGrid"></div>
+  </section>
 
-<!-- Service grid -->
-<div class="section-title">
-  <h2><span class="material-icons-round">concierge</span> Hotel Services</h2>
-</div>
-<div class="service-grid" id="serviceGrid"></div>
+  <!-- ======================================================= -->
+  <!-- TAB: SERVICES -->
+  <!-- ======================================================= -->
+  <section id="view-services" class="view hidden">
+    <div class="grid" id="servicesGrid"></div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- TAB: VENDORS -->
+  <!-- ======================================================= -->
+  <section id="view-vendors" class="view hidden">
+    <div class="pills" id="vendorPills"></div>
+    <div class="grid" id="vendorsGrid"></div>
+  </section>
+
+  <!-- ======================================================= -->
+  <!-- TAB: ORDERS -->
+  <!-- ======================================================= -->
+  <section id="view-orders" class="view hidden">
+    <div class="pills" id="orderPills">
+      <button class="pill on" data-ofilter="active">Active</button>
+      <button class="pill" data-ofilter="history">History</button>
+    </div>
+    <div id="ordersList"></div>
+  </section>
+
+</main>
 
 <!-- Cart bar -->
 <div class="cart-bar" id="cartBar">
@@ -1097,1088 +936,1532 @@ To: Simon rono <simonrono3@gmail.com>
     <small id="cartTotal">Ksh 0</small>
   </div>
   <button id="viewCartBtn">
-    View Cart
-    <span class="material-icons-round">arrow_forward</span>
+    View cart
+    <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
   </button>
 </div>
 
-<!-- Bottom navigation -->
+<!-- Bottom nav -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" data-tab="home">
-    <span class="material-icons-round">home</span>
+  <button class="nav-btn on" data-tab="home">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Home
   </button>
   <button class="nav-btn" data-tab="menu">
-    <span class="material-icons-round">restaurant_menu</span>
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
     Menu
   </button>
-  <button class="nav-btn" data-tab="orders">
-    <span class="material-icons-round">receipt</span>
-    Orders
+  <button class="nav-btn" data-tab="services">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+    Services
   </button>
-  <button class="nav-btn" data-tab="help">
-    <span class="material-icons-round">support_agent</span>
-    Help
+  <button class="nav-btn" data-tab="vendors">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+    Vendors
+  </button>
+  <button class="nav-btn" data-tab="orders">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+    Orders
+    <span class="nav-dot hidden" id="ordersDot">0</span>
   </button>
 </nav>
 
-<!-- ========== MODALS ========== -->
+<!-- ============================================================
+     SHEETS / MODALS
+     ============================================================ -->
 
-<!-- Context modal -->
-<div class="modal" id="contextModal">
-  <div class="modal-box">
-    <div class="modal-header">
+<!-- Context sheet -->
+<div class="sheet" id="contextSheet">
+  <div class="sheet-body">
+    <div class="sheet-head">
       <div>
-        <h3>Where are you?</h3>
-        <p>Choose your room or table to continue</p>
+        <div class="sheet-title">Where are you?</div>
+        <div class="sheet-sub">Choose your room or table — we route everything from there.</div>
       </div>
-      <button class="close-modal" data-close="contextModal">
-        <span class="material-icons-round">close</span>
+      <button class="sheet-close" data-close="contextSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div class="flex gap-2" style="margin-bottom:16px;">
-      <button class="btn-outline" id="pickRoomBtn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <span class="material-icons-round">king_bed</span> Room
-      </button>
-      <button class="btn-outline" id="pickTableBtn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; border-color:var(--brand-gold); background:var(--brand-sand);">
-        <span class="material-icons-round">table_restaurant</span> Table
-      </button>
+
+    <div class="field">
+      <label>Mode</label>
+      <div class="row-2">
+        <button class="btn btn-secondary" id="pickRoomBtn" style="justify-content:center">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>
+          Room
+        </button>
+        <button class="btn btn-secondary" id="pickTableBtn" style="justify-content:center">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/></svg>
+          Table
+        </button>
+      </div>
     </div>
-    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">Table number</label>
-    <input type="text" id="contextInput" placeholder="e.g. 12" style="width:100%; padding:14px 16px; border:1px solid var(--border-light); border-radius:14px; font-size:1rem; font-family:var(--font); outline:none; background:var(--brand-white);" value="12">
-    <button class="btn-primary" id="saveContextBtn" style="margin-top:16px;">
-      <span class="material-icons-round">check</span> Confirm
+
+    <div class="field">
+      <label>Number</label>
+      <input type="text" id="contextInput" class="input" placeholder="e.g. 101" autocomplete="off">
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="guestNameInput" class="input" placeholder="Full name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Phone (for updates)</label>
+        <input type="tel" id="guestPhoneInput" class="input" placeholder="0712 345 678" autocomplete="tel">
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="saveContextBtn">
+      Confirm
     </button>
   </div>
 </div>
 
-<!-- Cart modal -->
-<div class="modal" id="cartModal">
-  <div class="modal-box">
-    <div class="modal-header">
+<!-- Item detail sheet -->
+<div class="sheet" id="itemSheet">
+  <div class="sheet-body" id="itemSheetBody"></div>
+</div>
+
+<!-- Cart sheet -->
+<div class="sheet" id="cartSheet">
+  <div class="sheet-body">
+    <div class="sheet-head">
       <div>
-        <h3>Your Order</h3>
-        <p id="cartSubtitle">Table 12 · The Grand Baobab</p>
+        <div class="sheet-title">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L23 6H6"/></svg>
+          Your order
+        </div>
+        <div class="sheet-sub" id="cartSub">—</div>
       </div>
-      <button class="close-modal" data-close="cartModal">
-        <span class="material-icons-round">close</span>
+      <button class="sheet-close" data-close="cartSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div id="cartItemsList"></div>
-    <div class="cart-totals" id="cartTotals"></div>
-    <button class="btn-primary" id="checkoutBtn">
-      <span class="material-icons-round">check_circle</span> Place Order
+    <div id="cartItems"></div>
+    <div class="totals" id="cartTotals"></div>
+    <button class="btn btn-primary btn-full btn-lg" id="placeOrderBtn" style="margin-top:16px">
+      Place order
     </button>
   </div>
 </div>
 
-<!-- Success / Payment modal -->
-<div class="modal" id="successModal">
-  <div class="modal-box">
-    <div class="success-icon">
-      <span class="material-icons-round">check</span>
-    </div>
-    <h3 style="text-align:center; font-size:1.3rem; margin-bottom:6px; color:var(--brand-deep);">Order Received!</h3>
-    <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;" id="successMessage">Your order has been sent to the kitchen.</p>
-    <div style="background:var(--brand-sand); border-radius:16px; padding:16px; text-align:center; margin-bottom:16px;">
-      <small style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Reference</small>
-      <div style="font-size:1.2rem; font-weight:700; font-family:monospace; color:var(--brand-deep); margin-top:4px;" id="successRef">GH-XXXX</div>
-    </div>
-    <div id="paymentMount"></div>
-    <button class="btn-primary" id="trackOrderBtn">
-      <span class="material-icons-round">track_changes</span> Track My Order
-    </button>
-  </div>
+<!-- Success sheet -->
+<div class="sheet" id="successSheet">
+  <div class="sheet-body" id="successSheetBody"></div>
 </div>
 
-<!-- Orders modal -->
-<div class="modal" id="ordersModal">
-  <div class="modal-box">
-    <div class="modal-header">
+<!-- Booking sheet -->
+<div class="sheet" id="bookingSheet">
+  <div class="sheet-body" id="bookingSheetBody"></div>
+</div>
+
+<!-- Language sheet -->
+<div class="sheet" id="langSheet">
+  <div class="sheet-body">
+    <div class="sheet-head">
       <div>
-        <h3>My Orders</h3>
-        <p>Track your requests</p>
+        <div class="sheet-title">Language</div>
+        <div class="sheet-sub">Choose your preferred language</div>
       </div>
-      <button class="close-modal" data-close="ordersModal">
-        <span class="material-icons-round">close</span>
+      <button class="sheet-close" data-close="langSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div id="ordersList"></div>
-  </div>
-</div>
-
-<!-- Help modal -->
-<div class="modal" id="helpModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div>
-        <h3>Talk to the Hotel</h3>
-        <p>Direct WhatsApp — fastest response</p>
-      </div>
-      <button class="close-modal" data-close="helpModal">
-        <span class="material-icons-round">close</span>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-secondary btn-full" style="justify-content:flex-start;height:auto;padding:14px" data-lang="en">
+        <span style="font-size:20px;margin-right:10px">🇬🇧</span> <b>English</b>
       </button>
-    </div>
-    <div id="helpList">
-      <button class="btn-outline" style="width:100%; margin-bottom:10px; display:flex; align-items:center; gap:12px; text-align:left;" data-dept="reception">
-        <span class="material-icons-round" style="color:var(--brand-teal);">bell</span>
-        <div><b>Reception</b><br><small style="color:var(--text-muted);">WhatsApp instantly</small></div>
+      <button class="btn btn-secondary btn-full" style="justify-content:flex-start;height:auto;padding:14px" data-lang="sw">
+        <span style="font-size:20px;margin-right:10px">🇰🇪</span> <b>Kiswahili</b>
       </button>
-      <button class="btn-outline" style="width:100%; margin-bottom:10px; display:flex; align-items:center; gap:12px; text-align:left;" data-dept="housekeeping">
-        <span class="material-icons-round" style="color:var(--brand-teal);">cleaning_services</span>
-        <div><b>Housekeeping</b><br><small style="color:var(--text-muted);">WhatsApp instantly</small></div>
-      </button>
-      <button class="btn-outline" style="width:100%; margin-bottom:10px; display:flex; align-items:center; gap:12px; text-align:left;" data-dept="kitchen">
-        <span class="material-icons-round" style="color:var(--brand-teal);">restaurant</span>
-        <div><b>Kitchen</b><br><small style="color:var(--text-muted);">WhatsApp instantly</small></div>
+      <button class="btn btn-secondary btn-full" style="justify-content:flex-start;height:auto;padding:14px" data-lang="fr">
+        <span style="font-size:20px;margin-right:10px">🇫🇷</span> <b>Français</b>
       </button>
     </div>
   </div>
 </div>
 
-<!-- Info modal -->
-<div class="modal" id="infoModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div>
-        <h3>How It Works</h3>
-        <p>Your hotel experience in one place</p>
-      </div>
-      <button class="close-modal" data-close="infoModal">
-        <span class="material-icons-round">close</span>
-      </button>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:12px;">
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <span style="background:var(--brand-deep); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0;">1</span>
-        <div><b>Scan the QR code</b><br><small style="color:var(--text-muted);">No app needed — works in your browser</small></div>
-      </div>
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <span style="background:var(--brand-deep); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0;">2</span>
-        <div><b>Browse & add items</b><br><small style="color:var(--text-muted);">Food, drinks, services — all in one menu</small></div>
-      </div>
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <span style="background:var(--brand-deep); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0;">3</span>
-        <div><b>Pay easily via M-Pesa</b><br><small style="color:var(--text-muted);">Paybill, Till, or Send Money</small></div>
-      </div>
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <span style="background:var(--brand-deep); color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem; flex-shrink:0;">4</span>
-        <div><b>Track & enjoy</b><br><small style="color:var(--text-muted);">Live status updates until delivered</small></div>
-      </div>
-    </div>
-  </div>
+<!-- Profile sheet -->
+<div class="sheet" id="profileSheet">
+  <div class="sheet-body" id="profileSheetBody"></div>
 </div>
 
-<!-- Language modal -->
-<div class="modal" id="langModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div>
-        <h3>Language</h3>
-        <p>Choose your preferred language</p>
-      </div>
-      <button class="close-modal" data-close="langModal">
-        <span class="material-icons-round">close</span>
-      </button>
-    </div>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <button class="btn-outline" style="display:flex; align-items:center; gap:12px; text-align:left;" onclick="setLanguage('en')">
-        <span style="font-size:1.4rem;">🇬🇧</span> <span><b>English</b></span>
-      </button>
-      <button class="btn-outline" style="display:flex; align-items:center; gap:12px; text-align:left;" onclick="setLanguage('sw')">
-        <span style="font-size:1.4rem;">🇰🇪</span> <span><b>Kiswahili</b></span>
-      </button>
-      <button class="btn-outline" style="display:flex; align-items:center; gap:12px; text-align:left;" onclick="setLanguage('fr')">
-        <span style="font-size:1.4rem;">🇫🇷</span> <span><b>Français</b></span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+<div id="toast" class="toast"></div>
 
 <script>
+"use strict";
+
 /* ============================================================
-   GUESTHUB GUEST DASHBOARD — SIMULATED DATA & LOGIC
+   ICONS
    ============================================================ */
-
-/* ---------- DEMO DATA ---------- */
-const HOTEL = {
-  id: 'BAOBAB',
-  name: 'The Grand Baobab',
-  tagline: 'Luxury · Comfort · Warmth',
-  currency: 'Ksh',
-  payment: {
-    configured: true,
-    channel: 'paybill',
-    paybill_number: '247247',
-    paybill_account: 'BAOBAB123',
-    till_number: null,
-    mpesa_phone: null,
-    mpesa_name: null
-  }
+const ICON = {
+  check: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  alert: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>',
+  clock: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  cart: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L23 6H6"/></svg>',
+  plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+  copy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+  bell: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+  star: '<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  store: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>',
+  calendar: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>'
 };
 
-const CATEGORIES = [
-  { id: 'all', name: 'All', icon: 'apps' },
-  { id: 'food', name: 'Food', icon: 'restaurant' },
-  { id: 'drinks', name: 'Drinks', icon: 'local_bar' },
-  { id: 'services', name: 'Services', icon: 'room_service' },
-  { id: 'taxi', name: 'Taxi', icon: 'local_taxi' },
-  { id: 'tour', name: 'Tours', icon: 'explore' },
-  { id: 'spa', name: 'Spa', icon: 'spa' }
-];
-
-const MENU_ITEMS = [
-  { id: 'm1', cat: 'food', name: 'Full Breakfast', desc: 'Eggs, sausage, toast & coffee', price: 1200, emoji: '🍳', tags: ['popular'], available: true },
-  { id: 'm2', cat: 'food', name: 'Pancake Stack', desc: 'Maple syrup, fresh berries', price: 850, emoji: '🥞', tags: [], available: true },
-  { id: 'm3', cat: 'food', name: 'Garden Salad', desc: 'Crisp greens, house dressing', price: 700, emoji: '🥗', tags: ['veg'], available: true },
-  { id: 'm4', cat: 'food', name: 'Chicken Curry', desc: 'Coconut curry, basmati rice', price: 1400, emoji: '🍛', tags: ['popular'], available: true },
-  { id: 'm5', cat: 'food', name: 'Grilled Tilapia', desc: 'Lemon butter, ugali & greens', price: 1650, emoji: '🐟', tags: [], available: true },
-  { id: 'm6', cat: 'food', name: 'Ribeye Steak', desc: 'Chimichurri & hand-cut chips', price: 2600, emoji: '🥩', tags: ['popular'], available: true },
-  { id: 'm7', cat: 'food', name: 'Chocolate Lava', desc: 'Warm centre, vanilla ice cream', price: 750, emoji: '🍰', tags: ['popular'], available: true },
-  { id: 'm8', cat: 'drinks', name: 'Kenyan AA Coffee', desc: 'Single origin, freshly brewed', price: 350, emoji: '☕', tags: ['veg'], available: true },
-  { id: 'm9', cat: 'drinks', name: 'Passion Juice', desc: 'Freshly squeezed', price: 400, emoji: '🥤', tags: ['veg'], available: true },
-  { id: 'm10', cat: 'drinks', name: 'Still Water', desc: '750ml chilled bottle', price: 200, emoji: '💧', tags: ['veg'], available: true },
-  { id: 'm11', cat: 'services', name: 'Room Service', desc: 'Full menu delivered to your room', price: 0, emoji: '🛎️', tags: [], available: true },
-  { id: 'm12', cat: 'services', name: 'Laundry & Pressing', desc: 'Same-day return available', price: 0, emoji: '👔', tags: [], available: true },
-  { id: 'm13', cat: 'services', name: 'Housekeeping', desc: 'Clean, towels, amenities', price: 0, emoji: '🧹', tags: [], available: true },
-  { id: 'm14', cat: 'taxi', name: 'Airport Transfer', desc: 'Meet & greet, fixed rate', price: 2500, emoji: '🚕', tags: [], available: true },
-  { id: 'm15', cat: 'taxi', name: 'City Taxi', desc: 'On-demand rides around town', price: 800, emoji: '🚗', tags: [], available: true },
-  { id: 'm16', cat: 'tour', name: 'Game Drive / Safari', desc: 'Half-day or full-day safari', price: 8500, emoji: '🦁', tags: ['popular'], available: true },
-  { id: 'm17', cat: 'tour', name: 'City & Cultural Tour', desc: 'Guided local experience', price: 3500, emoji: '🏛️', tags: [], available: true },
-  { id: 'm18', cat: 'spa', name: 'Massage & Spa', desc: 'In-room or at the spa', price: 4500, emoji: '💆', tags: [], available: true },
-  { id: 'm19', cat: 'spa', name: 'Facial Treatment', desc: 'Deep cleanse & hydration', price: 3800, emoji: '🧖', tags: [], available: true }
-];
-
-const DEPARTMENTS = [
-  { name: 'reception', whatsapp: '254700000001', icon: 'bell' },
-  { name: 'housekeeping', whatsapp: '254700000002', icon: 'cleaning_services' },
-  { name: 'kitchen', whatsapp: '254700000003', icon: 'restaurant' }
-];
-
-/* ---------- STATE ---------- */
-let CONTEXT = {
-  mode: 'table',   // 'table' or 'room'
-  number: '12',
-  hotelId: 'BAOBAB'
-};
-
-let CART = [];
-let ACTIVE_ORDER = null;
-let CURRENT_LANG = 'en';
-let POLL_TIMER = null;
-let RATE_LIMIT = 0;
-
-/* ---------- DOM REFS ---------- */
+/* ============================================================
+   STATE
+   ============================================================ */
 const $ = id => document.getElementById(id);
-const $$ = sel => document.querySelectorAll(sel);
+const API = "";
 
-/* ---------- HELPERS ---------- */
-const money = v => {
-  const n = Number(v);
-  if (!Number.isFinite(n) || n <= 0) return 'Ksh 0';
-  return 'Ksh ' + n.toLocaleString('en-KE');
+const state = {
+  hotel: null,
+  session: null,
+  token: null,
+  menu: [],
+  services: [],
+  vendors: [],
+  departments: [],
+  cart: [],
+  orders: [],
+  bookings: [],
+  activeOrder: null,
+  activeBooking: null,
+  tab: 'home',
+  menuFilter: 'all',
+  vendorFilter: 'all',
+  orderFilter: 'active',
+  context: { mode: 'room', number: '' },
+  sse: null,
+  sseRetry: 0
 };
 
-const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({
-  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-}[c]));
+const params = new URLSearchParams(location.search);
+const HOTEL_ID = (params.get('hotel') || '').toUpperCase();
+const URL_ROOM = params.get('room') || params.get('table') || '';
+const URL_MODE = params.get('mode') || (params.get('table') ? 'table' : 'room');
 
-/* ---------- TOAST ---------- */
+/* ============================================================
+   UTILS
+   ============================================================ */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
+
+const cleanPhone = v => {
+  const d = String(v || '').replace(/\D/g, '');
+  if (d.startsWith('254')) return d;
+  if (d.startsWith('0')) return '254' + d.slice(1);
+  return d;
+};
+
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
+  const res = await fetch(API + path, { ...opts, headers });
+  let json = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok || json.ok === false) throw new Error(json.error || ('HTTP ' + res.status));
+  return json;
+}
+
 let toastTimer = null;
-function toast(msg) {
+function toast(msg, kind = 'success') {
   const el = $('toast');
-  el.textContent = msg;
+  el.className = 'toast ' + kind;
+  el.innerHTML = (kind === 'error' ? ICON.alert : ICON.check) + '<span>' + esc(msg) + '</span>';
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-/* ---------- OFFLINE ---------- */
+function statusBadge(status) {
+  const s = String(status || '').toLowerCase();
+  const map = {
+    pending:    ['badge-yellow', 'Pending'],
+    new:        ['badge-yellow', 'New'],
+    accepted:   ['badge-blue',   'Accepted'],
+    preparing:  ['badge-blue',   'Preparing'],
+    on_the_way: ['badge-purple', 'On the way'],
+    completed:  ['badge-green',  'Completed'],
+    cancelled:  ['badge-red',    'Cancelled'],
+    requested:  ['badge-yellow', 'Requested'],
+    confirmed:  ['badge-blue',   'Confirmed'],
+    declined:   ['badge-red',    'Declined']
+  };
+  const [cls, label] = map[s] || ['badge-gray', s.toUpperCase()];
+  return `<span class="badge ${cls}">${esc(label)}</span>`;
+}
+
+function relativeTime(iso) {
+  if (!iso) return '';
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return s + 's ago';
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + ' min ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+
+/* ============================================================
+   PERSISTENCE
+   ============================================================ */
+function saveLocal() {
+  try {
+    localStorage.setItem('gh_guest_ctx', JSON.stringify(state.context));
+    if (state.token) localStorage.setItem('gh_guest_token', state.token);
+    localStorage.setItem('gh_guest_cart_' + HOTEL_ID, JSON.stringify(state.cart));
+  } catch {}
+}
+function loadLocal() {
+  try {
+    const ctx = localStorage.getItem('gh_guest_ctx');
+    if (ctx) state.context = { ...state.context, ...JSON.parse(ctx) };
+    state.token = localStorage.getItem('gh_guest_token') || null;
+    const cart = localStorage.getItem('gh_guest_cart_' + HOTEL_ID);
+    if (cart) state.cart = JSON.parse(cart) || [];
+  } catch {}
+}
+
+/* ============================================================
+   OFFLINE
+   ============================================================ */
 function updateOffline() {
-  const bar = $('offlineBar');
-  if (!navigator.onLine) bar.classList.add('show');
-  else bar.classList.remove('show');
+  $('offlineBar').classList.toggle('show', !navigator.onLine);
 }
 window.addEventListener('offline', updateOffline);
-window.addEventListener('online', () => {
-  updateOffline();
-  toast('You\'re back online');
-});
+window.addEventListener('online', () => { updateOffline(); toast('Back online'); });
 updateOffline();
 
-/* ---------- MODALS ---------- */
-function openModal(id) {
-  const m = $(id);
-  if (!m) return;
-  m.classList.add('active');
+/* ============================================================
+   SHEETS
+   ============================================================ */
+function openSheet(id) {
+  const el = $(id);
+  if (!el) return;
+  el.classList.add('show');
   document.body.style.overflow = 'hidden';
 }
-function closeModal(id) {
-  const m = $(id);
-  if (!m) return;
-  m.classList.remove('active');
-  if (!document.querySelector('.modal.active')) {
-    document.body.style.overflow = '';
-  }
+function closeSheet(id) {
+  const el = $(id);
+  if (!el) return;
+  el.classList.remove('show');
+  if (!document.querySelector('.sheet.show')) document.body.style.overflow = '';
 }
-document.querySelectorAll('.modal').forEach(m => {
-  m.addEventListener('click', e => {
-    if (e.target === m) closeModal(m.id);
-  });
+document.querySelectorAll('.sheet').forEach(s => {
+  s.addEventListener('click', e => { if (e.target === s) closeSheet(s.id); });
 });
-document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+document.querySelectorAll('[data-close]').forEach(b => {
+  b.addEventListener('click', () => closeSheet(b.dataset.close));
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show'));
     document.body.style.overflow = '';
   }
 });
 
 /* ============================================================
-   CONTEXT MANAGEMENT
+   CONTEXT
    ============================================================ */
-function updateContextUI() {
-  const isTable = CONTEXT.mode === 'table';
-  $('contextIcon').innerHTML = isTable
-    ? '<span class="material-icons-round">table_restaurant</span>'
-    : '<span class="material-icons-round">king_bed</span>';
-  $('contextTitle').textContent = isTable
-    ? `Table ${CONTEXT.number}`
-    : `Room ${CONTEXT.number}`;
-  $('contextSub').textContent = isTable
-    ? `Dine-in · ${HOTEL.name}`
-    : `Room service · ${HOTEL.name}`;
-  $('quickRequests').style.display = isTable ? 'grid' : 'none';
+function renderContext() {
+  const c = state.context;
+  const hasNumber = !!c.number;
+  const isTable = c.mode === 'table';
+
+  $('contextTitle').textContent = hasNumber
+    ? (isTable ? `Table ${c.number}` : `Room ${c.number}`)
+    : 'Set your room';
+
+  const iconSvg = isTable
+    ? '<path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/>'
+    : '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>';
+  $('contextIcon').innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>`;
+
+  const sub = $('contextSub').querySelector('span');
+  if (sub) sub.textContent = state.hotel ? state.hotel.name : '—';
+
+  $('headerContext').textContent = hasNumber
+    ? (isTable ? `Table ${c.number}` : `Room ${c.number}`) + (state.hotel ? ' · ' + state.hotel.name : '')
+    : (state.hotel ? state.hotel.name : 'Loading…');
 }
 
-$('changeContextBtn').addEventListener('click', () => {
-  $('contextInput').value = CONTEXT.number;
-  const isTable = CONTEXT.mode === 'table';
-  $('pickTableBtn').style.borderColor = isTable ? 'var(--brand-gold)' : 'var(--border-light)';
-  $('pickTableBtn').style.background = isTable ? 'var(--brand-sand)' : 'transparent';
-  $('pickRoomBtn').style.borderColor = !isTable ? 'var(--brand-gold)' : 'var(--border-light)';
-  $('pickRoomBtn').style.background = !isTable ? 'var(--brand-sand)' : 'transparent';
-  openModal('contextModal');
-});
+function openContextSheet() {
+  $('contextInput').value = state.context.number || '';
+  $('guestNameInput').value = state.session?.guest_name || '';
+  $('guestPhoneInput').value = state.session?.guest_phone || '';
+  updatePickMode();
+  openSheet('contextSheet');
+}
 
-$('pickRoomBtn').addEventListener('click', () => {
-  CONTEXT.mode = 'room';
-  $('pickRoomBtn').style.borderColor = 'var(--brand-gold)';
-  $('pickRoomBtn').style.background = 'var(--brand-sand)';
-  $('pickTableBtn').style.borderColor = 'var(--border-light)';
-  $('pickTableBtn').style.background = 'transparent';
-  $('contextInput').placeholder = 'e.g. 101';
-});
+function updatePickMode() {
+  const isTable = state.context.mode === 'table';
+  $('pickRoomBtn').classList.toggle('btn-primary', !isTable);
+  $('pickRoomBtn').classList.toggle('btn-secondary', isTable);
+  $('pickTableBtn').classList.toggle('btn-primary', isTable);
+  $('pickTableBtn').classList.toggle('btn-secondary', !isTable);
+}
 
-$('pickTableBtn').addEventListener('click', () => {
-  CONTEXT.mode = 'table';
-  $('pickTableBtn').style.borderColor = 'var(--brand-gold)';
-  $('pickTableBtn').style.background = 'var(--brand-sand)';
-  $('pickRoomBtn').style.borderColor = 'var(--border-light)';
-  $('pickRoomBtn').style.background = 'transparent';
-  $('contextInput').placeholder = 'e.g. 12';
-});
+$('changeContextBtn').addEventListener('click', openContextSheet);
+$('pickRoomBtn').addEventListener('click', () => { state.context.mode = 'room'; updatePickMode(); });
+$('pickTableBtn').addEventListener('click', () => { state.context.mode = 'table'; updatePickMode(); });
 
-$('saveContextBtn').addEventListener('click', () => {
-  const val = $('contextInput').value.trim();
-  if (!val) {
-    toast('Please enter a number');
-    return;
+$('saveContextBtn').addEventListener('click', async () => {
+  const num = $('contextInput').value.trim();
+  const name = $('guestNameInput').value.trim();
+  const phone = $('guestPhoneInput').value.trim();
+
+  if (!num) return toast('Enter a room or table number', 'error');
+  if (!state.session || !state.session.guest_name) {
+    if (!name) return toast('Please add your name', 'error');
+    if (!phone) return toast('Please add your phone', 'error');
   }
-  CONTEXT.number = val;
-  updateContextUI();
-  closeModal('contextModal');
-  toast(`${CONTEXT.mode === 'table' ? 'Table' : 'Room'} ${val} set`);
-  if (ACTIVE_ORDER) renderActiveOrder(ACTIVE_ORDER);
+
+  state.context.number = num;
+
+  try {
+    const res = await api('/api/guest/session', {
+      method: 'POST',
+      body: JSON.stringify({
+        hotel_id: HOTEL_ID,
+        guest_name: name || state.session?.guest_name,
+        guest_phone: phone || state.session?.guest_phone,
+        mode: state.context.mode,
+        number: num
+      })
+    });
+    state.session = res.session;
+    state.token = res.token;
+    saveLocal();
+    closeSheet('contextSheet');
+    renderContext();
+    startSSE();
+    refreshOrders();
+    toast('Welcome, ' + (state.session.guest_name || 'guest'));
+  } catch (e) {
+    toast('Could not save: ' + e.message, 'error');
+  }
 });
 
 /* ============================================================
-   MENU RENDERING
+   BOOTSTRAP
    ============================================================ */
-function renderMenu(filterCat = 'all') {
-  const grid = $('menuGrid');
-  const items = MENU_ITEMS.filter(i => {
-    if (filterCat === 'all') return true;
-    return i.cat === filterCat;
-  });
-
-  if (!items.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-muted);">
-      <span class="material-icons-round" style="font-size:48px; color:var(--border-light);">search_off</span>
-      <p style="margin-top:12px; font-weight:500;">No items found</p>
-    </div>`;
+async function bootstrap() {
+  if (!HOTEL_ID) {
+    document.getElementById('main').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${ICON.alert}</div>
+        <b>No hotel specified</b>
+        <p>Please scan the QR code from your room.</p>
+      </div>`;
     return;
   }
 
-  grid.innerHTML = items.map(item => {
-    const qty = CART.find(l => l.id === item.id)?.qty || 0;
-    const badge = item.tags?.includes('popular') ? '<span class="badge">Popular</span>' : '';
-    return `
-      <div class="menu-card" data-id="${item.id}">
-        ${badge}
-        <div class="menu-image">
-          ${item.emoji || '🍽️'}
-        </div>
-        <div class="menu-info">
-          <h4>${escapeHtml(item.name)}</h4>
-          <p class="desc">${escapeHtml(item.desc)}</p>
-          <div class="menu-meta">
-            <span class="price">${item.price > 0 ? money(item.price) : 'Ask hotel'}</span>
-            <button class="add-btn ${qty > 0 ? 'added' : ''}" data-add="${item.id}">
-              <span class="material-icons-round">${qty > 0 ? 'check' : 'add'}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
+  // Skeleton
+  $('popularGrid').innerHTML = '<div class="skel"></div><div class="skel"></div>';
+  $('menuGrid').innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
 
-  // Attach add-to-cart listeners
-  grid.querySelectorAll('[data-add]').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const id = btn.dataset.add;
-      addToCart(id);
-    });
-  });
+  try {
+    const res = await api(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/bootstrap`);
+    state.hotel = res.hotel;
+    state.menu = res.menu || [];
+    state.services = res.services || [];
+    state.vendors = res.vendors || [];
+    state.departments = res.departments || [];
 
-  // Card click → add
-  grid.querySelectorAll('.menu-card').forEach(card => {
-    card.addEventListener('click', e => {
-      if (e.target.closest('[data-add]')) return;
-      addToCart(card.dataset.id);
-    });
-  });
+    document.title = state.hotel.name + ' · GuestHub';
+    $('brandLogo').textContent = (state.hotel.name || 'G')[0].toUpperCase();
+
+    // Promo
+    if (state.hotel.promo_title) {
+      $('promoTitle').textContent = state.hotel.promo_title;
+      $('promoText').textContent = state.hotel.promo_text || '';
+      $('promoBanner').classList.add('show');
+    }
+
+    // Prefill context from URL
+    if (URL_ROOM && !state.context.number) {
+      state.context.mode = URL_MODE === 'table' ? 'table' : 'room';
+      state.context.number = URL_ROOM;
+    }
+    saveLocal();
+    renderContext();
+
+    // Session — if we don't have name+phone yet, open the sheet
+    if (state.token) {
+      try {
+        const me = await api('/api/guest/me');
+        state.session = me.session;
+        if (!state.session.guest_name || !state.session.guest_phone) openContextSheet();
+        else startSSE();
+      } catch {
+        state.token = null;
+        openContextSheet();
+      }
+    } else {
+      openContextSheet();
+    }
+
+    // Render all views
+    renderPopular();
+    renderMenuPills();
+    renderMenu();
+    renderServices();
+    renderVendorPills();
+    renderVendors();
+    renderCartBar();
+    refreshOrders();
+    refreshBookings();
+
+  } catch (e) {
+    $('main').innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${ICON.alert}</div>
+        <b>Could not load hotel</b>
+        <p>${esc(e.message)}</p>
+      </div>`;
+  }
 }
 
 /* ============================================================
-   SERVICES RENDERING
+   POPULAR
    ============================================================ */
-function renderServices() {
-  const grid = $('serviceGrid');
-  const services = [
-    { id: 's1', name: 'Room Service', icon: 'room_service', desc: 'Full menu to your room' },
-    { id: 's2', name: 'Housekeeping', icon: 'cleaning_services', desc: 'Clean & fresh towels' },
-    { id: 's3', name: 'Wake-up Call', icon: 'alarm', desc: 'Set a precise time' },
-    { id: 's4', name: 'Express Checkout', icon: 'credit_card', desc: 'Skip the queue' },
-    { id: 's5', name: 'Concierge', icon: 'support_agent', desc: 'Anything you need' },
-    { id: 's6', name: 'Maintenance', icon: 'build', desc: 'AC, plumbing, electrics' }
-  ];
+function renderPopular() {
+  const popular = state.menu.filter(i => i.tags?.includes('popular')).slice(0, 4);
+  const fallback = state.menu.slice(0, 4);
+  const list = popular.length ? popular : fallback;
 
-  grid.innerHTML = services.map(s => `
-    <button class="service-card" data-service="${s.id}" data-title="${s.name}">
-      <span class="material-icons-round">${s.icon}</span>
-      <h4>${s.name}</h4>
-      <p>${s.desc}</p>
+  $('popularGrid').innerHTML = list.length
+    ? list.map(menuCard).join('')
+    : '<div class="empty" style="grid-column:1/-1;padding:24px"><b>Menu coming soon</b></div>';
+
+  const vendors = state.vendors.slice(0, 2);
+  $('popularVendors').innerHTML = vendors.length
+    ? vendors.map(vendorCard).join('')
+    : '<div class="empty" style="grid-column:1/-1;padding:24px"><b>No vendors yet</b></div>';
+
+  attachMenuHandlers($('popularGrid'));
+  attachVendorHandlers($('popularVendors'));
+}
+
+/* ============================================================
+   MENU
+   ============================================================ */
+function menuCategories() {
+  const set = new Map();
+  state.menu.forEach(i => {
+    const c = i.category || 'Menu';
+    if (!set.has(c)) set.set(c, c);
+  });
+  return ['all', ...set.keys()];
+}
+
+function renderMenuPills() {
+  const cats = menuCategories();
+  $('menuPills').innerHTML = cats.map(c => `
+    <button class="pill ${state.menuFilter === c ? 'on' : ''}" data-mcat="${esc(c)}">
+      ${c === 'all' ? 'All' : esc(c)}
     </button>
   `).join('');
+  $('menuPills').querySelectorAll('[data-mcat]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.menuFilter = b.dataset.mcat;
+      renderMenuPills();
+      renderMenu();
+    });
+  });
+}
 
-  grid.querySelectorAll('.service-card').forEach(btn => {
-    btn.addEventListener('click', () => {
-      openServiceOrder(btn.dataset.service, btn.dataset.title);
+function menuCard(item) {
+  const qty = state.cart.find(l => l.id === item.id)?.qty || 0;
+  return `
+    <div class="card clickable" data-item-id="${esc(item.id)}">
+      <div class="card-icon">${item.icon || '🍽️'}</div>
+      <div class="card-body">
+        <div class="card-name">${esc(item.name)}</div>
+        ${item.desc ? `<div class="card-desc">${esc(item.desc)}</div>` : ''}
+        <div class="card-row">
+          <span class="price">${money(item.price)}</span>
+          <button class="add-btn ${qty > 0 ? 'has' : ''}" data-add="${esc(item.id)}" aria-label="Add">
+            ${qty > 0 ? ICON.check : ICON.plus}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMenu() {
+  const list = state.menuFilter === 'all'
+    ? state.menu
+    : state.menu.filter(i => (i.category || 'Menu') === state.menuFilter);
+
+  $('menuGrid').innerHTML = list.length
+    ? list.map(menuCard).join('')
+    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.cart + '</div><b>No items</b><p>Try a different category.</p></div>';
+
+  attachMenuHandlers($('menuGrid'));
+}
+
+function attachMenuHandlers(root) {
+  root.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      addToCart(btn.dataset.add);
+    });
+  });
+  root.querySelectorAll('[data-item-id]').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('[data-add]')) return;
+      openItemDetail(card.dataset.itemId);
     });
   });
 }
 
 /* ============================================================
-   CART LOGIC
+   ITEM DETAIL
    ============================================================ */
-function addToCart(itemId) {
-  const item = MENU_ITEMS.find(i => i.id === itemId);
+function openItemDetail(id) {
+  const item = state.menu.find(i => String(i.id) === String(id));
   if (!item) return;
-  if (!item.available) {
-    toast('Item is sold out');
-    return;
-  }
+  const line = state.cart.find(l => l.id === id);
+  const qty = line?.qty || 0;
+  const notes = line?.notes || '';
 
-  const existing = CART.find(l => l.id === itemId);
-  if (existing) {
-    existing.qty += 1;
-  } else {
-    CART.push({
-      id: item.id,
-      name: item.name,
-      price: Number(item.price) || 0,
-      emoji: item.emoji || '🍽️',
-      qty: 1
-    });
-  }
+  $('itemSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${esc(item.name)}</div>
+        <div class="sheet-sub">${esc(item.desc || '')}</div>
+      </div>
+      <button class="sheet-close" data-close="itemSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div style="text-align:center;padding:20px 0;font-size:64px">${item.icon || '🍽️'}</div>
+    <div style="text-align:center;font-size:22px;font-weight:700;color:var(--brand-2);margin-bottom:16px">${money(item.price)}</div>
+    <div class="field">
+      <label>Special requests</label>
+      <textarea class="textarea" id="itemNotes" placeholder="No onions, extra spicy, etc.">${esc(notes)}</textarea>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
+      <div class="qty">
+        <button data-dec>−</button>
+        <span id="itemQty">${qty}</span>
+        <button data-inc>+</button>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" id="itemConfirm" data-id="${esc(item.id)}">
+        ${qty > 0 ? 'Update cart' : 'Add to cart'}
+      </button>
+    </div>
+  `;
 
-  saveCart();
-  toast(`${item.name} added`);
-  renderMenu(activeCategory);
-  renderCartBar();
-  if (navigator.vibrate) navigator.vibrate(20);
-}
-
-function setQty(itemId, qty) {
-  const line = CART.find(l => l.id === itemId);
-  if (!line) return;
-  if (qty <= 0) {
-    CART = CART.filter(l => l.id !== itemId);
-  } else {
-    line.qty = qty;
-  }
-  saveCart();
-  renderCart();
-  renderCartBar();
-  renderMenu(activeCategory);
-}
-
-function saveCart() {
-  try { localStorage.setItem('guesthub_cart_' + CONTEXT.hotelId + '_' + CONTEXT.number, JSON.stringify(CART)); } catch (e) {}
-}
-
-function loadCart() {
-  try {
-    const raw = localStorage.getItem('guesthub_cart_' + CONTEXT.hotelId + '_' + CONTEXT.number);
-    CART = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(CART)) CART = [];
-  } catch (e) { CART = []; }
-}
-
-function cartCount() { return CART.reduce((n, l) => n + l.qty, 0); }
-function cartSubtotal() { return CART.reduce((n, l) => n + l.qty * (Number(l.price) || 0), 0); }
-function cartTotal() { return cartSubtotal(); }
-
-function renderCartBar() {
-  const bar = $('cartBar');
-  const n = cartCount();
-  if (n === 0) {
-    bar.classList.remove('show');
-    return;
-  }
-  bar.classList.add('show');
-  $('cartCount').textContent = `${n} item${n > 1 ? 's' : ''}`;
-  $('cartTotal').textContent = money(cartTotal());
+  let currentQty = qty;
+  $('itemSheetBody').querySelector('[data-inc]').addEventListener('click', () => {
+    currentQty++;
+    $('itemQty').textContent = currentQty;
+  });
+  $('itemSheetBody').querySelector('[data-dec]').addEventListener('click', () => {
+    currentQty = Math.max(0, currentQty - 1);
+    $('itemQty').textContent = currentQty;
+  });
+  $('itemConfirm').addEventListener('click', () => {
+    const n = $('itemNotes').value.trim();
+    setCartLine(item.id, currentQty, n);
+    closeSheet('itemSheet');
+  });
+  $('itemSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('itemSheet'));
+  openSheet('itemSheet');
 }
 
 /* ============================================================
-   CART MODAL RENDERING
+   CART
    ============================================================ */
-function renderCart() {
-  const list = $('cartItemsList');
-  $('cartSubtitle').textContent = `${CONTEXT.mode === 'table' ? 'Table' : 'Room'} ${CONTEXT.number} · ${HOTEL.name}`;
+function addToCart(id) {
+  const item = state.menu.find(i => String(i.id) === String(id));
+  if (!item) return;
+  const line = state.cart.find(l => l.id === id);
+  if (line) line.qty += 1;
+  else state.cart.push({ id: item.id, name: item.name, price: Number(item.price) || 0, icon: item.icon || '🍽️', qty: 1, notes: '' });
+  saveLocal();
+  renderCartBar();
+  refreshCurrentView();
+  toast(item.name + ' added');
+}
 
-  if (!CART.length) {
-    list.innerHTML = `<div style="text-align:center; padding:30px 0; color:var(--text-muted);">
-      <span class="material-icons-round" style="font-size:48px; color:var(--border-light);">shopping_cart</span>
-      <p style="margin-top:12px;">Your cart is empty</p>
-    </div>`;
+function setCartLine(id, qty, notes) {
+  const item = state.menu.find(i => String(i.id) === String(id));
+  if (!item) return;
+  state.cart = state.cart.filter(l => l.id !== id);
+  if (qty > 0) {
+    state.cart.push({
+      id: item.id, name: item.name, price: Number(item.price) || 0,
+      icon: item.icon || '🍽️', qty, notes: notes || ''
+    });
+  }
+  saveLocal();
+  renderCartBar();
+  refreshCurrentView();
+}
+
+function removeFromCart(id) { setCartLine(id, 0, ''); }
+function updateQty(id, delta) {
+  const line = state.cart.find(l => l.id === id);
+  if (!line) return;
+  setCartLine(id, Math.max(0, line.qty + delta), line.notes);
+}
+
+function cartSubtotal() { return state.cart.reduce((s, l) => s + l.qty * (Number(l.price) || 0), 0); }
+function cartCount() { return state.cart.reduce((s, l) => s + l.qty, 0); }
+
+function renderCartBar() {
+  const n = cartCount();
+  const bar = $('cartBar');
+  if (!n) { bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+  $('cartCount').textContent = n + ' item' + (n > 1 ? 's' : '');
+  $('cartTotal').textContent = money(cartSubtotal());
+}
+
+function renderCartSheet() {
+  const box = $('cartItems');
+  if (!state.cart.length) {
+    box.innerHTML = '<div class="empty"><b>Your cart is empty</b></div>';
     $('cartTotals').innerHTML = '';
     return;
   }
-
-  list.innerHTML = CART.map(l => `
-    <div class="cart-item">
-      <div class="cart-item-img">${l.emoji || '🍽️'}</div>
-      <div class="cart-item-info">
-        <b>${escapeHtml(l.name)}</b>
-        <small>${money(l.price)} each</small>
+  box.innerHTML = state.cart.map(l => `
+    <div class="cart-line">
+      <div class="cart-line-icon">${l.icon || '🍽️'}</div>
+      <div class="cart-line-body">
+        <div class="cart-line-name">${esc(l.name)}</div>
+        <div class="cart-line-price">${money(l.price)} each${l.notes ? ' · ' + esc(l.notes) : ''}</div>
       </div>
-      <div class="qty-control">
-        <button data-dec="${l.id}">−</button>
+      <div class="qty">
+        <button data-qty-dec="${esc(l.id)}">−</button>
         <span>${l.qty}</span>
-        <button data-inc="${l.id}">+</button>
+        <button data-qty-inc="${esc(l.id)}">+</button>
       </div>
     </div>
   `).join('');
+  box.querySelectorAll('[data-qty-inc]').forEach(b =>
+    b.addEventListener('click', () => updateQty(b.dataset.qtyInc, 1)));
+  box.querySelectorAll('[data-qty-dec]').forEach(b =>
+    b.addEventListener('click', () => updateQty(b.dataset.qtyDec, -1)));
 
   const sub = cartSubtotal();
-  const total = cartTotal();
   $('cartTotals').innerHTML = `
     <div class="total-row"><span>Subtotal</span><span>${money(sub)}</span></div>
-    <div class="total-row grand"><span>Total</span><span>${money(total)}</span></div>
+    <div class="total-row grand"><span>Total</span><span>${money(sub)}</span></div>
   `;
 
-  list.querySelectorAll('[data-inc]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const line = CART.find(l => l.id === btn.dataset.inc);
-      setQty(btn.dataset.inc, (line?.qty || 0) + 1);
-    });
-  });
-  list.querySelectorAll('[data-dec]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const line = CART.find(l => l.id === btn.dataset.dec);
-      setQty(btn.dataset.dec, (line?.qty || 0) - 1);
-    });
-  });
+  $('cartSub').textContent = state.context.number
+    ? `${state.context.mode === 'table' ? 'Table' : 'Room'} ${state.context.number} · ${state.hotel?.name || ''}`
+    : state.hotel?.name || '';
 }
 
 $('viewCartBtn').addEventListener('click', () => {
-  if (!CART.length) { toast('Your cart is empty'); return; }
-  renderCart();
-  openModal('cartModal');
+  if (!state.cart.length) return;
+  renderCartSheet();
+  openSheet('cartSheet');
 });
+
+$('placeOrderBtn').addEventListener('click', placeOrder);
 
 /* ============================================================
-   CHECKOUT
+   PLACE ORDER
    ============================================================ */
-$('checkoutBtn').addEventListener('click', () => {
-  if (!CART.length) { toast('Your cart is empty'); return; }
+async function placeOrder() {
+  if (!state.cart.length) return;
+  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
 
-  const ref = 'GH-' + Date.now().toString(36).toUpperCase().slice(-6);
-  const total = cartTotal();
-  const order = {
-    reference: ref,
-    status: 'preparing',
-    service_title: CART.map(l => `${l.qty}× ${l.name}`).join(', '),
-    amount: total,
-    room_number: CONTEXT.mode === 'room' ? CONTEXT.number : '',
-    table_number: CONTEXT.mode === 'table' ? CONTEXT.number : '',
-    created_at: new Date().toISOString(),
-    items: [...CART]
-  };
+  const subtotal = cartSubtotal();
+  const items = state.cart.map(l => ({
+    id: l.id, name: l.name, price: l.price, qty: l.qty, notes: l.notes || ''
+  }));
 
-  // Save to localStorage
-  saveLocalOrder(order);
-  ACTIVE_ORDER = order;
+  const btn = $('placeOrderBtn');
+  btn.disabled = true; btn.textContent = 'Placing…';
 
-  // Clear cart
-  CART = [];
-  saveCart();
-  renderCartBar();
-  renderMenu(activeCategory);
-  closeModal('cartModal');
-
-  // Show success with payment
-  $('successRef').textContent = ref;
-  $('successMessage').textContent = `Your order has been sent to the kitchen. Total: ${money(total)}`;
-  renderPayment(total, ref);
-  openModal('successModal');
-
-  // Update active order display
-  renderActiveOrder(order);
-
-  if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-});
-
-function saveLocalOrder(order) {
   try {
-    const key = 'guesthub_orders_' + CONTEXT.hotelId + '_' + CONTEXT.number;
-    const orders = JSON.parse(localStorage.getItem(key) || '[]');
-    orders.unshift(order);
-    localStorage.setItem(key, JSON.stringify(orders.slice(0, 20)));
-  } catch (e) {}
-}
+    const res = await api('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        hotel_id: HOTEL_ID,
+        mode: state.context.mode,
+        room_number: state.context.mode === 'room' ? state.context.number : null,
+        table_number: state.context.mode === 'table' ? state.context.number : null,
+        guest_name: state.session.guest_name,
+        guest_phone: state.session.guest_phone,
+        guest_session_id: state.session.id,
+        service_title: items.map(i => i.qty + '× ' + i.name).join(', '),
+        category: 'food',
+        kind: 'food',
+        amount: subtotal,
+        total: subtotal,
+        subtotal,
+        details: items.filter(i => i.notes).map(i => i.name + ': ' + i.notes).join(' | '),
+        items
+      })
+    });
 
-function loadLocalOrders() {
-  try {
-    const key = 'guesthub_orders_' + CONTEXT.hotelId + '_' + CONTEXT.number;
-    return JSON.parse(localStorage.getItem(key) || '[]');
-  } catch (e) { return []; }
+    state.cart = [];
+    saveLocal();
+    renderCartBar();
+    closeSheet('cartSheet');
+    refreshCurrentView();
+
+    showSuccess(res.order);
+    refreshOrders();
+
+  } catch (e) {
+    toast('Failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Place order';
+  }
 }
 
 /* ============================================================
-   PAYMENT RENDERING (M-PESA)
+   SUCCESS + PAYMENT
    ============================================================ */
-function renderPayment(amount, ref) {
-  const mount = $('paymentMount');
-  const p = HOTEL.payment;
-  if (!p || !p.configured) {
-    mount.innerHTML = `
-      <div class="pay-card" style="background:#FFF4D6; border:1px solid #F0DFA0;">
-        <div class="pay-header">
-          <span class="material-icons-round" style="color:#8A6D1F;">credit_card</span>
-          <h4 style="color:#7A5C00;">Payment</h4>
-        </div>
-        <p style="font-size:0.85rem; color:#7A5C00; margin:0;">
-          Please pay at the reception or ask the front desk.
-        </p>
-      </div>
-    `;
-    return;
-  }
+function showSuccess(order) {
+  const p = state.hotel.payment || {};
+  const isConfigured = p.configured;
 
-  if (p.channel === 'paybill' && p.paybill_number) {
-    const acc = p.paybill_account || ref;
-    mount.innerHTML = `
-      <div class="pay-card">
-        <div class="pay-header">
-          <span class="material-icons-round">credit_card</span>
-          <h4>Pay via M-Pesa Paybill</h4>
-        </div>
-        <div class="pay-row">
-          <span class="label">Paybill Number</span>
-          <span class="value">${p.paybill_number}</span>
-          <button class="copy-btn" data-copy="${p.paybill_number}">
-            <span class="material-icons-round" style="font-size:14px;">content_copy</span> Copy
-          </button>
-        </div>
-        <div class="pay-row">
-          <span class="label">Account Number</span>
-          <span class="value" style="font-size:0.9rem;">${acc}</span>
-          <button class="copy-btn" data-copy="${acc}">
-            <span class="material-icons-round" style="font-size:14px;">content_copy</span> Copy
-          </button>
-        </div>
-        <div class="pay-row">
-          <span class="label">Amount</span>
-          <span class="value">${money(amount)}</span>
-        </div>
-        <ol class="pay-steps">
-          <li><span class="step-num">1</span> Open M-Pesa on your phone</li>
-          <li><span class="step-num">2</span> Choose Lipa na M-Pesa → Pay Bill</li>
-          <li><span class="step-num">3</span> Enter Business No: <b>${p.paybill_number}</b></li>
-          <li><span class="step-num">4</span> Enter Account: <b>${acc}</b></li>
-          <li><span class="step-num">5</span> Enter Amount: <b>${amount}</b></li>
-          <li><span class="step-num">6</span> Enter your PIN and confirm</li>
-        </ol>
+  $('successSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${ICON.check} Order placed</div>
+        <div class="sheet-sub">Kitchen is preparing it now — track live in Orders.</div>
       </div>
-    `;
-  } else if (p.channel === 'till' && p.till_number) {
-    mount.innerHTML = `
-      <div class="pay-card">
-        <div class="pay-header">
-          <span class="material-icons-round">credit_card</span>
-          <h4>Pay via M-Pesa Till</h4>
-        </div>
-        <div class="pay-row">
-          <span class="label">Till Number</span>
-          <span class="value">${p.till_number}</span>
-          <button class="copy-btn" data-copy="${p.till_number}">
-            <span class="material-icons-round" style="font-size:14px;">content_copy</span> Copy
-          </button>
-        </div>
-        <div class="pay-row">
-          <span class="label">Amount</span>
-          <span class="value">${money(amount)}</span>
-        </div>
-        <ol class="pay-steps">
-          <li><span class="step-num">1</span> Open M-Pesa on your phone</li>
-          <li><span class="step-num">2</span> Choose Lipa na M-Pesa → Buy Goods</li>
-          <li><span class="step-num">3</span> Enter Till: <b>${p.till_number}</b></li>
-          <li><span class="step-num">4</span> Enter Amount: <b>${amount}</b></li>
-          <li><span class="step-num">5</span> Enter your PIN and confirm</li>
-        </ol>
-      </div>
-    `;
-  } else if (p.channel === 'send_money' && p.mpesa_phone) {
-    const phone = String(p.mpesa_phone).replace(/\D/g, '');
-    mount.innerHTML = `
-      <div class="pay-card">
-        <div class="pay-header">
-          <span class="material-icons-round">credit_card</span>
-          <h4>Send Money via M-Pesa</h4>
-        </div>
-        <div class="pay-row">
-          <span class="label">Send to</span>
-          <span class="value">${phone}</span>
-          <button class="copy-btn" data-copy="${phone}">
-            <span class="material-icons-round" style="font-size:14px;">content_copy</span> Copy
-          </button>
-        </div>
-        <div class="pay-row">
-          <span class="label">Amount</span>
-          <span class="value">${money(amount)}</span>
-        </div>
-        <ol class="pay-steps">
-          <li><span class="step-num">1</span> Open M-Pesa</li>
-          <li><span class="step-num">2</span> Choose Send Money</li>
-          <li><span class="step-num">3</span> Enter phone: <b>${phone}</b></li>
-          <li><span class="step-num">4</span> Enter Amount: <b>${amount}</b></li>
-          <li><span class="step-num">5</span> Enter your PIN and confirm</li>
-        </ol>
-      </div>
-    `;
-  } else {
-    mount.innerHTML = `
-      <div class="pay-card" style="background:#FFF4D6;">
-        <div class="pay-header">
-          <span class="material-icons-round" style="color:#8A6D1F;">credit_card</span>
-          <h4 style="color:#7A5C00;">Payment</h4>
-        </div>
-        <p style="font-size:0.85rem; color:#7A5C00; margin:0;">
-          Payment details not available. Please pay at the reception.
-        </p>
-      </div>
-    `;
-  }
+      <button class="sheet-close" data-close="successSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
 
-  // Attach copy listeners
-  mount.querySelectorAll('[data-copy]').forEach(btn => {
+    <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">Reference</div>
+      <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(order.reference)}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:16px">
+      <span style="color:var(--text-2)">Total</span>
+      <strong style="color:var(--text)">${money(order.amount)}</strong>
+    </div>
+
+    ${isConfigured ? renderPaymentHTML(order.amount, p) : `
+      <div class="pay-warn">Payment at reception — this hotel has not set up M-Pesa yet.</div>
+    `}
+
+    <button class="btn btn-primary btn-full btn-lg" id="trackBtn" style="margin-top:16px">
+      Track my order
+    </button>
+  `;
+
+  $('successSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('successSheet'));
+  $('trackBtn').addEventListener('click', () => {
+    closeSheet('successSheet');
+    switchTab('orders');
+  });
+  attachCopyHandlers($('successSheetBody'));
+
+  openSheet('successSheet');
+}
+
+function renderPaymentHTML(amount, p) {
+  const channel = String(p.channel || 'paybill').toLowerCase();
+  const name = p.mpesa_name || state.hotel.name;
+
+  if (channel === 'paybill' && p.paybill_number) {
+    const acc = p.paybill_account || '—';
+    return `
+      <div class="pay">
+        <div class="pay-head">${ICON.cart}<b>Pay via M-Pesa Paybill</b></div>
+        <div class="pay-rows">
+          <div class="pay-row">
+            <span class="label">Paybill</span>
+            <span class="value">${esc(p.paybill_number)}</span>
+            <button class="pay-copy" data-copy="${esc(p.paybill_number)}">${ICON.copy} Copy</button>
+          </div>
+          <div class="pay-row">
+            <span class="label">Account</span>
+            <span class="value">${esc(acc)}</span>
+            <button class="pay-copy" data-copy="${esc(acc)}">${ICON.copy} Copy</button>
+          </div>
+          <div class="pay-row">
+            <span class="label">Amount</span>
+            <span class="value">${money(amount)}</span>
+          </div>
+        </div>
+        <ol class="pay-steps">
+          <li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
+          <li>Business no: <b>${esc(p.paybill_number)}</b></li>
+          <li>Account: <b>${esc(acc)}</b></li>
+          <li>Amount: <b>${amount}</b> · Enter PIN</li>
+        </ol>
+      </div>`;
+  }
+  if (channel === 'till' && p.till_number) {
+    return `
+      <div class="pay">
+        <div class="pay-head">${ICON.cart}<b>Pay via M-Pesa Till</b></div>
+        <div class="pay-rows">
+          <div class="pay-row">
+            <span class="label">Till</span>
+            <span class="value">${esc(p.till_number)}</span>
+            <button class="pay-copy" data-copy="${esc(p.till_number)}">${ICON.copy} Copy</button>
+          </div>
+          <div class="pay-row">
+            <span class="label">Amount</span>
+            <span class="value">${money(amount)}</span>
+          </div>
+        </div>
+        <ol class="pay-steps">
+          <li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Buy Goods</b></li>
+          <li>Till no: <b>${esc(p.till_number)}</b></li>
+          <li>Amount: <b>${amount}</b> · Enter PIN</li>
+        </ol>
+      </div>`;
+  }
+  return `<div class="pay-warn">Pay at reception.</div>`;
+}
+
+function attachCopyHandlers(root) {
+  root.querySelectorAll('[data-copy]').forEach(btn => {
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
         const old = btn.innerHTML;
-        btn.innerHTML = '<span class="material-icons-round" style="font-size:14px;">check</span> Copied';
-        setTimeout(() => btn.innerHTML = old, 1500);
-        if (navigator.vibrate) navigator.vibrate(15);
-      } catch (e) {
-        toast('Copy failed — please copy manually');
-      }
+        btn.innerHTML = ICON.check + ' Copied';
+        setTimeout(() => btn.innerHTML = old, 1400);
+      } catch { toast('Copy failed'); }
     });
   });
 }
 
 /* ============================================================
-   ACTIVE ORDER DISPLAY
+   SERVICES
    ============================================================ */
-function renderActiveOrder(order) {
-  const panel = $('activeOrder');
-  if (!order) {
-    panel.classList.remove('show');
-    return;
+function renderServices() {
+  const list = state.services;
+  $('servicesGrid').innerHTML = list.length
+    ? list.map(s => `
+        <div class="card clickable" data-svc-id="${esc(s.id)}">
+          <div class="card-icon">${s.icon || '🛎️'}</div>
+          <div class="card-body">
+            <div class="card-name">${esc(s.name)}</div>
+            ${s.desc ? `<div class="card-desc">${esc(s.desc)}</div>` : ''}
+            <div class="card-row">
+              <span class="price">${s.price > 0 ? money(s.price) : '<small>Complimentary</small>'}</span>
+              <button class="add-btn" data-svc="${esc(s.id)}">${ICON.plus}</button>
+            </div>
+          </div>
+        </div>
+      `).join('')
+    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.bell + '</div><b>No services yet</b></div>';
+
+  $('servicesGrid').querySelectorAll('[data-svc]').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); requestService(btn.dataset.svc); });
+  });
+  $('servicesGrid').querySelectorAll('[data-svc-id]').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('[data-svc]')) return;
+      requestService(card.dataset.svcId);
+    });
+  });
+}
+
+async function requestService(id) {
+  const svc = state.services.find(s => String(s.id) === String(id));
+  if (!svc) return;
+  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+
+  try {
+    await api('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({
+        hotel_id: HOTEL_ID,
+        mode: state.context.mode,
+        room_number: state.context.mode === 'room' ? state.context.number : null,
+        table_number: state.context.mode === 'table' ? state.context.number : null,
+        guest_name: state.session.guest_name,
+        guest_phone: state.session.guest_phone,
+        guest_session_id: state.session.id,
+        service_title: svc.name,
+        category: svc.category || 'service',
+        kind: 'hotel_service',
+        amount: svc.price || 0,
+        total: svc.price || 0
+      })
+    });
+    toast(svc.name + ' requested');
+    refreshOrders();
+    switchTab('orders');
+  } catch (e) {
+    toast(e.message, 'error');
   }
-  panel.classList.add('show');
-  $('activeOrderTitle').textContent = order.service_title || 'Your Order';
-  $('activeOrderRef').textContent = order.reference || 'GH-XXXX';
-  $('activeOrderTotal').textContent = money(order.amount || 0);
+}
 
-  const status = order.status || 'preparing';
-  const statusEl = $('activeOrderStatus');
-  statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-  statusEl.className = 'status-badge ' + status;
+/* Quick actions */
+document.querySelectorAll('[data-quick]').forEach(b => {
+  b.addEventListener('click', async () => {
+    const type = b.dataset.quick;
+    if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+    const titles = { waiter: 'Call Waiter', water: 'Drinking Water', bill: 'Request Bill', housekeeping: 'Housekeeping' };
+    const title = titles[type] || 'Request';
+    try {
+      await api('/api/orders', {
+        method: 'POST',
+        body: JSON.stringify({
+          hotel_id: HOTEL_ID,
+          mode: state.context.mode,
+          room_number: state.context.mode === 'room' ? state.context.number : null,
+          table_number: state.context.mode === 'table' ? state.context.number : null,
+          guest_name: state.session.guest_name,
+          guest_phone: state.session.guest_phone,
+          guest_session_id: state.session.id,
+          service_title: title,
+          category: 'services',
+          kind: 'hotel_service',
+          amount: 0, total: 0
+        })
+      });
+      toast(title + ' requested');
+      refreshOrders();
+    } catch (e) { toast(e.message, 'error'); }
+  });
+});
 
-  // Progress steps
-  const steps = $$('#progressSteps .step');
-  const statusMap = { pending: 1, preparing: 2, ontheway: 3, delivered: 4 };
-  const activeStep = statusMap[status] || 1;
-  steps.forEach((s, i) => {
-    s.classList.toggle('active', i + 1 <= activeStep);
-    s.classList.toggle('done', i + 1 < activeStep);
+/* ============================================================
+   VENDORS
+   ============================================================ */
+const GROUP_LABELS = {
+  transport: 'Transport & Taxi',
+  tours: 'Tours & Safari',
+  wellness: 'Wellness & Spa',
+  media: 'Media & Concierge',
+  services: 'Other services'
+};
+
+function vendorCard(v) {
+  const group = v.group || 'services';
+  const primaryItem = v.items?.[0];
+  return `
+    <div class="vendor-card" data-vendor-id="${esc(v.id)}">
+      <div class="vendor-head">
+        <div class="vendor-logo">${(v.name || 'V')[0].toUpperCase()}</div>
+        <div class="vendor-info">
+          <div class="vendor-name">${esc(v.name)}</div>
+          <div class="vendor-meta">
+            ${v.rating > 0 ? `<span>${ICON.star.replace('<svg', '<svg style="width:11px;height:11px;display:inline;vertical-align:-1px"')} ${v.rating.toFixed(1)}</span>` : ''}
+            <span>${esc(GROUP_LABELS[group] || group)}</span>
+          </div>
+        </div>
+      </div>
+      ${v.bio ? `<div class="card-desc">${esc(v.bio)}</div>` : ''}
+      <div class="vendor-services">
+        ${(v.items || []).slice(0, 4).map(i => `<span class="vendor-tag">${esc(i.name)}</span>`).join('')}
+      </div>
+      <div class="vendor-actions">
+        <button class="btn btn-primary" data-book="${esc(v.id)}">
+          ${ICON.calendar} Book
+        </button>
+      </div>
+    </div>`;
+}
+
+function vendorCategories() {
+  const set = new Set();
+  state.vendors.forEach(v => set.add(v.group || 'services'));
+  return ['all', ...set];
+}
+
+function renderVendorPills() {
+  const cats = vendorCategories();
+  $('vendorPills').innerHTML = cats.map(c => `
+    <button class="pill ${state.vendorFilter === c ? 'on' : ''}" data-vcat="${esc(c)}">
+      ${c === 'all' ? 'All' : esc(GROUP_LABELS[c] || c)}
+    </button>
+  `).join('');
+  $('vendorPills').querySelectorAll('[data-vcat]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.vendorFilter = b.dataset.vcat;
+      renderVendorPills();
+      renderVendors();
+    });
+  });
+}
+
+function renderVendors() {
+  const list = state.vendorFilter === 'all'
+    ? state.vendors
+    : state.vendors.filter(v => (v.group || 'services') === state.vendorFilter);
+
+  $('vendorsGrid').innerHTML = list.length
+    ? list.map(vendorCard).join('')
+    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.store + '</div><b>No vendors yet</b><p>Partner vendors will appear here.</p></div>';
+
+  attachVendorHandlers($('vendorsGrid'));
+}
+
+function attachVendorHandlers(root) {
+  root.querySelectorAll('[data-book]').forEach(b => {
+    b.addEventListener('click', e => {
+      e.stopPropagation();
+      openBookingSheet(b.dataset.book);
+    });
   });
 }
 
 /* ============================================================
-   ORDER HISTORY
+   BOOKING SHEET
    ============================================================ */
-function renderOrders() {
-  const list = $('ordersList');
-  const orders = loadLocalOrders();
-  if (!orders.length) {
-    list.innerHTML = `<div style="text-align:center; padding:30px 0; color:var(--text-muted);">
-      <span class="material-icons-round" style="font-size:48px; color:var(--border-light);">receipt_long</span>
-      <p style="margin-top:12px;">No orders yet</p>
-    </div>`;
-    return;
-  }
-  list.innerHTML = orders.map(o => `
-    <div style="background:var(--brand-white); border:1px solid var(--border-light); border-radius:16px; padding:14px; margin-bottom:10px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <b style="font-size:0.9rem; color:var(--brand-deep);">${escapeHtml(o.service_title || 'Order')}</b>
-        <span style="font-weight:700; color:var(--brand-teal); font-size:0.9rem;">${money(o.amount)}</span>
+async function openBookingSheet(vendorId) {
+  const vendor = state.vendors.find(v => String(v.id) === String(vendorId));
+  if (!vendor) return;
+  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+
+  const item = vendor.items?.[0];
+  if (!item) return toast('Vendor has no services', 'error');
+
+  const today = new Date();
+  const dateStr = d => d.toISOString().slice(0, 10);
+
+  const html = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">Book ${esc(vendor.name)}</div>
+        <div class="sheet-sub">${esc(item.name)} · ${money(item.price)}</div>
       </div>
-      <div style="font-size:0.75rem; color:var(--text-muted);">
-        Ref: ${escapeHtml(o.reference || '—')} · ${new Date(o.created_at).toLocaleString()}
+      <button class="sheet-close" data-close="bookingSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="field">
+      <label>Service</label>
+      <select class="input" id="bkService">
+        ${(vendor.items || []).map(i => `
+          <option value="${esc(i.id)}" data-price="${i.price}">${esc(i.name)} — ${money(i.price)}</option>
+        `).join('')}
+      </select>
+    </div>
+
+    <div class="row-2">
+      <div class="field">
+        <label>Date</label>
+        <input type="date" class="input" id="bkDate" min="${dateStr(today)}" value="${dateStr(today)}">
       </div>
-      <div style="margin-top:8px;">
-        <span class="status-badge ${o.status || 'preparing'}" style="font-size:0.65rem; padding:4px 12px;">
-          ${(o.status || 'preparing').charAt(0).toUpperCase() + (o.status || 'preparing').slice(1)}
-        </span>
+      <div class="field">
+        <label>Guests</label>
+        <input type="number" class="input" id="bkGuests" min="1" max="20" value="1">
       </div>
     </div>
-  `).join('');
-}
 
-/* ============================================================
-   SERVICE ORDER (from service cards)
-   ============================================================ */
-function openServiceOrder(serviceId, title) {
-  const ref = 'GH-' + Date.now().toString(36).toUpperCase().slice(-6);
-  const order = {
-    reference: ref,
-    status: 'preparing',
-    service_title: title,
-    amount: 0,
-    room_number: CONTEXT.mode === 'room' ? CONTEXT.number : '',
-    table_number: CONTEXT.mode === 'table' ? CONTEXT.number : '',
-    created_at: new Date().toISOString(),
-    items: []
-  };
-  saveLocalOrder(order);
-  ACTIVE_ORDER = order;
-  renderActiveOrder(order);
-  $('successRef').textContent = ref;
-  $('successMessage').textContent = `${title} request sent to the hotel team.`;
-  renderPayment(0, ref);
-  openModal('successModal');
-  if (navigator.vibrate) navigator.vibrate(40);
-}
+    <div class="field">
+      <label>Available time slots</label>
+      <div id="bkSlots"><div class="empty" style="padding:20px"><b>Pick a date</b></div></div>
+    </div>
 
-/* ============================================================
-   QUICK REQUESTS
-   ============================================================ */
-document.querySelectorAll('[data-quick]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const type = btn.dataset.quick;
-    const titles = { waiter: 'Call Waiter', water: 'Drinking Water', bill: 'Request Bill' };
-    const title = titles[type] || 'Request';
-    openServiceOrder('quick_' + type, title);
-  });
-});
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea class="textarea" id="bkNotes" placeholder="Any special requests?"></textarea>
+    </div>
 
-/* ============================================================
-   HELP / WHATSAPP
-   ============================================================ */
-function whatsapp(dept) {
-  const loc = CONTEXT.mode === 'table' ? `Table ${CONTEXT.number}` : `Room ${CONTEXT.number}`;
-  const d = DEPARTMENTS.find(x => x.name.toLowerCase() === dept.toLowerCase());
-  if (!d || !d.whatsapp) { toast('This department has no WhatsApp yet'); return; }
-  const phone = d.whatsapp.replace(/\D/g, '');
-  const msg = encodeURIComponent(`Hi, I'm at ${loc} (${HOTEL.name}). I need assistance with ${dept}.`);
-  window.open('https://wa.me/' + phone + '?text=' + msg, '_blank');
-}
+    <button class="btn btn-primary btn-full btn-lg" id="bkConfirm" disabled>
+      Confirm booking
+    </button>
+  `;
 
-document.querySelectorAll('[data-dept]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    whatsapp(btn.dataset.dept);
-  });
-});
+  $('bookingSheetBody').innerHTML = html;
+  $('bookingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('bookingSheet'));
 
-/* ============================================================
-   LANGUAGE
-   ============================================================ */
-function setLanguage(lang) {
-  CURRENT_LANG = lang;
-  localStorage.setItem('guesthub_lang', lang);
-  closeModal('langModal');
-  const names = { en: 'English', sw: 'Kiswahili', fr: 'Français' };
-  toast(`Language: ${names[lang] || lang}`);
-}
+  let selectedSlot = null;
 
-$('langBtn').addEventListener('click', () => openModal('langModal'));
-$('infoBtn').addEventListener('click', () => openModal('infoModal'));
-
-/* ============================================================
-   BOTTOM NAVIGATION
-   ============================================================ */
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const tab = btn.dataset.tab;
-    if (tab === 'home') {
-      document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-      document.body.style.overflow = '';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (tab === 'menu') {
-      document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-      document.body.style.overflow = '';
-      document.querySelector('.category-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (tab === 'orders') {
-      renderOrders();
-      openModal('ordersModal');
-    } else if (tab === 'help') {
-      openModal('helpModal');
-    }
-  });
-});
-
-/* ============================================================
-   CATEGORY TABS
-   ============================================================ */
-let activeCategory = 'all';
-document.querySelectorAll('.cat-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    activeCategory = tab.dataset.cat;
-    renderMenu(activeCategory);
-  });
-});
-
-/* ============================================================
-   POPULAR / VIEW ALL
-   ============================================================ */
-$('viewAllPopular').addEventListener('click', e => {
-  e.preventDefault();
-  activeCategory = 'all';
-  document.querySelectorAll('.cat-tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.cat === 'all');
-  });
-  renderMenu('all');
-  document.querySelector('.category-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-
-/* ============================================================
-   INITIALISATION
-   ============================================================ */
-function init() {
-  // Detect context from URL params
-  const params = new URLSearchParams(location.search);
-  const mode = params.get('mode') || 'table';
-  const number = params.get('table') || params.get('room') || '12';
-  CONTEXT.mode = mode === 'room' ? 'room' : 'table';
-  CONTEXT.number = number;
-
-  // Persist
-  try { localStorage.setItem('guesthub_ctx', JSON.stringify(CONTEXT)); } catch (e) {}
-  updateContextUI();
-
-  // Load cart
-  loadCart();
-  renderCartBar();
-
-  // Render everything
-  renderMenu('all');
-  renderServices();
-  renderOrders();
-
-  // Check for active order
-  const orders = loadLocalOrders();
-  if (orders.length) {
-    const active = orders.find(o => o.status !== 'delivered' && o.status !== 'cancelled');
-    if (active) {
-      ACTIVE_ORDER = active;
-      renderActiveOrder(active);
+  async function loadSlots() {
+    const date = $('bkDate').value;
+    if (!date) return;
+    $('bkSlots').innerHTML = '<div class="empty" style="padding:20px"><b>Loading slots…</b></div>';
+    try {
+      const res = await api(`/api/public/vendor/${encodeURIComponent(vendor.id)}/slots?date=${date}`);
+      const slots = res.slots || [];
+      if (!slots.length) {
+        $('bkSlots').innerHTML = '<div class="empty" style="padding:20px"><b>No slots this day</b><p>Try another date.</p></div>';
+        selectedSlot = null;
+        updateConfirm();
+        return;
+      }
+      $('bkSlots').innerHTML = `
+        <div class="slots">
+          ${slots.map(s => `<button class="slot" data-slot="${esc(s.start)}">${new Date(s.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</button>`).join('')}
+        </div>
+      `;
+      $('bkSlots').querySelectorAll('[data-slot]').forEach(b => {
+        b.addEventListener('click', () => {
+          $('bkSlots').querySelectorAll('.slot').forEach(x => x.classList.remove('on'));
+          b.classList.add('on');
+          selectedSlot = b.dataset.slot;
+          updateConfirm();
+        });
+      });
+    } catch (e) {
+      $('bkSlots').innerHTML = `<div class="empty" style="padding:20px"><b>Could not load</b><p>${esc(e.message)}</p></div>`;
     }
   }
 
-  // Set language from storage
-  const savedLang = localStorage.getItem('guesthub_lang');
-  if (savedLang) CURRENT_LANG = savedLang;
+  function updateConfirm() {
+    $('bkConfirm').disabled = !selectedSlot;
+  }
 
-  // Auto-poll for active order updates (simulated)
-  startPolling();
-}
+  $('bkDate').addEventListener('change', loadSlots);
+  $('bkConfirm').addEventListener('click', async () => {
+    if (!selectedSlot) return;
+    const sel = $('bkService');
+    const opt = sel.options[sel.selectedIndex];
+    const serviceId = sel.value;
+    const serviceName = opt.textContent.split(' — ')[0];
+    const price = Number(opt.dataset.price) || 0;
+    const guests = Number($('bkGuests').value) || 1;
+    const notes = $('bkNotes').value.trim();
 
-/* ============================================================
-   SIMULATED POLLING / STATUS UPDATES
-   ============================================================ */
-function startPolling() {
-  if (POLL_TIMER) clearInterval(POLL_TIMER);
-  POLL_TIMER = setInterval(() => {
-    if (!ACTIVE_ORDER) return;
-    // Simulate status progression
-    const statuses = ['preparing', 'ontheway', 'delivered'];
-    const currentIdx = statuses.indexOf(ACTIVE_ORDER.status);
-    if (currentIdx < statuses.length - 1) {
-      ACTIVE_ORDER.status = statuses[currentIdx + 1];
-      // Update local storage
-      const key = 'guesthub_orders_' + CONTEXT.hotelId + '_' + CONTEXT.number;
-      const orders = JSON.parse(localStorage.getItem(key) || '[]');
-      const idx = orders.findIndex(o => o.reference === ACTIVE_ORDER.reference);
-      if (idx > -1) orders[idx].status = ACTIVE_ORDER.status;
-      localStorage.setItem(key, JSON.stringify(orders));
-      // Update UI
-      renderActiveOrder(ACTIVE_ORDER);
-      if (ACTIVE_ORDER.status === 'ontheway') {
-        toast('Your order is on the way!');
-        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-      } else if (ACTIVE_ORDER.status === 'delivered') {
-        toast('Order delivered — enjoy!');
-        if (navigator.vibrate) navigator.vibrate([120, 60, 120]);
-      }
+    $('bkConfirm').disabled = true;
+    $('bkConfirm').textContent = 'Booking…';
+    try {
+      const res = await api('/api/bookings', {
+        method: 'POST',
+        body: JSON.stringify({
+          hotel_id: HOTEL_ID,
+          vendor_id: vendor.id,
+          service_id: serviceId,
+          service_title: serviceName,
+          scheduled_for: selectedSlot,
+          duration_min: 60,
+          guests_count: guests,
+          guest_name: state.session.guest_name,
+          guest_phone: state.session.guest_phone,
+          room_number: state.context.mode === 'room' ? state.context.number : null,
+          table_number: state.context.mode === 'table' ? state.context.number : null,
+          guest_session_id: state.session.id,
+          amount: price,
+          notes
+        })
+      });
+      closeSheet('bookingSheet');
+      showBookingSuccess(res.booking);
+      refreshBookings();
+      switchTab('orders');
+    } catch (e) {
+      toast('Booking failed: ' + e.message, 'error');
+      $('bkConfirm').disabled = false;
+      $('bkConfirm').textContent = 'Confirm booking';
     }
-  }, 15000); // every 15s
+  });
+
+  openSheet('bookingSheet');
+  loadSlots();
+}
+
+function showBookingSuccess(booking) {
+  $('successSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${ICON.check} Booking requested</div>
+        <div class="sheet-sub">The vendor will confirm shortly.</div>
+      </div>
+      <button class="sheet-close" data-close="successSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">Reference</div>
+      <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(booking.reference)}</div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
+      <span style="color:var(--text-2)">Service</span><strong>${esc(booking.service_title)}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
+      <span style="color:var(--text-2)">When</span><strong>${new Date(booking.scheduled_for).toLocaleString()}</strong>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13.5px">
+      <span style="color:var(--text-2)">Total</span><strong>${money(booking.amount)}</strong>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="bookTrackBtn" style="margin-top:16px">View booking</button>
+  `;
+  $('successSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('successSheet'));
+  $('bookTrackBtn').addEventListener('click', () => { closeSheet('successSheet'); switchTab('orders'); });
+  openSheet('successSheet');
 }
 
 /* ============================================================
-   START
+   ORDERS
    ============================================================ */
-init();
-
-// Clean up
-window.addEventListener('beforeunload', () => {
-  if (POLL_TIMER) clearInterval(POLL_TIMER);
+$('orderPills').querySelectorAll('[data-ofilter]').forEach(b => {
+  b.addEventListener('click', () => {
+    state.orderFilter = b.dataset.ofilter;
+    $('orderPills').querySelectorAll('[data-ofilter]').forEach(x => x.classList.toggle('on', x === b));
+    renderOrders();
+  });
 });
-</script>
 
+async function refreshOrders() {
+  if (!state.token) return;
+  try {
+    const [orders, bookings] = await Promise.all([
+      api('/api/guest/orders').then(r => r.orders || []).catch(() => []),
+      api('/api/bookings/guest').then(r => r.bookings || []).catch(() => [])
+    ]);
+    state.orders = orders;
+    state.bookings = bookings;
+    pickActive();
+    renderOrders();
+    renderActiveCard();
+  } catch {}
+}
+
+async function refreshBookings() {
+  if (!state.token) return;
+  try {
+    const r = await api('/api/bookings/guest');
+    state.bookings = r.bookings || [];
+    pickActive();
+    renderOrders();
+    renderActiveCard();
+  } catch {}
+}
+
+function pickActive() {
+  state.activeOrder = state.orders.find(o => !['completed', 'cancelled'].includes(String(o.status || '').toLowerCase())) || null;
+  state.activeBooking = state.bookings.find(b => !['completed', 'cancelled', 'declined'].includes(String(b.status || '').toLowerCase())) || null;
+
+  const count = (state.activeOrder ? 1 : 0) + (state.activeBooking ? 1 : 0);
+  const dot = $('ordersDot');
+  if (dot) {
+    dot.textContent = count;
+    dot.classList.toggle('hidden', count === 0);
+  }
+}
+
+function renderActiveCard() {
+  const card = $('activeCard');
+  const o = state.activeOrder;
+  const b = state.activeBooking;
+  const active = o || b;
+
+  if (!active) { card.classList.remove('show'); return; }
+
+  card.className = 'active-card show status-' + String(active.status || '').toLowerCase();
+
+  if (o) {
+    const steps = ['pending', 'accepted', 'preparing', 'on_the_way', 'completed'];
+    const idx = steps.indexOf(String(o.status || '').toLowerCase());
+    const progress = steps.map((_, i) => {
+      const cls = i < idx ? 'done' : i === idx ? 'on' : '';
+      return `<div class="seg ${cls}"></div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="active-head">
+        <div>
+          <div class="active-title">${esc(o.service_title || 'Your order')}</div>
+          <div class="active-ref">${esc(o.reference)}</div>
+        </div>
+        ${statusBadge(o.status)}
+      </div>
+      <div class="active-meta">
+        <span>${ICON.clock} <strong>${relativeTime(o.created_at)}</strong></span>
+        <span>Total <strong>${money(o.amount)}</strong></span>
+      </div>
+      <div class="progress">${progress}</div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="active-head">
+        <div>
+          <div class="active-title">${esc(b.service_title || 'Booking')}</div>
+          <div class="active-ref">${esc(b.reference)}</div>
+        </div>
+        ${statusBadge(b.status)}
+      </div>
+      <div class="active-meta">
+        <span>${ICON.calendar} <strong>${new Date(b.scheduled_for).toLocaleString()}</strong></span>
+        <span>Total <strong>${money(b.amount)}</strong></span>
+      </div>
+    `;
+  }
+}
+
+function renderOrders() {
+  const box = $('ordersList');
+  const filter = state.orderFilter;
+
+  let list = [];
+  if (filter === 'active') {
+    list = [
+      ...state.orders.filter(o => !['completed', 'cancelled'].includes(String(o.status || '').toLowerCase())).map(o => ({ type: 'order', ...o })),
+      ...state.bookings.filter(b => !['completed', 'cancelled', 'declined'].includes(String(b.status || '').toLowerCase())).map(b => ({ type: 'booking', ...b }))
+    ];
+  } else {
+    list = [
+      ...state.orders.filter(o => ['completed', 'cancelled'].includes(String(o.status || '').toLowerCase())).map(o => ({ type: 'order', ...o })),
+      ...state.bookings.filter(b => ['completed', 'cancelled', 'declined'].includes(String(b.status || '').toLowerCase())).map(b => ({ type: 'booking', ...b }))
+    ];
+  }
+
+  if (!list.length) {
+    box.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${ICON.cart}</div>
+        <b>${filter === 'active' ? 'Nothing active' : 'No history yet'}</b>
+        <p>${filter === 'active' ? 'Place an order or book a service to see it here.' : 'Completed orders will appear here.'}</p>
+      </div>`;
+    return;
+  }
+
+  box.innerHTML = list.map(x => orderRow(x)).join('');
+}
+
+function orderRow(x) {
+  const isOrder = x.type === 'order';
+  const when = isOrder ? x.created_at : x.scheduled_for;
+  return `
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-icon">${isOrder ? '🍽️' : '📅'}</div>
+      <div class="card-body">
+        <div class="card-name">${esc(x.service_title || 'Request')}</div>
+        <div class="card-desc">${esc(x.reference)} · ${new Date(when).toLocaleString()}</div>
+        <div class="card-row">
+          <span class="price">${money(x.amount)}</span>
+          ${statusBadge(x.status)}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+function switchTab(name) {
+  state.tab = name;
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  const view = $('view-' + name);
+  if (view) view.classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (name === 'orders') { refreshOrders(); refreshBookings(); }
+}
+
+document.querySelectorAll('.nav-btn').forEach(b => {
+  b.addEventListener('click', () => switchTab(b.dataset.tab));
+});
+document.querySelectorAll('[data-tab]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    switchTab(a.dataset.tab);
+  });
+});
+
+function refreshCurrentView() {
+  if (state.tab === 'home') renderPopular();
+  else if (state.tab === 'menu') renderMenu();
+  else if (state.tab === 'services') renderServices();
+  else if (state.tab === 'vendors') renderVendors();
+}
+
+/* ============================================================
+   SSE — real-time order + booking status
+   ============================================================ */
+function startSSE() {
+  if (state.sse) try { state.sse.close(); } catch {}
+  if (!state.token) return;
+
+  const es = new EventSource(`/api/stream/guest/${encodeURIComponent(state.token)}`);
+  state.sse = es;
+
+  es.addEventListener('orders', e => {
+    try {
+      state.orders = JSON.parse(e.data) || [];
+      pickActive();
+      renderActiveCard();
+      if (state.tab === 'orders') renderOrders();
+    } catch {}
+  });
+
+  es.addEventListener('bookings', e => {
+    try {
+      state.bookings = JSON.parse(e.data) || [];
+      pickActive();
+      renderActiveCard();
+      if (state.tab === 'orders') renderOrders();
+    } catch {}
+  });
+
+  es.addEventListener('hello', () => { state.sseRetry = 0; });
+  es.addEventListener('error', () => {
+    try { es.close(); } catch {}
+    state.sse = null;
+    const delay = Math.min(30000, 2000 * Math.pow(2, state.sseRetry++));
+    setTimeout(startSSE, delay);
+  });
+}
+
+/* ============================================================
+   HEADER ACTIONS
+   ============================================================ */
+$('langBtn').addEventListener('click', () => openSheet('langSheet'));
+$('profileBtn').addEventListener('click', () => {
+  if (!state.session) return openContextSheet();
+  $('profileSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">Your profile</div>
+        <div class="sheet-sub">Update anytime</div>
+      </div>
+      <button class="sheet-close" data-close="profileSheet">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="field"><label>Name</label><input class="input" value="${esc(state.session.guest_name || '')}" disabled></div>
+    <div class="field"><label>Phone</label><input class="input" value="${esc(state.session.guest_phone || '')}" disabled></div>
+    <div class="field"><label>Hotel</label><input class="input" value="${esc(state.hotel?.name || '')}" disabled></div>
+    <div class="field"><label>Current location</label><input class="input" value="${esc(state.context.mode === 'table' ? 'Table ' : 'Room ')}${esc(state.context.number || '')}" disabled></div>
+    <button class="btn btn-primary btn-full" id="editContext">Change location</button>
+  `;
+  $('profileSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('profileSheet'));
+  $('profileSheetBody').querySelector('#editContext').addEventListener('click', () => {
+    closeSheet('profileSheet');
+    openContextSheet();
+  });
+  openSheet('profileSheet');
+});
+
+document.querySelectorAll('[data-lang]').forEach(b => {
+  b.addEventListener('click', () => {
+    const lang = b.dataset.lang;
+    try { localStorage.setItem('gh_lang', lang); } catch {}
+    document.documentElement.lang = lang;
+    closeSheet('langSheet');
+    toast('Language: ' + lang);
+  });
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init() {
+  loadLocal();
+  renderContext();
+  bootstrap();
+  setInterval(renderActiveCard, 30000);
+}
+
+init();
+</script>
 </body>
 </html>
