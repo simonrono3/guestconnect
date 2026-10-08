@@ -383,4 +383,26 @@ async function waiveCommission(id, btnEl){
     await loadCommission();
     renderCurrent();
   } catch (e) {
-    toast('❌ ' +
+    toast('❌ ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Waive'; }
+  }
+}
+
+function renderCurrent(){
+  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+  $('view-' + currentTab).classList.remove('hidden');
+  if (currentTab === 'hotels') renderHotels();
+  if (currentTab === 'vendors') renderVendors();
+  if (currentTab === 'orders') renderOrders();
+  if (currentTab === 'commission') renderCommission();
+}
+
+// Boot
+if (!localStorage.getItem('admin_token')) {
+  window.location.href = '/admin-login.html';
+} else {
+  refreshAll();
+}
+</script>
+</body>
+</html>
