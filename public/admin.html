@@ -63,11 +63,13 @@
   <button class="tab active" data-tab="hotels">🏨 Hotels <span id="c_h"></span></button>
   <button class="tab" data-tab="vendors">🚚 Vendors <span id="c_v"></span></button>
   <button class="tab" data-tab="orders">🔔 Orders</button>
+  <button class="tab" data-tab="commission">💰 Commission</button>
 </div></div>
 
 <section id="view-hotels" class="view"></section>
 <section id="view-vendors" class="view hidden"></section>
 <section id="view-orders" class="view hidden"></section>
+<section id="view-commission" class="view hidden"></section>
 </main>
 
 <div id="toast" class="toast"></div>
@@ -77,7 +79,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
 
-let HOTELS = [], VENDORS = [], ORDERS = [];
+let HOTELS = [], VENDORS = [], ORDERS = [], COMMISSION = [];
 let currentTab = 'hotels';
 
 function adminHeaders(extra = {}){
@@ -96,9 +98,7 @@ async function apiCall(url, opts = {}){
   const r = await safeFetch(url, opts);
   let data = {};
   try { data = await r.json(); } catch {}
-  if (!r.ok || data.ok === false) {
-    throw new Error(data.error || ('HTTP ' + r.status));
-  }
+  if (!r.ok || data.ok === false) throw new Error(data.error || ('HTTP ' + r.status));
   return data;
 }
 
@@ -117,7 +117,7 @@ function logout(){
 
 async function refreshAll(){
   try {
-    await Promise.all([loadHotels(), loadVendors(), loadOrders()]);
+    await Promise.all([loadHotels(), loadVendors(), loadOrders(), loadCommission()]);
     renderCurrent();
   } catch (e) { toast('Error: ' + e.message, 'error'); }
 }
@@ -187,14 +187,11 @@ async function approveHotel(id, btnEl){
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
   try {
     const url = '/api/admin/hotels/' + encodeURIComponent(id) + '/approve';
-    console.log('▶️ POST', url);
     const j = await apiCall(url, { method: 'POST' });
-    console.log('✅ Approve response:', j);
     toast('✅ Hotel approved: ' + (j.hotel?.hotel_id || id), 'success');
     await loadHotels();
     renderCurrent();
   } catch (e) {
-    console.error('❌ Approve failed:', e);
     toast('❌ Approve failed: ' + e.message, 'error');
     if (btnEl) { btnEl.disabled = false; btnEl.textContent = '✅ Approve'; }
   }
@@ -205,13 +202,11 @@ async function deleteHotel(id, btnEl){
   if (!confirm('Delete hotel ' + id + '?')) return;
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
   try {
-    const url = '/api/admin/hotels/' + encodeURIComponent(id);
-    await apiCall(url, { method: 'DELETE' });
+    await apiCall('/api/admin/hotels/' + encodeURIComponent(id), { method: 'DELETE' });
     toast('Deleted', 'success');
     await loadHotels();
     renderCurrent();
   } catch (e) {
-    console.error('❌ Delete failed:', e);
     toast('❌ Delete failed: ' + e.message, 'error');
     if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Del'; }
   }
@@ -235,11 +230,17 @@ function renderVendors(){
   box.innerHTML = VENDORS.map(v => {
     const st = String(v.status).toLowerCase();
     const cls = st === 'approved' ? 'badge-green' : st === 'rejected' ? 'badge-red' : 'badge-yellow';
+    const meta = [
+      v.city, v.hub_location,
+      v.vehicle, v.plate,
+      (v.services || []).join(', '),
+      v.price ? money(v.price) : null
+    ].filter(Boolean).join(' • ');
     return `<div class="row">
       <div>
         <b>${esc(v.vendor_name)}</b> <span class="badge ${cls}">${esc(v.status)}</span><br>
         <small style="color:#777">${esc(v.phone || '')} • ${esc(v.email || '')}</small><br>
-        <small style="color:#777">${esc(v.city || '')} • ${(v.services || []).join(', ')} • ${money(v.price)}</small>
+        <small style="color:#777">${esc(meta)}</small>
       </div>
       <div style="display:flex;gap:5px;flex-wrap:wrap">
         <button class="btn btn-primary btn-sm" onclick="updateVendor('${esc(v.id)}','approved', this)">Approve</button>
@@ -296,27 +297,90 @@ function renderOrders(){
     ORDERS.map(o => `
       <div class="row">
         <div>
-          <b>${esc(o.hotel_id)} • Room ${esc(o.room_number)} • ${esc(o.guest_name)}</b><br>
-          <small style="color:#777">${esc(o.service_title)} • ${money(o.amount)} • ${esc(o.status)}</small><br>
-          <small style="color:#555">${esc(o.guest_phone)} • ${new Date(o.created_at).toLocaleString()}</small>
+          <b>${esc(o.hotel_id)} • Room ${esc(o.room_number || o.table_number || '—')} • ${esc(o.guest_name || 'Guest')}</b><br>
+          <small style="color:#777">${esc(o.service_title || '')} • ${money(o.amount)} • ${esc(o.status)}</small><br>
+          <small style="color:#555">${esc(o.guest_phone || '')} • ${o.created_at ? new Date(o.created_at).toLocaleString() : ''}</small>
         </div>
       </div>`).join('');
 }
 
-function renderCurrent(){
-  document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-  $('view-' + currentTab).classList.remove('hidden');
-  if (currentTab === 'hotels') renderHotels();
-  if (currentTab === 'vendors') renderVendors();
-  if (currentTab === 'orders') renderOrders();
+async function loadCommission(){
+  try {
+    const j = await apiCall('/api/admin/commission');
+    COMMISSION = j.ledger || [];
+    window.__commissionTotals = j.totals || { gross: 0, commission: 0, owed: 0, settled: 0, waived: 0 };
+  } catch (e) {
+    console.warn('Commission load failed:', e.message);
+    COMMISSION = [];
+    window.__commissionTotals = { gross: 0, commission: 0, owed: 0, settled: 0, waived: 0 };
+  }
 }
 
-// Boot
-if (!localStorage.getItem('admin_token')) {
-  window.location.href = '/admin-login.html';
-} else {
-  refreshAll();
+function renderCommission(){
+  const box = $('view-commission');
+  const totals = window.__commissionTotals || { gross: 0, commission: 0, owed: 0, settled: 0, waived: 0 };
+
+  box.innerHTML = `
+    <div class="card">
+      <b>💰 Commission overview</b>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px">
+        <div class="stat" style="background:#0a0a0a;border-color:#1b1b1b"><b>${money(totals.gross)}</b><small>GROSS VOLUME</small></div>
+        <div class="stat" style="background:#0a0a0a;border-color:#1b1b1b"><b>${money(totals.commission)}</b><small>TOTAL 15%</small></div>
+        <div class="stat" style="background:#351a00;border-color:#5c2d00"><b style="color:var(--gold)">${money(totals.owed)}</b><small>OWED</small></div>
+        <div class="stat" style="background:#0a2914;border-color:#1e5c33"><b style="color:var(--green)">${money(totals.settled)}</b><small>SETTLED</small></div>
+      </div>
+    </div>
+    ${COMMISSION.length ? COMMISSION.map(c => {
+      const st = String(c.status || 'owed').toLowerCase();
+      const cls = st === 'settled' ? 'badge-green' : st === 'waived' ? 'badge-yellow' : 'badge-red';
+      return `
+        <div class="row">
+          <div>
+            <b>${esc(c.hotel_id)} • ${money(c.commission)}</b>
+            <span class="badge ${cls}">${esc(st.toUpperCase())}</span><br>
+            <small style="color:#777">Gross: ${money(c.gross_amount)} • Vendor: ${esc(String(c.vendor_id || '').slice(0,8))}</small><br>
+            <small style="color:#555">${c.created_at ? new Date(c.created_at).toLocaleString() : ''}</small>
+          </div>
+          <div style="display:flex;gap:5px">
+            ${st === 'owed' ? `
+              <button class="btn btn-primary btn-sm" onclick="settleCommission('${esc(c.id)}', this)">Mark settled</button>
+              <button class="btn btn-dark btn-sm" onclick="waiveCommission('${esc(c.id)}', this)">Waive</button>
+            ` : `<span style="color:#666;font-size:10px">${esc(c.settled_ref || '—')}</span>`}
+          </div>
+        </div>`;
+    }).join('') : '<div class="card empty">No commission entries yet.</div>'}
+  `;
 }
-</script>
-</body>
-</html>
+
+async function settleCommission(id, btnEl){
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    const ref = prompt('Settlement reference (e.g. M-Pesa code):') || null;
+    await apiCall('/api/admin/commission/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'settled', settled_ref: ref })
+    });
+    toast('Marked settled', 'success');
+    await loadCommission();
+    renderCurrent();
+  } catch (e) {
+    toast('❌ ' + e.message, 'error');
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Mark settled'; }
+  }
+}
+
+async function waiveCommission(id, btnEl){
+  if (!confirm('Waive this commission?')) return;
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳...'; }
+  try {
+    await apiCall('/api/admin/commission/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'waived' })
+    });
+    toast('Waived', 'success');
+    await loadCommission();
+    renderCurrent();
+  } catch (e) {
+    toast('❌ ' +
