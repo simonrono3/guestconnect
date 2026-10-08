@@ -13,18 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 
-<link rel="stylesheet" href="/assets/device.css">
-<link rel="manifest" href="/manifest.json">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="GuestHub">
-<meta name="mobile-web-app-capable" content="yes">
-
 <style>
-/* =====================================================================
-   Tokens — matched to guesthub.app homepage
-   ===================================================================== */
 :root{
   --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
   --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
@@ -70,9 +59,6 @@ ul{ list-style:none; }
 
 .icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
 
-/* =====================================================================
-   Header
-   ===================================================================== */
 .header{
   position:sticky; top:0; z-index:100;
   background:var(--brand); color:#fff;
@@ -104,9 +90,6 @@ ul{ list-style:none; }
 }
 .vendor-mini small{ color:rgba(255,255,255,.65); font-size:11px; font-weight:500; }
 
-/* =====================================================================
-   Buttons
-   ===================================================================== */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap:6px; height:40px; padding:0 14px;
@@ -130,20 +113,12 @@ ul{ list-style:none; }
 .btn-danger:hover:not(:disabled){ background:var(--red-soft); }
 .btn-dark{ background:#fff; color:var(--text); border-color:var(--border-2); }
 .btn-dark:hover:not(:disabled){ background:var(--bg-subtle); }
-.btn-dark-solid{ background:#1a1a1a; color:#fff; }
-.btn-dark-solid:hover:not(:disabled){ background:#000; }
 .btn-full{ width:100%; margin-top:8px; }
 .btn-sm{ height:32px; padding:0 10px; font-size:12px; }
 .btn .icon{ width:14px; height:14px; }
 
-/* =====================================================================
-   Container + layout
-   ===================================================================== */
 .container{ max-width:900px; margin:0 auto; padding:16px 14px 96px; }
 
-/* =====================================================================
-   Wallet / Payment card
-   ===================================================================== */
 .wallet{
   background:#fff;
   border:1px solid var(--border);
@@ -179,13 +154,7 @@ ul{ list-style:none; }
   color:var(--text);
   word-break:break-all;
 }
-.wallet-sub{
-  margin-top:4px;
-  font-size:13px;
-  color:var(--text-2);
-  font-weight:500;
-}
-
+.wallet-sub{ margin-top:4px; font-size:13px; color:var(--text-2); font-weight:500; }
 .wallet-ussd{
   margin-top:16px;
   padding:14px;
@@ -199,23 +168,11 @@ ul{ list-style:none; }
   color:var(--text-2);
 }
 .wallet-ussd.empty{ color:var(--yellow-ink); }
-
-.wallet-actions{
-  display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;
-}
+.wallet-actions{ display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; }
 .wallet-actions .btn{ flex:1; min-width:0; }
 
-/* =====================================================================
-   Stats
-   ===================================================================== */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:10px;
-  margin-bottom:16px;
-}
+.stats{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:16px; }
 @media (max-width:520px){ .stats{ grid-template-columns:repeat(2,1fr); } }
-
 .stat{
   background:#fff;
   border:1px solid var(--border);
@@ -243,9 +200,6 @@ ul{ list-style:none; }
   margin-top:8px;
 }
 
-/* =====================================================================
-   Availability row
-   ===================================================================== */
 .availability{
   background:#fff;
   border:1px solid var(--border);
@@ -283,7 +237,6 @@ ul{ list-style:none; }
   0%,100%{ opacity:1; transform:scale(1); }
   50%    { opacity:.5; transform:scale(.85); }
 }
-
 .toggle{
   width:50px; height:28px;
   background:var(--border-3);
@@ -309,9 +262,6 @@ ul{ list-style:none; }
 .toggle.on::after{ left:25px; }
 .toggle.busy{ opacity:.5; pointer-events:none; }
 
-/* =====================================================================
-   Tabs
-   ===================================================================== */
 .tabs-wrap{
   position:sticky;
   top:var(--header-h);
@@ -358,10 +308,18 @@ ul{ list-style:none; }
 }
 .tab .icon{ width:14px; height:14px; opacity:.9; }
 .tab.active .icon{ opacity:1; }
+.tab .tab-badge{
+  display:none;
+  margin-left:6px;
+  background:var(--red);
+  color:#fff;
+  font-size:9.5px;
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:999px;
+}
+.tab .tab-badge.show{ display:inline-block; }
 
-/* =====================================================================
-   Cards
-   ===================================================================== */
 .view{ padding-top:6px; }
 .view.hidden{ display:none; }
 
@@ -388,12 +346,8 @@ ul{ list-style:none; }
   line-height:1.55;
 }
 
-/* =====================================================================
-   Job card
-   ===================================================================== */
 .job{ border-left:3px solid var(--brand-2); }
 .job-new{ border-left-color:var(--yellow); }
-
 .job-top{
   display:flex;
   justify-content:space-between;
@@ -453,29 +407,14 @@ ul{ list-style:none; }
   line-height:1.6;
   margin-bottom:14px;
 }
-@media (min-width:520px){
-  .job-meta{ grid-template-columns:1fr 1fr; }
-}
-.job-meta-row{
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  min-width:0;
-}
-.job-meta-row .k{
-  color:var(--text-3);
-  font-weight:500;
-  flex-shrink:0;
-}
+@media (min-width:520px){ .job-meta{ grid-template-columns:1fr 1fr; } }
+.job-meta-row{ display:flex; align-items:baseline; gap:6px; min-width:0; }
+.job-meta-row .k{ color:var(--text-3); font-weight:500; flex-shrink:0; }
 .job-meta-row .v{
-  color:var(--text);
-  font-weight:600;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  color:var(--text); font-weight:600;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .job-meta-row .v.lime{ color:var(--brand-2); }
-
 .job-notes{
   margin-top:8px;
   padding:10px 12px;
@@ -486,20 +425,14 @@ ul{ list-style:none; }
   color:var(--text-2);
   line-height:1.55;
 }
-
 .job-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
   margin-top:6px;
 }
-@media (max-width:400px){
-  .job-actions{ grid-template-columns:1fr; }
-}
+@media (max-width:400px){ .job-actions{ grid-template-columns:1fr; } }
 
-/* =====================================================================
-   Service card
-   ===================================================================== */
 .service{
   display:flex;
   justify-content:space-between;
@@ -513,18 +446,8 @@ ul{ list-style:none; }
   box-shadow:var(--shadow-xs);
 }
 .service-left{ min-width:0; flex:1; }
-.service-name{
-  font-weight:600;
-  font-size:13.5px;
-  color:var(--text);
-  line-height:1.3;
-}
-.service-sub{
-  font-size:11.5px;
-  color:var(--text-3);
-  margin-top:2px;
-  font-weight:500;
-}
+.service-name{ font-weight:600; font-size:13.5px; color:var(--text); line-height:1.3; }
+.service-sub{ font-size:11.5px; color:var(--text-3); margin-top:2px; font-weight:500; }
 .service-price{
   color:var(--brand-2);
   font-weight:700;
@@ -533,9 +456,6 @@ ul{ list-style:none; }
   font-variant-numeric:tabular-nums;
 }
 
-/* =====================================================================
-   Hotel row
-   ===================================================================== */
 .hotel-row{
   display:flex;
   justify-content:space-between;
@@ -549,18 +469,8 @@ ul{ list-style:none; }
   box-shadow:var(--shadow-xs);
 }
 .hotel-left{ min-width:0; flex:1; }
-.hotel-name{
-  font-weight:600;
-  font-size:13.5px;
-  color:var(--text);
-  line-height:1.3;
-}
-.hotel-sub{
-  font-size:11.5px;
-  color:var(--text-3);
-  margin-top:2px;
-  font-weight:500;
-}
+.hotel-name{ font-weight:600; font-size:13.5px; color:var(--text); line-height:1.3; }
+.hotel-sub{ font-size:11.5px; color:var(--text-3); margin-top:2px; font-weight:500; }
 .hotel-status{
   display:inline-flex;
   align-items:center;
@@ -581,9 +491,6 @@ ul{ list-style:none; }
   background:var(--green);
 }
 
-/* =====================================================================
-   Profile rows
-   ===================================================================== */
 .profile-row{
   padding:12px 0;
   border-bottom:1px solid var(--border);
@@ -606,9 +513,6 @@ ul{ list-style:none; }
   line-height:1.5;
 }
 
-/* =====================================================================
-   Empty & loading
-   ===================================================================== */
 .empty{
   text-align:center;
   padding:48px 20px;
@@ -656,9 +560,6 @@ ul{ list-style:none; }
 }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
-/* =====================================================================
-   Forms (modals)
-   ===================================================================== */
 .form-group{ margin-bottom:14px; }
 .form-group label{
   display:block;
@@ -689,7 +590,6 @@ ul{ list-style:none; }
 }
 .textarea{ min-height:80px; resize:vertical; }
 
-/* Checkbox grid */
 .chk-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -697,7 +597,6 @@ ul{ list-style:none; }
   margin-top:4px;
 }
 @media (max-width:520px){ .chk-grid{ grid-template-columns:1fr; } }
-
 .chk{
   display:flex;
   align-items:center;
@@ -726,7 +625,6 @@ ul{ list-style:none; }
   color:var(--brand);
 }
 
-/* Payment channel chips */
 .pay-tabs{
   display:grid;
   grid-template-columns:repeat(3, 1fr);
@@ -760,9 +658,6 @@ ul{ list-style:none; }
   box-shadow:0 4px 12px rgba(0,113,194,.1);
 }
 
-/* =====================================================================
-   Modal
-   ===================================================================== */
 .modal{
   position:fixed; inset:0; z-index:500;
   display:none;
@@ -794,7 +689,6 @@ ul{ list-style:none; }
   .modal{ align-items:center; padding:20px; }
   .modal-box{ border-radius:var(--r-lg); }
 }
-
 .modal-head{
   display:flex;
   justify-content:space-between;
@@ -813,9 +707,6 @@ ul{ list-style:none; }
 }
 .modal-head b .icon{ color:var(--brand-2); width:17px; height:17px; }
 
-/* =====================================================================
-   Toast
-   ===================================================================== */
 .toast{
   position:fixed;
   left:50%; bottom:24px;
@@ -839,17 +730,6 @@ ul{ list-style:none; }
 .toast.err{ background:var(--red); }
 .toast svg{ flex-shrink:0; width:16px; height:16px; }
 
-/* =====================================================================
-   Icons-in-text helper
-   ===================================================================== */
-.icon-inline{
-  display:inline-block;
-  width:14px; height:14px;
-  vertical-align:-2px;
-  margin-right:5px;
-  color:var(--text-3);
-}
-
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms !important;
@@ -861,7 +741,6 @@ ul{ list-style:none; }
 </head>
 <body>
 
-<!-- ============================= Header ============================= -->
 <header class="header">
   <div class="header-inner">
     <a href="/" class="brand" aria-label="GuestHub home">
@@ -892,7 +771,6 @@ ul{ list-style:none; }
 
 <main class="container">
 
-  <!-- ============================= Payment card ============================= -->
   <section class="wallet" id="paymentCard">
     <div class="wallet-top">
       <div class="wallet-icon" aria-hidden="true">
@@ -904,7 +782,7 @@ ul{ list-style:none; }
       <div class="wallet-body">
         <div class="wallet-label">
           Direct payment
-          <span class="badge badge-neutral" id="walletStatus" style="font-size:9.5px;padding:2px 8px">—</span>
+          <span class="badge badge-neutral" id="walletStatus">—</span>
         </div>
         <h1 id="paymentHeadline">Set up your Paybill</h1>
         <div class="wallet-sub" id="paymentSub">Guests pay you directly</div>
@@ -929,7 +807,6 @@ ul{ list-style:none; }
     </div>
   </section>
 
-  <!-- ============================= Stats ============================= -->
   <section class="stats">
     <div class="stat"><b id="statServices">0</b><small>Services</small></div>
     <div class="stat"><b id="statNew">0</b><small>New jobs</small></div>
@@ -937,7 +814,6 @@ ul{ list-style:none; }
     <div class="stat"><b id="statCompleted">0</b><small>Completed</small></div>
   </section>
 
-  <!-- ============================= Availability ============================= -->
   <section class="availability" id="availabilityBlock">
     <div class="availability-left">
       <b>
@@ -956,22 +832,26 @@ ul{ list-style:none; }
     ></button>
   </section>
 
-  <!-- ============================= Tabs ============================= -->
   <div class="tabs-wrap">
     <nav class="tabs" role="tablist">
-      <button class="tab active" data-tab="new"      onclick="showTab('new', this)">
+      <button class="tab active" data-tab="new" onclick="showTab('new', this)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         New jobs
       </button>
-      <button class="tab" data-tab="active"   onclick="showTab('active', this)">
+      <button class="tab" data-tab="active" onclick="showTab('active', this)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
         Active
+      </button>
+      <button class="tab" data-tab="bookings" onclick="showTab('bookings', this)">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        Bookings
+        <span class="tab-badge" id="tabBookingBadge">0</span>
       </button>
       <button class="tab" data-tab="services" onclick="showTab('services', this)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Services
       </button>
-      <button class="tab" data-tab="hotels"   onclick="showTab('hotels', this)">
+      <button class="tab" data-tab="hotels" onclick="showTab('hotels', this)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
         Hotels
       </button>
@@ -979,20 +859,23 @@ ul{ list-style:none; }
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Earnings
       </button>
-      <button class="tab" data-tab="profile"  onclick="showTab('profile', this)">
+      <button class="tab" data-tab="profile" onclick="showTab('profile', this)">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Profile
       </button>
     </nav>
   </div>
 
-  <!-- ============================= Views ============================= -->
   <section id="view-new" class="view">
     <div id="newJobs"><div class="loader">Loading new jobs…</div></div>
   </section>
 
   <section id="view-active" class="view hidden">
     <div id="activeJobs"><div class="loader">Loading…</div></div>
+  </section>
+
+  <section id="view-bookings" class="view hidden">
+    <div id="bookingsContent"><div class="loader">Loading bookings…</div></div>
   </section>
 
   <section id="view-services" class="view hidden">
@@ -1013,11 +896,10 @@ ul{ list-style:none; }
 
 </main>
 
-<!-- ============================= Payment modal ============================= -->
-<div id="paymentModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+<div id="paymentModal" class="modal" role="dialog" aria-modal="true">
   <div class="modal-box">
     <div class="modal-head">
-      <b id="paymentModalTitle">
+      <b>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
         Payment setup
       </b>
@@ -1031,16 +913,16 @@ ul{ list-style:none; }
       Paybill / Till / number at checkout.
     </p>
 
-    <div class="pay-tabs" role="radiogroup" aria-label="Payment channel">
-      <button type="button" class="paychip" data-channel="paybill" role="radio" aria-checked="false">
+    <div class="pay-tabs" role="radiogroup">
+      <button type="button" class="paychip" data-channel="paybill">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
         <span>Paybill</span>
       </button>
-      <button type="button" class="paychip" data-channel="till" role="radio" aria-checked="false">
+      <button type="button" class="paychip" data-channel="till">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
         <span>Till</span>
       </button>
-      <button type="button" class="paychip" data-channel="send_money" role="radio" aria-checked="false">
+      <button type="button" class="paychip" data-channel="send_money">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         <span>Send Money</span>
       </button>
@@ -1083,11 +965,10 @@ ul{ list-style:none; }
   </div>
 </div>
 
-<!-- ============================= Services modal ============================= -->
-<div id="servicesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="servicesModalTitle">
+<div id="servicesModal" class="modal" role="dialog" aria-modal="true">
   <div class="modal-box">
     <div class="modal-head">
-      <b id="servicesModalTitle">
+      <b>
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Edit services
       </b>
@@ -1128,9 +1009,6 @@ ul{ list-style:none; }
   const TOKEN_KEY = 'vendor_token';
   const $ = id => document.getElementById(id);
 
-  /* ============================================================
-     SERVICE CATALOGUE
-     ============================================================ */
   const SERVICES = {
     g1: { label: 'transport', items: [
       { id:'airport_taxi', t:'Airport Taxi' },
@@ -1174,36 +1052,27 @@ ul{ list-style:none; }
   };
   const statusIn = (s, list) => list.includes(String(s || '').toLowerCase());
 
-  /* ============================================================
-     ICONS
-     ============================================================ */
   const ICONS = {
-    check:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
-    alert:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
-    bell:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
-    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
-    wrench:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
-    hotel:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>',
-    wallet:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>',
-    user:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-    lock:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+    check:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    alert:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+    bell:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
+    calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
+    wrench:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    hotel:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>',
+    wallet:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>',
+    user:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+    lock:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
   };
 
-  /* ============================================================
-     STATE
-     ============================================================ */
   let currentVendor = null;
   let allOrders = [];
+  let allBookings = [];
   let myHotels = [];
   let myHotelsMeta = [];
   let busy = false;
   let editChannel = 'paybill';
 
-  /* ============================================================
-     HELPERS
-     ============================================================ */
   const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
-
   const escapeHtml = v => String(v ?? '')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -1227,8 +1096,12 @@ ul{ list-style:none; }
       return '<span class="badge badge-active">' + s.replace('_',' ').toUpperCase() + '</span>';
     if (s === 'completed')
       return '<span class="badge badge-done">COMPLETED</span>';
-    if (s === 'cancelled')
-      return '<span class="badge badge-danger">CANCELLED</span>';
+    if (s === 'cancelled' || s === 'declined')
+      return '<span class="badge badge-danger">' + s.toUpperCase() + '</span>';
+    if (s === 'requested')
+      return '<span class="badge badge-new">REQUESTED</span>';
+    if (s === 'confirmed')
+      return '<span class="badge badge-active">CONFIRMED</span>';
     return '<span class="badge badge-neutral">' + escapeHtml(status || 'UNKNOWN').toUpperCase() + '</span>';
   }
 
@@ -1238,9 +1111,6 @@ ul{ list-style:none; }
     catch { return ''; }
   };
 
-  /* ============================================================
-     API CLIENT
-     ============================================================ */
   const getToken = () => localStorage.getItem(TOKEN_KEY);
 
   async function api(path, opts = {}) {
@@ -1261,9 +1131,6 @@ ul{ list-style:none; }
     return json;
   }
 
-  /* ============================================================
-     AUTH GATE
-     ============================================================ */
   function renderLoginRequired() {
     $('vendorName').textContent = 'Not logged in';
     $('vendorCity').textContent = 'Please log in';
@@ -1295,9 +1162,6 @@ ul{ list-style:none; }
     }
   }
 
-  /* ============================================================
-     INIT
-     ============================================================ */
   async function init() {
     if (!getToken()) return renderLoginRequired();
 
@@ -1311,7 +1175,7 @@ ul{ list-style:none; }
       renderServices();
       renderProfile();
 
-      await Promise.all([loadMyHotels(), loadOrders()]);
+      await Promise.all([loadMyHotels(), loadOrders(), loadBookings()]);
     } catch (err) {
       console.error(err);
       showFatal(err.message || 'Unable to load dashboard.');
@@ -1329,61 +1193,40 @@ ul{ list-style:none; }
       renderAvailability();
       renderServices();
       renderProfile();
-      await Promise.all([loadMyHotels(), loadOrders()]);
+      await Promise.all([loadMyHotels(), loadOrders(), loadBookings()]);
       toast('Dashboard updated');
     } catch (err) {
       toast(err.message || 'Refresh failed', true);
     }
   }
 
-  /* ============================================================
-     HEADER
-     ============================================================ */
   function renderVendorHeader() {
     const v = currentVendor || {};
     $('vendorName').textContent = v.vendor_name || v.full_name || 'Vendor';
     $('vendorCity').textContent = v.city || v.hub_location || 'Kenya';
   }
 
-  /* ============================================================
-     PAYMENT CARD
-     ============================================================ */
   function paymentCopy(v) {
     const ch = String(v.payment_channel || 'send_money').toLowerCase();
     if (ch === 'paybill' && v.paybill_number) {
       return {
         headline: 'Paybill ' + v.paybill_number,
         sub: 'Account: ' + (v.paybill_account || '—'),
-        ussd:
-`Dial *334#
-→ Lipa na M-Pesa
-→ Pay Bill
-→ Business No: ${v.paybill_number}
-→ Account: ${v.paybill_account || '—'}
-→ Amount: (as shown)`
+        ussd: `Dial *334#\n→ Lipa na M-Pesa\n→ Pay Bill\n→ Business No: ${v.paybill_number}\n→ Account: ${v.paybill_account || '—'}\n→ Amount: (as shown)`
       };
     }
     if (ch === 'till' && v.till_number) {
       return {
         headline: 'Till ' + v.till_number,
         sub: 'Buy Goods — no account needed',
-        ussd:
-`Dial *334#
-→ Lipa na M-Pesa
-→ Buy Goods & Services
-→ Till No: ${v.till_number}
-→ Amount: (as shown)`
+        ussd: `Dial *334#\n→ Lipa na M-Pesa\n→ Buy Goods & Services\n→ Till No: ${v.till_number}\n→ Amount: (as shown)`
       };
     }
     if (v.mpesa) {
       return {
         headline: v.mpesa,
         sub: 'Send Money (Safaricom)',
-        ussd:
-`M-Pesa App or *334#
-→ Send Money
-→ ${v.mpesa}
-→ Amount: (as shown)`
+        ussd: `M-Pesa App or *334#\n→ Send Money\n→ ${v.mpesa}\n→ Amount: (as shown)`
       };
     }
     return {
@@ -1406,9 +1249,6 @@ ul{ list-style:none; }
     statusEl.className = 'badge ' + (String(v.status || '').toLowerCase() === 'approved' ? 'badge-done' : 'badge-new');
   }
 
-  /* ============================================================
-     PAYMENT MODAL
-     ============================================================ */
   function openPaymentModal() {
     if (!currentVendor) return;
     const v = currentVendor;
@@ -1435,7 +1275,6 @@ ul{ list-style:none; }
     document.querySelectorAll('#paymentModal .paychip').forEach(c => {
       const on = c.dataset.channel === ch;
       c.classList.toggle('on', on);
-      c.setAttribute('aria-checked', String(on));
     });
     $('pm-paybill').style.display    = (ch === 'paybill')    ? '' : 'none';
     $('pm-till').style.display       = (ch === 'till')       ? '' : 'none';
@@ -1446,16 +1285,15 @@ ul{ list-style:none; }
     const btn = $('btnPaymentSave');
     const channel = editChannel;
 
-    const body = { channel };
+    const body = { payment_channel: channel, mpesa_name: $('pm_name').value.trim() };
     if (channel === 'paybill') {
-      body.paybill_number  = $('pm_paybill_number').value;
-      body.paybill_account = $('pm_paybill_account').value;
+      body.paybill_number  = $('pm_paybill_number').value.trim();
+      body.paybill_account = $('pm_paybill_account').value.trim() || null;
     } else if (channel === 'till') {
-      body.till_number = $('pm_till_number').value;
+      body.till_number = $('pm_till_number').value.trim();
     } else {
-      body.mpesa = $('pm_phone').value;
+      body.mpesa = $('pm_phone').value.trim();
     }
-    body.mpesa_name = $('pm_name').value;
 
     btn.disabled = true;
     btn.textContent = 'Saving…';
@@ -1477,9 +1315,6 @@ ul{ list-style:none; }
     }
   }
 
-  /* ============================================================
-     AVAILABILITY
-     ============================================================ */
   function renderAvailability() {
     const v = currentVendor || {};
     const available = v.is_available !== false;
@@ -1498,6 +1333,7 @@ ul{ list-style:none; }
     const t = $('availabilityToggle');
     const next = !t.classList.contains('on');
 
+    // Optimistic UI
     t.classList.toggle('on', next);
     t.setAttribute('aria-checked', String(next));
     $('availabilityTitle').textContent = next ? 'Available for jobs' : 'Offline';
@@ -1512,10 +1348,13 @@ ul{ list-style:none; }
         method: 'PATCH',
         body: JSON.stringify({ available: next })
       });
+      if (res.available === undefined) {
+        throw new Error('Server did not persist availability');
+      }
       currentVendor.is_available = res.available;
-      if (res.warning) console.warn(res.warning);
       toast(next ? 'You are now available' : 'You are now offline');
     } catch (err) {
+      // Revert on failure
       renderAvailability();
       toast(err.message || 'Could not save availability', true);
     } finally {
@@ -1523,9 +1362,6 @@ ul{ list-style:none; }
     }
   }
 
-  /* ============================================================
-     HOTELS
-     ============================================================ */
   async function loadMyHotels() {
     try {
       const [linked, all] = await Promise.all([
@@ -1581,9 +1417,6 @@ ul{ list-style:none; }
     `;
   }
 
-  /* ============================================================
-     ORDERS
-     ============================================================ */
   async function loadOrders() {
     if (!currentVendor) return;
     const box = $('newJobs');
@@ -1602,6 +1435,29 @@ ul{ list-style:none; }
           <button class="btn btn-primary" onclick="refreshDashboard()">Try again</button>
         </div>
       `;
+    }
+  }
+
+  async function loadBookings() {
+    if (!currentVendor) return;
+    try {
+      const res = await api('/bookings/vendor');
+      allBookings = Array.isArray(res.bookings) ? res.bookings : [];
+      renderBookings();
+      updateBookingBadge();
+    } catch (err) {
+      console.warn('Bookings load failed:', err.message);
+      allBookings = [];
+      renderBookings();
+    }
+  }
+
+  function updateBookingBadge() {
+    const pending = allBookings.filter(b => String(b.status).toLowerCase() === 'requested').length;
+    const badge = $('tabBookingBadge');
+    if (badge) {
+      badge.textContent = pending;
+      badge.classList.toggle('show', pending > 0);
     }
   }
 
@@ -1729,9 +1585,6 @@ ul{ list-style:none; }
     }).join('');
   }
 
-  /* ============================================================
-     ORDER ACTIONS
-     ============================================================ */
   async function acceptOrder(id) {
     if (busy) return;
     if (!confirm('Accept this guest job?')) return;
@@ -1777,9 +1630,7 @@ ul{ list-style:none; }
   }
 
   async function cancelOrder(id, kind) {
-    const reason = kind === 'decline'
-      ? prompt('Optional: why are you declining?')
-      : prompt('Optional: reason for cancelling?');
+    const reason = prompt(kind === 'decline' ? 'Why are you declining?' : 'Reason for cancelling?');
     if (reason === null) return;
     if (!confirm('This will cancel the job. Continue?')) return;
 
@@ -1798,9 +1649,148 @@ ul{ list-style:none; }
     }
   }
 
-  /* ============================================================
-     SERVICES
-     ============================================================ */
+  function renderBookings() {
+    const box = $('bookingsContent');
+    if (!box) return;
+
+    if (!allBookings.length) {
+      box.innerHTML = `
+        <div class="card empty">
+          <div class="empty-icon">${ICONS.calendar}</div>
+          <b>No bookings yet</b>
+          <p>Guest bookings will appear here when they choose your services.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const grouped = { requested: [], confirmed: [], past: [] };
+    allBookings.forEach(b => {
+      const s = String(b.status || '').toLowerCase();
+      if (s === 'requested') grouped.requested.push(b);
+      else if (s === 'confirmed') grouped.confirmed.push(b);
+      else grouped.past.push(b);
+    });
+
+    const section = (title, list, kind) => {
+      if (!list.length) return '';
+      return `
+        <div class="card">
+          <div class="card-title">${title} <span class="badge badge-neutral" style="margin-left:6px">${list.length}</span></div>
+        </div>
+        ${list.map(b => bookingCard(b, kind)).join('')}
+      `;
+    };
+
+    box.innerHTML =
+      section('New requests', grouped.requested, 'requested') +
+      section('Confirmed', grouped.confirmed, 'confirmed') +
+      section('Past', grouped.past, 'past');
+  }
+
+  function bookingCard(b, kind) {
+    const when = new Date(b.scheduled_for);
+    const badgeMap = {
+      requested: 'badge-new',
+      confirmed: 'badge-active',
+      completed: 'badge-done',
+      declined:  'badge-danger',
+      cancelled: 'badge-danger'
+    };
+    const badge = badgeMap[String(b.status).toLowerCase()] || 'badge-neutral';
+
+    return `
+      <div class="card job ${kind === 'requested' ? 'job-new' : ''}">
+        <div class="job-top">
+          <div class="job-heading">
+            <div class="job-title">${escapeHtml(b.service_title || 'Booking')}</div>
+            <span class="job-ref">${escapeHtml(b.reference || '')}</span>
+            <span class="job-hotel">${escapeHtml(b.hotel_id || '')}</span>
+          </div>
+          <span class="badge ${badge}">${escapeHtml(String(b.status || '').toUpperCase())}</span>
+        </div>
+
+        <div class="job-meta">
+          <div class="job-meta-row"><span class="k">When</span><span class="v">${when.toLocaleString()}</span></div>
+          <div class="job-meta-row"><span class="k">Guests</span><span class="v">${b.guests_count || 1}</span></div>
+          <div class="job-meta-row"><span class="k">Room</span><span class="v">${escapeHtml(b.room_number || '—')}</span></div>
+          <div class="job-meta-row"><span class="k">Guest</span><span class="v">${escapeHtml(b.guest_name || 'Guest')}</span></div>
+          <div class="job-meta-row"><span class="k">Phone</span><span class="v">${escapeHtml(b.guest_phone || '—')}</span></div>
+          <div class="job-meta-row"><span class="k">Value</span><span class="v lime">${money(b.amount)}</span></div>
+        </div>
+
+        ${b.notes ? `<div class="job-notes">${escapeHtml(b.notes)}</div>` : ''}
+
+        ${kind === 'requested' ? `
+          <div class="job-actions">
+            <button class="btn btn-success" onclick="confirmBooking('${escapeHtml(b.id)}')">
+              ${ICONS.check} Confirm
+            </button>
+            <button class="btn btn-danger" onclick="declineBooking('${escapeHtml(b.id)}')">Decline</button>
+          </div>
+        ` : ''}
+
+        ${kind === 'confirmed' ? `
+          <div class="job-actions">
+            <button class="btn btn-success" onclick="completeBooking('${escapeHtml(b.id)}')">
+              ${ICONS.check} Complete
+            </button>
+            <button class="btn btn-danger" onclick="cancelBooking('${escapeHtml(b.id)}')">Cancel</button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  async function confirmBooking(id) {
+    if (!confirm('Confirm this booking?')) return;
+    try {
+      await api('/bookings/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'confirmed' })
+      });
+      toast('Booking confirmed');
+      await loadBookings();
+    } catch (err) { toast(err.message || 'Failed', true); }
+  }
+
+  async function declineBooking(id) {
+    const reason = prompt('Reason (optional):');
+    if (reason === null) return;
+    try {
+      await api('/bookings/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'declined', vendor_note: reason })
+      });
+      toast('Booking declined');
+      await loadBookings();
+    } catch (err) { toast(err.message || 'Failed', true); }
+  }
+
+  async function completeBooking(id) {
+    if (!confirm('Mark as completed?')) return;
+    try {
+      await api('/bookings/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'completed' })
+      });
+      toast('Booking completed');
+      await loadBookings();
+    } catch (err) { toast(err.message || 'Failed', true); }
+  }
+
+  async function cancelBooking(id) {
+    if (!confirm('Cancel this booking?')) return;
+    try {
+      await api('/bookings/' + encodeURIComponent(id), {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'cancelled' })
+      });
+      toast('Booking cancelled');
+      await loadBookings();
+    } catch (err) { toast(err.message || 'Failed', true); }
+  }
+
   function renderServices() {
     const v = currentVendor || {};
     const services = Array.isArray(v.services) ? v.services : [];
@@ -1902,9 +1892,6 @@ ul{ list-style:none; }
     }
   }
 
-  /* ============================================================
-     EARNINGS
-     ============================================================ */
   function renderEarnings(myOrders, completed) {
     const total = completed.reduce((s, o) => s + Number(o.amount || 0), 0);
     const commission = Math.floor(total * 0.15);
@@ -1939,6 +1926,13 @@ ul{ list-style:none; }
           <div class="profile-value" style="color:var(--brand-2); font-weight:700">${money(total - commission)}</div>
         </div>
         <div class="profile-row">
+          <div class="profile-label">How to settle</div>
+          <div class="profile-value" style="font-size:12.5px;color:var(--text-2);line-height:1.55">
+            Send <strong>${money(commission)}</strong> to the hotel's Paybill before month-end.
+            Track exact amounts per booking in the Bookings tab.
+          </div>
+        </div>
+        <div class="profile-row">
           <div class="profile-label">Completed jobs</div>
           <div class="profile-value">${completed.length}</div>
         </div>
@@ -1959,20 +1953,9 @@ ul{ list-style:none; }
           : `<div class="empty">No completed jobs yet.</div>`
         }
       </div>
-
-      <div class="card">
-        <div class="card-title">Monthly settlement to hotel</div>
-        <p class="card-sub" style="margin:0">
-          Guest paid you the full amount. You owe <strong style="color:var(--text)">${money(commission)}</strong>
-          in 15% hotel commission for this month. Send it to the hotel's Paybill before month-end.
-        </p>
-      </div>
     `;
   }
 
-  /* ============================================================
-     PROFILE
-     ============================================================ */
   function renderProfile() {
     const v = currentVendor || {};
     $('profileContent').innerHTML = `
@@ -1983,32 +1966,26 @@ ul{ list-style:none; }
           <div class="profile-label">Vendor name</div>
           <div class="profile-value">${escapeHtml(v.vendor_name || v.full_name || '—')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Email</div>
           <div class="profile-value">${escapeHtml(v.email || '—')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Phone</div>
           <div class="profile-value">${escapeHtml(v.phone || '—')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Hub location</div>
           <div class="profile-value">${escapeHtml(v.hub_location || v.city || '—')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Category</div>
           <div class="profile-value">${escapeHtml(v.category || '—')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Status</div>
           <div class="profile-value">${statusBadge(v.status || 'pending')}</div>
         </div>
-
         <div class="profile-row">
           <div class="profile-label">Bio</div>
           <div class="profile-value">${escapeHtml(v.bio || 'No bio provided')}</div>
@@ -2029,9 +2006,6 @@ ul{ list-style:none; }
     `;
   }
 
-  /* ============================================================
-     TABS
-     ============================================================ */
   function showTab(name, element) {
     document.querySelectorAll('.view').forEach(s => s.classList.add('hidden'));
     const target = document.getElementById('view-' + name);
@@ -2041,9 +2015,6 @@ ul{ list-style:none; }
     if (element) element.classList.add('active');
   }
 
-  /* ============================================================
-     FATAL
-     ============================================================ */
   function showFatal(message) {
     $('vendorName').textContent = 'Error';
     $('vendorCity').textContent = 'GuestHub';
@@ -2058,9 +2029,6 @@ ul{ list-style:none; }
     `;
   }
 
-  /* ============================================================
-     MODAL CLOSE ON BACKDROP
-     ============================================================ */
   document.querySelectorAll('.modal').forEach(m => {
     m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
   });
@@ -2071,40 +2039,26 @@ ul{ list-style:none; }
     }
   });
 
-  /* Payment modal chips */
   document.addEventListener('click', e => {
     const chip = e.target.closest('#paymentModal .paychip');
     if (chip) applyPaymentModalChannel(chip.dataset.channel);
   });
 
-  /* ============================================================
-     EXPOSE FOR INLINE HANDLERS
-     ============================================================ */
   Object.assign(window, {
     showTab, refreshDashboard, logoutVendor,
     toggleAvailability,
     openPaymentModal, closePaymentModal, savePaymentSetup,
     acceptOrder, updateOrderStatus, cancelOrder,
-    openServicesModal, closeServicesModal, saveServices
+    openServicesModal, closeServicesModal, saveServices,
+    confirmBooking, declineBooking, completeBooking, cancelBooking
   });
 
-  /* ============================================================
-     BOOT
-     ============================================================ */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
     init();
   }
-
-  /* Service worker for PWA */
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {});
-    });
-  }
 })();
 </script>
-
 </body>
 </html>
