@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +17,7 @@
 
 <style>
 /* =====================================================================
-   Tokens — matched to guesthub.app homepage
+   Tokens
    ===================================================================== */
 :root{
   --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
@@ -28,6 +27,7 @@
   --red:#d32f2f; --red-soft:#fdeaea; --red-line:#f4c5c5;
   --purple:#7c3aed; --purple-soft:#f3e8ff;
   --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
+  --surface:#fff;
   --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
   --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
   --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
@@ -37,12 +37,10 @@
   --shadow-sm:0 1px 3px rgb(0 0 0/6%),0 1px 2px rgb(0 0 0/4%);
   --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
   --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
-  color-scheme: light;
+  --header-h:62px;
+  color-scheme:light;
 }
 
-/* =====================================================================
-   Reset
-   ===================================================================== */
 *,*::before,*::after{ box-sizing:border-box; }
 *{ margin:0; padding:0; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
@@ -67,9 +65,7 @@ ul{ list-style:none; }
 .icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
 .hidden{ display:none !important; }
 
-/* =====================================================================
-   Boot error
-   ===================================================================== */
+/* Boot error */
 #bootError{
   display:none; position:fixed; top:0; left:0; right:0; z-index:9999;
   background:var(--red); color:#fff; padding:12px 14px;
@@ -83,9 +79,7 @@ ul{ list-style:none; }
   margin-left:auto;
 }
 
-/* =====================================================================
-   Header
-   ===================================================================== */
+/* Header */
 .header{
   position:sticky; top:0; z-index:100;
   background:var(--brand); color:#fff;
@@ -127,9 +121,7 @@ ul{ list-style:none; }
 }
 .icon-btn.has-notif .notif-dot{ display:block; }
 
-/* =====================================================================
-   Buttons
-   ===================================================================== */
+/* Buttons */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap:6px; height:36px; padding:0 14px;
@@ -141,42 +133,30 @@ ul{ list-style:none; }
 }
 .btn:active:not(:disabled){ transform:scale(.98); }
 .btn:disabled{ opacity:.6; cursor:wait; }
-
 .btn-primary{ background:var(--brand-2); color:#fff; box-shadow:var(--shadow-xs); }
 .btn-primary:hover:not(:disabled){ background:var(--brand-3); }
-
 .btn-secondary{ background:#fff; color:var(--text); border-color:var(--border-2); box-shadow:var(--shadow-xs); }
 .btn-secondary:hover:not(:disabled){ background:var(--bg-subtle); border-color:var(--border-3); }
-
 .btn-success{ background:var(--green); color:#fff; }
 .btn-success:hover:not(:disabled){ filter:brightness(.94); }
-
 .btn-warn{ background:var(--yellow); color:#000; }
 .btn-warn:hover:not(:disabled){ filter:brightness(.96); }
-
 .btn-danger{ background:#fff; color:var(--red); border-color:var(--red-line); }
 .btn-danger:hover:not(:disabled){ background:var(--red-soft); }
-
 .btn-dark{ background:#fff; color:var(--text); border-color:var(--border-2); }
 .btn-dark:hover:not(:disabled){ background:var(--bg-subtle); }
-
 .btn-ghost{
   background:transparent; color:rgba(255,255,255,.9);
   border-color:rgba(255,255,255,.35);
 }
 .btn-ghost:hover{ background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.5); }
-
 .btn-sm{ height:30px; padding:0 10px; font-size:12px; border-radius:var(--r-sm); gap:5px; }
 .btn-sm svg{ width:13px; height:13px; }
 .btn-lg{ height:44px; padding:0 18px; font-size:14px; border-radius:var(--r); }
-
 .btn .icon{ width:14px; height:14px; }
 
-/* =====================================================================
-   Dashboard layout
-   ===================================================================== */
+/* Dashboard */
 .dashboard{ padding:20px 16px; max-width:1500px; margin:auto; }
-
 .hero{
   border:1px solid var(--border);
   border-radius:var(--r-lg);
@@ -186,7 +166,6 @@ ul{ list-style:none; }
   box-shadow:var(--shadow-xs);
 }
 @media (max-width:640px){ .hero{ padding:20px; } }
-
 .hero h1{
   margin:0;
   font-size:clamp(20px,3.5vw,28px);
@@ -227,14 +206,12 @@ ul{ list-style:none; }
   100%{ box-shadow:0 0 0 0 rgba(0,128,9,0); }
 }
 
-/* Stats */
 .stats{
   display:grid; grid-template-columns:repeat(5,1fr);
   gap:12px; margin-bottom:16px;
 }
 @media (max-width:900px){ .stats{ grid-template-columns:repeat(3,1fr); } }
 @media (max-width:560px){ .stats{ grid-template-columns:repeat(2,1fr); gap:10px; } }
-
 .stat{
   background:#fff; border:1px solid var(--border);
   border-radius:var(--r-lg); padding:16px;
@@ -258,15 +235,9 @@ ul{ list-style:none; }
   letter-spacing:.4px; text-transform:uppercase;
   margin-top:6px; display:block;
 }
-.stat.highlight{
-  border-color:var(--brand-line);
-  background:var(--brand-soft);
-}
+.stat.highlight{ border-color:var(--brand-line); background:var(--brand-soft); }
 .stat.highlight b{ color:var(--brand); }
 
-/* =====================================================================
-   Tabs
-   ===================================================================== */
 .tabs-wrap{
   position:sticky; top:60px; z-index:80;
   background:rgba(255,255,255,.94);
@@ -282,7 +253,6 @@ ul{ list-style:none; }
   padding-bottom:2px; -webkit-overflow-scrolling:touch;
 }
 .tabs::-webkit-scrollbar{ display:none; }
-
 .tab{
   display:inline-flex; align-items:center; gap:7px;
   flex:0 0 auto;
@@ -306,31 +276,21 @@ ul{ list-style:none; }
 }
 .tab .icon{ width:14px; height:14px; opacity:.85; }
 .tab.active .icon{ opacity:1; }
-
 .tab .badge-count{
   background:var(--bg-subtle); color:var(--text-2);
   font-size:10.5px; font-weight:600;
   padding:1px 7px; border-radius:999px;
   min-width:20px; text-align:center;
 }
-.tab.active .badge-count{
-  background:rgba(255,255,255,.22); color:#fff;
-}
-.tab .badge-count.hot{
-  background:var(--yellow); color:#000;
-  animation:shake .4s ease 3;
-}
+.tab.active .badge-count{ background:rgba(255,255,255,.22); color:#fff; }
+.tab .badge-count.hot{ background:var(--yellow); color:#000; animation:shake .4s ease 3; }
 @keyframes shake{
   0%,100%{ transform:translateX(0); }
   25%{ transform:translateX(-2px); }
   75%{ transform:translateX(2px); }
 }
 
-/* =====================================================================
-   Cards
-   ===================================================================== */
 .view{ padding:20px 16px; max-width:1500px; margin:auto; }
-
 .card{
   background:#fff; border:1px solid var(--border);
   border-radius:var(--r-lg); padding:18px;
@@ -347,9 +307,6 @@ ul{ list-style:none; }
   line-height:1.55; max-width:720px;
 }
 
-/* =====================================================================
-   Form inputs
-   ===================================================================== */
 .input, .select, textarea{
   width:100%; padding:11px 13px;
   background:#fff; border:1px solid var(--border-2);
@@ -372,7 +329,6 @@ ul{ list-style:none; }
   padding-right:36px;
 }
 textarea{ min-height:100px; resize:vertical; font-family:inherit; }
-
 label{
   display:block;
   font-size:11.5px; font-weight:600; color:var(--text-2);
@@ -380,14 +336,12 @@ label{
 }
 label:first-child{ margin-top:0; }
 
-/* Filter pills */
 .filterRow{
   display:flex; gap:6px; overflow-x:auto;
   padding-bottom:4px; margin-top:12px;
   scrollbar-width:none; -webkit-overflow-scrolling:touch;
 }
 .filterRow::-webkit-scrollbar{ display:none; }
-
 .fpill{
   flex:0 0 auto;
   display:inline-flex; align-items:center; gap:6px;
@@ -401,15 +355,10 @@ label:first-child{ margin-top:0; }
   touch-action:manipulation;
 }
 .fpill:hover:not(.active){ border-color:var(--border-3); color:var(--text); }
-.fpill.active{
-  background:var(--brand-2); border-color:var(--brand-2); color:#fff;
-}
+.fpill.active{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
 .fpill .n{ font-size:10.5px; opacity:.75; }
 .fpill svg{ width:13px; height:13px; }
 
-/* =====================================================================
-   Rows (orders, vendors, services, menu)
-   ===================================================================== */
 .row{
   display:flex; justify-content:space-between; align-items:center;
   gap:12px;
@@ -423,14 +372,13 @@ label:first-child{ margin-top:0; }
   transition:border-color .15s ease, box-shadow .15s ease;
   position:relative;
 }
-.row:hover{ border-color:var(--border-2); box-shadow:var(--shadow); }
+.row:hover{ border-color:var(--border-2); box-shadow:var(--shadow-sm); }
 .row.new-order{
   border-left:3px solid var(--brand-2);
   background:linear-gradient(90deg, var(--brand-soft), #fff 20%);
 }
 .row.priority{ border-left:3px solid var(--red); }
 .row.clickable{ cursor:pointer; }
-
 .row .rowMain{ flex:1; min-width:220px; }
 .row .rowMain > b{
   font-size:14px; font-weight:600;
@@ -441,13 +389,8 @@ label:first-child{ margin-top:0; }
   color:var(--text-2); font-size:12.5px; display:block; margin-top:5px;
   line-height:1.5;
 }
-.rowActions{
-  display:flex; gap:6px; flex-wrap:wrap; flex-shrink:0;
-}
+.rowActions{ display:flex; gap:6px; flex-wrap:wrap; flex-shrink:0; }
 
-/* =====================================================================
-   Badges
-   ===================================================================== */
 .badge{
   display:inline-flex; align-items:center; gap:4px;
   padding:3px 9px;
@@ -463,9 +406,6 @@ label:first-child{ margin-top:0; }
 .badge-red   { background:var(--red-soft); color:var(--red); border-color:var(--red-line); }
 .badge-gray  { background:var(--bg-subtle); color:var(--text-3); border-color:var(--border); }
 
-/* =====================================================================
-   Order meta
-   ===================================================================== */
 .orderMeta{
   color:var(--text-3); font-size:11px;
   margin-top:8px; display:flex; gap:14px; flex-wrap:wrap; font-weight:500;
@@ -480,9 +420,6 @@ label:first-child{ margin-top:0; }
 @keyframes pulse-t{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
 .elapsed.old{ animation:pulse-t 2s infinite; }
 
-/* =====================================================================
-   Skeleton
-   ===================================================================== */
 .skel{
   height:78px; border-radius:var(--r-lg);
   background:linear-gradient(90deg, #f0f0f0 0%, #e8e8e8 50%, #f0f0f0 100%);
@@ -496,9 +433,6 @@ label:first-child{ margin-top:0; }
   100%{ background-position:-200% 0; }
 }
 
-/* =====================================================================
-   Modal
-   ===================================================================== */
 .modal{
   position:fixed; inset:0; z-index:1000;
   display:none; place-items:end center; padding:12px;
@@ -530,9 +464,7 @@ label:first-child{ margin-top:0; }
   display:inline-flex; align-items:center; gap:8px;
 }
 .modalTitle .icon{ color:var(--brand-2); width:18px; height:18px; }
-.modalDesc{
-  margin-top:6px; color:var(--text-3); font-size:12.5px; line-height:1.55;
-}
+.modalDesc{ margin-top:6px; color:var(--text-3); font-size:12.5px; line-height:1.55; }
 .close{
   width:34px; height:34px; flex-shrink:0; border-radius:50%;
   border:1px solid var(--border-2); background:#fff;
@@ -541,9 +473,6 @@ label:first-child{ margin-top:0; }
 }
 .close:hover{ background:var(--bg-subtle); }
 
-/* =====================================================================
-   QR grid
-   ===================================================================== */
 .qr-grid{
   display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
   gap:12px;
@@ -565,9 +494,6 @@ label:first-child{ margin-top:0; }
   letter-spacing:.02em;
 }
 
-/* =====================================================================
-   Toast
-   ===================================================================== */
 .toast{
   position:fixed; right:14px; bottom:20px; left:14px;
   max-width:420px; margin-left:auto; z-index:500;
@@ -587,9 +513,6 @@ label:first-child{ margin-top:0; }
 .toast.error  { background:var(--red); }
 .toast.success{ background:#1a1a1a; }
 
-/* =====================================================================
-   Charts
-   ===================================================================== */
 .chart{
   display:grid; grid-template-columns:repeat(7,1fr);
   gap:10px; align-items:end; height:150px; padding:14px 0 0;
@@ -610,24 +533,17 @@ label:first-child{ margin-top:0; }
   font-weight:700;
 }
 .chart-wrap{ padding-bottom:28px; }
-
 .heatmap{
   display:grid; grid-template-columns:repeat(24,1fr);
   gap:3px; height:48px; margin-top:14px;
 }
-.hm{
-  background:#f0f0f0; border-radius:3px;
-  transition:background .15s ease; position:relative;
-}
+.hm{ background:#f0f0f0; border-radius:3px; transition:background .15s ease; position:relative; }
 .hm[data-lvl="1"]{ background:#c8d8ed; }
 .hm[data-lvl="2"]{ background:#8cb0dd; }
 .hm[data-lvl="3"]{ background:#4488cc; }
 .hm[data-lvl="4"]{ background:var(--brand-2); }
 .hm:hover{ outline:2px solid var(--brand-2); outline-offset:1px; z-index:2; }
 
-/* =====================================================================
-   Empty
-   ===================================================================== */
 .empty{
   text-align:center; padding:48px 20px;
   color:var(--text-3); font-size:13.5px;
@@ -646,12 +562,7 @@ label:first-child{ margin-top:0; }
 }
 .empty p{ color:var(--text-3); font-size:13px; }
 
-/* =====================================================================
-   Language grid
-   ===================================================================== */
-.langGrid{
-  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;
-}
+.langGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
 .langCard{
   position:relative;
   padding:14px;
@@ -666,18 +577,11 @@ label:first-child{ margin-top:0; }
 .langCard .flag{ font-size:22px; line-height:1; }
 .langCard b{ color:var(--text); font-size:13.5px; font-weight:600; }
 .langCard small{ color:var(--text-3); font-size:11px; font-weight:500; }
-.langCard .check{
-  position:absolute; top:10px; right:12px;
-  color:var(--brand-2);
-}
+.langCard .check{ position:absolute; top:10px; right:12px; color:var(--brand-2); }
 .langCard .check svg{ width:16px; height:16px; }
 
-/* =====================================================================
-   Payment tabs (kept from original, restyled)
-   ===================================================================== */
-.payTabs{
-  display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px;
-}
+/* Payment */
+.payTabs{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
 .payTab{
   padding:14px 10px;
   background:#fff; border:1.5px solid var(--border-2);
@@ -695,14 +599,12 @@ label:first-child{ margin-top:0; }
   color:var(--brand-2);
   box-shadow:0 4px 12px rgba(0,113,194,.1);
 }
-
 .payField{ display:none; }
 .payField.show{ display:block; animation:payFade .22s ease; }
 @keyframes payFade{
   from{ opacity:0; transform:translateY(6px); }
   to{ opacity:1; transform:none; }
 }
-
 .payPreview{
   margin-top:16px; padding:18px;
   background:var(--bg-subtle); border:1px solid var(--border);
@@ -734,9 +636,7 @@ label:first-child{ margin-top:0; }
   font-family:var(--mono); font-size:17px; font-weight:700;
   color:var(--text); letter-spacing:.5px;
 }
-.payPreview .pvSteps{
-  counter-reset:s; padding:0; margin:0;
-}
+.payPreview .pvSteps{ counter-reset:s; padding:0; margin:0; }
 .payPreview .pvSteps li{
   position:relative; padding-left:28px;
   font-size:12.5px; color:var(--text-2);
@@ -752,9 +652,7 @@ label:first-child{ margin-top:0; }
   font-size:10px; font-weight:700;
   display:grid; place-items:center;
 }
-.payPreview.empty{
-  background:#fff; border-color:var(--border);
-}
+.payPreview.empty{ background:#fff; border-color:var(--border); }
 .payPreview .pvNote{
   font-size:13px; color:var(--text-3);
   line-height:1.6; margin:0;
@@ -783,7 +681,6 @@ label:first-child{ margin-top:0; }
 }
 .paySaveBar .btn{ flex:1; }
 
-/* RTL */
 [dir="rtl"] .rowActions{ flex-direction:row-reverse; }
 [dir="rtl"] .toast{ right:auto; left:14px; }
 @media(min-width:640px){ [dir="rtl"] .toast{ left:auto; right:14px; } }
@@ -795,11 +692,8 @@ label:first-child{ margin-top:0; }
   .hero h1{ font-size:20px; }
   .headActions .btn .label{ display:none; }
 }
-
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation:none !important; transition:none !important;
-  }
+  *,*::before,*::after{ animation:none !important; transition:none !important; }
 }
 </style>
 </head>
@@ -821,9 +715,7 @@ label:first-child{ margin-top:0; }
         <rect x="39.5" y="18.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
         <rect x="13" y="34" width="17" height="17" rx="3" fill="#003580"/>
         <rect x="18.5" y="39.5" width="6" height="6" rx="1.5" fill="#ffffff"/>
-        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43"
-              stroke="#febb02" stroke-width="4.5"
-              stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M36.5 48.5 L48.5 36.5 M42 36.5 L48.5 36.5 L48.5 43" stroke="#febb02" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
       </svg>
       <div class="brand-text">
         <div class="brand-title">GuestHub <span class="gm">GM OS</span></div>
@@ -832,41 +724,22 @@ label:first-child{ margin-top:0; }
     </div>
 
     <div class="headActions">
-      <button type="button" class="icon-btn" id="notifBtn" title="Toggle alerts" aria-label="Toggle alerts">
-        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-        </svg>
+      <button type="button" class="icon-btn" id="notifBtn" title="Toggle alerts">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         <span class="notif-dot"></span>
       </button>
-      <button type="button" class="icon-btn" id="langBtn" title="Language" aria-label="Language">
-        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-          <path d="M2 12h20"/>
-        </svg>
+      <button type="button" class="icon-btn" id="langBtn" title="Language">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       </button>
-      <button type="button" class="icon-btn" id="refreshBtn" title="Refresh" aria-label="Refresh">
-        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-          <path d="M21 3v5h-5"/>
-          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-          <path d="M8 16H3v5"/>
-        </svg>
+      <button type="button" class="icon-btn" id="refreshBtn" title="Refresh">
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
       </button>
       <button type="button" class="btn btn-ghost btn-sm" id="guestBtn" title="Open guest view">
-        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
         <span class="label">Guest view</span>
       </button>
-      <button type="button" class="btn btn-ghost btn-sm" id="logoutBtn" title="Sign out" aria-label="Sign out">
-        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" x2="9" y1="12" y2="12"/>
-        </svg>
+      <button type="button" class="btn btn-ghost btn-sm" id="logoutBtn" title="Sign out">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
       </button>
     </div>
   </div>
@@ -876,7 +749,7 @@ label:first-child{ margin-top:0; }
   <section class="dashboard">
     <div class="hero">
       <h1><span id="hotelNameHero">Hotel</span> <span class="hl">—</span> <span class="hl" data-i18n="control_center">Control Center</span></h1>
-      <p data-i18n="hero_desc">Every status tap reaches the guest's phone in under a second. Live sync keeps your floor team and guests in step.</p>
+      <p data-i18n="hero_desc">Every status tap reaches the guest's phone in under a second.</p>
       <div class="status-pill off" id="syncPill">
         <span class="dot" id="rtDot"></span>
         <span id="systemStatus" data-i18n="connecting">Connecting to live sync…</span>
@@ -884,35 +757,25 @@ label:first-child{ margin-top:0; }
     </div>
 
     <div class="stats" id="statsGrid">
-      <div class="stat highlight">
-        <b id="s_live">0</b>
-        <small data-i18n="stat_live">Live orders</small>
-      </div>
-      <div class="stat">
-        <b id="s_active">0</b>
-        <small data-i18n="stat_active">In progress</small>
-      </div>
-      <div class="stat">
-        <b id="s_today_rev">Ksh 0</b>
-        <small data-i18n="stat_today">Today</small>
-      </div>
-      <div class="stat">
-        <b id="s_week_rev">Ksh 0</b>
-        <small data-i18n="stat_week">7-day revenue</small>
-      </div>
-      <div class="stat">
-        <b id="s_aov">Ksh 0</b>
-        <small data-i18n="stat_aov">Avg order</small>
-      </div>
+      <div class="stat highlight"><b id="s_live">0</b><small data-i18n="stat_live">Live orders</small></div>
+      <div class="stat"><b id="s_active">0</b><small data-i18n="stat_active">In progress</small></div>
+      <div class="stat"><b id="s_today_rev">Ksh 0</b><small data-i18n="stat_today">Today</small></div>
+      <div class="stat"><b id="s_week_rev">Ksh 0</b><small data-i18n="stat_week">7-day revenue</small></div>
+      <div class="stat"><b id="s_aov">Ksh 0</b><small data-i18n="stat_aov">Avg order</small></div>
     </div>
   </section>
 
   <div class="tabs-wrap">
     <div class="tabs" id="tabsBar" role="tablist">
       <button type="button" class="tab active" data-tab="orders">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
         <span data-i18n="tab_orders">Orders</span>
         <span class="badge-count" id="c_orders">0</span>
+      </button>
+      <button type="button" class="tab" data-tab="bookings">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+        <span data-i18n="tab_bookings">Bookings</span>
+        <span class="badge-count" id="c_bookings">0</span>
       </button>
       <button type="button" class="tab" data-tab="vendors">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
@@ -951,6 +814,7 @@ label:first-child{ margin-top:0; }
   </div>
 
   <section id="view-orders" class="view"></section>
+  <section id="view-bookings" class="view hidden"></section>
   <section id="view-vendors" class="view hidden"></section>
   <section id="view-menu" class="view hidden"></section>
   <section id="view-services" class="view hidden"></section>
@@ -966,7 +830,7 @@ label:first-child{ margin-top:0; }
     <div class="modalHead">
       <div>
         <h3 class="modalTitle" id="omTitle">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/></svg>
           <span id="omTitleText" data-i18n="order_details">Order details</span>
         </h3>
         <div class="modalDesc" id="omSub"></div>
@@ -984,13 +848,13 @@ label:first-child{ margin-top:0; }
   <div class="modalBox">
     <div class="modalHead">
       <div>
-        <h3 class="modalTitle" id="langTitle">
+        <h3 class="modalTitle">
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
           <span data-i18n="lang_title">Language</span>
         </h3>
         <div class="modalDesc" data-i18n="lang_desc">Choose your preferred language.</div>
       </div>
-      <button type="button" class="close" data-close="langModal" aria-label="Close">
+      <button type="button" class="close" data-close="langModal">
         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
@@ -1003,9 +867,6 @@ label:first-child{ margin-top:0; }
 <script>
 "use strict";
 
-/* ═══════════════════════════════════════════════════════════════
-   1. ICONS — inline SVG strings for JS-generated markup
-   ═══════════════════════════════════════════════════════════════ */
 const ICON = {
   check:    '<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
   alert:    '<svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>',
@@ -1016,10 +877,10 @@ const ICON = {
   play:     '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>',
   pause:    '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></svg>',
   copy:     '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
-  x:        '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
   bell:     '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
   cog:      '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
   xCircle:  '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+  calendar: '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
   sparkles: '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
   message:  '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>',
   store:    '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>',
@@ -1033,13 +894,9 @@ const ICON = {
   upload:   '<svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>',
   save:     '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>',
   eye:      '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
-  printer:  '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>',
-  clipboard:'<svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>'
+  printer:  '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>'
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   2. BOOT ERROR CATCHER
-   ═══════════════════════════════════════════════════════════════ */
 function showBootError(msg){
   try{
     const el = document.getElementById('bootError');
@@ -1048,12 +905,9 @@ function showBootError(msg){
     console.error('[GuestHub GM]', msg);
   }catch(_){}
 }
-window.addEventListener('error', e => showBootError((e.message || 'JS error') + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + e.lineno : '')));
+window.addEventListener('error', e => showBootError((e.message || 'JS error')));
 window.addEventListener('unhandledrejection', e => showBootError('Promise rejected: ' + (e.reason?.message || e.reason)));
 
-/* ═══════════════════════════════════════════════════════════════
-   3. CONFIG + AUTH
-   ═══════════════════════════════════════════════════════════════ */
 const GUEST_APP_PATH = '/guest.html';
 const POLL_MS = 20000;
 const ORDERS_LIMIT = 500;
@@ -1080,44 +934,38 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = v => 'Ksh ' + Number(v || 0).toLocaleString('en-KE');
 
-/* ═══════════════════════════════════════════════════════════════
-   4. SUPABASE
-   ═══════════════════════════════════════════════════════════════ */
 let supa = null;
 try{
   const u = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL) || window.GUESTHUB_SUPABASE_URL || '';
   const k = (typeof SUPABASE_KEY !== 'undefined' && SUPABASE_KEY) || window.GUESTHUB_SUPABASE_KEY || '';
   if(window.supabase && u && k){
     supa = window.supabase.createClient(u, k, { realtime: { params: { eventsPerSecond: 10 } } });
-    console.log('[GuestHub GM] Supabase client ready');
+    console.log('[GuestHub GM] Supabase ready');
   } else {
-    console.warn('[GuestHub GM] Supabase not configured — offline mode');
+    console.warn('[GuestHub GM] Supabase not configured');
   }
 }catch(e){ console.warn('[GuestHub GM] Supabase init failed:', e); }
 
-/* ═══════════════════════════════════════════════════════════════
-   5. I18N (labels cleaned of emoji)
-   ═══════════════════════════════════════════════════════════════ */
 const I18N = {
   en:{dir:'ltr',flag:'🇬🇧',name:'English',native:'English',
     control_center:'Control Center',
-    hero_desc:"Every status tap reaches the guest's phone in under a second. Live sync keeps your floor team and guests in step.",
-    connecting:'Connecting to live sync…',live_sync:'Live sync active — guest updates instantly',offline_polling:'Offline — polling every 20s',
+    hero_desc:"Every status tap reaches the guest's phone in under a second.",
+    connecting:'Connecting to live sync…',live_sync:'Live sync active',offline_polling:'Offline — polling every 20s',
     stat_live:'Live orders',stat_active:'In progress',stat_today:'Today',stat_week:'7-day revenue',stat_aov:'Avg order',
-    tab_orders:'Orders',tab_vendors:'Vendors',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QRs',tab_finance:'Finance',tab_payment:'Payment',tab_analytics:'Analytics',
+    tab_orders:'Orders',tab_bookings:'Bookings',tab_vendors:'Vendors',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QRs',tab_finance:'Finance',tab_payment:'Payment',tab_analytics:'Analytics',
     order_details:'Order details',lang_title:'Language',lang_desc:'Choose your preferred language.',
     room:'Room',guest:'Guest',search_ph:'Search room, guest, ref…',
     f_all:'All',f_new:'New',f_active:'Active',f_done:'Done',f_cancelled:'Cancelled',
     accept_all:'Accept all new',export_csv:'Export CSV',
     no_active:'No active orders',no_active_sub:'New orders will appear here instantly.',
     no_hist:'No past orders yet.',
-    accept:'Accept',preparing:'Preparing',on_way:'On the way',complete:'Complete',cancel:'Cancel',
+    accept:'Accept',preparing:'Preparing',on_way:'On the way',complete:'Complete',cancel:'Cancel',confirm:'Confirm',
     closed:'Closed',new_order:'New',whatsapp_guest:'WhatsApp guest',forward_vendor:'Forward to vendor',
     copy:'Copy',close:'Close',status:'Status',created:'Created',updated:'Updated',
     from:'From',service:'Service',amount:'Amount',category:'Category',phone:'Phone',notes:'Notes',
     empty_vendors:'No approved vendors yet.',empty_menu:'No menu items yet.',empty_services:'No services yet.',
     add_to_hotel:'Add',remove:'Remove',added:'Added',available:'Available',
-    menu_title:'Menu builder',menu_sub:'These items appear under "Food & Room Service" on the guest phone.',
+    menu_title:'Menu builder',menu_sub:'Food items appear on the guest phone under "Menu".',
     menu_name:'Item name',menu_price:'Price',menu_cat:'Category',menu_add:'Add menu item',
     services_title:'Hotel services',services_sub:'active services visible on guest phone',
     wa_title:'WhatsApp departments',wa_sub:'Guests tap these buttons in the Help tab.',
@@ -1132,72 +980,1519 @@ const I18N = {
     toast_saved:'Saved — guest sees it instantly',toast_copied:'Copied to clipboard',
     vendor_pool_title:'Vendors marketplace',vendor_pool_sub:'Approved vendors. Adding one here makes it appear on every guest phone instantly.',
     lang_saved:'Language updated',refresh_done:'Refreshed',refreshing:'Refreshing…',
-    qr_lib_missing:'QR library not loaded — check your connection',enter_rooms:'Enter at least one room',
+    qr_lib_missing:'QR library not loaded',enter_rooms:'Enter at least one room',
     name_price_req:'Name & price required',session_expired:'Session expired — please log in again',
     no_supabase:'Supabase not configured',unknown_status:'Unknown status: ',
-    payment_title:'Payment settings',payment_sub:'Set up how guests pay you. This appears on their phone immediately after they place an order.',
+    payment_title:'Payment settings',payment_sub:'Set up how guests pay you.',
     choose_method:'Choose payment method',paybill:'Paybill',till:'Till',send_money:'Send money',
     paybill_number:'Paybill number',account_number:'Account number (optional)',till_number:'Till number',
     receive_on:'Receive money on (M-Pesa number)',account_name:'Account name (shown to guests)',
-    pay_preview:'What guests will see',preview_empty:'Enter your payment details above and hit Save — a live preview of what guests see will appear here.',
+    pay_preview:'What guests will see',preview_empty:'Enter your payment details above and hit Save.',
     clear:'Clear',save_payment:'Save payment',saved_payment:'Saved — guests see it instantly',
     paybill_invalid:'Paybill number must be 4–10 digits',till_invalid:'Till number must be 4–10 digits',
-    phone_invalid:'Enter a valid M-Pesa number (e.g. 0712345678)'},
+    phone_invalid:'Enter a valid M-Pesa number'},
   sw:{dir:'ltr',flag:'🇰🇪',name:'Kiswahili',native:'Kiswahili',
     control_center:'Kituo cha Udhibiti',
     hero_desc:'Kila hali unayobofya inafika kwenye simu ya mgeni chini ya sekunde moja.',
-    connecting:'Inaunganisha…',live_sync:'Usawazishaji wa moja kwa moja',offline_polling:'Nje ya mtandao — kila sekunde 20',
+    connecting:'Inaunganisha…',live_sync:'Usawazishaji wa moja kwa moja',offline_polling:'Nje ya mtandao',
     stat_live:'Oda hai',stat_active:'Zinaendelea',stat_today:'Leo',stat_week:'Mapato ya siku 7',stat_aov:'Wastani',
-    tab_orders:'Oda',tab_vendors:'Wauzaji',tab_menu:'Menyu',tab_services:'Huduma',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Fedha',tab_payment:'Malipo',tab_analytics:'Uchanganuzi',
-    order_details:'Maelezo ya oda',lang_title:'Lugha',lang_desc:'Chagua lugha unayopendelea.',
+    tab_orders:'Oda',tab_bookings:'Bookings',tab_vendors:'Wauzaji',tab_menu:'Menyu',tab_services:'Huduma',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Fedha',tab_payment:'Malipo',tab_analytics:'Uchanganuzi',
+    order_details:'Maelezo ya oda',lang_title:'Lugha',lang_desc:'Chagua lugha.',
     room:'Chumba',guest:'Mgeni',search_ph:'Tafuta…',
     f_all:'Zote',f_new:'Mpya',f_active:'Zinaendelea',f_done:'Zimekamilika',f_cancelled:'Zilizofutwa',
     accept_all:'Kubali zote mpya',export_csv:'Hamisha CSV',
-    no_active:'Hakuna oda hai',no_active_sub:'Oda mpya zitaonekana hapa papo hapo.',no_hist:'Hakuna historia.',
-    accept:'Kubali',preparing:'Inaandaliwa',on_way:'Njiani',complete:'Kamilisha',cancel:'Futa',
+    no_active:'Hakuna oda hai',no_active_sub:'Oda mpya zitaonekana hapa.',no_hist:'Hakuna historia.',
+    accept:'Kubali',preparing:'Inaandaliwa',on_way:'Njiani',complete:'Kamilisha',cancel:'Futa',confirm:'Thibitisha',
     closed:'Imefungwa',new_order:'Mpya',whatsapp_guest:'WhatsApp mgeni',forward_vendor:'Kwa muuzaji',
     copy:'Nakili',close:'Funga',status:'Hali',created:'Iliundwa',updated:'Imesasishwa',
     from:'Kutoka',service:'Huduma',amount:'Kiasi',category:'Aina',phone:'Simu',notes:'Maelezo',
     empty_vendors:'Hakuna wauzaji.',empty_menu:'Hakuna vyakula.',empty_services:'Hakuna huduma.',
     add_to_hotel:'Ongeza',remove:'Ondoa',added:'Imeongezwa',available:'Inapatikana',
-    menu_title:'Kujenga menyu',menu_sub:'Vitu hivi vinaonekana kwenye "Chakula na Huduma ya Chumba".',
+    menu_title:'Kujenga menyu',menu_sub:'Vitu hivi vinaonekana kwenye menyu ya mgeni.',
     menu_name:'Jina',menu_price:'Bei',menu_cat:'Aina',menu_add:'Ongeza',
     services_title:'Huduma za hoteli',services_sub:'huduma hai',wa_title:'WhatsApp ya idara',wa_sub:'Wageni wanabofya hizi.',
     save:'Hifadhi',qr_title:'Kitengeneza QR',qr_sub:'Kila QR inampeleka mgeni chumbani.',
     qr_single:'Chumba kimoja',qr_batch:'Kwa wingi',qr_gen:'Tengeneza',qr_gen_all:'Tengeneza zote',qr_print:'Chapisha',
     finance_title:'Fedha',analytics_title:'Uchanganuzi',top_services:'Huduma bora',revenue_by_cat:'Mapato kwa aina',peak_hours:'Saa za shughuli',
     today:'Leo',week:'Wiki',month:'Mwezi',all_time:'Zote',orders:'oda',avg_short:'wastani',
-    no_data:'Hakuna data.',confirm_cancel:'Futa oda hii? Mgeni atajulishwa.',guest_notified:'Mgeni amejulishwa — ',error_prefix:'Kosa: ',
+    no_data:'Hakuna data.',confirm_cancel:'Futa oda hii?',guest_notified:'Mgeni amejulishwa — ',error_prefix:'Kosa: ',
     toast_added:'Imeongezwa',toast_removed:'Imeondolewa',toast_saved:'Imehifadhiwa',toast_copied:'Imenakiliwa',
     vendor_pool_title:'Soko la wauzaji',vendor_pool_sub:'Wauzaji walioidhinishwa.',
     lang_saved:'Lugha imebadilishwa',refresh_done:'Imesasishwa',refreshing:'Inasasisha…',
-    qr_lib_missing:'Maktaba ya QR haijapakiwa',enter_rooms:'Ingiza chumba kimoja',name_price_req:'Jina na bei inahitajika',
-    session_expired:'Kipindi kimeisha — ingia tena',no_supabase:'Supabase haijasanidiwa',unknown_status:'Hali isiyojulikana: ',
+    qr_lib_missing:'Maktaba ya QR haijapakiwa',enter_rooms:'Ingiza chumba',name_price_req:'Jina na bei inahitajika',
+    session_expired:'Kipindi kimeisha',no_supabase:'Supabase haijasanidiwa',unknown_status:'Hali isiyojulikana: ',
     payment_title:'Mipangilio ya malipo',payment_sub:'Weka jinsi wageni wanavyolipa.',
-    choose_method:'Chagua njia ya malipo',paybill:'Paybill',till:'Till',send_money:'Tuma pesa',
-    paybill_number:'Namba ya Paybill',account_number:'Namba ya akaunti (si lazima)',till_number:'Namba ya Till',
-    receive_on:'Pokea pesa kwa (namba ya M-Pesa)',account_name:'Jina la akaunti',
-    pay_preview:'Kile wageni wataona',preview_empty:'Weka maelezo hapo juu.',
+    choose_method:'Chagua njia',paybill:'Paybill',till:'Till',send_money:'Tuma pesa',
+    paybill_number:'Namba ya Paybill',account_number:'Namba ya akaunti',till_number:'Namba ya Till',
+    receive_on:'Pokea kwa (namba ya M-Pesa)',account_name:'Jina la akaunti',
+    pay_preview:'Kile wageni wataona',preview_empty:'Weka maelezo.',
     clear:'Futa',save_payment:'Hifadhi malipo',saved_payment:'Imehifadhiwa',
     paybill_invalid:'Paybill lazima tarakimu 4–10',till_invalid:'Till lazima tarakimu 4–10',
-    phone_invalid:'Weka namba sahihi ya M-Pesa'},
+    phone_invalid:'Weka namba sahihi'},
   fr:{dir:'ltr',flag:'🇫🇷',name:'Français',native:'Français',
     control_center:'Centre de contrôle',
-    hero_desc:"Chaque changement de statut arrive sur le téléphone du client en moins d'une seconde.",
-    connecting:'Connexion…',live_sync:'Synchronisation en direct',offline_polling:'Hors ligne — 20s',
+    hero_desc:"Chaque changement de statut arrive en moins d'une seconde.",
+    connecting:'Connexion…',live_sync:'Synchronisation en direct',offline_polling:'Hors ligne',
     stat_live:'Commandes',stat_active:'En cours',stat_today:"Aujourd'hui",stat_week:'7 jours',stat_aov:'Panier moy.',
-    tab_orders:'Commandes',tab_vendors:'Vendeurs',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Finance',tab_payment:'Paiement',tab_analytics:'Analytique',
+    tab_orders:'Commandes',tab_bookings:'Réservations',tab_vendors:'Vendeurs',tab_menu:'Menu',tab_services:'Services',tab_whatsapp:'WhatsApp',tab_qr:'QR',tab_finance:'Finance',tab_payment:'Paiement',tab_analytics:'Analytique',
     order_details:'Détails',lang_title:'Langue',lang_desc:'Choisissez votre langue.',
     room:'Chambre',guest:'Client',search_ph:'Rechercher…',
     f_all:'Tout',f_new:'Nouveau',f_active:'En cours',f_done:'Terminé',f_cancelled:'Annulé',
     accept_all:'Accepter tout',export_csv:'Export CSV',
     no_active:'Aucune commande active',no_active_sub:'Les nouvelles apparaîtront ici.',no_hist:'Aucun historique.',
-    accept:'Accepter',preparing:'Préparation',on_way:'En route',complete:'Terminer',cancel:'Annuler',
+    accept:'Accepter',preparing:'Préparation',on_way:'En route',complete:'Terminer',cancel:'Annuler',confirm:'Confirmer',
     closed:'Fermé',new_order:'Nouveau',whatsapp_guest:'WhatsApp client',forward_vendor:'Au vendeur',
     copy:'Copier',close:'Fermer',status:'Statut',created:'Créée',updated:'MAJ',
     from:'De',service:'Service',amount:'Montant',category:'Catégorie',phone:'Téléphone',notes:'Notes',
     empty_vendors:'Aucun vendeur.',empty_menu:'Aucun article.',empty_services:'Aucun service.',
     add_to_hotel:'Ajouter',remove:'Retirer',added:'Ajouté',available:'Disponible',
-    menu_title:'Menu',menu_sub:'Ces articles apparaissent sous "Nourriture & Service".',
+    menu_title:'Menu',menu_sub:'Ces articles apparaissent sur le téléphone du client.',
     menu_name:'Nom',menu_price:'Prix',menu_cat:'Catégorie',menu_add:'Ajouter',
-    services_title:'Services',services_sub:'services actifs',wa_title:'WhatsApp',wa_sub:'Départements WhatsA
+    services_title:'Services',services_sub:'services actifs',wa_title:'WhatsApp',wa_sub:'Départements WhatsApp.',
+    save:'Enregistrer',qr_title:'Générateur QR',qr_sub:'Chaque QR mène à la chambre.',
+    qr_single:'Une chambre',qr_batch:'En lot',qr_gen:'Générer',qr_gen_all:'Générer tout',qr_print:'Imprimer',
+    finance_title:'Finance',analytics_title:'Analytique',top_services:'Top services',revenue_by_cat:'Revenu par catégorie',peak_hours:'Heures de pointe',
+    today:"Aujourd'hui",week:'Semaine',month:'Mois',all_time:'Total',orders:'commandes',avg_short:'moy',
+    no_data:'Aucune donnée.',confirm_cancel:'Annuler ?',guest_notified:'Client notifié — ',error_prefix:'Erreur: ',
+    toast_added:'Ajouté',toast_removed:'Retiré',toast_saved:'Enregistré',toast_copied:'Copié',
+    vendor_pool_title:'Marché vendeurs',vendor_pool_sub:'Vendeurs approuvés.',
+    lang_saved:'Langue mise à jour',refresh_done:'Actualisé',refreshing:'Actualisation…',
+    qr_lib_missing:'Bibliothèque QR non chargée',enter_rooms:'Entrez une chambre',name_price_req:'Nom et prix requis',
+    session_expired:'Session expirée',no_supabase:'Supabase non configuré',unknown_status:'Statut inconnu: ',
+    payment_title:'Paramètres de paiement',payment_sub:'Comment les clients vous paient.',
+    choose_method:'Méthode',paybill:'Paybill',till:'Till',send_money:'Envoyer',
+    paybill_number:'Numéro Paybill',account_number:'Numéro de compte',till_number:'Numéro Till',
+    receive_on:'Recevoir sur (numéro M-Pesa)',account_name:'Nom du compte',
+    pay_preview:'Ce que les clients verront',preview_empty:'Entrez vos détails.',
+    clear:'Effacer',save_payment:'Enregistrer',saved_payment:'Enregistré',
+    paybill_invalid:'Paybill: 4–10 chiffres',till_invalid:'Till: 4–10 chiffres',phone_invalid:'Numéro invalide'},
+  ar:{dir:'rtl',flag:'🇸🇦',name:'العربية',native:'العربية',
+    control_center:'مركز التحكم',
+    hero_desc:'كل تغيير حالة يصل خلال أقل من ثانية.',
+    connecting:'جارٍ الاتصال…',live_sync:'المزامنة المباشرة نشطة',offline_polling:'غير متصل',
+    stat_live:'الطلبات النشطة',stat_active:'قيد التنفيذ',stat_today:'اليوم',stat_week:'7 أيام',stat_aov:'المتوسط',
+    tab_orders:'الطلبات',tab_bookings:'الحجوزات',tab_vendors:'البائعون',tab_menu:'القائمة',tab_services:'الخدمات',tab_whatsapp:'واتساب',tab_qr:'QR',tab_finance:'المالية',tab_payment:'الدفع',tab_analytics:'التحليلات',
+    order_details:'تفاصيل الطلب',lang_title:'اللغة',lang_desc:'اختر لغتك.',
+    room:'غرفة',guest:'ضيف',search_ph:'ابحث…',
+    f_all:'الكل',f_new:'جديد',f_active:'نشط',f_done:'مكتمل',f_cancelled:'ملغى',
+    accept_all:'قبول الكل',export_csv:'تصدير',
+    no_active:'لا توجد طلبات',no_active_sub:'ستظهر هنا.',no_hist:'لا يوجد سجل.',
+    accept:'قبول',preparing:'تحضير',on_way:'في الطريق',complete:'إكمال',cancel:'إلغاء',confirm:'تأكيد',
+    closed:'مغلق',new_order:'جديد',whatsapp_guest:'واتساب الضيف',forward_vendor:'إلى البائع',
+    copy:'نسخ',close:'إغلاق',status:'الحالة',created:'أُنشئ',updated:'حُدّث',
+    from:'من',service:'الخدمة',amount:'المبلغ',category:'الفئة',phone:'الهاتف',notes:'ملاحظات',
+    empty_vendors:'لا يوجد بائعون.',empty_menu:'القائمة فارغة.',empty_services:'لا توجد خدمات.',
+    add_to_hotel:'إضافة',remove:'إزالة',added:'مُضاف',available:'متاح',
+    menu_title:'بناء القائمة',menu_sub:'تظهر هذه العناصر على هاتف الضيف.',
+    menu_name:'الاسم',menu_price:'السعر',menu_cat:'الفئة',menu_add:'إضافة',
+    services_title:'خدمات الفندق',services_sub:'خدمات نشطة',wa_title:'أرقام واتساب',wa_sub:'يضغط الضيوف عليها.',
+    save:'حفظ',qr_title:'مولّد QR',qr_sub:'كل QR يوصل الضيف إلى غرفته.',
+    qr_single:'غرفة واحدة',qr_batch:'دفعة',qr_gen:'توليد',qr_gen_all:'توليد الكل',qr_print:'طباعة',
+    finance_title:'المالية',analytics_title:'التحليلات',top_services:'أفضل الخدمات',revenue_by_cat:'الإيرادات حسب الفئة',peak_hours:'ساعات الذروة',
+    today:'اليوم',week:'الأسبوع',month:'الشهر',all_time:'الكل',orders:'طلب',avg_short:'متوسط',
+    no_data:'لا توجد بيانات.',confirm_cancel:'إلغاء الطلب؟',guest_notified:'تم إشعار الضيف — ',error_prefix:'خطأ: ',
+    toast_added:'تمت الإضافة',toast_removed:'تمت الإزالة',toast_saved:'تم الحفظ',toast_copied:'تم النسخ',
+    vendor_pool_title:'سوق البائعين',vendor_pool_sub:'بائعون معتمدون.',
+    lang_saved:'تم تحديث اللغة',refresh_done:'تم التحديث',refreshing:'جارٍ التحديث…',
+    qr_lib_missing:'مكتبة QR غير محملة',enter_rooms:'أدخل غرفة',name_price_req:'الاسم والسعر مطلوبان',
+    session_expired:'انتهت الجلسة',no_supabase:'Supabase غير مُهيأ',unknown_status:'حالة غير معروفة: ',
+    payment_title:'إعدادات الدفع',payment_sub:'كيف يدفع الضيوف.',
+    choose_method:'اختر الطريقة',paybill:'Paybill',till:'Till',send_money:'إرسال',
+    paybill_number:'رقم Paybill',account_number:'رقم الحساب',till_number:'رقم Till',
+    receive_on:'استقبل على (رقم M-Pesa)',account_name:'اسم الحساب',
+    pay_preview:'ما سيراه الضيوف',preview_empty:'أدخل تفاصيلك.',
+    clear:'مسح',save_payment:'حفظ',saved_payment:'تم الحفظ',
+    paybill_invalid:'Paybill: 4–10 أرقام',till_invalid:'Till: 4–10 أرقام',phone_invalid:'رقم غير صحيح'}
+};
+
+let currentLang = params.get('lang') || localStorage.getItem('hotelhub_lang') ||
+                  (I18N[(navigator.language||'en').slice(0,2).toLowerCase()] ? (navigator.language||'en').slice(0,2).toLowerCase() : 'en');
+if(!I18N[currentLang]) currentLang = 'en';
+
+function t(key, vars){
+  let str = (I18N[currentLang] && I18N[currentLang][key]) ?? I18N.en[key] ?? key;
+  if(vars) Object.keys(vars).forEach(k => { str = String(str).replace(`{${k}}`, vars[k]); });
+  return str;
+}
+
+let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [], BOOKINGS = [];
+let currentTab = localStorage.getItem('hotel_last_tab') || 'orders';
+let orderFilter = 'all';
+let orderSearch = '';
+let bookingFilter = 'today';
+let seenOrderIds = new Set();
+let soundEnabled = localStorage.getItem('hotel_sound') !== 'off';
+let rtChannel = null;
+let pollTimer = null;
+let tickTimer = null;
+let searchDebounceTimer = null;
+let loadingSkeleton = false;
+let bootComplete = false;
+
+let PAYMENT = {
+  channel:'paybill', paybill_number:'', paybill_account:'',
+  till_number:'', mpesa_phone:'', mpesa_name:'', configured:false
+};
+
+const GUEST_STATUSES = {
+  pending:    { step:1, badge:'badge-gray'   },
+  new:        { step:1, badge:'badge-gray'   },
+  accepted:   { step:2, badge:'badge-blue'   },
+  preparing:  { step:3, badge:'badge-yellow' },
+  on_the_way: { step:3, badge:'badge-purple' },
+  completed:  { step:4, badge:'badge-green'  },
+  cancelled:  { step:0, badge:'badge-red'    }
+};
+const STATUS_ALIASES = { ready:'on_the_way', done:'completed', ontheway:'on_the_way' };
+function normalizeStatus(s){ const k = String(s || 'pending').toLowerCase().trim(); return STATUS_ALIASES[k] || k; }
+const NEXT_STATUS = {
+  pending:['accepted','cancelled'], new:['accepted','cancelled'],
+  accepted:['preparing','cancelled'], preparing:['on_the_way','cancelled'],
+  on_the_way:['completed','cancelled'], completed:[], cancelled:[]
+};
+
+let toastTimer = null;
+function toast(msg, kind='success'){
+  const el = $('toast'); if(!el) return;
+  const ic = kind === 'error' ? ICON.alert : ICON.check;
+  el.innerHTML = ic + '<span>' + esc(msg) + '</span>';
+  el.className = 'toast show ' + (kind === 'error' ? 'error' : 'success');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.className = 'toast', 3400);
+}
+
+let audioCtx = null;
+function ensureAudio(){
+  if(audioCtx) return audioCtx;
+  try{ const C = window.AudioContext || window.webkitAudioContext; if(C) audioCtx = new C(); }catch(_){}
+  return audioCtx;
+}
+function beepNewOrder(){
+  if(!soundEnabled) return;
+  const ctx = ensureAudio(); if(!ctx) return;
+  if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
+  const now = ctx.currentTime;
+  [880, 1180, 1480].forEach((freq, i) => {
+    const t0 = now + i * 0.13;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value = freq; o.type = 'triangle';
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.14);
+    o.start(t0); o.stop(t0 + 0.16);
+  });
+}
+function beepConfirm(){
+  if(!soundEnabled) return;
+  const ctx = ensureAudio(); if(!ctx) return;
+  if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.frequency.value = 660; o.type = 'sine';
+  const t0 = ctx.currentTime;
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+  o.start(t0); o.stop(t0 + 0.2);
+}
+
+function relativeTime(iso){
+  if(!iso) return '';
+  const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+  const s = Math.floor(diff / 1000);
+  if(s < 60) return s + 's ago';
+  const m = Math.floor(s / 60);
+  if(m < 60) return m + ' min ago';
+  const h = Math.floor(m / 60);
+  if(h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function urgencyClass(iso){
+  if(!iso) return '';
+  const m = (Date.now() - new Date(iso).getTime()) / 60000;
+  if(m < 2) return 'fresh';
+  if(m < 15) return '';
+  return 'old';
+}
+
+async function api(path, opts = {}){
+  const headers = Object.assign({}, opts.headers || {});
+  if(AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
+  if(opts.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  if(res.status === 401){
+    ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
+    toast(t('session_expired'), 'error');
+    setTimeout(() => location.replace('/hotel-login.html'), 1200);
+    throw new Error('Unauthorized');
+  }
+  return res;
+}
+
+function guestLink(room){
+  const base = location.origin + GUEST_APP_PATH;
+  const q = new URLSearchParams({ hotel: HOTEL_ID, room: String(room || '') });
+  return base + '?' + q.toString();
+}
+function orderAmount(o){ return Number(o.amount ?? o.total ?? 0); }
+function orderItemsText(o){
+  if(o.service_title) return o.service_title;
+  if(Array.isArray(o.items) && o.items.length) return o.items.map(i => i.name || i).join(', ');
+  return '—';
+}
+function orderRef(o){ return o.reference || o.ref || ('#' + String(o.id || '').slice(0, 6)); }
+function orderRoom(o){ return o.room_number ?? o.room ?? '—'; }
+function orderGuest(o){ return o.guest_name ?? o.guest ?? 'Guest'; }
+function orderCat(o){ return o.category ?? o.department ?? 'service'; }
+
+function normalizeCategory(raw){
+  const c = String(raw || '').toLowerCase().trim();
+  if(!c) return 'other';
+  if(c.includes('taxi')||c.includes('transport')||c.includes('transfer')||c.includes('ride')||c.includes('airport')||c.includes('shuttle')||c.includes('driver')||c.includes('car ')) return 'taxi';
+  if(c.includes('tour')||c.includes('safari')||c.includes('travel')||c.includes('excursion')||c.includes('trip')||c.includes('park')||c.includes('game drive')) return 'tour';
+  if(c.includes('spa')||c.includes('massage')||c.includes('wellness')||c.includes('laundry')||c.includes('gym')||c.includes('beauty')||c.includes('salon')||c.includes('hair')||c.includes('nail')||c.includes('sauna')) return 'spa';
+  if(c.includes('food')||c.includes('restaurant')||c.includes('dining')||c.includes('room service')||c.includes('drink')||c.includes('bar')||c.includes('kitchen')||c.includes('menu')||c.includes('meal')||c.includes('main')||c.includes('starter')||c.includes('dessert')||c.includes('snack')||c.includes('breakfast')||c.includes('lunch')||c.includes('dinner')||c.includes('beverage')) return 'food';
+  if(c.includes('housekeep')||c.includes('front')||c.includes('service')||c.includes('maintenance')||c.includes('clean')||c.includes('towel')||c.includes('amenity')) return 'services';
+  return 'other';
+}
+
+/* Loaders */
+async function loadHotelMeta(){
+  try{
+    const res = await fetch(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}`);
+    if(!res.ok) throw new Error();
+    const j = await res.json();
+    const h = j.hotel || j;
+    const name = h.name || h.hotel_name || HOTEL_ID;
+    $('hotelNameHero').textContent = name;
+    $('hotelSub').textContent = name + ' · GM OS';
+    document.title = name + ' — GuestHub';
+  }catch(_){
+    $('hotelNameHero').textContent = HOTEL_ID;
+    $('hotelSub').textContent = HOTEL_ID + ' · GM OS';
+  }
+}
+async function loadServices(){
+  if(!supa){ SERVICES = []; return; }
+  try{
+    const { data, error } = await supa.from('hotel_services').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending:false });
+    if(error) console.warn('loadServices:', error.message);
+    SERVICES = data || [];
+  }catch(e){ SERVICES = []; }
+}
+async function loadOrders(){
+  if(!supa){ ORDERS = []; return; }
+  try{
+    const { data, error } = await supa.from('orders').select('*').eq('hotel_id', HOTEL_ID).order('created_at', { ascending:false }).limit(ORDERS_LIMIT);
+    if(error) console.warn('loadOrders:', error.message);
+    const incoming = (data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
+    const firstLoad = seenOrderIds.size === 0;
+    const brandNew = [];
+    incoming.forEach(o => {
+      if(!seenOrderIds.has(o.id)){
+        seenOrderIds.add(o.id);
+        if(!firstLoad && (o.status === 'new' || o.status === 'pending')) brandNew.push(o);
+      }
+    });
+    ORDERS = incoming;
+    if(brandNew.length && !firstLoad) onNewOrders(brandNew);
+  }catch(e){ ORDERS = []; }
+  updateStats(); updateTabBadges();
+  if(currentTab === 'orders') renderOrders();
+  else if(currentTab === 'finance') renderFinance();
+  else if(currentTab === 'analytics') renderAnalytics();
+}
+async function loadDepts(){
+  if(!supa){ DEPTS = []; return; }
+  try{
+    const { data } = await supa.from('departments').select('*').eq('hotel_id', HOTEL_ID);
+    DEPTS = data || [];
+  }catch(_){ DEPTS = []; }
+}
+async function loadVendorsPool(){
+  try{
+    const res = await api(`/api/gm/vendors-pool?hotel_id=${HOTEL_ID}`);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    VENDORS_POOL = j.pool || [];
+    MY_VENDOR_IDS = j.myVendorIds || [];
+  }catch(e){
+    if(supa){
+      try{
+        const { data } = await supa.from('vendors').select('*').eq('status', 'approved').limit(200);
+        VENDORS_POOL = data || [];
+        const { data: my } = await supa.from('hotel_services').select('vendor_id').eq('hotel_id', HOTEL_ID).eq('is_active', true);
+        MY_VENDOR_IDS = (my || []).map(x => x.vendor_id).filter(Boolean);
+      }catch(_){ VENDORS_POOL = []; MY_VENDOR_IDS = []; }
+    } else { VENDORS_POOL = []; MY_VENDOR_IDS = []; }
+  }
+}
+async function loadPayment(){
+  try{
+    const res = await fetch(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/payment`);
+    if(res.ok){
+      const j = await res.json();
+      const p = j.payment || {};
+      PAYMENT = {
+        channel: String(p.channel || 'paybill').toLowerCase(),
+        paybill_number: p.paybill_number || '',
+        paybill_account: p.paybill_account || '',
+        till_number: p.till_number || '',
+        mpesa_phone: p.mpesa_phone || '',
+        mpesa_name: p.mpesa_name || '',
+        configured: !!p.configured
+      };
+    }
+  }catch(e){ console.warn('loadPayment:', e.message); }
+}
+async function loadBookings(){
+  try{
+    const res = await api(`/api/gm/bookings`);
+    if(res.ok){
+      const j = await res.json();
+      BOOKINGS = j.bookings || [];
+    }
+  }catch(e){ console.warn('loadBookings:', e.message); }
+}
+
+async function refreshAll(){
+  loadingSkeleton = true;
+  if(currentTab === 'orders') renderOrders();
+  try{
+    await Promise.all([loadHotelMeta(), loadServices(), loadOrders(), loadDepts(), loadVendorsPool(), loadPayment(), loadBookings()]);
+  }catch(e){ console.warn('refreshAll partial:', e.message); }
+  finally{
+    loadingSkeleton = false;
+    renderCurrentTab();
+    updateTabBadges();
+  }
+}
+
+function updateStats(){
+  const now = Date.now();
+  const day = 24 * 3600 * 1000;
+  const d = new Date();
+  const todayStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const live = ORDERS.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length;
+  const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
+  const todayRev = ORDERS.filter(o => (o.created_at || '').startsWith(todayStr)).reduce((s,o) => s + orderAmount(o), 0);
+  const weekRev = ORDERS.filter(o => now - new Date(o.created_at || 0).getTime() < 7 * day).reduce((s,o) => s + orderAmount(o), 0);
+  const completedOrders = ORDERS.filter(o => o.status === 'completed');
+  const aov = completedOrders.length ? completedOrders.reduce((s,o) => s + orderAmount(o), 0) / completedOrders.length : 0;
+  const el = id => $(id);
+  if(el('s_live')) el('s_live').textContent = live;
+  if(el('s_active')) el('s_active').textContent = active;
+  if(el('s_today_rev')) el('s_today_rev').textContent = money(todayRev);
+  if(el('s_week_rev')) el('s_week_rev').textContent = money(weekRev);
+  if(el('s_aov')) el('s_aov').textContent = money(aov);
+}
+
+function updateTabBadges(){
+  const pending = ORDERS.filter(o => o.status === 'new' || o.status === 'pending').length;
+  const active = ORDERS.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)).length;
+  const total = pending + active;
+  const el = $('c_orders');
+  if(el){ el.textContent = total; el.classList.toggle('hot', pending > 0); }
+  const cv = $('c_vendors'); if(cv) cv.textContent = MY_VENDOR_IDS.length;
+  const todayBookings = BOOKINGS.filter(b => {
+    const t = new Date(b.scheduled_for).getTime();
+    const start = new Date(); start.setHours(0,0,0,0);
+    const end = new Date(start); end.setDate(end.getDate()+1);
+    return t >= start.getTime() && t < end.getTime();
+  }).length;
+  const cb = $('c_bookings');
+  if(cb){ cb.textContent = todayBookings; cb.classList.toggle('hot', todayBookings > 0); }
+}
+
+function renderOrders(){
+  const box = $('view-orders');
+  if(!box) return;
+  if(loadingSkeleton && !ORDERS.length){
+    box.innerHTML = `<div class="card"><div class="card-title">${ICON.bell} ${esc(t('tab_orders'))}</div></div>` +
+      Array.from({length:4}).map(() => '<div class="skel"></div>').join('');
+    return;
+  }
+  const q = orderSearch.toLowerCase();
+  const filtered = ORDERS.filter(o => {
+    const blob = `${orderRoom(o)} ${orderGuest(o)} ${orderCat(o)} ${orderItemsText(o)} ${orderRef(o)} ${o.guest_phone||''}`.toLowerCase();
+    return !q || blob.includes(q);
+  });
+  const byFilter = {
+    all: filtered,
+    new: filtered.filter(o => o.status === 'new' || o.status === 'pending'),
+    active: filtered.filter(o => ['accepted','preparing','on_the_way'].includes(o.status)),
+    done: filtered.filter(o => o.status === 'completed'),
+    cancelled: filtered.filter(o => o.status === 'cancelled')
+  };
+  const counts = { all: byFilter.all.length, new: byFilter.new.length, active: byFilter.active.length, done: byFilter.done.length, cancelled: byFilter.cancelled.length };
+  const list = byFilter[orderFilter] || byFilter.all;
+  const pendingNew = byFilter.new;
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.bell} ${esc(t('tab_orders'))} — ${esc(HOTEL_ID)}</div>
+      <div class="card-sub">Tap a status button — the guest's phone updates in ~0.4s</div>
+      <input id="orderSearch" class="input" style="margin-top:12px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}" autocomplete="off">
+      <div class="filterRow">
+        <button type="button" class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
+        <button type="button" class="fpill ${orderFilter==='new'?'active':''}" data-f="new">${ICON.sparkles} ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
+        <button type="button" class="fpill ${orderFilter==='active'?'active':''}" data-f="active">${ICON.cog} ${esc(t('f_active'))} <span class="n">(${counts.active})</span></button>
+        <button type="button" class="fpill ${orderFilter==='done'?'active':''}" data-f="done">${ICON.check} ${esc(t('f_done'))} <span class="n">(${counts.done})</span></button>
+        <button type="button" class="fpill ${orderFilter==='cancelled'?'active':''}" data-f="cancelled">${ICON.xCircle} ${esc(t('f_cancelled'))} <span class="n">(${counts.cancelled})</span></button>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:14px;flex-wrap:wrap">
+        ${pendingNew.length ? `<button type="button" class="btn btn-primary btn-sm" onclick="acceptAllNew()">${ICON.check} ${esc(t('accept_all'))} (${pendingNew.length})</button>` : ''}
+        <button type="button" class="btn btn-dark btn-sm" onclick="exportCSV()">${ICON.download} ${esc(t('export_csv'))}</button>
+      </div>
+    </div>
+    ${list.length ? list.map(orderCard).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.bell}</div><strong>${esc(t('no_active'))}</strong><p>${esc(t('no_active_sub'))}</p></div></div>`}
+  `;
+
+  const search = $('orderSearch');
+  if(search){
+    search.addEventListener('input', e => {
+      orderSearch = e.target.value;
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        const cur = search.selectionStart;
+        renderOrders();
+        const next = $('orderSearch');
+        if(next){ next.focus(); try{ next.setSelectionRange(cur, cur); }catch(_){} }
+      }, SEARCH_DEBOUNCE_MS);
+    });
+  }
+  box.querySelectorAll('[data-f]').forEach(p => p.addEventListener('click', () => {
+    orderFilter = p.dataset.f;
+    renderOrders();
+  }));
+  box.querySelectorAll('[data-order-id]').forEach(row => {
+    row.addEventListener('click', e => {
+      if(e.target.closest('button')) return;
+      openOrderModal(row.dataset.orderId);
+    });
+  });
+  box.querySelectorAll('[data-status]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      updateStatus(btn.dataset.orderId, btn.dataset.status);
+    });
+  });
+}
+
+function orderCard(o){
+  const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
+  const nexts = NEXT_STATUS[o.status] || [];
+  const canAdvance = nexts.filter(s => s !== 'cancelled');
+  const isFresh = Date.now() - new Date(o.created_at || 0).getTime() < 5 * 60 * 1000;
+  const isUrgent = Date.now() - new Date(o.created_at || 0).getTime() > 15 * 60 * 1000 && o.status !== 'completed' && o.status !== 'cancelled';
+  const buttons = canAdvance.map(s => {
+    const cls = s === 'accepted' ? 'btn-primary' : s === 'preparing' ? 'btn-warn' : s === 'on_the_way' ? 'btn-secondary' : 'btn-success';
+    const key = s === 'preparing' ? 'preparing' : s === 'on_the_way' ? 'on_way' : s;
+    const label = t(key) || s;
+    return `<button type="button" class="btn ${cls} btn-sm" data-status="${esc(s)}" data-order-id="${esc(o.id)}">${esc(label)}</button>`;
+  }).join('');
+  const cancelBtn = nexts.includes('cancelled')
+    ? `<button type="button" class="btn btn-danger btn-sm" data-status="cancelled" data-order-id="${esc(o.id)}">${esc(t('cancel'))}</button>`
+    : '';
+  return `
+    <div class="row ${isFresh ? 'new-order' : ''} ${isUrgent ? 'priority' : ''} clickable" data-order-id="${esc(o.id)}">
+      <div class="rowMain">
+        <b>${esc(t('room'))} ${esc(orderRoom(o))} — ${esc(orderGuest(o))}</b>
+        <span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span>
+        ${isFresh ? `<span class="badge badge-blue">${ICON.sparkles} ${esc(t('new_order'))}</span>` : ''}
+        <small>${esc(orderItemsText(o))} — ${money(orderAmount(o))}</small>
+        <div class="orderMeta">
+          <span class="orderRef">${esc(orderRef(o))}</span>
+          <span>${esc(orderCat(o))}</span>
+          <span class="elapsed ${urgencyClass(o.created_at)}"><span data-tick="${esc(o.created_at)}">${relativeTime(o.created_at)}</span></span>
+          ${o.guest_phone ? `<span>${esc(o.guest_phone)}</span>` : ''}
+        </div>
+      </div>
+      <div class="rowActions">${buttons}${cancelBtn}${!buttons && !cancelBtn ? `<span class="badge badge-gray">${esc(t('closed'))}</span>` : ''}</div>
+    </div>`;
+}
+
+function renderBookings(){
+  const box = $('view-bookings'); if(!box) return;
+
+  const now = Date.now();
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const todayEnd = new Date(todayStart); todayEnd.setDate(todayEnd.getDate()+1);
+
+  const bucket = b => {
+    const t = new Date(b.scheduled_for).getTime();
+    if(t >= todayStart.getTime() && t < todayEnd.getTime()) return 'today';
+    if(t >= todayEnd.getTime()) return 'upcoming';
+    return 'past';
+  };
+
+  const grouped = { today: [], upcoming: [], past: [] };
+  BOOKINGS.forEach(b => grouped[bucket(b)].push(b));
+
+  grouped.today.sort((a,b) => new Date(a.scheduled_for) - new Date(b.scheduled_for));
+  grouped.upcoming.sort((a,b) => new Date(a.scheduled_for) - new Date(b.scheduled_for));
+  grouped.past.sort((a,b) => new Date(b.scheduled_for) - new Date(a.scheduled_for));
+
+  const counts = {
+    today: grouped.today.length,
+    upcoming: grouped.upcoming.length,
+    past: grouped.past.length
+  };
+
+  const list = grouped[bookingFilter] || [];
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.calendar} Bookings — ${esc(HOTEL_ID)}</div>
+      <div class="card-sub">Guest bookings with vendors. Confirm, decline, or mark complete.</div>
+      <div class="filterRow">
+        <button type="button" class="fpill ${bookingFilter==='today'?'active':''}" data-bk="today">Today <span class="n">(${counts.today})</span></button>
+        <button type="button" class="fpill ${bookingFilter==='upcoming'?'active':''}" data-bk="upcoming">Upcoming <span class="n">(${counts.upcoming})</span></button>
+        <button type="button" class="fpill ${bookingFilter==='past'?'active':''}" data-bk="past">Past <span class="n">(${counts.past})</span></button>
+      </div>
+    </div>
+    ${list.length ? list.map(bookingCard).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.calendar}</div><strong>No ${bookingFilter} bookings</strong></div></div>`}
+  `;
+
+  box.querySelectorAll('[data-bk]').forEach(p => p.addEventListener('click', () => {
+    bookingFilter = p.dataset.bk;
+    renderBookings();
+  }));
+  box.querySelectorAll('[data-bk-action]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      updateBookingStatus(btn.dataset.bkId, btn.dataset.bkAction);
+    });
+  });
+}
+
+function bookingCard(b){
+  const st = String(b.status || 'requested').toLowerCase();
+  const badgeMap = {
+    requested: 'badge-yellow', confirmed: 'badge-blue',
+    declined: 'badge-red', completed: 'badge-green', cancelled: 'badge-red'
+  };
+  const badgeCls = badgeMap[st] || 'badge-gray';
+  const when = new Date(b.scheduled_for);
+  const canConfirm = st === 'requested';
+  const canComplete = st === 'confirmed';
+  const canCancel = st === 'requested' || st === 'confirmed';
+
+  return `
+    <div class="row">
+      <div class="rowMain">
+        <b>${esc(b.service_title || 'Service')}</b>
+        <span class="badge ${badgeCls}">${esc(st.toUpperCase())}</span>
+        <small>${when.toLocaleString()} · ${b.duration_min || 60} min · ${b.guests_count || 1} guest(s)</small>
+        <div class="orderMeta">
+          <span class="orderRef">${esc(b.reference || '')}</span>
+          <span>${esc(b.guest_name || 'Guest')} · Room ${esc(b.room_number || '—')}</span>
+          ${b.guest_phone ? `<span>${esc(b.guest_phone)}</span>` : ''}
+          <span>${money(b.amount)}</span>
+        </div>
+        ${b.notes ? `<div style="margin-top:8px;font-size:12.5px;color:var(--text-3)">${esc(b.notes)}</div>` : ''}
+      </div>
+      <div class="rowActions">
+        ${canConfirm ? `<button type="button" class="btn btn-primary btn-sm" data-bk-action="confirmed" data-bk-id="${esc(b.id)}">${esc(t('confirm'))}</button>` : ''}
+        ${canComplete ? `<button type="button" class="btn btn-success btn-sm" data-bk-action="completed" data-bk-id="${esc(b.id)}">${esc(t('complete'))}</button>` : ''}
+        ${canCancel ? `<button type="button" class="btn btn-danger btn-sm" data-bk-action="cancelled" data-bk-id="${esc(b.id)}">Cancel</button>` : ''}
+        ${!canConfirm && !canComplete && !canCancel ? `<span class="badge badge-gray">Done</span>` : ''}
+      </div>
+    </div>`;
+}
+
+async function updateBookingStatus(id, status){
+  try{
+    const res = await api(`/api/gm/bookings/${encodeURIComponent(id)}`, {
+      method:'PATCH',
+      body: JSON.stringify({ status })
+    });
+    if(res.ok){
+      toast(`Booking ${status}`);
+      beepConfirm();
+      await loadBookings();
+      renderBookings();
+    } else {
+      const j = await res.json().catch(()=>({}));
+      toast(j.error || 'Failed', 'error');
+    }
+  }catch(e){ toast('Error: ' + e.message, 'error'); }
+}
+
+/* Placeholder renderers so nothing breaks */
+function renderVendors(){
+  const box = $('view-vendors'); if(!box) return;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.store} ${esc(t('vendor_pool_title'))} — ${esc(HOTEL_ID)}</div>
+      <p class="card-sub">${esc(t('vendor_pool_sub'))}</p>
+    </div>
+    ${VENDORS_POOL.length ? VENDORS_POOL.map(v => {
+      const added = MY_VENDOR_IDS.includes(v.id);
+      const cat = normalizeCategory(v.category);
+      return `
+        <div class="row">
+          <div class="rowMain">
+            <b>${esc(v.vendor_name || 'Vendor')} — ${esc(v.category || 'service')}</b>
+            <span class="badge ${added ? 'badge-green' : 'badge-yellow'}">${added ? esc(t('added')) : esc(t('available'))}</span>
+            <span class="badge badge-gray">${esc(cat.toUpperCase())}</span>
+            <small>${esc(v.phone || '')} · ${money(v.price)} · ${esc((v.services || []).join(', '))}</small>
+          </div>
+          <div class="rowActions">
+            ${added
+              ? `<button type="button" class="btn btn-danger btn-sm" onclick="removeVendor('${esc(v.id)}')">${esc(t('remove'))}</button>`
+              : `<button type="button" class="btn btn-primary btn-sm" onclick="addVendor('${esc(v.id)}')">${ICON.plus} ${esc(t('add_to_hotel'))}</button>`}
+          </div>
+        </div>`;
+    }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.store}</div><strong>${esc(t('empty_vendors'))}</strong></div></div>`}`;
+}
+
+function renderMenu(){
+  const box = $('view-menu'); if(!box) return;
+  const food = SERVICES.filter(s => s.kind === 'food' || (!s.kind && !s.vendor_id && normalizeCategory(s.category) === 'food'));
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.utensils} ${esc(t('menu_title'))}</div>
+      <div class="card-sub">${esc(t('menu_sub'))}</div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px;margin-top:14px">
+        <input id="mName" class="input" placeholder="${esc(t('menu_name'))}">
+        <input id="mPrice" type="number" class="input" placeholder="${esc(t('menu_price'))}">
+        <select id="mCat" class="select">
+          <option value="food">Food</option>
+          <option value="drinks">Drinks</option>
+          <option value="main">Main Course</option>
+          <option value="starter">Starter</option>
+          <option value="dessert">Dessert</option>
+          <option value="breakfast">Breakfast</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;margin-top:12px" onclick="addMenu()">${ICON.plus} ${esc(t('menu_add'))}</button>
+    </div>
+    ${food.length ? food.map(i => `
+      <div class="row">
+        <div class="rowMain">
+          <b>${esc(i.title)}</b> <span class="badge badge-green">${money(i.price)}</span>
+          <small>${esc(i.category || 'food')}</small>
+        </div>
+        <div class="rowActions">
+          <button type="button" class="btn btn-danger btn-sm" onclick="delMenu('${esc(i.id)}')">${ICON.trash}</button>
+        </div>
+      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.utensils}</div><strong>${esc(t('empty_menu'))}</strong></div></div>`}
+  `;
+}
+
+function renderServices(){
+  const box = $('view-services'); if(!box) return;
+  const activeCount = SERVICES.filter(s => s.is_active).length;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.bell} ${esc(t('services_title'))}</div>
+      <div class="card-sub">${activeCount} ${esc(t('services_sub'))}</div>
+    </div>
+    ${SERVICES.length ? SERVICES.map(s => `
+      <div class="row">
+        <div class="rowMain">
+          <b>${esc(s.title)}</b>
+          <span class="badge ${s.is_active ? 'badge-green' : 'badge-gray'}">${money(s.price)}</span>
+          <small>(${esc(s.kind || normalizeCategory(s.category))})</small>
+        </div>
+        <div class="rowActions">
+          <button type="button" class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? ICON.pause : ICON.play}</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="delService('${esc(s.id)}')">${ICON.trash}</button>
+        </div>
+      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.bell}</div><strong>${esc(t('empty_services'))}</strong></div></div>`}
+  `;
+}
+
+function renderWhatsApp(){
+  const box = $('view-whatsapp'); if(!box) return;
+  const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.message} ${esc(t('wa_title'))}</div>
+      <div class="card-sub">${esc(t('wa_sub'))}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+        <div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${esc(getVal('kitchen'))}" placeholder="254712345678"></div>
+        <div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(getVal('housekeeping'))}" placeholder="254712345678"></div>
+        <div><label>Laundry</label><input id="wa_laundry" class="input" value="${esc(getVal('laundry'))}" placeholder="254712345678"></div>
+        <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}" placeholder="254712345678"></div>
+        <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}" placeholder="254712345678"></div>
+      </div>
+      <button type="button" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveWhatsApp()">${ICON.save} ${esc(t('save'))}</button>
+    </div>`;
+}
+
+function renderQR(){
+  const box = $('view-qr'); if(!box) return;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.qr} ${esc(t('qr_title'))}</div>
+      <div class="card-sub">${esc(t('qr_sub'))}</div>
+    </div>
+    <div class="card">
+      <label>${esc(t('qr_single'))}</label>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+        <input id="qrRoom" class="input" placeholder="101">
+        <button type="button" class="btn btn-primary" onclick="genSingle()">${esc(t('qr_gen'))}</button>
+      </div>
+      <div id="singleQR" style="text-align:center;margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <label>${esc(t('qr_batch'))}</label>
+      <textarea id="qrBatch" class="input" rows="5" placeholder="101&#10;102&#10;103"></textarea>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button type="button" class="btn btn-primary" style="flex:1" onclick="genBatch()">${ICON.qr} ${esc(t('qr_gen_all'))}</button>
+        <button type="button" class="btn btn-dark" onclick="window.print()">${ICON.printer} ${esc(t('qr_print'))}</button>
+      </div>
+      <div id="batchQR" style="margin-top:14px" class="qr-grid"></div>
+    </div>`;
+}
+
+function renderPayment(){
+  const box = $('view-payment'); if(!box) return;
+  const ch = PAYMENT.channel || 'paybill';
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.wallet} ${esc(t('payment_title'))}</div>
+      <p class="card-sub">${esc(t('payment_sub'))}</p>
+    </div>
+    <div class="card">
+      <label>${esc(t('choose_method'))}</label>
+      <div class="payTabs">
+        <button type="button" class="payTab ${ch==='paybill'?'active':''}" data-channel="paybill">${ICON.bank}<span>${esc(t('paybill'))}</span></button>
+        <button type="button" class="payTab ${ch==='till'?'active':''}" data-channel="till">${ICON.store}<span>${esc(t('till'))}</span></button>
+        <button type="button" class="payTab ${ch==='send_money'?'active':''}" data-channel="send_money">${ICON.phone}<span>${esc(t('send_money'))}</span></button>
+      </div>
+      <div class="payField ${ch==='paybill'?'show':''}" data-field="paybill">
+        <label>${esc(t('paybill_number'))}</label>
+        <input id="pay_paybill_number" class="input" inputmode="numeric" value="${esc(PAYMENT.paybill_number)}">
+        <label>${esc(t('account_number'))}</label>
+        <input id="pay_paybill_account" class="input" value="${esc(PAYMENT.paybill_account)}">
+      </div>
+      <div class="payField ${ch==='till'?'show':''}" data-field="till">
+        <label>${esc(t('till_number'))}</label>
+        <input id="pay_till_number" class="input" inputmode="numeric" value="${esc(PAYMENT.till_number)}">
+      </div>
+      <div class="payField ${ch==='send_money'?'show':''}" data-field="send_money">
+        <label>${esc(t('receive_on'))}</label>
+        <input id="pay_mpesa_phone" class="input" inputmode="tel" value="${esc(PAYMENT.mpesa_phone)}">
+      </div>
+      <label>${esc(t('account_name'))}</label>
+      <input id="pay_mpesa_name" class="input" value="${esc(PAYMENT.mpesa_name)}">
+      <div class="payHelp">${ICON.info}<span>Double-check your Paybill / Till — guests pay directly to it.</span></div>
+      <div class="paySaveBar">
+        <button type="button" class="btn btn-dark btn-lg" onclick="clearPayment()">${esc(t('clear'))}</button>
+        <button type="button" class="btn btn-primary btn-lg" id="savePayBtn" onclick="savePayment()">${ICON.save} ${esc(t('save_payment'))}</button>
+      </div>
+    </div>
+    ${paymentPreviewHTML()}
+  `;
+  box.querySelectorAll('[data-channel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      PAYMENT.channel = btn.dataset.channel;
+      renderPayment();
+    });
+  });
+}
+
+function paymentPreviewHTML(){
+  const ch = PAYMENT.channel;
+  const name = PAYMENT.mpesa_name || HOTEL_ID;
+
+  const wrap = (title, boxRows, steps) => `
+    <div class="card">
+      <div class="card-title">${ICON.eye} ${esc(t('pay_preview'))}</div>
+      <div class="payPreview">
+        <div class="pvTitle">${ICON.wallet}<span>${esc(title)}</span></div>
+        <div class="pvBox">${boxRows}</div>
+        <ol class="pvSteps">${steps}</ol>
+      </div>
+    </div>`;
+
+  if(ch === 'paybill' && PAYMENT.paybill_number){
+    const acc = PAYMENT.paybill_account || 'GH-ABC123';
+    return wrap('Pay via M-Pesa Paybill',
+      `<div class="pvRow"><span class="pvLbl">Paybill</span><span class="pvVal">${esc(PAYMENT.paybill_number)}</span></div>
+       <div class="pvRow"><span class="pvLbl">Account</span><span class="pvVal" style="font-size:14px">${esc(acc)}</span></div>`,
+      `<li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
+       <li>Business No: <b>${esc(PAYMENT.paybill_number)}</b></li>
+       <li>Account: <b>${esc(acc)}</b></li>
+       <li>Amount as shown · Enter PIN</li>`);
+  }
+  if(ch === 'till' && PAYMENT.till_number){
+    return wrap('Pay via M-Pesa Till',
+      `<div class="pvRow"><span class="pvLbl">Till</span><span class="pvVal">${esc(PAYMENT.till_number)}</span></div>`,
+      `<li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Buy Goods</b></li>
+       <li>Till No: <b>${esc(PAYMENT.till_number)}</b></li>
+       <li>Amount as shown · Enter PIN</li>`);
+  }
+  if(ch === 'send_money' && PAYMENT.mpesa_phone){
+    const phone = String(PAYMENT.mpesa_phone).replace(/\D/g,'');
+    return wrap('Send Money via M-Pesa',
+      `<div class="pvRow"><span class="pvLbl">Send to</span><span class="pvVal" style="font-size:14px">${esc(phone)}</span></div>`,
+      `<li>Open M-Pesa → <b>Send Money</b></li>
+       <li>Number: <b>${esc(phone)}</b></li>
+       <li>Amount as shown · Enter PIN</li>`);
+  }
+  return `
+    <div class="card">
+      <div class="card-title">${ICON.eye} ${esc(t('pay_preview'))}</div>
+      <div class="payPreview empty">
+        <div class="pvTitle" style="color:var(--text-3)">${ICON.wallet}<span>Payment</span></div>
+        <p class="pvNote">${esc(t('preview_empty'))}</p>
+      </div>
+    </div>`;
+}
+
+async function savePayment(){
+  const btn = $('savePayBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+
+  const channel = PAYMENT.channel;
+  PAYMENT.paybill_number  = ($('pay_paybill_number')?.value  || '').trim();
+  PAYMENT.paybill_account = ($('pay_paybill_account')?.value || '').trim();
+  PAYMENT.till_number     = ($('pay_till_number')?.value     || '').trim();
+  PAYMENT.mpesa_phone     = ($('pay_mpesa_phone')?.value     || '').trim();
+  PAYMENT.mpesa_name      = ($('pay_mpesa_name')?.value      || '').trim();
+
+  const resetBtn = () => { if(btn){ btn.disabled = false; btn.innerHTML = ICON.save + ' ' + esc(t('save_payment')); } };
+
+  if(channel === 'paybill'){
+    if(!/^\d{4,10}$/.test(PAYMENT.paybill_number)){
+      resetBtn(); return toast(t('paybill_invalid'), 'error');
+    }
+  } else if(channel === 'till'){
+    if(!/^\d{4,10}$/.test(PAYMENT.till_number)){
+      resetBtn(); return toast(t('till_invalid'), 'error');
+    }
+  } else if(channel === 'send_money'){
+    const digits = PAYMENT.mpesa_phone.replace(/\D/g,'');
+    if(!/^(254|0)\d{9}$/.test(digits)){
+      resetBtn(); return toast(t('phone_invalid'), 'error');
+    }
+  }
+
+  const payload = { payment_channel: channel, mpesa_name: PAYMENT.mpesa_name || null };
+  if(channel === 'paybill'){
+    payload.paybill_number  = PAYMENT.paybill_number;
+    payload.paybill_account = PAYMENT.paybill_account || null;
+    payload.till_number     = null;
+  } else if(channel === 'till'){
+    payload.till_number     = PAYMENT.till_number;
+    payload.paybill_number  = null;
+    payload.paybill_account = null;
+  } else {
+    payload.mpesa           = PAYMENT.mpesa_phone.replace(/\D/g,'');
+    payload.paybill_number  = null;
+    payload.paybill_account = null;
+    payload.till_number     = null;
+  }
+
+  let saved = false;
+  try{
+    const res = await api('/api/gm/payment', { method:'PATCH', body:JSON.stringify(payload) });
+    if(res.ok){
+      const j = await res.json().catch(() => ({}));
+      if(j.ok) saved = true;
+    }
+  }catch(e){ console.warn('API save failed:', e.message); }
+
+  if(!saved && supa){
+    try{
+      const upd = { ...payload };
+      if(channel === 'send_money') upd.phone = payload.mpesa;
+      const { error } = await supa.from('hotels').update(upd).ilike('hotel_id', HOTEL_ID);
+      if(!error) saved = true;
+    }catch(e){ console.warn('Supabase fallback:', e.message); }
+  }
+
+  resetBtn();
+  if(saved){
+    PAYMENT.configured = true;
+    toast(t('saved_payment'));
+    beepConfirm();
+    renderPayment();
+  } else {
+    toast('Failed to save — check your connection', 'error');
+  }
+}
+
+async function clearPayment(){
+  if(!confirm('Clear all payment settings?')) return;
+  try{
+    await api('/api/gm/payment', {
+      method:'PATCH',
+      body: JSON.stringify({ payment_channel:'paybill', paybill_number:null, paybill_account:null, till_number:null, mpesa_name:null, mpesa:null })
+    });
+  }catch(_){}
+  if(supa){
+    try{
+      await supa.from('hotels').update({
+        payment_channel:null, paybill_number:null, paybill_account:null,
+        till_number:null, mpesa_name:null, phone:null
+      }).ilike('hotel_id', HOTEL_ID);
+    }catch(_){}
+  }
+  PAYMENT = { channel:'paybill', paybill_number:'', paybill_account:'', till_number:'', mpesa_phone:'', mpesa_name:'', configured:false };
+  toast('Payment settings cleared');
+  renderPayment();
+}
+
+function renderFinance(){
+  const box = $('view-finance'); if(!box) return;
+  const now = Date.now(); const day = 24 * 3600 * 1000;
+  const today = new Date().toISOString().slice(0, 10);
+  const week = ORDERS.filter(o => now - new Date(o.created_at||0).getTime() < 7*day);
+  const month = ORDERS.filter(o => now - new Date(o.created_at||0).getTime() < 30*day);
+  const todayOrders = ORDERS.filter(o => (o.created_at||'').startsWith(today));
+  const completedOrders = ORDERS.filter(o => o.status === 'completed');
+  const sum = arr => arr.reduce((s,o) => s + orderAmount(o), 0);
+  const aov = completedOrders.length ? sum(completedOrders) / completedOrders.length : 0;
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.wallet} ${esc(t('finance_title'))}</div>
+      <div class="card-sub">${esc(HOTEL_ID)} · Live revenue tracking</div>
+    </div>
+    <div class="stats" style="grid-template-columns:repeat(2,1fr)">
+      <div class="stat highlight"><b>${money(sum(todayOrders))}</b><small>${esc(t('today'))} · ${todayOrders.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(week))}</b><small>${esc(t('week'))} · ${week.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(month))}</b><small>${esc(t('month'))} · ${month.length} ${esc(t('orders'))}</small></div>
+      <div class="stat"><b>${money(sum(ORDERS))}</b><small>${esc(t('all_time'))} · ${ORDERS.length}</small></div>
+      <div class="stat"><b>${money(aov)}</b><small>${esc(t('stat_aov'))}</small></div>
+      <div class="stat"><b>${completedOrders.length}</b><small>COMPLETED</small></div>
+    </div>`;
+}
+
+function renderAnalytics(){
+  const box = $('view-analytics'); if(!box) return;
+  const day = 24 * 3600 * 1000; const now = Date.now();
+  const days = [];
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(now - i * day);
+    const key = d.toISOString().slice(0, 10);
+    const rev = ORDERS.filter(o => (o.created_at||'').startsWith(key)).reduce((s,o) => s + orderAmount(o), 0);
+    days.push({ key, label: d.toLocaleDateString('en', { weekday: 'short' }), rev });
+  }
+  const maxRev = Math.max(...days.map(d => d.rev), 1);
+  const barsHtml = days.map(d => {
+    const h = Math.max(4, (d.rev / maxRev) * 100);
+    return `<div style="display:flex;flex-direction:column;justify-content:flex-end;height:100%">
+      <div class="bar" style="height:${h}%">
+        <div class="barVal">${d.rev > 0 ? Math.round(d.rev/1000) + 'k' : ''}</div>
+        <div class="barLabel">${esc(d.label)}</div>
+      </div></div>`;
+  }).join('');
+
+  const svcCount = {};
+  ORDERS.forEach(o => { const k = orderItemsText(o); if(k && k !== '—') svcCount[k] = (svcCount[k]||0) + 1; });
+  const top = Object.entries(svcCount).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const topHtml = top.length ? top.map(([name, n]) => `
+    <div class="row" style="padding:11px 14px">
+      <span style="font-size:13px;font-weight:600">${esc(name)}</span>
+      <span class="badge badge-green">${n}</span>
+    </div>`).join('') : `<div class="empty"><p>${esc(t('no_data'))}</p></div>`;
+
+  const catRev = {};
+  ORDERS.forEach(o => { const c = normalizeCategory(orderCat(o)); catRev[c] = (catRev[c]||0) + orderAmount(o); });
+  const totalCatRev = Object.values(catRev).reduce((s,v) => s+v, 0) || 1;
+  const catColors = { food:'#febb02', taxi:'#0071c2', tour:'#008009', spa:'#7c3aed', services:'#003580', other:'#8a8a8a' };
+  const catHtml = Object.entries(catRev).sort((a,b) => b[1]-a[1]).map(([cat, rev]) => {
+    const pct = Math.round((rev / totalCatRev) * 100);
+    const color = catColors[cat] || '#8a8a8a';
+    return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:6px">
+        <span style="text-transform:capitalize;color:var(--text)">${esc(cat)}</span>
+        <span style="color:var(--text-2)">${money(rev)} · ${pct}%</span>
+      </div>
+      <div style="background:#f0f0f0;height:8px;border-radius:999px;overflow:hidden">
+        <div style="background:${color};height:100%;width:${pct}%"></div>
+      </div></div>`;
+  }).join('') || `<div class="empty"><p>${esc(t('no_data'))}</p></div>`;
+
+  const hours = new Array(24).fill(0);
+  ORDERS.forEach(o => { if(!o.created_at) return; const h = new Date(o.created_at).getHours(); hours[h]++; });
+  const maxH = Math.max(...hours, 1);
+  const heatHtml = hours.map((n, i) => {
+    const lvl = n === 0 ? 0 : Math.min(4, Math.ceil((n / maxH) * 4));
+    return `<div class="hm" data-lvl="${lvl}" title="${i}:00 — ${n} orders"></div>`;
+  }).join('');
+
+  box.innerHTML = `
+    <div class="card">
+      <div class="card-title">${ICON.wallet} ${esc(t('analytics_title'))} — ${esc(HOTEL_ID)}</div>
+      <div class="card-sub">Last 7 days · all orders in current window</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Revenue — Last 7 Days</div>
+      <div class="chart-wrap"><div class="chart">${barsHtml}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">${ICON.sparkles} ${esc(t('top_services'))}</div>
+      ${topHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">${ICON.wallet} ${esc(t('revenue_by_cat'))}</div>
+      <div style="margin-top:14px">${catHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">${ICON.bell} ${esc(t('peak_hours'))}</div>
+      <div class="heatmap">${heatHtml}</div>
+      <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-4);margin-top:8px">
+        <span>00:00</span><span>12:00</span><span>23:00</span>
+      </div>
+    </div>`;
+}
+
+async function updateStatus(id, s){
+  const clean = normalizeStatus(s);
+  if(!GUEST_STATUSES[clean]) return toast(t('unknown_status') + s, 'error');
+  if(clean === 'cancelled'){ if(!confirm(t('confirm_cancel'))) return; }
+  if(!supa) return toast(t('no_supabase'), 'error');
+  const patch = { status: clean, updated_at: new Date().toISOString() };
+  const { error } = await supa.from('orders').update(patch).eq('id', id);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  beepConfirm();
+  toast(t('guest_notified') + (t(clean) || clean));
+  const idx = ORDERS.findIndex(o => String(o.id) === String(id));
+  if(idx >= 0){ ORDERS[idx] = { ...ORDERS[idx], ...patch, status: clean }; renderOrders(); updateStats(); updateTabBadges(); }
+  setTimeout(loadOrders, 900);
+}
+
+async function acceptAllNew(){
+  const pending = ORDERS.filter(o => o.status === 'new' || o.status === 'pending');
+  if(!pending.length) return toast('No new orders');
+  if(!confirm(`Accept all ${pending.length} new order(s)?`)) return;
+  if(!supa) return;
+  const ids = pending.map(o => o.id);
+  const { error } = await supa.from('orders').update({ status:'accepted', updated_at:new Date().toISOString() }).in('id', ids);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  beepConfirm();
+  toast(`Accepted ${pending.length} orders`);
+  loadOrders();
+}
+
+async function addVendor(vendorId){
+  try{
+    const res = await api(`/api/gm/vendors/${vendorId}/add?hotel_id=${HOTEL_ID}`, { method:'POST' });
+    const j = await res.json();
+    if(j.ok){ toast(t('toast_added')); loadVendorsPool(); loadServices(); renderCurrentTab(); return; }
+    throw new Error(j.error || 'Failed');
+  }catch(e){
+    const v = VENDORS_POOL.find(x => String(x.id) === String(vendorId));
+    if(!v || !supa) return toast(t('error_prefix') + e.message, 'error');
+    const guestCategory = normalizeCategory(v.category);
+    const groupLabel = (() => {
+      const c = String(v.category || '').toLowerCase();
+      if (c.includes('transport') || c.includes('taxi')) return 'transport';
+      if (c.includes('tour')) return 'tours';
+      if (c.includes('wellness') || c.includes('spa') || c.includes('massage')) return 'wellness';
+      if (c.includes('media') || c.includes('photo')) return 'media';
+      return 'services';
+    })();
+    const { error } = await supa.from('hotel_services').insert([{
+      hotel_id: HOTEL_ID, title: v.vendor_name, description: v.bio || 'Available through GuestHub',
+      price: v.price || 0, category: guestCategory, icon: '🏪', vendor_id: vendorId,
+      vendor_name: v.vendor_name, vendor_phone: v.phone, is_active: true,
+      kind: 'vendor_item', group_label: groupLabel
+    }]);
+    if(error) return toast(t('error_prefix') + error.message, 'error');
+    toast(t('toast_added'));
+    loadVendorsPool(); loadServices(); renderCurrentTab();
+  }
+}
+async function removeVendor(vendorId){
+  if(!supa) return;
+  const { error } = await supa.from('hotel_services').update({ is_active:false }).eq('hotel_id', HOTEL_ID).eq('vendor_id', vendorId);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_removed'));
+  loadVendorsPool(); loadServices(); renderCurrentTab();
+}
+async function addMenu(){
+  const name = $('mName').value.trim();
+  const price = parseInt($('mPrice').value);
+  const cat = $('mCat').value;
+  if(!name || !price) return toast(t('name_price_req'), 'error');
+  if(!supa) return toast(t('no_supabase'), 'error');
+  const { error } = await supa.from('hotel_services').insert([{
+    hotel_id: HOTEL_ID, title: name, price, category: normalizeCategory(cat), is_active: true, kind: 'food'
+  }]);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_added'));
+  await loadServices(); renderMenu();
+}
+async function delMenu(id){
+  if(!supa) return;
+  const { error } = await supa.from('hotel_services').delete().eq('id', id);
+  if(error) return toast(t('error_prefix') + error.message, 'error');
+  toast(t('toast_removed'));
+  await loadServices(); renderMenu();
+}
+async function toggleService(id, active){
+  if(!supa) return;
+  await supa.from('hotel_services').update({ is_active: active }).eq('id', id);
+  await loadServices(); renderServices();
+}
+async function delService(id){
+  if(!supa) return;
+  await supa.from('hotel_services').delete().eq('id', id);
+  toast(t('toast_removed'));
+  await loadServices(); renderServices();
+}
+async function saveWhatsApp(){
+  if(!supa) return toast(t('no_supabase'), 'error');
+  const keys = ['kitchen','housekeeping','laundry','taxi','frontdesk'];
+  for(const d of keys){
+    const num = $('wa_' + d)?.value.trim();
+    if(num){
+      const { error } = await supa.from('departments').upsert({ hotel_id: HOTEL_ID, name: d, whatsapp: num }, { onConflict: 'hotel_id,name' });
+      if(error) return toast(t('error_prefix') + error.message, 'error');
+    }
+  }
+  toast(t('toast_saved'));
+  loadDepts();
+}
+function qrReady(){
+  if(typeof QRCode === 'undefined' || window.__qrLibFailed){
+    toast(t('qr_lib_missing'), 'error');
+    return false;
+  }
+  return true;
+}
+function genSingle(){
+  if(!qrReady()) return;
+  const room = ($('qrRoom').value.trim() || '101');
+  const box = $('singleQR');
+  box.innerHTML = `<div class="qr-box"><div id="qrSingleCanvas"></div><div class="qr-label" style="color:var(--text)">${esc(HOTEL_ID)} — ROOM ${esc(room)}</div></div>`;
+  setTimeout(() => {
+    const el = $('qrSingleCanvas');
+    if(!el) return;
+    try{ new QRCode(el, { text: guestLink(room), width: 200, height: 200, colorDark: '#000', colorLight: '#fff' }); }
+    catch(e){ toast('QR generation failed: ' + e.message, 'error'); }
+  }, 60);
+}
+function genBatch(){
+  if(!qrReady()) return;
+  const raw = ($('qrBatch').value || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  if(!raw.length) return toast(t('enter_rooms'), 'error');
+  const box = $('batchQR');
+  box.innerHTML = raw.map((room, i) => `<div class="qr-card"><div id="qrBatch-${i}"></div><div class="qr-label">ROOM ${esc(room)}</div></div>`).join('');
+  raw.forEach((room, i) => {
+    setTimeout(() => {
+      const el = $('qrBatch-' + i);
+      if(el) try{ new QRCode(el, { text: guestLink(room), width: 160, height: 160, colorDark:'#000', colorLight:'#fff' }); }catch(_){}
+    }, 60 + i * 20);
+  });
+  toast(`Generated ${raw.length} QR codes`);
+}
+function exportCSV(){
+  const rows = [['Reference','Date','Room','Guest','Phone','Service','Category','Amount','Status']];
+  ORDERS.forEach(o => rows.push([
+    orderRef(o), o.created_at ? new Date(o.created_at).toISOString() : '',
+    orderRoom(o), orderGuest(o), o.guest_phone || '',
+    orderItemsText(o), orderCat(o), orderAmount(o), o.status
+  ]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `guesthub-orders-${HOTEL_ID}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported');
+}
+
+function openOrderModal(id){
+  const o = ORDERS.find(x => String(x.id) === String(id));
+  if(!o) return;
+  const st = GUEST_STATUSES[o.status] || GUEST_STATUSES.pending;
+  const titleEl = $('omTitleText');
+  if(titleEl) titleEl.textContent = `${t('room')} ${orderRoom(o)} — ${orderGuest(o)}`;
+  $('omSub').textContent = orderRef(o) + ' · ' + (t(o.status) || o.status);
+  $('omBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div><label style="margin-top:0">${esc(t('service'))}</label><div style="font-weight:600">${esc(orderItemsText(o))}</div></div>
+      <div><label style="margin-top:0">${esc(t('amount'))}</label><div style="font-weight:700;color:var(--brand-2)">${money(orderAmount(o))}</div></div>
+      <div><label style="margin-top:0">${esc(t('category'))}</label><div style="font-weight:500">${esc(orderCat(o))}</div></div>
+      <div><label style="margin-top:0">${esc(t('status'))}</label><div><span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span></div></div>
+      <div><label style="margin-top:0">${esc(t('phone'))}</label><div style="font-weight:500">${esc(o.guest_phone || '—')}</div></div>
+      <div><label style="margin-top:0">${esc(t('created'))}</label><div style="font-weight:500;font-size:12.5px">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</div></div>
+    </div>
+    ${(o.details || o.notes) ? `<label>${esc(t('notes'))}</label><div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;font-size:13px;line-height:1.55;color:var(--text-2)">${esc(o.details || o.notes)}</div>` : ''}
+  `;
+  const actions = [];
+  if(o.guest_phone){
+    const wa = String(o.guest_phone).replace(/\D/g,'');
+    const msg = encodeURIComponent(`Hi ${orderGuest(o)}, this is ${HOTEL_ID} — regarding your order ${orderRef(o)}. `);
+    actions.push(`<a class="btn btn-success btn-sm" href="https://wa.me/${wa}?text=${msg}" target="_blank" rel="noopener">${ICON.message} ${esc(t('whatsapp_guest'))}</a>`);
+  }
+  if(o.vendor_phone){
+    const vp = String(o.vendor_phone).replace(/\D/g,'');
+    const msg = encodeURIComponent(`New order ${orderRef(o)} — Room ${orderRoom(o)}: ${orderItemsText(o)} (${money(orderAmount(o))}).`);
+    actions.push(`<a class="btn btn-secondary btn-sm" href="https://wa.me/${vp}?text=${msg}" target="_blank" rel="noopener">${ICON.store} ${esc(t('forward_vendor'))}</a>`);
+  }
+  actions.push(`<button type="button" class="btn btn-dark btn-sm" onclick="copyOrder('${esc(o.id)}')">${ICON.copy} ${esc(t('copy'))}</button>`);
+  actions.push(`<button type="button" class="btn btn-dark btn-sm" data-close="orderModal">${esc(t('close'))}</button>`);
+  $('omActions').innerHTML = actions.join('');
+  openModal('orderModal');
+}
+
+function copyOrder(id){
+  const o = ORDERS.find(x => String(x.id) === String(id));
+  if(!o) return;
+  const txt = `Room ${orderRoom(o)} — ${orderGuest(o)}\n${orderItemsText(o)} — ${money(orderAmount(o))}\n${orderRef(o)} · ${o.status}`;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(() => toast(t('toast_copied'))).catch(() => toast('Copy failed', 'error'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); toast(t('toast_copied')); }catch(_){ toast('Copy failed', 'error'); }
+    ta.remove();
+  }
+}
+
+function openModal(id){ const m = $(id); if(m){ m.classList.add('active'); document.body.style.overflow = 'hidden'; } }
+function closeModal(id){
+  const m = $(id); if(m) m.classList.remove('active');
+  if(!document.querySelector('.modal.active')) document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); }));
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeModal(b.dataset.close)));
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape'){ document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active')); document.body.style.overflow = ''; }
+  if(e.target.matches('input, textarea, select')) return;
+  const map = { '1':'orders','2':'bookings','3':'vendors','4':'menu','5':'services','6':'whatsapp','7':'qr','8':'finance','9':'payment' };
+  if(map[e.key]) switchTab(map[e.key]);
+  if(e.key === '/'){ const s = $('orderSearch'); if(s){ e.preventDefault(); s.focus(); } }
+  if(e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey){ refreshAll(); }
+});
+
+function switchTab(name){
+  try{
+    currentTab = name;
+    localStorage.setItem('hotel_last_tab', name);
+    document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    const view = $('view-' + name);
+    const tab = document.querySelector(`.tab[data-tab="${name}"]`);
+    if(view) view.classList.remove('hidden');
+    if(tab) tab.classList.add('active');
+    renderCurrentTab();
+    try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }catch(_){ window.scrollTo(0, 0); }
+  }catch(e){ showBootError('switchTab(' + name + '): ' + e.message); }
+}
+
+function renderCurrentTab(){
+  try{
+    if(currentTab === 'orders') renderOrders();
+    else if(currentTab === 'bookings') renderBookings();
+    else if(currentTab === 'vendors') renderVendors();
+    else if(currentTab === 'menu') renderMenu();
+    else if(currentTab === 'services') renderServices();
+    else if(currentTab === 'whatsapp') renderWhatsApp();
+    else if(currentTab === 'qr') renderQR();
+    else if(currentTab === 'finance') renderFinance();
+    else if(currentTab === 'payment') renderPayment();
+    else if(currentTab === 'analytics') renderAnalytics();
+    else renderOrders();
+  }catch(e){ showBootError('renderCurrentTab(' + currentTab + '): ' + e.message); }
+}
+
+(function wireTabs(){
+  const bar = document.getElementById('tabsBar');
+  if(!bar){ showBootError('tabsBar missing'); return; }
+  bar.addEventListener('click', e => {
+    const btn = e.target.closest('.tab');
+    if(!btn) return;
+    e.preventDefault();
+    const name = btn.dataset.tab;
+    if(!name){ showBootError('tab missing data-tab'); return; }
+    switchTab(name);
+  });
+})();
+
+function onNewOrders(orders){
+  if(!orders || !orders.length) return;
+  const o = orders[0];
+  if(!o) return;
+  const room = orderRoom(o);
+  toast(`New order — Room ${room} · ${orderItemsText(o)}`);
+  beepNewOrder();
+  if(navigator.vibrate) navigator.vibrate([120, 60, 120, 60, 120]);
+  if(document.hidden && 'Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification(`GuestHub — Room ${room}`, { body:`${orderGuest(o)} — ${orderItemsText(o)} (${money(orderAmount(o))})`, tag:'guesthub-order-' + o.id }); }catch(_){}
+  }
+  if(currentTab === 'orders') renderOrders();
+  updateTabBadges();
+}
+
+function setSyncDot(state){
+  const pill = $('syncPill');
+  const dot = $('rtDot');
+  const txt = $('systemStatus');
+  if(!pill) return;
+  pill.className = 'status-pill' + (state === 'live' ? '' : state === 'connecting' ? ' warn' : ' off');
+  if(dot) dot.className = 'dot';
+  if(txt) txt.textContent = state === 'live' ? t('live_sync') : state === 'connecting' ? t('connecting') : t('offline_polling');
+}
+
+function subscribeRealtime(){
+  if(!supa){ setSyncDot('off'); schedulePoll(); return; }
+  if(rtChannel){ try{ supa.removeChannel(rtChannel); }catch(_){} rtChannel = null; }
+  setSyncDot('connecting');
+  try{
+    rtChannel = supa.channel('gm-' + HOTEL_ID)
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'orders', filter:`hotel_id=eq.${HOTEL_ID}` }, p => {
+        const row = p.new; if(!row) return;
+        const norm = { ...row, status: normalizeStatus(row.status) };
+        if(!seenOrderIds.has(norm.id)){ seenOrderIds.add(norm.id); onNewOrders([norm]); }
+        ORDERS.unshift(norm);
+        updateStats(); updateTabBadges();
+        if(currentTab === 'orders') renderOrders();
+      })
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'orders', filter:`hotel_id=eq.${HOTEL_ID}` }, p => {
+        const row = p.new; if(!row) return;
+        const idx = ORDERS.findIndex(o => String(o.id) === String(row.id));
+        if(idx >= 0) ORDERS[idx] = { ...ORDERS[idx], ...row, status: normalizeStatus(row.status) };
+        else ORDERS.unshift({ ...row, status: normalizeStatus(row.status) });
+        updateStats(); updateTabBadges();
+        if(currentTab === 'orders') renderOrders();
+      })
+      .subscribe((status, err) => {
+        if(status === 'SUBSCRIBED'){ setSyncDot('live'); stopPoll(); }
+        else if(['CHANNEL_ERROR','TIMED_OUT','CLOSED'].includes(status)){
+          setSyncDot('off');
+          if(err) console.warn('Realtime:', err);
+          schedulePoll();
+        }
+      });
+  }catch(e){
+    console.warn('Realtime failed:', e.message);
+    setSyncDot('off'); schedulePoll();
+  }
+}
+function schedulePoll(){
+  if(pollTimer) clearTimeout(pollTimer);
+  pollTimer = setTimeout(async () => { await loadOrders(); schedulePoll(); }, POLL_MS);
+}
+function stopPoll(){ if(pollTimer){ clearTimeout(pollTimer); pollTimer = null; } }
+
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden) stopPoll();
+  else { loadOrders(); if(!rtChannel) subscribeRealtime(); }
+});
+window.addEventListener('online', () => { loadOrders(); subscribeRealtime(); });
+window.addEventListener('offline', () => setSyncDot('off'));
+
+function tickTimes(){
+  document.querySelectorAll('[data-tick]').forEach(el => {
+    el.textContent = relativeTime(el.dataset.tick);
+    const parent = el.parentElement;
+    if(parent) parent.className = 'elapsed ' + urgencyClass(el.dataset.tick);
+  });
+}
+
+$('refreshBtn').addEventListener('click', () => { refreshAll(); toast(t('refresh_done')); });
+$('guestBtn').addEventListener('click', () => {
+  const r = prompt('Open guest app for which room?', '101');
+  if (r && r.trim()) window.open(guestLink(r.trim()), '_blank');
+});
+$('langBtn').addEventListener('click', () => { renderLangGrid(); openModal('langModal'); });
+$('logoutBtn').addEventListener('click', () => {
+  ['hotel_token','gm_token','hotel_id','hotel_name'].forEach(k => localStorage.removeItem(k));
+  location.replace('/hotel-login.html');
+});
+
+const notifBtn = $('notifBtn');
+function updateNotifUI(){
+  if(!notifBtn) return;
+  notifBtn.classList.toggle('muted', !soundEnabled);
+  const ic = notifBtn.querySelector('svg');
+  if(ic) ic.innerHTML = soundEnabled
+    ? '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'
+    : '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><line x1="2" x2="22" y1="2" y2="22"/>';
+}
+notifBtn.addEventListener('click', async () => {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem('hotel_sound', soundEnabled ? 'on' : 'off');
+  updateNotifUI();
+  if(soundEnabled){
+    toast('Alerts enabled');
+    beepConfirm();
+    if('Notification' in window && Notification.permission === 'default'){
+      try{ await Notification.requestPermission(); }catch(_){}
+    }
+  } else { toast('Alerts muted'); }
+});
+
+function applyI18n(){
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = I18N[currentLang].dir || 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  renderLangGrid();
+  if(currentTab === 'payment' && typeof renderPayment === 'function') renderPayment();
+}
+
+function renderLangGrid(){
+  const grid = $('langGrid'); if(!grid) return;
+  grid.innerHTML = Object.keys(I18N).map(code => {
+    const L = I18N[code]; const active = code === currentLang;
+    return `<button type="button" class="langCard ${active ? 'active' : ''}" data-lang="${code}">
+      <span class="flag">${L.flag}</span><b>${esc(L.native)}</b><small>${esc(L.name)}</small>
+      ${active ? `<span class="check">${ICON.check}</span>` : ''}</button>`;
+  }).join('');
+  grid.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+    currentLang = b.dataset.lang;
+    localStorage.setItem('hotelhub_lang', currentLang);
+    applyI18n();
+    closeModal('langModal');
+    toast(t('lang_saved') + ' — ' + I18N[currentLang].native);
+  }));
+}
+
+(async function boot(){
+  try{
+    updateNotifUI();
+    applyI18n();
+    $('hotelSub').textContent = HOTEL_ID + ' · GM OS';
+
+    const wanted = document.querySelector(`.tab[data-tab="${currentTab}"]`) ? currentTab : 'orders';
+    switchTab(wanted);
+
+    await refreshAll();
+    subscribeRealtime();
+    schedulePoll();
+    tickTimer = setInterval(tickTimes, 30000);
+
+    bootComplete = true;
+  }catch(e){
+    showBootError('Boot failed: ' + e.message);
+    try{ switchTab('orders'); }catch(_){}
+  }
+})();
+
+setTimeout(() => {
+  if(!bootComplete){ showBootError('Dashboard did not finish loading.'); }
+}, 4000);
+
+window.acceptAllNew = acceptAllNew;
+window.exportCSV = exportCSV;
+window.addVendor = addVendor;
+window.removeVendor = removeVendor;
+window.addMenu = addMenu;
+window.delMenu = delMenu;
+window.toggleService = toggleService;
+window.delService = delService;
+window.saveWhatsApp = saveWhatsApp;
+window.genSingle = genSingle;
+window.genBatch = genBatch;
+window.copyOrder = copyOrder;
+window.updateStatus = updateStatus;
+window.savePayment = savePayment;
+window.clearPayment = clearPayment;
+window.updateBookingStatus = updateBookingStatus;
+</script>
+</body>
+</html>
