@@ -1,10 +1,7 @@
 // ============================================================
-// GuestHub V1.5 — Direct-to-Vendor Payments + Table Mode + Images + Hotel Payment
-// Aligned with GM OS + Guest SuperApp + Vendor OS
-// Changes vs V1.4:
-//   - NEW:  GET  /api/public/hotel/:hotelId/payment  (guest reads hotel paybill/till)
-//   - NEW:  PATCH /api/gm/payment                    (GM saves paybill/till)
-//   - NEW:  hotel payment columns added to boot migration
+// GuestHub V2.0 — Full system with guest sessions, bookings,
+// vendor marketplace, commission ledger, SSE real-time
+// Aligned with GM OS + Guest SuperApp + Vendor OS + Admin
 // ============================================================
 
 import express from "express";
@@ -29,14 +26,13 @@ const REQUIRED = ["SUPABASE_URL", "SUPABASE_KEY", "SUPABASE_SERVICE_KEY", "JWT_S
 const missing = REQUIRED.filter(k => !process.env[k]);
 if (missing.length) {
   console.warn("⚠️  Missing env vars:", missing.join(", "));
-  console.warn("⚠️  Server will start, but API calls that need these will fail.");
 }
 
-const SUPABASE_URL = process.env.SUPABASE_URL || "";
-const SUPABASE_ANON = process.env.SUPABASE_KEY || "";
+const SUPABASE_URL     = process.env.SUPABASE_URL || "";
+const SUPABASE_ANON    = process.env.SUPABASE_KEY || "";
 const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY || "";
-const JWT_SECRET = process.env.JWT_SECRET || "dev_only_change_me";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+const JWT_SECRET       = process.env.JWT_SECRET || "dev_only_change_me";
+const ADMIN_PASSWORD   = process.env.ADMIN_PASSWORD || "admin123";
 
 let supa = null;
 if (SUPABASE_URL && SUPABASE_SERVICE) {
@@ -80,7 +76,7 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V1.5",
+    os: "GuestHub V2.0",
     time: new Date().toISOString(),
     supabase: !!supa,
     missing_env: missing
@@ -101,7 +97,9 @@ app.get("/config.js", (req, res) => {
   );
 });
 
-// ---------- Helpers ----------
+// ============================================================
+// Helpers
+// ============================================================
 const clean     = v => String(v || "").trim().toLowerCase();
 const cleanText = (v, m = 500) => String(v || "").trim().slice(0, m).replace(/[<>]/g, "");
 const isValidEmail = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e || ""));
@@ -118,6 +116,7 @@ const sanitizeIdentifier = v => String(v || "").trim().replace(/[%_]/g, "");
 const sendError = (res, s, m) => res.status(s).json({ ok: false, error: m });
 const sendSuccess = (res, d = {}) => res.json({ ok: true, ...d });
 const makeRef = () => "GH-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(100 + Math.random() * 900);
+const makeBookingRef = () => "BK-" + Date.now().toString(36).toUpperCase() + "-" + Math.floor(100 + Math.random() * 900);
 
 function requireSupabase(req, res, next) {
   if (!supa) return sendError(res, 503, "Server not configured. Contact admin.");
@@ -128,7 +127,7 @@ function isMissingColumnError(err) {
   return err && /column|schema cache|does not exist/i.test(err.message || "");
 }
 
-// ---------- Order status model ----------
+// ---------- Status model ----------
 const ALLOWED_STATUSES = ["pending", "new", "accepted", "preparing", "on_the_way", "completed", "cancelled"];
 const VALID_TRANSITIONS = {
   pending:    ["accepted", "preparing", "on_the_way", "completed", "cancelled"],
@@ -155,7 +154,6 @@ function validatePayment(body, forcedChannel) {
     const num = String(body.paybill_number || "").replace(/\D/g, "");
     const acc = cleanText(body.paybill_account, 40);
     if (!/^\d{4,10}$/.test(num)) return { error: "Paybill number must be 4–10 digits" };
-    // Account number optional for hotels (guest ref used as fallback)
     patch.paybill_number = num;
     patch.paybill_account = acc || null;
     patch.till_number = null;
@@ -200,6 +198,11 @@ function requireHotel(req, res, next) {
 function requireVendor(req, res, next) {
   const t = verifyToken(req);
   if (!t || t.role !== "vendor") return sendError(res, 401, "Vendor login required");
+  req.user = t; next();
+}
+function requireGuest(req, res, next) {
+  const t = verifyToken(req);
+  if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
   req.user = t; next();
 }
 
@@ -338,7 +341,6 @@ app.post("/api/admin/hotels/:id/block", requireAdmin, requireSupabase, async (re
   try {
     const { hotel } = await findHotel(req.params.id);
     if (!hotel) return sendError(res, 404, "Hotel not found: " + req.params.id);
-
     const { error } = await supa.from("hotels")
       .update({ status: "BLOCKED" }).eq("id", hotel.id);
     if (error) return sendError(res, 500, error.message);
@@ -352,7 +354,6 @@ app.delete("/api/admin/hotels/:id", requireAdmin, requireSupabase, async (req, r
   try {
     const { hotel } = await findHotel(req.params.id);
     if (!hotel) return sendError(res, 404, "Hotel not found: " + req.params.id);
-
     const { error } = await supa.from("hotels").delete().eq("id", hotel.id);
     if (error) return sendError(res, 500, error.message);
     sendSuccess(res);
@@ -408,11 +409,42 @@ app.get("/api/admin/orders", requireAdmin, requireSupabase, async (req, res) => 
   res.json({ orders: data || [] });
 });
 
+// Admin commission ledger
+app.get("/api/admin/commission", requireAdmin, requireSupabase, async (req, res) => {
+  const status = String(req.query.status || "").toLowerCase();
+  let q = supa.from("commission_ledger").select("*")
+    .order("created_at", { ascending: false }).limit(500);
+  if (["owed", "settled", "waived"].includes(status)) q = q.eq("status", status);
+  const { data, error } = await q;
+  if (error) return sendError(res, 500, error.message);
+
+  const totals = (data || []).reduce((acc, r) => {
+    acc.gross += Number(r.gross_amount) || 0;
+    acc.commission += Number(r.commission) || 0;
+    acc[r.status] = (acc[r.status] || 0) + Number(r.commission || 0);
+    return acc;
+  }, { gross: 0, commission: 0, owed: 0, settled: 0, waived: 0 });
+
+  return sendSuccess(res, { ledger: data || [], totals });
+});
+
+app.patch("/api/admin/commission/:id", requireAdmin, requireSupabase, async (req, res) => {
+  const status = String(req.body.status || "").toLowerCase();
+  if (!["owed", "settled", "waived"].includes(status)) return sendError(res, 400, "Invalid status");
+  const patch = { status };
+  if (status === "settled") {
+    patch.settled_at = new Date().toISOString();
+    patch.settled_ref = cleanText(req.body.settled_ref, 100) || null;
+  }
+  const { data, error } = await supa.from("commission_ledger")
+    .update(patch).eq("id", req.params.id).select().single();
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { entry: data });
+});
+
 // ============================================================
 // HOTELS
 // ============================================================
-
-// Public hotel list for homepage — includes image_url + images
 app.get("/api/data", requireSupabase, async (req, res) => {
   let { data, error } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status,image_url,images")
@@ -529,12 +561,20 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
 });
 
 // ============================================================
-// HOTEL IMAGES — upload to Supabase Storage
+// HOTEL IMAGES — now with ownership check (bug #10 fixed)
 // ============================================================
 app.post(
   "/api/hotels/images",
   signupLimiter,
   requireSupabase,
+  (req, res, next) => {
+    const hotelId = String(req.body?.hotel_id || "").trim();
+    if (!hotelId) return sendError(res, 400, "hotel_id required");
+    const t = verifyToken(req);
+    if (t && t.role === "hotel" && t.hotel_id !== hotelId.toUpperCase())
+      return sendError(res, 403, "You can only upload images for your own hotel");
+    next();
+  },
   imageUpload.array("images", 8),
   async (req, res) => {
     try {
@@ -581,16 +621,13 @@ app.post(
       let { error: dbErr } = await supa.from("hotels").update(patch).eq("id", hotel.id);
 
       if (dbErr && isMissingColumnError(dbErr)) {
-        console.warn("⚠️ hotels.images missing, retrying with image_url only");
         const r2 = await supa.from("hotels").update({ image_url: cover }).eq("id", hotel.id);
         dbErr = r2.error;
       }
 
       if (dbErr) {
-        console.warn("⚠️ Could not save image URLs to hotels:", dbErr.message);
         return sendSuccess(res, {
-          images: uploaded,
-          cover,
+          images: uploaded, cover,
           warning: "Images uploaded but not saved to hotel record: " + dbErr.message
         });
       }
@@ -604,10 +641,8 @@ app.post(
 );
 
 // ============================================================
-// HOTEL PAYMENT — GM saves paybill/till · guests read it
+// HOTEL PAYMENT
 // ============================================================
-
-// GM sets payment info from the hotel dashboard
 app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => {
   try {
     const check = validatePayment(req.body);
@@ -617,7 +652,6 @@ app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => 
       check.patch.mpesa_name = cleanText(req.body.mpesa_name, 100) || null;
     }
 
-    // Resolve hotel UUID from the JWT's hotel_id
     const { hotel } = await findHotel(req.user.hotel_id);
     if (!hotel) return sendError(res, 404, "Hotel not found");
 
@@ -629,7 +663,7 @@ app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => 
       .single();
 
     if (error && isMissingColumnError(error))
-      return sendError(res, 501, "Payment columns missing on hotels table. Run the ALTER TABLE from the boot log.");
+      return sendError(res, 501, "Payment columns missing on hotels table. Run SCHEMA.sql.");
     if (error) return sendError(res, 500, error.message);
 
     return sendSuccess(res, {
@@ -649,7 +683,6 @@ app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => 
   }
 });
 
-// Public — guests read the hotel's paybill/till to show the payment card
 app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) => {
   try {
     const hid = String(req.params.hotelId || "").trim().toUpperCase();
@@ -662,17 +695,11 @@ app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) 
       .maybeSingle();
 
     if (error) {
-      // Graceful fallback if new columns don't exist yet
       if (isMissingColumnError(error)) {
         return sendSuccess(res, {
           payment: {
-            channel: "paybill",
-            paybill_number: null,
-            paybill_account: null,
-            till_number: null,
-            mpesa_name: null,
-            mpesa_phone: null,
-            configured: false
+            channel: "paybill", paybill_number: null, paybill_account: null,
+            till_number: null, mpesa_name: null, mpesa_phone: null, configured: false
           }
         });
       }
@@ -703,7 +730,7 @@ app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) 
 });
 
 // ============================================================
-// VENDOR SIGNUP
+// VENDOR SIGNUP — persists all collected fields (bug #17 fixed)
 // ============================================================
 app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
@@ -711,7 +738,8 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       full_name, vendor_name, email, password, phone,
       id_number, city, location, location_hub,
       category, services, price, bio,
-      hotels, hotel_ids
+      hotels, hotel_ids,
+      vehicle, plate, radius, country
     } = req.body;
 
     const finalName = cleanText(vendor_name || full_name, 100);
@@ -735,6 +763,16 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
     const hash = await bcrypt.hash(String(password), 12);
     const serviceList = Array.isArray(services) ? services : [];
 
+    // group_label derived from category
+    const groupLabel = (() => {
+      const c = String(category || serviceList[0] || "").toLowerCase();
+      if (c.includes("transport") || c.includes("taxi")) return "transport";
+      if (c.includes("tour") || c.includes("safari"))     return "tours";
+      if (c.includes("wellness") || c.includes("spa") || c.includes("massage")) return "wellness";
+      if (c.includes("media") || c.includes("photo"))     return "media";
+      return "services";
+    })();
+
     const insertPayload = {
       vendor_name: finalName,
       email: finalEmail,
@@ -755,6 +793,11 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       services: serviceList,
       payout_method: cleanText(req.body.payout_method || payCheck.patch.payment_channel, 20),
       mpesa_name: cleanText(req.body.mpesa_name || finalName, 100),
+      vehicle: cleanText(vehicle, 80),
+      plate:   cleanText(plate, 40),
+      radius:  cleanText(radius, 40),
+      country: cleanText(country, 40),
+      group_label: groupLabel,
       ...payCheck.patch
     };
 
@@ -762,7 +805,7 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
       .from("vendors").insert([{ ...insertPayload, ...optional }]).select().single();
 
     if (error && isMissingColumnError(error)) {
-      console.warn("⚠️ Optional vendor columns missing, retrying minimal insert:", error.message);
+      console.warn("⚠️ Optional vendor columns missing, retrying minimal:", error.message);
       const retry = await supa.from("vendors").insert([{ ...insertPayload, ...payCheck.patch }]).select().single();
       vendor = retry.data;
       error = retry.error;
@@ -848,8 +891,13 @@ app.get("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
 });
 
 app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
-  const { title, description, price, category, icon } = req.body;
+  const { title, description, price, category, icon, kind } = req.body;
   if (!title) return sendError(res, 400, "Title required");
+
+  const finalKind = ["food", "hotel_service", "vendor_item"].includes(String(kind || "").toLowerCase())
+    ? String(kind).toLowerCase()
+    : "food";
+
   const { data, error } = await supa.from("hotel_services").insert([{
     hotel_id: req.user.hotel_id,
     title: cleanText(title, 120),
@@ -857,6 +905,7 @@ app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => 
     price: safeNumber(price, 0),
     category: cleanText(category || "food", 30),
     icon: cleanText(icon || "🍔", 8),
+    kind: finalKind,
     is_active: true
   }]).select().single();
   if (error) return sendError(res, 500, error.message);
@@ -913,22 +962,33 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
     .select("id").eq("hotel_id", hid).eq("vendor_id", vid).maybeSingle();
 
   if (!existing) {
+    // Derive group_label from vendor category (bug #14 fixed)
+    const cat = String(v.category || "services").toLowerCase();
+    const groupLabel =
+      cat.includes("transport") || cat.includes("taxi") ? "transport"
+    : cat.includes("tour")                            ? "tours"
+    : cat.includes("wellness") || cat.includes("spa") || cat.includes("massage") ? "wellness"
+    : cat.includes("media") || cat.includes("photo")  ? "media"
+    : "services";
+
     const insertPayload = {
       hotel_id: hid,
-      title: `${v.vendor_name} — ${v.category || "service"}`,
+      title: v.vendor_name,
       description: v.bio || "Available through GuestHub",
       price: safeNumber(v.price, 0),
-      category: v.category || "services",
+      category: cat,
       icon: "🏪",
       vendor_id: vid,
       vendor_name: v.vendor_name,
       vendor_phone: v.phone,
-      is_active: true
+      is_active: true,
+      kind: "vendor_item",
+      group_label: groupLabel
     };
     let { error } = await supa.from("hotel_services").insert([insertPayload]);
     if (error && isMissingColumnError(error)) {
-      delete insertPayload.vendor_name;
-      delete insertPayload.vendor_phone;
+      delete insertPayload.group_label;
+      delete insertPayload.kind;
       const retry = await supa.from("hotel_services").insert([insertPayload]);
       error = retry.error;
     }
@@ -1039,6 +1099,33 @@ app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) 
   sendSuccess(res, { order: data });
 });
 
+// Hotel bookings view
+app.get("/api/gm/bookings", requireHotel, requireSupabase, async (req, res) => {
+  const { data, error } = await supa.from("bookings").select("*")
+    .eq("hotel_id", req.user.hotel_id)
+    .order("scheduled_for", { ascending: true }).limit(300);
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { bookings: data || [] });
+});
+
+app.patch("/api/gm/bookings/:id", requireHotel, requireSupabase, async (req, res) => {
+  const { data: existing } = await supa.from("bookings")
+    .select("hotel_id,status").eq("id", req.params.id).maybeSingle();
+  if (!existing) return sendError(res, 404, "Not found");
+  if (existing.hotel_id !== req.user.hotel_id) return sendError(res, 403, "Not yours");
+
+  const next = String(req.body.status || "").toLowerCase();
+  if (!["confirmed", "declined", "completed", "cancelled"].includes(next))
+    return sendError(res, 400, "Invalid status");
+
+  const patch = { status: next, updated_at: new Date().toISOString() };
+  if (req.body.vendor_note !== undefined) patch.vendor_note = cleanText(req.body.vendor_note, 300);
+
+  const { data, error } = await supa.from("bookings").update(patch).eq("id", req.params.id).select().single();
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { booking: data });
+});
+
 // ============================================================
 // VENDOR endpoints
 // ============================================================
@@ -1049,6 +1136,7 @@ app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   return sendSuccess(res, { vendor: data });
 });
 
+// Vendor orders — now scoped to vendor's service categories (bug #9 fixed)
 app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
   const { data: links } = await supa.from("vendor_hotels")
@@ -1062,11 +1150,29 @@ app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) =
 
   if (!scopeIds.length) return sendSuccess(res, { orders: [] });
 
+  // Get vendor's service categories to filter unassigned jobs
+  const { data: myServices } = await supa.from("hotel_services")
+    .select("category").eq("vendor_id", vid);
+  const categories = [...new Set(
+    (myServices || []).map(s => String(s.category || "").toLowerCase()).filter(Boolean)
+  )];
+
   const { data } = await supa.from("orders").select("*")
     .in("hotel_id", scopeIds)
     .or(`vendor_id.eq.${vid},vendor_id.is.null`)
     .order("created_at", { ascending: false }).limit(200);
-  return sendSuccess(res, { orders: data || [] });
+
+  const filtered = (data || []).filter(o => {
+    if (o.vendor_id && String(o.vendor_id) === String(vid)) return true;
+    if (!o.vendor_id) {
+      if (!categories.length) return false;
+      const cat = String(o.category || "").toLowerCase();
+      return categories.includes(cat);
+    }
+    return false;
+  });
+
+  return sendSuccess(res, { orders: filtered });
 });
 
 app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, res) => {
@@ -1077,7 +1183,7 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
       return sendError(res, 400, "Invalid status");
 
     const { data: order } = await supa.from("orders")
-      .select("id, status, vendor_id, hotel_id, reference")
+      .select("id, status, vendor_id, hotel_id, reference, amount")
       .eq("id", req.params.id).maybeSingle();
     if (!order) return sendError(res, 404, "Order not found");
 
@@ -1116,6 +1222,21 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
       data = r2.data; error = r2.error;
     }
     if (error) return sendError(res, 500, error.message);
+
+    // Record commission on completion (bug #15 fixed)
+    if (status === "completed" && data && Number(data.amount) > 0) {
+      try {
+        await supa.from("commission_ledger").insert([{
+          hotel_id: data.hotel_id,
+          vendor_id: vid,
+          order_id: data.id,
+          gross_amount: Number(data.amount) || 0,
+          commission: Math.floor((Number(data.amount) || 0) * 0.15),
+          status: "owed"
+        }]);
+      } catch (e) { console.warn("⚠️ commission insert (order):", e.message); }
+    }
+
     return sendSuccess(res, { order: data });
   } catch (e) {
     return sendError(res, 500, e.message);
@@ -1134,14 +1255,73 @@ app.patch("/api/vendor/availability", requireVendor, requireSupabase, async (req
     .update({ is_available: isAvailable })
     .eq("id", req.user.vendor_id).select().single();
 
-  if (error && isMissingColumnError(error)) {
-    return sendSuccess(res, {
-      available: isAvailable,
-      warning: "Add is_available column to vendors table to persist this."
-    });
+  if (error) {
+    if (isMissingColumnError(error))
+      return sendError(res, 501, "Server not migrated. Run SCHEMA.sql (column: is_available).");
+    return sendError(res, 500, error.message);
   }
+  return sendSuccess(res, { available: !!data.is_available });
+});
+
+// Weekly availability slots
+app.get("/api/vendor/availability", requireVendor, requireSupabase, async (req, res) => {
+  const { data, error } = await supa.from("vendor_availability")
+    .select("*").eq("vendor_id", req.user.vendor_id).order("dow");
   if (error) return sendError(res, 500, error.message);
-  return sendSuccess(res, { available: data.is_available });
+  return sendSuccess(res, { slots: data || [] });
+});
+
+app.put("/api/vendor/availability", requireVendor, requireSupabase, async (req, res) => {
+  try {
+    const slots = Array.isArray(req.body.slots) ? req.body.slots : [];
+    if (slots.length > 40) return sendError(res, 400, "Too many slots (max 40)");
+
+    for (const s of slots) {
+      const dow = Number(s.dow);
+      if (!(dow >= 0 && dow <= 6)) return sendError(res, 400, "Invalid dow");
+      if (!/^\d{1,2}:\d{2}/.test(String(s.open_time)))  return sendError(res, 400, "Invalid open_time");
+      if (!/^\d{1,2}:\d{2}/.test(String(s.close_time))) return sendError(res, 400, "Invalid close_time");
+    }
+
+    await supa.from("vendor_availability").delete().eq("vendor_id", req.user.vendor_id);
+
+    if (slots.length) {
+      const rows = slots.map(s => ({
+        vendor_id: req.user.vendor_id,
+        dow: Number(s.dow),
+        open_time: s.open_time,
+        close_time: s.close_time,
+        slot_minutes: Math.max(15, Math.min(480, Number(s.slot_minutes) || 60))
+      }));
+      const { error } = await supa.from("vendor_availability").insert(rows);
+      if (error) return sendError(res, 500, error.message);
+    }
+
+    return sendSuccess(res, { saved: slots.length });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+app.post("/api/vendor/blackouts", requireVendor, requireSupabase, async (req, res) => {
+  const { starts_at, ends_at, reason } = req.body;
+  if (!starts_at || !ends_at) return sendError(res, 400, "starts_at and ends_at required");
+  const s = new Date(starts_at), e = new Date(ends_at);
+  if (isNaN(s) || isNaN(e) || e <= s) return sendError(res, 400, "Invalid date range");
+
+  const { data, error } = await supa.from("vendor_blackouts").insert([{
+    vendor_id: req.user.vendor_id,
+    starts_at: s.toISOString(),
+    ends_at: e.toISOString(),
+    reason: cleanText(reason, 200)
+  }]).select().single();
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { blackout: data });
+});
+
+app.delete("/api/vendor/blackouts/:id", requireVendor, requireSupabase, async (req, res) => {
+  const { error } = await supa.from("vendor_blackouts")
+    .delete().eq("id", req.params.id).eq("vendor_id", req.user.vendor_id);
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res);
 });
 
 app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, res) => {
@@ -1165,7 +1345,7 @@ app.get("/api/vendor/payment", requireVendor, requireSupabase, async (req, res) 
     .select("payment_channel, paybill_number, paybill_account, till_number, mpesa, mpesa_name")
     .eq("id", req.user.vendor_id).maybeSingle();
   if (error && isMissingColumnError(error))
-    return sendError(res, 501, "Payment columns missing. Run the ALTER TABLE from the migration.");
+    return sendError(res, 501, "Payment columns missing. Run SCHEMA.sql.");
   if (error) return sendError(res, 500, error.message);
   return sendSuccess(res, { payment: data || {} });
 });
@@ -1182,7 +1362,7 @@ app.patch("/api/vendor/payment", requireVendor, requireSupabase, async (req, res
     .update(check.patch).eq("id", req.user.vendor_id).select().single();
 
   if (error && isMissingColumnError(error))
-    return sendError(res, 501, "Payment columns missing. Run the ALTER TABLE from the migration.");
+    return sendError(res, 501, "Payment columns missing. Run SCHEMA.sql.");
   if (error) return sendError(res, 500, error.message);
   delete data.password_hash;
   return sendSuccess(res, { vendor: data });
@@ -1198,8 +1378,256 @@ app.get("/api/public/vendor/:vendorId/payment", requireSupabase, async (req, res
   return sendSuccess(res, { payment: data });
 });
 
+// Public vendor profile
+app.get("/api/public/vendor/:vendorId", requireSupabase, async (req, res) => {
+  const vid = req.params.vendorId;
+  if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
+  const { data } = await supa.from("vendors")
+    .select("id,vendor_name,bio,category,group_label,phone,city,hub_location,price,services,vehicle,rating_avg,rating_count,is_available,payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,status")
+    .eq("id", vid).maybeSingle();
+  if (!data) return sendError(res, 404, "Vendor not found");
+  if (String(data.status).toLowerCase() !== "approved")
+    return sendError(res, 403, "Vendor not available");
+  return sendSuccess(res, { vendor: data });
+});
+
+// Public slots
+app.get("/api/public/vendor/:vendorId/slots", requireSupabase, async (req, res) => {
+  const vid = req.params.vendorId;
+  if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
+
+  const date = String(req.query.date || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return sendError(res, 400, "date=YYYY-MM-DD required");
+
+  const dayStart = new Date(date + "T00:00:00Z");
+  const dayEnd   = new Date(date + "T23:59:59Z");
+  const dow = dayStart.getUTCDay();
+
+  const { data: avail } = await supa.from("vendor_availability")
+    .select("*").eq("vendor_id", vid).eq("dow", dow);
+
+  if (!avail || !avail.length) return sendSuccess(res, { slots: [], dow });
+
+  const { data: existing } = await supa.from("bookings")
+    .select("scheduled_for,duration_min,status")
+    .eq("vendor_id", vid)
+    .gte("scheduled_for", dayStart.toISOString())
+    .lte("scheduled_for", dayEnd.toISOString())
+    .in("status", ["requested", "confirmed"]);
+
+  const { data: blackouts } = await supa.from("vendor_blackouts")
+    .select("starts_at,ends_at").eq("vendor_id", vid)
+    .lte("starts_at", dayEnd.toISOString())
+    .gte("ends_at", dayStart.toISOString());
+
+  const bookedRanges = (existing || []).map(b => {
+    const start = new Date(b.scheduled_for).getTime();
+    const end = start + (Number(b.duration_min) || 60) * 60000;
+    return [start, end];
+  });
+  const blackRanges = (blackouts || []).map(b => [new Date(b.starts_at).getTime(), new Date(b.ends_at).getTime()]);
+
+  const slots = [];
+  const now = Date.now();
+
+  avail.forEach(a => {
+    const [oh, om] = String(a.open_time).split(":").map(Number);
+    const [ch, cm] = String(a.close_time).split(":").map(Number);
+    const step = Math.max(15, Number(a.slot_minutes) || 60);
+
+    let cur = Date.UTC(dayStart.getUTCFullYear(), dayStart.getUTCMonth(), dayStart.getUTCDate(), oh, om);
+    const end = Date.UTC(dayStart.getUTCFullYear(), dayStart.getUTCMonth(), dayStart.getUTCDate(), ch, cm);
+
+    while (cur + step * 60000 <= end) {
+      const slotEnd = cur + step * 60000;
+      if (cur < now) { cur = slotEnd; continue; }
+
+      const overlapBooked = bookedRanges.some(([s, e]) => cur < e && slotEnd > s);
+      const overlapBlack  = blackRanges.some(([s, e]) => cur < e && slotEnd > s);
+
+      if (!overlapBooked && !overlapBlack) {
+        slots.push({ start: new Date(cur).toISOString(), end: new Date(slotEnd).toISOString() });
+      }
+      cur = slotEnd;
+    }
+  });
+
+  return sendSuccess(res, { slots, dow });
+});
+
 // ============================================================
-// GUEST — public
+// GUEST SESSIONS
+// ============================================================
+app.post("/api/guest/session", orderLimiter, requireSupabase, async (req, res) => {
+  try {
+    const { hotel_id, guest_name, guest_phone, mode, number, language } = req.body;
+    if (!hotel_id) return sendError(res, 400, "hotel_id required");
+
+    const isTable = String(mode || "room").toLowerCase() === "table";
+    const loc = cleanText(number, 30);
+    if (!loc) return sendError(res, 400, "room/table number required");
+
+    const payload = {
+      hotel_id: String(hotel_id).toUpperCase(),
+      guest_name: cleanText(guest_name, 100),
+      guest_phone: cleanPhone(guest_phone),
+      room_number: isTable ? null : loc,
+      table_number: isTable ? loc : null,
+      mode: isTable ? "table" : "room",
+      language: cleanText(language || "en", 5),
+      last_seen_at: new Date().toISOString()
+    };
+
+    // Reuse session if same phone + hotel in last 24h
+    if (payload.guest_phone) {
+      const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+      const { data: existing } = await supa.from("guest_sessions")
+        .select("*").eq("hotel_id", payload.hotel_id)
+        .eq("guest_phone", payload.guest_phone)
+        .gte("last_seen_at", since).order("last_seen_at", { ascending: false })
+        .limit(1).maybeSingle();
+
+      if (existing) {
+        const { data: updated } = await supa.from("guest_sessions")
+          .update(payload).eq("id", existing.id).select().single();
+        const token = createToken({ role: "guest", sid: updated.id, hid: payload.hotel_id }, "30d");
+        return sendSuccess(res, { session: updated, token });
+      }
+    }
+
+    const { data, error } = await supa.from("guest_sessions").insert([payload]).select().single();
+    if (error) return sendError(res, 500, error.message);
+
+    const token = createToken({ role: "guest", sid: data.id, hid: payload.hotel_id }, "30d");
+    return sendSuccess(res, { session: data, token });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+app.get("/api/guest/me", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+  const { data } = await supa.from("guest_sessions").select("*").eq("id", t.sid).maybeSingle();
+  if (!data) return sendError(res, 404, "Session not found");
+  return sendSuccess(res, { session: data });
+});
+
+// ============================================================
+// BOOTSTRAP — one call for the guest app
+// ============================================================
+app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res) => {
+  try {
+    const hid = String(req.params.hotelId || "").toUpperCase();
+    if (!hid) return sendError(res, 400, "hotelId required");
+
+    const { data: hotel } = await supa.from("hotels")
+      .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status")
+      .ilike("hotel_id", hid).maybeSingle();
+
+    if (!hotel) return sendError(res, 404, "Hotel not found");
+    if (String(hotel.status || "").toUpperCase() !== "APPROVED")
+      return sendError(res, 403, "Hotel not available");
+
+    const [services, depts] = await Promise.all([
+      supa.from("hotel_services").select("*").eq("hotel_id", hid).eq("is_active", true),
+      supa.from("departments").select("name,whatsapp").eq("hotel_id", hid)
+    ]);
+
+    const rows = services.data || [];
+    const food         = rows.filter(r => r.kind === "food" || (!r.kind && !r.vendor_id));
+    const hotelService = rows.filter(r => r.kind === "hotel_service");
+    const vendorItems  = rows.filter(r => r.kind === "vendor_item" || r.vendor_id);
+
+    // Group vendor items
+    const vendorMap = new Map();
+    vendorItems.forEach(r => {
+      if (!r.vendor_id) return;
+      if (!vendorMap.has(r.vendor_id)) {
+        vendorMap.set(r.vendor_id, {
+          id: r.vendor_id,
+          name: r.vendor_name || r.title,
+          phone: r.vendor_phone,
+          group: r.group_label || "services",
+          items: []
+        });
+      }
+      vendorMap.get(r.vendor_id).items.push({
+        id: r.id,
+        name: r.title,
+        desc: r.description,
+        price: Number(r.price) || 0,
+        icon: r.icon || "🏪"
+      });
+    });
+
+    // Enrich with vendor payment + rating
+    const vendorList = [];
+    for (const v of vendorMap.values()) {
+      const { data: vRow } = await supa.from("vendors")
+        .select("payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,rating_avg,rating_count,bio,is_available")
+        .eq("id", v.id).maybeSingle();
+      vendorList.push({
+        ...v,
+        bio: vRow?.bio || "",
+        rating: Number(vRow?.rating_avg) || 0,
+        rating_count: Number(vRow?.rating_count) || 0,
+        available: vRow?.is_available !== false,
+        payment: {
+          channel: vRow?.payment_channel || null,
+          paybill_number: vRow?.paybill_number || null,
+          paybill_account: vRow?.paybill_account || null,
+          till_number: vRow?.till_number || null,
+          mpesa_phone: vRow?.mpesa || null,
+          mpesa_name: vRow?.mpesa_name || v.name,
+          configured: !!(vRow?.paybill_number || vRow?.till_number || vRow?.mpesa)
+        }
+      });
+    }
+
+    return sendSuccess(res, {
+      hotel: {
+        hotel_id: hotel.hotel_id,
+        name: hotel.name || hotel.hotel_name || hid,
+        tagline: hotel.tagline || "",
+        currency: hotel.currency || "Ksh",
+        service_charge: Number(hotel.service_charge) || 0,
+        promo_title: hotel.promo_title || "",
+        promo_text: hotel.promo_text || "",
+        image_url: hotel.image_url || (Array.isArray(hotel.images) && hotel.images[0]) || null,
+        phone: hotel.phone || null,
+        payment: {
+          channel: hotel.payment_channel || "paybill",
+          paybill_number: hotel.paybill_number || null,
+          paybill_account: hotel.paybill_account || null,
+          till_number: hotel.till_number || null,
+          mpesa_name: hotel.mpesa_name || null,
+          configured: !!(hotel.paybill_number || hotel.till_number)
+        }
+      },
+      menu: food.map(r => ({
+        id: r.id,
+        name: r.title,
+        desc: r.description,
+        price: Number(r.price) || 0,
+        icon: r.icon || "🍽️",
+        category: r.category || "Menu",
+        tags: Array.isArray(r.tags) ? r.tags : []
+      })),
+      services: hotelService.map(r => ({
+        id: r.id,
+        name: r.title,
+        desc: r.description,
+        price: Number(r.price) || 0,
+        icon: r.icon || "🛎️",
+        category: r.category || "service"
+      })),
+      vendors: vendorList,
+      departments: depts.data || []
+    });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// ============================================================
+// PUBLIC HOTEL LEGACY ENDPOINTS
 // ============================================================
 app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
@@ -1218,23 +1646,10 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
       .order("created_at", { ascending: true }).limit(500);
     if (error) return sendError(res, 500, error.message);
 
-    const FOOD_HINTS = [
-      "food","restaurant","dining","room service","drink","bar","kitchen","menu",
-      "meal","main","starter","appetizer","dessert","snack","breakfast","lunch",
-      "dinner","beverage","juice","cocktail","wine","beer","tea","coffee","soda",
-      "water","pizza","burger","chicken","rice","pilau","nyama","ugali","soup",
-      "salad","fish","beef","vegetarian","drinks"
-    ];
-    const isFood = s => {
-      const c = String(s.category || "").toLowerCase();
-      const t = String(s.title || "").toLowerCase();
-      return FOOD_HINTS.some(h => c.includes(h) || t.includes(h));
-    };
-
-    const foodServices = (data || []).filter(isFood);
+    const foodServices = (data || []).filter(s => s.kind === "food" || (!s.kind && !s.vendor_id));
 
     const catMap = new Map();
-    const items = foodServices.map((s, i) => {
+    const items = foodServices.map(s => {
       const rawCat = String(s.category || "Menu").trim();
       const catKey = rawCat.toLowerCase() || "menu";
       if (!catMap.has(catKey)) {
@@ -1260,10 +1675,7 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
     });
 
     return sendSuccess(res, {
-      menu: {
-        categories: [...catMap.values()],
-        items
-      }
+      menu: { categories: [...catMap.values()], items }
     });
   } catch (e) {
     return sendError(res, 500, e.message);
@@ -1272,7 +1684,9 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
 
 app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
-  const { data } = await supa.from("hotels").select("name, hotel_name, tagline, currency, service_charge, promo_title, promo_text").ilike("hotel_id", hid).maybeSingle();
+  const { data } = await supa.from("hotels")
+    .select("name, hotel_name, tagline, currency, service_charge, promo_title, promo_text")
+    .ilike("hotel_id", hid).maybeSingle();
   if (!data) return sendError(res, 404, "Hotel not found");
   return sendSuccess(res, {
     settings: {
@@ -1286,7 +1700,9 @@ app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res)
   });
 });
 
-// ---------- Order creation ----------
+// ============================================================
+// ORDER CREATION
+// ============================================================
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const {
@@ -1294,8 +1710,9 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
       room_number, table_number,
       guest_name, guest_phone,
       service_id, service_title,
-      category, details, amount, department,
-      items, subtotal, service_charge, total
+      category, details, amount, department, kind,
+      items, subtotal, service_charge, total,
+      guest_session_id
     } = req.body;
 
     if (!hotel_id) return sendError(res, 400, "hotel_id required");
@@ -1330,12 +1747,23 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     };
 
     const extendedPayload = { ...basePayload };
+
     if (isTable) {
       extendedPayload.mode = "table";
       extendedPayload.table_number = locValue;
     } else {
       extendedPayload.mode = "room";
     }
+
+    if (guest_session_id && isUUID(guest_session_id)) {
+      extendedPayload.guest_session_id = guest_session_id;
+    }
+
+    const finalKind = ["food", "hotel_service", "vendor_item"].includes(String(kind || "").toLowerCase())
+      ? String(kind).toLowerCase()
+      : "food";
+    extendedPayload.kind = finalKind;
+
     if (Array.isArray(items) && items.length) {
       extendedPayload.items = items.map(i => ({
         id: cleanText(i.id, 60),
@@ -1409,9 +1837,6 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
       .order("created_at", { ascending: false })
       .limit(50);
 
-    if (error && isMissingColumnError(error)) {
-      return sendError(res, 500, error.message);
-    }
     if (error) return sendError(res, 500, error.message);
 
     if (!data || !data.length) {
@@ -1428,15 +1853,219 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
+// Guest order history — session-aware
 app.get("/api/guest/orders", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  const sid = t?.role === "guest" ? t.sid : null;
   const phone = cleanPhone(req.query.phone || "");
   const hotel_id = String(req.query.hotel_id || "").toUpperCase();
-  if (!phone || !hotel_id) return sendError(res, 400, "phone and hotel_id required");
-  const { data } = await supa.from("orders").select("*")
-    .eq("hotel_id", hotel_id)
-    .eq("guest_phone", phone)
-    .order("created_at", { ascending: false }).limit(20);
+
+  if (!sid && !(phone && hotel_id))
+    return sendError(res, 400, "Guest token or phone+hotel_id required");
+
+  let q = supa.from("orders").select("*").order("created_at", { ascending: false }).limit(50);
+  q = sid ? q.eq("guest_session_id", sid) : q.eq("guest_phone", phone).eq("hotel_id", hotel_id);
+
+  const { data, error } = await q;
+  if (error) return sendError(res, 500, error.message);
   return sendSuccess(res, { orders: data || [] });
+});
+
+// ============================================================
+// BOOKINGS
+// ============================================================
+app.post("/api/bookings", orderLimiter, requireSupabase, async (req, res) => {
+  try {
+    const {
+      hotel_id, vendor_id, service_id, service_title,
+      scheduled_for, duration_min, guests_count,
+      guest_name, guest_phone, room_number, table_number,
+      amount, notes, guest_session_id
+    } = req.body;
+
+    if (!hotel_id || !vendor_id || !service_title || !scheduled_for)
+      return sendError(res, 400, "hotel_id, vendor_id, service_title, scheduled_for are required");
+
+    const when = new Date(scheduled_for);
+    if (isNaN(when.getTime())) return sendError(res, 400, "Invalid scheduled_for");
+    if (when.getTime() < Date.now() - 60_000)
+      return sendError(res, 400, "Scheduled time is in the past");
+
+    const ref = makeBookingRef();
+
+    const payload = {
+      reference: ref,
+      hotel_id: String(hotel_id).toUpperCase(),
+      vendor_id,
+      service_id: service_id || null,
+      service_title: cleanText(service_title, 120),
+      scheduled_for: when.toISOString(),
+      duration_min: safeNumber(duration_min, 60),
+      guests_count: Math.max(1, safeNumber(guests_count, 1)),
+      guest_name: cleanText(guest_name, 100),
+      guest_phone: cleanPhone(guest_phone),
+      room_number: cleanText(room_number, 30) || null,
+      table_number: cleanText(table_number, 30) || null,
+      amount: safeNumber(amount, 0),
+      notes: cleanText(notes, 500),
+      status: "requested"
+    };
+
+    if (guest_session_id && isUUID(guest_session_id))
+      payload.guest_session_id = guest_session_id;
+
+    const { data, error } = await supa.from("bookings").insert([payload]).select().single();
+    if (error) return sendError(res, 500, error.message);
+
+    return sendSuccess(res, { booking: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+app.get("/api/bookings/guest", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  const sid = t?.role === "guest" ? t.sid : null;
+  const phone = cleanPhone(req.query.phone || "");
+  if (!sid && !phone) return sendError(res, 400, "Guest token or phone required");
+
+  let q = supa.from("bookings").select("*").order("created_at", { ascending: false }).limit(50);
+  q = sid ? q.eq("guest_session_id", sid) : q.eq("guest_phone", phone);
+  const { data, error } = await q;
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { bookings: data || [] });
+});
+
+app.get("/api/bookings/vendor", requireVendor, requireSupabase, async (req, res) => {
+  const { data, error } = await supa.from("bookings").select("*")
+    .eq("vendor_id", req.user.vendor_id)
+    .order("scheduled_for", { ascending: true }).limit(200);
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { bookings: data || [] });
+});
+
+app.get("/api/bookings/hotel", requireHotel, requireSupabase, async (req, res) => {
+  const { data, error } = await supa.from("bookings").select("*")
+    .eq("hotel_id", req.user.hotel_id)
+    .order("scheduled_for", { ascending: true }).limit(200);
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { bookings: data || [] });
+});
+
+app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
+  try {
+    const t = verifyToken(req);
+    if (!t) return sendError(res, 401, "Auth required");
+
+    const { data: existing } = await supa.from("bookings")
+      .select("*").eq("id", req.params.id).maybeSingle();
+    if (!existing) return sendError(res, 404, "Booking not found");
+
+    const isVendor = t.role === "vendor" && String(existing.vendor_id) === String(t.vendor_id);
+    const isHotel  = t.role === "hotel"  && existing.hotel_id === t.hotel_id;
+    const isGuest  = t.role === "guest"  && String(existing.guest_session_id) === String(t.sid);
+    if (!isVendor && !isHotel && !isGuest) return sendError(res, 403, "Not yours");
+
+    const next = String(req.body.status || "").toLowerCase();
+    const allowed = isVendor
+      ? ["confirmed", "declined", "completed", "cancelled"]
+      : isHotel
+      ? ["confirmed", "declined", "completed", "cancelled"]
+      : ["cancelled"];
+    if (next && !allowed.includes(next)) return sendError(res, 403, "Not allowed");
+
+    const patch = { updated_at: new Date().toISOString() };
+    if (next) patch.status = next;
+    if (req.body.vendor_note !== undefined) patch.vendor_note = cleanText(req.body.vendor_note, 300);
+    if (next === "confirmed") patch.confirmed_at = new Date().toISOString();
+    if (next === "completed") patch.completed_at = new Date().toISOString();
+    if (next === "cancelled") patch.cancelled_at = new Date().toISOString();
+
+    const { data, error } = await supa.from("bookings").update(patch).eq("id", req.params.id).select().single();
+    if (error) return sendError(res, 500, error.message);
+
+    // Commission on completion
+    if (next === "completed" && data.amount > 0 && data.vendor_id) {
+      try {
+        await supa.from("commission_ledger").insert([{
+          hotel_id: data.hotel_id,
+          vendor_id: data.vendor_id,
+          booking_id: data.id,
+          gross_amount: Number(data.amount) || 0,
+          commission: Math.floor((Number(data.amount) || 0) * 0.15),
+          status: "owed"
+        }]);
+      } catch (e) { console.warn("⚠️ commission insert (booking):", e.message); }
+    }
+
+    return sendSuccess(res, { booking: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// ============================================================
+// GUEST SSE — real-time order + booking status
+// ============================================================
+app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
+  const token = String(req.params.token || "");
+  let payload = null;
+  try { payload = jwt.verify(token, JWT_SECRET); } catch { /* */ }
+  if (!payload || payload.role !== "guest") return sendError(res, 401, "Invalid guest token");
+
+  const sid = payload.sid;
+  const hotelId = payload.hid;
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders?.();
+
+  const send = (event, data) => {
+    res.write(`event: ${event}\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  send("hello", { sid, hotelId, ts: Date.now() });
+
+  let lastOrdersHash = "";
+  let lastBookingsHash = "";
+
+  const tick = async () => {
+    try {
+      const [orders, bookings] = await Promise.all([
+        supa.from("orders")
+          .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items")
+          .eq("hotel_id", hotelId).eq("guest_session_id", sid)
+          .order("created_at", { ascending: false }).limit(20),
+        supa.from("bookings")
+          .select("id,status,reference,scheduled_for,service_title,updated_at,amount,duration_min,vendor_note")
+          .eq("guest_session_id", sid)
+          .order("created_at", { ascending: false }).limit(20)
+      ]);
+
+      const oHash = JSON.stringify(orders.data || []);
+      const bHash = JSON.stringify(bookings.data || []);
+
+      if (oHash !== lastOrdersHash) {
+        lastOrdersHash = oHash;
+        send("orders", orders.data || []);
+      }
+      if (bHash !== lastBookingsHash) {
+        lastBookingsHash = bHash;
+        send("bookings", bookings.data || []);
+      }
+
+      send("ping", { ts: Date.now() });
+    } catch (e) {
+      send("error", { message: e.message });
+    }
+  };
+
+  tick();
+  const timer = setInterval(tick, 4000);
+
+  req.on("close", () => {
+    clearInterval(timer);
+    res.end();
+  });
 });
 
 // ============================================================
@@ -1463,6 +2092,7 @@ app.get("*", (req, res) => {
     "/vendor-login": "vendor-login.html",
     "/vendor-signup": "vendor-signup.html",
     "/hotel-login": "hotel-login.html",
+    "/admin-login": "admin-login.html",
     "/": "index.html"
   };
   const mapped = htmlMap[req.path] || "index.html";
@@ -1480,7 +2110,7 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V1.5 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V2.0 running on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   console.log(`📦 Storage bucket: ${BUCKET}`);
@@ -1488,51 +2118,10 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("--------------------------------------------");
   console.log("💳 Direct-to-vendor payments enabled");
   console.log("🍽️  Table-mode ordering enabled");
-  console.log("📸 Hotel image uploads enabled");
-  console.log("🏦 Hotel paybill/till endpoints enabled");
-  console.log("📌 Required migration (run once in Supabase SQL):");
-  console.log(`
--- Vendors: payment + availability
-ALTER TABLE vendors
-  ADD COLUMN IF NOT EXISTS payment_channel text DEFAULT 'send_money',
-  ADD COLUMN IF NOT EXISTS paybill_number  text,
-  ADD COLUMN IF NOT EXISTS paybill_account text,
-  ADD COLUMN IF NOT EXISTS till_number     text,
-  ADD COLUMN IF NOT EXISTS mpesa_name      text,
-  ADD COLUMN IF NOT EXISTS is_available    boolean DEFAULT true;
-
--- Orders: table mode + cart
-ALTER TABLE orders
-  ADD COLUMN IF NOT EXISTS mode            text DEFAULT 'room',
-  ADD COLUMN IF NOT EXISTS table_number    text,
-  ADD COLUMN IF NOT EXISTS items           jsonb,
-  ADD COLUMN IF NOT EXISTS subtotal        numeric DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS service_charge  numeric DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS total           numeric DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS rating          smallint,
-  ADD COLUMN IF NOT EXISTS rated_at        timestamptz;
-
--- Hotel services: vendor attribution
-ALTER TABLE hotel_services
-  ADD COLUMN IF NOT EXISTS vendor_id     uuid,
-  ADD COLUMN IF NOT EXISTS vendor_name   text,
-  ADD COLUMN IF NOT EXISTS vendor_phone  text,
-  ADD COLUMN IF NOT EXISTS tags          jsonb;
-
--- Hotels: guest-facing settings + images + M-Pesa payment
-ALTER TABLE hotels
-  ADD COLUMN IF NOT EXISTS tagline         text,
-  ADD COLUMN IF NOT EXISTS currency        text DEFAULT 'Ksh',
-  ADD COLUMN IF NOT EXISTS service_charge  numeric DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS promo_title     text,
-  ADD COLUMN IF NOT EXISTS promo_text      text,
-  ADD COLUMN IF NOT EXISTS image_url       text,
-  ADD COLUMN IF NOT EXISTS images          jsonb,
-  ADD COLUMN IF NOT EXISTS payment_channel text DEFAULT 'paybill',
-  ADD COLUMN IF NOT EXISTS paybill_number  text,
-  ADD COLUMN IF NOT EXISTS paybill_account text,
-  ADD COLUMN IF NOT EXISTS till_number     text,
-  ADD COLUMN IF NOT EXISTS mpesa_name      text;
-  `);
+  console.log("📸 Hotel image uploads (ownership-checked)");
+  console.log("🏦 Hotel + vendor paybill/till endpoints");
+  console.log("🎫 Guest sessions + bookings + SSE");
+  console.log("💰 Commission ledger (15%)");
+  console.log("📊 Admin commission endpoints");
   console.log("============================================");
 });
