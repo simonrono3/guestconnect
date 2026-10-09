@@ -1,8 +1,9 @@
 // ============================================================
-// GuestHub V2.1 — Guest Love Edition
-// Adds: push notifications, ETA, kitchen state, cancel window,
-// rate+tip, SSE kitchen channel, extended bootstrap, vendor
-// hours/gallery, dietary tags, item availability & images.
+// GuestHub V2.2 — Guest Love Edition + Department Routing
+// Adds: web push, ETA, kitchen state, cancel window, rate+tip,
+// SSE kitchen channel, extended bootstrap, vendor hours/gallery,
+// dietary tags, item availability, item images,
+// and department routing with WhatsApp notification.
 // ============================================================
 
 import express from "express";
@@ -36,7 +37,9 @@ const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY || "";
 const JWT_SECRET       = process.env.JWT_SECRET || "dev_only_change_me";
 const ADMIN_PASSWORD   = process.env.ADMIN_PASSWORD || "admin123";
 
-// ---------- Web Push (FIX #1) ----------
+/* ============================================================
+   WEB PUSH
+   ============================================================ */
 const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY  || "";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT     || "mailto:admin@guesthub.app";
@@ -48,6 +51,9 @@ if (PUSH_ENABLED) {
   console.log("ℹ️  Web Push disabled — set VAPID_PUBLIC_KEY + VAPID_PRIVATE_KEY to enable");
 }
 
+/* ============================================================
+   SUPABASE
+   ============================================================ */
 let supa = null;
 if (SUPABASE_URL && SUPABASE_SERVICE) {
   supa = createClient(SUPABASE_URL, SUPABASE_SERVICE, {
@@ -90,10 +96,11 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V2.1",
+    os: "GuestHub V2.2",
     time: new Date().toISOString(),
     supabase: !!supa,
     push: PUSH_ENABLED,
+    whatsapp: WA_ENABLED,
     missing_env: missing
   })
 );
@@ -221,6 +228,234 @@ function requireGuest(req, res, next) {
   req.user = t; next();
 }
 
+/* ============================================================
+   WHATSAPP — DEPARTMENT NOTIFICATIONS
+   ============================================================ */
+const WHATSAPP_PROVIDER = process.env.WHATSAPP_PROVIDER || "";
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID || "";
+const TWILIO_AUTH_TOKEN  = process.env.TWILIO_AUTH_TOKEN  || "";
+const TWILIO_WA_FROM     = process.env.TWILIO_WA_FROM     || "";
+const META_WA_TOKEN      = process.env.META_WA_TOKEN      || "";
+const META_WA_PHONE_ID   = process.env.META_WA_PHONE_ID   || "";
+
+const WA_ENABLED =
+  (WHATSAPP_PROVIDER === "twilio" && TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_WA_FROM) ||
+  (WHATSAPP_PROVIDER === "meta" && META_WA_TOKEN && META_WA_PHONE_ID);
+
+if (WA_ENABLED) console.log(`✅ WhatsApp provider: ${WHATSAPP_PROVIDER}`);
+else console.log("ℹ️  WhatsApp disabled — set WHATSAPP_PROVIDER + credentials to enable");
+
+async function sendWhatsApp(toPhone, message) {
+  if (!WA_ENABLED) return { ok: false, reason: "not_configured" };
+  const digits = String(toPhone || "").replace(/\D/g, "");
+  if (!digits) return { ok: false, reason: "no_phone" };
+
+  try {
+    if (WHATSAPP_PROVIDER === "twilio") {
+      const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+      const body = new URLSearchParams({
+        From: TWILIO_WA_FROM.startsWith("whatsapp:") ? TWILIO_WA_FROM : "whatsapp:" + TWILIO_WA_FROM,
+        To: `whatsapp:+${digits}`,
+        Body: message
+      });
+      const res = await fetch(
+        `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Basic " + auth,
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body
+        }
+      );
+      const json = await res.json().catch(() => ({}));
+      return { ok: res.ok, sid: json.sid, error: json.message };
+    }
+
+    if (WHATSAPP_PROVIDER === "meta") {
+      const res = await fetch(
+        `https://graph.facebook.com/v20.0/${META_WA_PHONE_ID}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + META_WA_TOKEN,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: digits,
+            type: "text",
+            text: { body: message }
+          })
+        }
+      );
+      const json = await res.json().catch(() => ({}));
+      return { ok: res.ok, id: json?.messages?.[0]?.id, error: json?.error?.message };
+    }
+  } catch (e) {
+    return { ok: false, reason: e.message };
+  }
+  return { ok: false, reason: "unknown" };
+}
+
+function buildDepartmentMessage(order, items, currency = "Ksh") {
+  const loc = order.mode === "table"
+    ? `Table ${order.table_number}`
+    : `Room ${order.room_number}`;
+  const lines = [
+    `🔔 *New order* — ${loc}`,
+    ``,
+    `*${order.reference}*`,
+    `Guest: ${order.guest_name || "—"}`,
+    `Phone: ${order.guest_phone || "—"}`,
+    ``,
+    ...(items && items.length
+      ? items.map(i => `• ${i.qty}× ${i.name}${i.notes ? ` _(${i.notes})_` : ""}`)
+      : [`• ${order.service_title}`]),
+    ``,
+    `Total: ${currency} ${order.amount}`,
+    order.details ? `Notes: ${order.details}` : ""
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
+async function getDepartmentContact(hotelId, department) {
+  if (!supa) return null;
+  const { data } = await supa
+    .from("departments")
+    .select("name, whatsapp, email, is_active")
+    .eq("hotel_id", String(hotelId).toUpperCase())
+    .ilike("name", department)
+    .maybeSingle();
+  if (!data || data.is_active === false) return null;
+  return data;
+}
+
+async function notifyDepartment(order, currency = "Ksh") {
+  if (!order?.department) return;
+  try {
+    const contact = await getDepartmentContact(order.hotel_id, order.department);
+    if (!contact || !contact.whatsapp) {
+      console.log(`ℹ️  No WhatsApp for ${order.hotel_id}/${order.department}`);
+      return;
+    }
+
+    const items = Array.isArray(order.items) ? order.items : [];
+    const message = buildDepartmentMessage(order, items, currency);
+    const result = await sendWhatsApp(contact.whatsapp, message);
+
+    try {
+      await supa.from("orders").update({
+        department_notified_at: result.ok ? new Date().toISOString() : null,
+        department_notify_error: result.ok ? null : (result.error || result.reason || "unknown")
+      }).eq("id", order.id);
+    } catch {}
+
+    if (result.ok) console.log(`✅ Notified ${contact.name} (${contact.whatsapp}) for ${order.reference}`);
+    else console.warn(`⚠️ WhatsApp failed for ${order.reference}:`, result.error || result.reason);
+
+    broadcastKitchen(order.hotel_id, {
+      type: "new_order",
+      reference: order.reference,
+      department: order.department
+    });
+  } catch (e) {
+    console.warn("⚠️ notifyDepartment error:", e.message);
+  }
+}
+
+/* ============================================================
+   PUSH HELPERS
+   ============================================================ */
+async function pushToSession(sessionId, payload) {
+  if (!PUSH_ENABLED || !supa) return { sent: 0, failed: 0 };
+  const { data: subs } = await supa
+    .from("guest_push_subscriptions")
+    .select("*")
+    .eq("guest_session_id", sessionId);
+
+  let sent = 0, failed = 0;
+  const stale = [];
+
+  for (const s of subs || []) {
+    try {
+      await webpush.sendNotification(
+        { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+        JSON.stringify(payload)
+      );
+      sent++;
+    } catch (e) {
+      failed++;
+      if (e.statusCode === 404 || e.statusCode === 410) stale.push(s.id);
+    }
+  }
+
+  if (stale.length) {
+    try { await supa.from("guest_push_subscriptions").delete().in("id", stale); } catch {}
+  }
+
+  try {
+    await supa.from("guest_push_subscriptions")
+      .update({ last_used_at: new Date().toISOString() })
+      .eq("guest_session_id", sessionId);
+  } catch {}
+
+  return { sent, failed };
+}
+
+async function pushOrderUpdate(order) {
+  if (!order?.guest_session_id) return;
+  const titles = {
+    accepted:   "Order accepted",
+    preparing:  "Being prepared",
+    on_the_way: "On the way",
+    completed:  "Order delivered",
+    cancelled:  "Order cancelled"
+  };
+  const title = titles[order.status] || "Order update";
+  await pushToSession(order.guest_session_id, {
+    title,
+    body: `${order.service_title || "Your order"} · ${order.reference || ""}`,
+    url: `/?hotel=${order.hotel_id}&order=${order.id}`,
+    tag: `order-${order.id}`,
+    orderId: order.id,
+    status: order.status
+  });
+}
+
+async function pushBookingUpdate(booking) {
+  if (!booking?.guest_session_id) return;
+  const titles = {
+    confirmed: "Booking confirmed",
+    declined:  "Booking declined",
+    completed: "Booking completed",
+    cancelled: "Booking cancelled"
+  };
+  const title = titles[booking.status] || "Booking update";
+  await pushToSession(booking.guest_session_id, {
+    title,
+    body: `${booking.service_title || "Your booking"} · ${new Date(booking.scheduled_for).toLocaleString()}`,
+    url: `/?hotel=${booking.hotel_id}&booking=${booking.id}`,
+    tag: `booking-${booking.id}`,
+    bookingId: booking.id,
+    status: booking.status
+  });
+}
+
+/* ============================================================
+   SSE KITCHEN REGISTRY
+   ============================================================ */
+const guestStreamsByHotel = new Map();
+
+function broadcastKitchen(hotelId, payload) {
+  const set = guestStreamsByHotel.get(String(hotelId).toUpperCase());
+  if (!set) return;
+  for (const entry of set) {
+    try { entry.send("kitchen", payload); } catch {}
+  }
+}
+
 // ============================================================
 // SAFE HOTEL LOOKUP
 // ============================================================
@@ -289,98 +524,9 @@ const imageUpload = multer({
   }
 });
 
-// ============================================================
-// PUSH HELPERS (FIX #1)
-// ============================================================
-async function pushToSession(sessionId, payload) {
-  if (!PUSH_ENABLED || !supa) return { sent: 0, failed: 0 };
-  const { data: subs } = await supa
-    .from("guest_push_subscriptions")
-    .select("*")
-    .eq("guest_session_id", sessionId);
-
-  let sent = 0, failed = 0;
-  const stale = [];
-
-  for (const s of subs || []) {
-    try {
-      await webpush.sendNotification(
-        { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-        JSON.stringify(payload)
-      );
-      sent++;
-    } catch (e) {
-      failed++;
-      if (e.statusCode === 404 || e.statusCode === 410) stale.push(s.id);
-    }
-  }
-
-  if (stale.length) {
-    await supa.from("guest_push_subscriptions").delete().in("id", stale);
-  }
-
-  await supa.from("guest_push_subscriptions")
-    .update({ last_used_at: new Date().toISOString() })
-    .eq("guest_session_id", sessionId);
-
-  return { sent, failed };
-}
-
-async function pushOrderUpdate(order) {
-  if (!order?.guest_session_id) return;
-  const titles = {
-    accepted:   "Order accepted",
-    preparing:  "Being prepared",
-    on_the_way: "On the way",
-    completed:  "Order delivered",
-    cancelled:  "Order cancelled"
-  };
-  const title = titles[order.status] || "Order update";
-  await pushToSession(order.guest_session_id, {
-    title,
-    body: `${order.service_title || "Your order"} · ${order.reference || ""}`,
-    url: `/?hotel=${order.hotel_id}&order=${order.id}`,
-    tag: `order-${order.id}`,
-    orderId: order.id,
-    status: order.status
-  });
-}
-
-async function pushBookingUpdate(booking) {
-  if (!booking?.guest_session_id) return;
-  const titles = {
-    confirmed: "Booking confirmed",
-    declined:  "Booking declined",
-    completed: "Booking completed",
-    cancelled: "Booking cancelled"
-  };
-  const title = titles[booking.status] || "Booking update";
-  await pushToSession(booking.guest_session_id, {
-    title,
-    body: `${booking.service_title || "Your booking"} · ${new Date(booking.scheduled_for).toLocaleString()}`,
-    url: `/?hotel=${booking.hotel_id}&booking=${booking.id}`,
-    tag: `booking-${booking.id}`,
-    bookingId: booking.id,
-    status: booking.status
-  });
-}
-
-// ============================================================
-// SSE KITCHEN REGISTRY (FIX #13)
-// ============================================================
-const guestStreamsByHotel = new Map(); // hotelId -> Set of {send, sid}
-
-function broadcastKitchen(hotelId, payload) {
-  const set = guestStreamsByHotel.get(String(hotelId).toUpperCase());
-  if (!set) return;
-  for (const entry of set) {
-    try { entry.send("kitchen", payload); } catch {}
-  }
-}
-
-// ============================================================
-// ADMIN
-// ============================================================
+/* ============================================================
+   ADMIN
+   ============================================================ */
 app.post("/api/admin/login", loginLimiter, async (req, res) => {
   try {
     const pw = String(req.body.password || "");
@@ -543,9 +689,9 @@ app.patch("/api/admin/commission/:id", requireAdmin, requireSupabase, async (req
   return sendSuccess(res, { entry: data });
 });
 
-// ============================================================
-// HOTELS
-// ============================================================
+/* ============================================================
+   HOTELS
+   ============================================================ */
 app.get("/api/data", requireSupabase, async (req, res) => {
   let { data, error } = await supa.from("hotels")
     .select("id,hotel_id,name,hotel_name,location,city,hotel_type,status,image_url,images")
@@ -661,9 +807,9 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// ============================================================
-// HOTEL IMAGES
-// ============================================================
+/* ============================================================
+   HOTEL IMAGES
+   ============================================================ */
 app.post(
   "/api/hotels/images",
   signupLimiter,
@@ -741,9 +887,9 @@ app.post(
   }
 );
 
-// ============================================================
-// HOTEL PAYMENT
-// ============================================================
+/* ============================================================
+   HOTEL PAYMENT
+   ============================================================ */
 app.patch("/api/gm/payment", requireHotel, requireSupabase, async (req, res) => {
   try {
     const check = validatePayment(req.body);
@@ -830,9 +976,9 @@ app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) 
   }
 });
 
-// ============================================================
-// VENDOR SIGNUP
-// ============================================================
+/* ============================================================
+   VENDOR SIGNUP / LOGIN
+   ============================================================ */
 app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
     const {
@@ -973,9 +1119,9 @@ app.post("/api/vendors/login", loginLimiter, requireSupabase, async (req, res) =
   }
 });
 
-// ============================================================
-// GM endpoints
-// ============================================================
+/* ============================================================
+   GM endpoints
+   ============================================================ */
 app.get("/api/gm/me", requireHotel, requireSupabase, async (req, res) => {
   const hid = req.user.hotel_id;
   const { hotel } = await findHotel(hid);
@@ -991,12 +1137,14 @@ app.get("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
 });
 
 app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
-  const { title, description, price, category, icon, kind, image_url, dietary_tags } = req.body;
+  const { title, description, price, category, icon, kind, image_url, dietary_tags, department } = req.body;
   if (!title) return sendError(res, 400, "Title required");
 
   const finalKind = ["food", "hotel_service", "vendor_item"].includes(String(kind || "").toLowerCase())
     ? String(kind).toLowerCase()
     : "food";
+
+  const finalDept = cleanText(department || (finalKind === "food" ? "kitchen" : "front_desk"), 30).toLowerCase();
 
   const payload = {
     hotel_id: req.user.hotel_id,
@@ -1006,10 +1154,10 @@ app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => 
     category: cleanText(category || "food", 30),
     icon: cleanText(icon || "🍔", 8),
     kind: finalKind,
+    department: finalDept,
     is_active: true
   };
 
-  // FIX #3 & #6 — extend with image + dietary tags
   if (image_url) payload.image_url = cleanText(image_url, 500);
   if (Array.isArray(dietary_tags)) payload.dietary_tags = dietary_tags.slice(0, 10);
 
@@ -1017,6 +1165,7 @@ app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => 
   if (error && isMissingColumnError(error)) {
     delete payload.image_url;
     delete payload.dietary_tags;
+    delete payload.department;
     const retry = await supa.from("hotel_services").insert([payload]).select().single();
     data = retry.data; error = retry.error;
   }
@@ -1036,16 +1185,18 @@ app.patch("/api/gm/services/:id", requireHotel, requireSupabase, async (req, res
   if (req.body.price !== undefined) patch.price = safeNumber(req.body.price);
   if (req.body.category !== undefined) patch.category = cleanText(req.body.category, 30);
   if (req.body.is_active !== undefined) patch.is_active = !!req.body.is_active;
-  // FIX #3 & #6 & #13
   if (req.body.image_url !== undefined) patch.image_url = cleanText(req.body.image_url, 500) || null;
   if (Array.isArray(req.body.dietary_tags)) patch.dietary_tags = req.body.dietary_tags.slice(0, 10);
   if (req.body.available !== undefined) patch.available = !!req.body.available;
+  if (req.body.department !== undefined)
+    patch.department = cleanText(req.body.department, 30).toLowerCase() || null;
 
   let { data, error } = await supa.from("hotel_services").update(patch).eq("id", req.params.id).select().single();
   if (error && isMissingColumnError(error)) {
     delete patch.image_url;
     delete patch.dietary_tags;
     delete patch.available;
+    delete patch.department;
     const retry = await supa.from("hotel_services").update(patch).eq("id", req.params.id).select().single();
     data = retry.data; error = retry.error;
   }
@@ -1107,12 +1258,14 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
       vendor_phone: v.phone,
       is_active: true,
       kind: "vendor_item",
-      group_label: groupLabel
+      group_label: groupLabel,
+      department: "front_desk"
     };
     let { error } = await supa.from("hotel_services").insert([insertPayload]);
     if (error && isMissingColumnError(error)) {
       delete insertPayload.group_label;
       delete insertPayload.kind;
+      delete insertPayload.department;
       const retry = await supa.from("hotel_services").insert([insertPayload]);
       error = retry.error;
     }
@@ -1137,14 +1290,52 @@ app.get("/api/gm/departments", requireHotel, requireSupabase, async (req, res) =
 });
 
 app.post("/api/gm/departments", requireHotel, requireSupabase, async (req, res) => {
-  const { name, whatsapp } = req.body;
+  const { name, whatsapp, email } = req.body;
   if (!name) return sendError(res, 400, "Department name required");
-  const { data, error } = await supa.from("departments").upsert(
-    [{ hotel_id: req.user.hotel_id, name: clean(name), whatsapp: cleanPhone(whatsapp) }],
-    { onConflict: "hotel_id,name" }
-  ).select().single();
+
+  const payload = {
+    hotel_id: req.user.hotel_id,
+    name: cleanText(name, 40).toLowerCase(),
+    whatsapp: cleanPhone(whatsapp),
+    email: cleanText(email, 200) || null
+  };
+
+  let { data, error } = await supa.from("departments")
+    .upsert([payload], { onConflict: "hotel_id,name" })
+    .select().single();
+
+  if (error && isMissingColumnError(error)) {
+    delete payload.email;
+    const retry = await supa.from("departments")
+      .upsert([payload], { onConflict: "hotel_id,name" })
+      .select().single();
+    data = retry.data; error = retry.error;
+  }
+
   if (error) return sendError(res, 500, error.message);
   sendSuccess(res, { department: data });
+});
+
+// Update single department (by name)
+app.patch("/api/gm/departments/:name", requireHotel, requireSupabase, async (req, res) => {
+  const name = String(req.params.name || "").toLowerCase().trim();
+  if (!name) return sendError(res, 400, "Department name required");
+
+  const patch = {};
+  if (req.body.whatsapp !== undefined) patch.whatsapp = cleanPhone(req.body.whatsapp);
+  if (req.body.email !== undefined) patch.email = cleanText(req.body.email, 200) || null;
+  if (req.body.is_active !== undefined) patch.is_active = !!req.body.is_active;
+
+  if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
+
+  const { data, error } = await supa
+    .from("departments")
+    .upsert([{ hotel_id: req.user.hotel_id, name, ...patch }], { onConflict: "hotel_id,name" })
+    .select()
+    .single();
+
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { department: data });
 });
 
 app.get("/api/gm/orders", requireHotel, requireSupabase, async (req, res) => {
@@ -1154,7 +1345,25 @@ app.get("/api/gm/orders", requireHotel, requireSupabase, async (req, res) => {
   sendSuccess(res, { orders: data || [] });
 });
 
-// FIX #1 — GM sets ETA + assigns staff
+// Department-scoped feed (for kitchen/bar tablets)
+app.get("/api/gm/orders/by-department", requireHotel, requireSupabase, async (req, res) => {
+  const dept = String(req.query.department || "").toLowerCase().trim();
+  if (!dept) return sendError(res, 400, "department query required");
+
+  const { data, error } = await supa
+    .from("orders")
+    .select("*")
+    .eq("hotel_id", req.user.hotel_id)
+    .eq("department", dept)
+    .in("status", ["pending", "new", "accepted", "preparing"])
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { orders: data || [], department: dept });
+});
+
+// GM sets ETA + assigns staff
 app.patch("/api/gm/orders/:id/eta", requireHotel, requireSupabase, async (req, res) => {
   try {
     const { data: existing } = await supa.from("orders")
@@ -1179,7 +1388,6 @@ app.patch("/api/gm/orders/:id/eta", requireHotel, requireSupabase, async (req, r
       return sendError(res, 501, "Run the migration SQL — missing eta/assigned_to columns");
     if (error) return sendError(res, 500, error.message);
 
-    // Notify guest with new ETA
     if (data.guest_session_id && patch.eta_minutes !== undefined) {
       pushToSession(data.guest_session_id, {
         title: "ETA updated",
@@ -1193,7 +1401,7 @@ app.patch("/api/gm/orders/:id/eta", requireHotel, requireSupabase, async (req, r
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// FIX #13 — GM toggles kitchen busy
+// GM toggles kitchen busy
 app.patch("/api/gm/kitchen/busy", requireHotel, requireSupabase, async (req, res) => {
   try {
     const busy = !!req.body.busy;
@@ -1258,7 +1466,6 @@ app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req
     }
     if (error) return sendError(res, 500, error.message);
 
-    // Push notification to guest (FIX #1)
     pushOrderUpdate(data).catch(() => {});
 
     return sendSuccess(res, { order: data });
@@ -1326,9 +1533,9 @@ app.patch("/api/gm/bookings/:id", requireHotel, requireSupabase, async (req, res
   return sendSuccess(res, { booking: data });
 });
 
-// ============================================================
-// VENDOR endpoints
-// ============================================================
+/* ============================================================
+   VENDOR endpoints
+   ============================================================ */
 app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   const { data } = await supa.from("vendors").select("*").eq("id", req.user.vendor_id).maybeSingle();
   if (!data) return sendError(res, 404, "Vendor not found");
@@ -1434,7 +1641,6 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
       } catch (e) { console.warn("⚠️ commission insert (order):", e.message); }
     }
 
-    // Push to guest (FIX #1)
     pushOrderUpdate(data).catch(() => {});
 
     return sendSuccess(res, { order: data });
@@ -1530,7 +1736,6 @@ app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, re
   if (req.body.price !== undefined)   patch.price = safeNumber(req.body.price, 0);
   if (req.body.bio !== undefined)     patch.bio = cleanText(req.body.bio, 300);
   if (req.body.category !== undefined) patch.category = cleanText(req.body.category, 40);
-  // FIX #12 — vendor hours + gallery + cancellation policy
   if (req.body.hours_open !== undefined)  patch.hours_open  = cleanText(req.body.hours_open, 10) || null;
   if (req.body.hours_close !== undefined) patch.hours_close = cleanText(req.body.hours_close, 10) || null;
   if (Array.isArray(req.body.hours_closed_dow)) patch.hours_closed_dow = req.body.hours_closed_dow.filter(n => n >= 0 && n <= 6);
@@ -1543,7 +1748,6 @@ app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, re
   let { data, error } = await supa.from("vendors")
     .update(patch).eq("id", req.user.vendor_id).select().single();
   if (error && isMissingColumnError(error)) {
-    // Retry with base fields only
     const base = {};
     ["services", "price", "bio", "category"].forEach(k => { if (patch[k] !== undefined) base[k] = patch[k]; });
     const r2 = await supa.from("vendors").update(base).eq("id", req.user.vendor_id).select().single();
@@ -1667,9 +1871,9 @@ app.get("/api/public/vendor/:vendorId/slots", requireSupabase, async (req, res) 
   return sendSuccess(res, { slots, dow });
 });
 
-// ============================================================
-// GUEST SESSIONS
-// ============================================================
+/* ============================================================
+   GUEST SESSIONS
+   ============================================================ */
 app.post("/api/guest/session", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const { hotel_id, guest_name, guest_phone, mode, number, language } = req.body;
@@ -1722,9 +1926,9 @@ app.get("/api/guest/me", requireSupabase, async (req, res) => {
   return sendSuccess(res, { session: data });
 });
 
-// ============================================================
-// FIX #1 — Web Push subscription endpoints
-// ============================================================
+/* ============================================================
+   WEB PUSH SUBSCRIPTION
+   ============================================================ */
 app.post("/api/guest/push-subscribe", requireSupabase, async (req, res) => {
   try {
     const t = verifyToken(req);
@@ -1762,15 +1966,14 @@ app.get("/api/guest/vapid-public", (req, res) => {
   return sendSuccess(res, { key: VAPID_PUBLIC });
 });
 
-// ============================================================
-// FIX #1 — Service Worker (served from root)
-// ============================================================
+/* ============================================================
+   SERVICE WORKER
+   ============================================================ */
 app.get("/sw.js", (req, res) => {
   res.type("application/javascript");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Service-Worker-Allowed", "/");
   res.send(`
-/* GuestHub Service Worker — push notifications */
 self.addEventListener('install', e => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
 
@@ -1802,9 +2005,12 @@ self.addEventListener('notificationclick', event => {
 `);
 });
 
-// ============================================================
-// BOOTSTRAP — one call for the guest app (FIX #3, #6, #12, #13)
-// ============================================================
+/* === CONTINUE IN CHUNK 2 === */
+
+
+/* ============================================================
+   BOOTSTRAP — one call for the guest app
+   ============================================================ */
 app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res) => {
   try {
     const hid = String(req.params.hotelId || "").toUpperCase();
@@ -1830,7 +2036,7 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
 
     const [services, depts] = await Promise.all([
       supa.from("hotel_services").select("*").eq("hotel_id", hid).eq("is_active", true),
-      supa.from("departments").select("name,whatsapp").eq("hotel_id", hid)
+      supa.from("departments").select("name,whatsapp,email,is_active").eq("hotel_id", hid)
     ]);
 
     const rows = services.data || [];
@@ -1857,7 +2063,8 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         desc: r.description,
         price: Number(r.price) || 0,
         icon: r.icon || "🏪",
-        image_url: r.image_url || null
+        image_url: r.image_url || null,
+        department: r.department || "front_desk"
       });
     });
 
@@ -1934,6 +2141,7 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         icon: r.icon || "🍽️",
         image_url: r.image_url || null,
         category: r.category || "Menu",
+        department: r.department || "kitchen",
         tags: Array.isArray(r.tags) ? r.tags : [],
         dietary_tags: Array.isArray(r.dietary_tags) ? r.dietary_tags : [],
         available: r.available !== false && r.is_active !== false,
@@ -1948,7 +2156,8 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         price: Number(r.price) || 0,
         icon: r.icon || "🛎️",
         image_url: r.image_url || null,
-        category: r.category || "service"
+        category: r.category || "service",
+        department: r.department || "front_desk"
       })),
       vendors: vendorList,
       departments: depts.data || []
@@ -1956,9 +2165,9 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// ============================================================
-// PUBLIC HOTEL LEGACY ENDPOINTS
-// ============================================================
+/* ============================================================
+   PUBLIC HOTEL LEGACY ENDPOINTS
+   ============================================================ */
 app.get("/api/public/hotel/:hotelId/services", requireSupabase, async (req, res) => {
   const hid = String(req.params.hotelId || "").toUpperCase();
   const { data } = await supa.from("hotel_services").select("*")
@@ -1998,6 +2207,7 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
         price: Number(s.price) || 0,
         emoji: s.icon || "🍽️",
         image_url: s.image_url || null,
+        department: s.department || "kitchen",
         tags: Array.isArray(s.tags) ? s.tags : [],
         dietary_tags: Array.isArray(s.dietary_tags) ? s.dietary_tags : [],
         available: s.available !== false && s.is_active !== false,
@@ -2033,9 +2243,9 @@ app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res)
   });
 });
 
-// ============================================================
-// ORDER CREATION (FIX #2 — sets cancel window)
-// ============================================================
+/* ============================================================
+   ORDER CREATION — with department + WhatsApp notify
+   ============================================================ */
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const {
@@ -2064,6 +2274,10 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     const hid = String(hotel_id).toUpperCase();
     const ref = makeRef();
 
+    // Determine final department
+    const rawDept = String(department || "").toLowerCase().trim();
+    const finalDept = rawDept || (String(kind || "").toLowerCase() === "hotel_service" ? "front_desk" : "kitchen");
+
     const basePayload = {
       reference: ref,
       hotel_id: hid,
@@ -2075,7 +2289,7 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
       category: cleanText(category || "food", 30),
       details: cleanText(details, 300),
       amount: safeNumber(amount, 0),
-      department: cleanText(department || "services", 30),
+      department: cleanText(finalDept, 30),
       status: "pending"
     };
 
@@ -2103,14 +2317,15 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
         name: cleanText(i.name, 120),
         price: safeNumber(i.price, 0),
         qty: Math.max(1, safeNumber(i.qty, 1)),
-        notes: cleanText(i.notes, 200)
+        notes: cleanText(i.notes, 200),
+        department: cleanText(i.department, 30) || finalDept
       }));
     }
     if (subtotal !== undefined)       extendedPayload.subtotal       = safeNumber(subtotal, 0);
     if (service_charge !== undefined) extendedPayload.service_charge = safeNumber(service_charge, 0);
     if (total !== undefined)          extendedPayload.total          = safeNumber(total, 0);
 
-    // Set cancel window (FIX #2)
+    // 2-min cancel window
     extendedPayload.cancel_window_ends_at = new Date(Date.now() + 2 * 60 * 1000).toISOString();
 
     let { data, error } = await supa.from("orders").insert([extendedPayload]).select().single();
@@ -2121,6 +2336,10 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     }
 
     if (error) return sendError(res, 500, error.message);
+
+    // Fire department notification (non-blocking)
+    notifyDepartment(data).catch(e => console.warn("dept notify failed:", e.message));
+
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
@@ -2139,9 +2358,9 @@ app.get("/api/orders/:id", requireSupabase, async (req, res) => {
   return sendSuccess(res, { order: data });
 });
 
-// ============================================================
-// FIX #2 — Guest cancels own order (2-min window)
-// ============================================================
+/* ============================================================
+   GUEST CANCELS ORDER (2-min window)
+   ============================================================ */
 app.post("/api/orders/:id/cancel", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const t = verifyToken(req);
@@ -2175,7 +2394,6 @@ app.post("/api/orders/:id/cancel", orderLimiter, requireSupabase, async (req, re
     }).eq("id", req.params.id).select().single();
 
     if (error && isMissingColumnError(error)) {
-      // Fallback: just status
       const r2 = await supa.from("orders").update({ status: "cancelled" })
         .eq("id", req.params.id).select().single();
       if (r2.error) return sendError(res, 500, r2.error.message);
@@ -2187,9 +2405,9 @@ app.post("/api/orders/:id/cancel", orderLimiter, requireSupabase, async (req, re
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// ============================================================
-// FIX #11 — Rate order + tip
-// ============================================================
+/* ============================================================
+   RATE ORDER + TIP
+   ============================================================ */
 app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
   try {
     const t = verifyToken(req);
@@ -2231,9 +2449,8 @@ app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// Rate-plus alias (for older client)
+// Alias for older clients
 app.post("/api/orders/:id/rate-plus", requireSupabase, async (req, res) => {
-  // Forward to /rate
   req.url = `/api/orders/${req.params.id}/rate`;
   app._router.handle(req, res, () => {});
 });
@@ -2268,7 +2485,6 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// Guest order history
 app.get("/api/guest/orders", requireSupabase, async (req, res) => {
   const t = verifyToken(req);
   const sid = t?.role === "guest" ? t.sid : null;
@@ -2286,9 +2502,9 @@ app.get("/api/guest/orders", requireSupabase, async (req, res) => {
   return sendSuccess(res, { orders: data || [] });
 });
 
-// ============================================================
-// BOOKINGS
-// ============================================================
+/* ============================================================
+   BOOKINGS
+   ============================================================ */
 app.post("/api/bookings", orderLimiter, requireSupabase, async (req, res) => {
   try {
     const {
@@ -2365,7 +2581,6 @@ app.get("/api/bookings/hotel", requireHotel, requireSupabase, async (req, res) =
   return sendSuccess(res, { bookings: data || [] });
 });
 
-// FIX #1 — Push on booking status change
 app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
   try {
     const t = verifyToken(req);
@@ -2411,16 +2626,15 @@ app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
       } catch (e) { console.warn("⚠️ commission insert (booking):", e.message); }
     }
 
-    // Push (FIX #1)
     pushBookingUpdate(data).catch(() => {});
 
     return sendSuccess(res, { booking: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// ============================================================
-// GUEST SSE — real-time orders + bookings + kitchen (FIX #1, #13)
-// ============================================================
+/* ============================================================
+   GUEST SSE — orders + bookings + kitchen state
+   ============================================================ */
 app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   const token = String(req.params.token || "");
   let payload = null;
@@ -2463,7 +2677,6 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
 
   const tick = async () => {
     try {
-      // Try extended columns first; fall back if missing
       let ordersList = [];
       let bookingsList = [];
 
@@ -2517,9 +2730,9 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   });
 });
 
-// ============================================================
-// STATIC FRONTEND + SPA fallback
-// ============================================================
+/* ============================================================
+   STATIC FRONTEND + SPA fallback
+   ============================================================ */
 const publicDir = path.join(__dirname, "public");
 app.use(express.static(publicDir, { maxAge: "1h", etag: true }));
 
@@ -2556,13 +2769,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ ok: false, error: "Server error" });
 });
 
-// ---------- Listen ----------
+/* ============================================================
+   LISTEN
+   ============================================================ */
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V2.1 Guest Love Edition on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V2.2 Department Routing on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   console.log(`🔔 Web Push: ${PUSH_ENABLED ? "ENABLED" : "DISABLED"}`);
+  console.log(`💬 WhatsApp: ${WA_ENABLED ? WHATSAPP_PROVIDER.toUpperCase() : "DISABLED"}`);
   console.log(`📦 Storage bucket: ${BUCKET}`);
   if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
   console.log("--------------------------------------------");
@@ -2573,9 +2789,8 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("🎫 Guest sessions + bookings + SSE");
   console.log("💰 Commission ledger (15%)");
   console.log("📊 Admin commission endpoints");
-  console.log("✨ NEW: Push notifications, ETA, kitchen state");
-  console.log("✨ NEW: Cancel window, rate+tip, images, diet tags");
+  console.log("🔔 Push notifications + ETA + kitchen state");
+  console.log("⏱️  Cancel window + rate + tip");
+  console.log("🍳 DEPARTMENT ROUTING (WhatsApp notify)");
   console.log("============================================");
 });
-
-/* === CONTINUE IN PART 2 === */
