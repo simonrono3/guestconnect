@@ -25,7 +25,6 @@
   --surface:#fff;
   --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
   --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f;
-  /* FIX #9 — WCAG AA compliant (was #8a8a8a) */
   --text-4:#6b6b6b;
   --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
@@ -35,7 +34,6 @@
   --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
   --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
   --safe-b:env(safe-area-inset-bottom,0px);
-  /* FIX #14 — dynamic bottom padding set via JS on resize */
   --bottom-stack:84px;
   color-scheme:light;
 }
@@ -67,7 +65,6 @@ ul{ list-style:none; }
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 
-/* Skip link — FIX #9 */
 .skip-link{
   position:absolute; left:8px; top:-100px; z-index:999;
   background:var(--brand); color:#fff; padding:10px 14px;
@@ -217,7 +214,6 @@ ul{ list-style:none; }
 .promo b{ display:block; font-size:13.5px; font-weight:700; }
 .promo p{ font-size:12.5px; margin-top:3px; line-height:1.5; }
 
-/* FIX #13 — Kitchen busy banner */
 .busy-banner{
   display:none;
   background:var(--yellow-soft);
@@ -286,7 +282,6 @@ ul{ list-style:none; }
   color:var(--brand-2); margin-top:2px;
   letter-spacing:.3px;
 }
-/* FIX #1 — ETA + waiter row */
 .active-eta{
   display:flex; align-items:center; gap:8px;
   padding:8px 10px; margin:8px 0;
@@ -339,7 +334,6 @@ ul{ list-style:none; }
 .progress .seg.on{ background:var(--brand-2); }
 .progress .seg.done{ background:var(--green); }
 
-/* FIX #2 — Post-order modify window */
 .modify-bar{
   display:flex; align-items:center; justify-content:space-between;
   gap:8px; margin-top:10px; padding:8px 10px;
@@ -394,7 +388,6 @@ ul{ list-style:none; }
 /* =====================================================================
    Category pills + search
    ===================================================================== */
-/* FIX #4 — Search box */
 .search-bar{
   position:relative; margin-bottom:10px;
 }
@@ -476,7 +469,6 @@ ul{ list-style:none; }
 .card.clickable{ cursor:pointer; }
 .card.clickable:active{ transform:scale(.99); }
 
-/* FIX #3 — Item images */
 .card-icon{
   width:56px; height:56px; flex-shrink:0;
   border-radius:12px; background:var(--bg-subtle);
@@ -486,7 +478,6 @@ ul{ list-style:none; }
   position:relative;
 }
 .card-icon img{ width:100%; height:100%; object-fit:cover; }
-/* Placeholder for items without an image */
 .card-icon.no-img::after{
   content:""; position:absolute; inset:0;
   background:linear-gradient(135deg,var(--brand-soft),var(--bg-subtle));
@@ -503,7 +494,6 @@ ul{ list-style:none; }
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   overflow:hidden;
 }
-/* FIX #6 — Dietary / allergen badges */
 .diet-tags{
   display:flex; flex-wrap:wrap; gap:4px;
   margin-top:6px;
@@ -525,7 +515,6 @@ ul{ list-style:none; }
 }
 .diet-tag .icon{ width:10px; height:10px; }
 
-/* FIX #6 — Social proof (sold today) */
 .card-social{
   font-size:11px; color:var(--text-3);
   margin-top:5px;
@@ -555,7 +544,6 @@ ul{ list-style:none; }
 .add-btn.has{ background:var(--brand-soft); color:var(--brand-2); border:1px solid var(--brand-line); }
 .add-btn .icon{ width:18px; height:18px; }
 
-/* FIX #13 — Unavailable items */
 .card.unavailable{
   opacity:.55;
   pointer-events:none;
@@ -579,7 +567,6 @@ ul{ list-style:none; }
   z-index:1;
 }
 
-/* Vendor card */
 .vendor-card{
   background:#fff; border:1px solid var(--border);
   border-radius:var(--r-lg); padding:14px;
@@ -611,7 +598,6 @@ ul{ list-style:none; }
   display:flex; gap:8px; flex-wrap:wrap;
   align-items:center;
 }
-/* FIX #12 — Vendor hours */
 .vendor-hours{
   display:inline-flex; align-items:center; gap:4px;
   font-size:11px; font-weight:600;
@@ -627,7 +613,6 @@ ul{ list-style:none; }
 }
 .vendor-hours .icon{ width:11px; height:11px; }
 
-/* FIX #12 — Vendor gallery */
 .vendor-gallery{
   display:flex; gap:6px; overflow-x:auto;
   margin-top:10px; padding-bottom:4px;
@@ -808,7 +793,6 @@ ul{ list-style:none; }
   font-variant-numeric:tabular-nums;
 }
 
-/* Totals */
 .totals{
   padding:14px 0 0;
   display:flex; flex-direction:column; gap:6px;
@@ -898,7 +882,6 @@ ul{ list-style:none; }
   display:block; font-size:11.5px; font-weight:600;
   color:var(--text-2); margin-bottom:6px;
   letter-spacing:.3px;
-  /* FIX #14 — remove shouty uppercase */
   text-transform:none;
 }
 .input, .textarea{
@@ -954,7 +937,6 @@ ul{ list-style:none; }
   display:block; font-size:14.5px; font-weight:600;
   color:var(--text); margin-bottom:6px;
 }
-/* FIX #8 — Retry button on error states */
 .empty .retry-btn{
   display:inline-flex; align-items:center; gap:6px;
   margin-top:14px; padding:10px 18px;
@@ -1098,7 +1080,6 @@ ul{ list-style:none; }
 
 <div class="offline" id="offlineBar" role="status" aria-live="polite">You're offline — reconnecting…</div>
 
-<!-- FIX #14 — Pull to refresh indicator -->
 <div class="ptr-indicator" id="ptrIndicator">
   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
   <span>Pull to refresh</span>
@@ -1126,7 +1107,6 @@ ul{ list-style:none; }
 
 <main class="container" id="main" tabindex="-1">
 
-  <!-- CONTEXT BANNER -->
   <section class="context" id="contextBanner">
     <div class="context-icon" id="contextIcon">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
@@ -1141,21 +1121,16 @@ ul{ list-style:none; }
     <button class="context-change" id="changeContextBtn">Change</button>
   </section>
 
-  <!-- PROMO -->
   <div class="promo" id="promoBanner">
     <b id="promoTitle"></b>
     <p id="promoText"></p>
   </div>
 
-  <!-- FIX #13 — Kitchen busy banner -->
   <div class="busy-banner" id="busyBanner" role="status" aria-live="polite">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
     <span id="busyText">Kitchen is busy right now — orders may take longer than usual.</span>
   </div>
 
-  <!-- ======================================================= -->
-  <!-- TAB: HOME -->
-  <!-- ======================================================= -->
   <section id="view-home" class="view">
     <div class="active-card" id="activeCard"></div>
 
@@ -1197,11 +1172,7 @@ ul{ list-style:none; }
     <div class="grid" id="popularVendors"></div>
   </section>
 
-  <!-- ======================================================= -->
-  <!-- TAB: MENU -->
-  <!-- ======================================================= -->
   <section id="view-menu" class="view hidden">
-    <!-- FIX #4 — Search -->
     <div class="search-bar">
       <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input type="search" id="menuSearch" placeholder="Search the menu…" autocomplete="off" aria-label="Search menu">
@@ -1210,31 +1181,21 @@ ul{ list-style:none; }
       </button>
     </div>
 
-    <!-- FIX #8 — Recently ordered -->
     <div id="recentWrap"></div>
 
     <div class="pills" id="menuPills"></div>
     <div class="grid" id="menuGrid"></div>
   </section>
 
-  <!-- ======================================================= -->
-  <!-- TAB: SERVICES -->
-  <!-- ======================================================= -->
   <section id="view-services" class="view hidden">
     <div class="grid" id="servicesGrid"></div>
   </section>
 
-  <!-- ======================================================= -->
-  <!-- TAB: VENDORS -->
-  <!-- ======================================================= -->
   <section id="view-vendors" class="view hidden">
     <div class="pills" id="vendorPills"></div>
     <div class="grid" id="vendorsGrid"></div>
   </section>
 
-  <!-- ======================================================= -->
-  <!-- TAB: ORDERS -->
-  <!-- ======================================================= -->
   <section id="view-orders" class="view hidden">
     <div class="pills" id="orderPills">
       <button class="pill on" data-ofilter="active">Active</button>
@@ -1279,8 +1240,6 @@ ul{ list-style:none; }
     <span class="nav-dot hidden" id="ordersDot">0</span>
   </button>
 </nav>
-
-<!-- SHEETS -->
 
 <div class="sheet" id="contextSheet">
   <div class="sheet-body">
@@ -1389,12 +1348,10 @@ ul{ list-style:none; }
   <div class="sheet-body" id="profileSheetBody"></div>
 </div>
 
-<!-- FIX #11 — Post-checkout rating sheet -->
 <div class="sheet" id="ratingSheet">
   <div class="sheet-body" id="ratingSheetBody"></div>
 </div>
 
-<!-- FIX #14 — Confirm order dialog -->
 <div class="sheet" id="confirmSheet">
   <div class="sheet-body" id="confirmSheetBody"></div>
 </div>
@@ -1456,11 +1413,11 @@ const state = {
   context: { mode: 'room', number: '' },
   sse: null,
   sseRetry: 0,
-  recentItems: [],           // FIX #8
-  orderModifyUntil: 0,       // FIX #2
-  kitchenBusy: false,        // FIX #13
-  lang: 'en',                // FIX #10
-  ratings: {}                // FIX #11
+  recentItems: [],
+  orderModifyUntil: 0,
+  kitchenBusy: false,
+  lang: 'en',
+  ratings: {}
 };
 
 const params = new URLSearchParams(location.search);
@@ -1469,7 +1426,7 @@ const URL_ROOM = params.get('room') || params.get('table') || '';
 const URL_MODE = params.get('mode') || (params.get('table') ? 'table' : 'room');
 
 /* ============================================================
-   FIX #10 — REAL i18n dictionary
+   i18n dictionary
    ============================================================ */
 const I18N = {
   en: {
@@ -1572,16 +1529,13 @@ function t(key) {
 }
 
 function applyTranslations() {
-  // Update all [data-i18n] elements
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
     el.textContent = t(key);
   });
-  // Update placeholders
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     el.placeholder = t(el.dataset.i18nPlaceholder);
   });
-  // Update aria-labels
   document.querySelectorAll('[data-i18n-aria]').forEach(el => {
     el.setAttribute('aria-label', t(el.dataset.i18nAria));
   });
@@ -1594,7 +1548,6 @@ function applyTranslations() {
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/* FIX #14 — currency-aware formatter */
 function money(v) {
   const currency = state.hotel?.currency || 'Ksh';
   return currency + ' ' + Number(v || 0).toLocaleString();
@@ -1657,19 +1610,14 @@ function relativeTime(iso) {
   return Math.floor(h / 24) + 'd ago';
 }
 
-/* FIX #1 — human-readable ETA */
 function formatETA(order) {
   const mins = order.eta_minutes || order.estimated_minutes;
   if (mins) return `~${mins} min`;
-  // Fallback: estimate from status
   const status = String(order.status || '').toLowerCase();
-  const fallback = {
-    pending: 25, accepted: 20, preparing: 12, on_the_way: 4
-  };
+  const fallback = { pending: 25, accepted: 20, preparing: 12, on_the_way: 4 };
   return fallback[status] ? `~${fallback[status]} min` : '';
 }
 
-/* FIX #6 — dietary badge map */
 const DIET_META = {
   vegetarian: { label: 'Vegetarian', icon: ICON.leaf, cls: '' },
   vegan:      { label: 'Vegan',      icon: ICON.leaf, cls: '' },
@@ -1699,11 +1647,8 @@ function saveLocal() {
     localStorage.setItem('gh_guest_ctx', JSON.stringify(state.context));
     if (state.token) localStorage.setItem('gh_guest_token', state.token);
     localStorage.setItem('gh_guest_cart_' + HOTEL_ID, JSON.stringify(state.cart));
-    // FIX #8 — persist recent items
     localStorage.setItem('gh_guest_recent_' + HOTEL_ID, JSON.stringify(state.recentItems.slice(0, 8)));
-    // FIX #10 — persist language
     localStorage.setItem('gh_lang', state.lang);
-    // FIX #11 — persist ratings
     localStorage.setItem('gh_ratings_' + HOTEL_ID, JSON.stringify(state.ratings));
   } catch {}
 }
@@ -1767,7 +1712,7 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   CONTEXT
+   CONTEXT (room / table)
    ============================================================ */
 function renderContext() {
   const c = state.context;
@@ -1873,7 +1818,6 @@ async function bootstrap() {
     state.vendors = res.vendors || [];
     state.departments = res.departments || [];
 
-    /* FIX #13 — read kitchen busy state from hotel payload */
     state.kitchenBusy = !!(state.hotel.kitchen_busy || state.hotel.is_busy);
     renderBusyBanner();
 
@@ -1920,7 +1864,6 @@ async function bootstrap() {
     applyTranslations();
 
   } catch (e) {
-    /* FIX #8 — retry button on bootstrap failure */
     $('main').innerHTML = `
       <div class="empty">
         <div class="empty-icon">${ICON.alert}</div>
@@ -1933,9 +1876,6 @@ async function bootstrap() {
   }
 }
 
-/* ============================================================
-   FIX #13 — Kitchen busy banner
-   ============================================================ */
 function renderBusyBanner() {
   const banner = $('busyBanner');
   if (!banner) return;
@@ -1948,7 +1888,7 @@ function renderBusyBanner() {
 }
 
 /* ============================================================
-   FIX #8 — Recently ordered
+   RECENTLY ORDERED
    ============================================================ */
 function renderRecent() {
   const wrap = $('recentWrap');
@@ -1978,7 +1918,6 @@ function renderRecent() {
       const id = b.dataset.recent;
       const item = state.menu.find(m => String(m.id) === String(id));
       if (!item) return;
-      // If unavailable, don't add
       if (item.available === false) return toast(item.name + ' is sold out', 'error');
       addToCart(id);
     });
@@ -2040,7 +1979,6 @@ function renderMenuPills() {
   });
 }
 
-/* FIX #3, #6, #13 — menu card with image, diet tags, social proof, availability */
 function menuCard(item) {
   const qty = state.cart.find(l => l.id === item.id)?.qty || 0;
   const unavailable = item.available === false;
@@ -2081,13 +2019,11 @@ function menuCard(item) {
   `;
 }
 
-/* FIX #4 — search filter in menu render */
 function renderMenu() {
   let list = state.menuFilter === 'all'
     ? state.menu
     : state.menu.filter(i => (i.category || 'Menu') === state.menuFilter);
 
-  // Search filter
   const q = state.menuSearch.trim().toLowerCase();
   if (q) {
     list = list.filter(i =>
@@ -2124,7 +2060,6 @@ function attachMenuHandlers(root) {
   });
 }
 
-/* FIX #4 — wire search input */
 $('menuSearch').addEventListener('input', e => {
   state.menuSearch = e.target.value;
   $('menuSearchClear').classList.toggle('show', !!state.menuSearch);
@@ -2269,7 +2204,6 @@ function renderCartBar() {
   updateBottomStack();
 }
 
-/* FIX #14 — dynamic body padding */
 function updateBottomStack() {
   const hasCart = cartCount() > 0;
   const height = hasCart ? 148 : 84;
@@ -2327,7 +2261,7 @@ $('viewCartBtn').addEventListener('click', () => {
 $('placeOrderBtn').addEventListener('click', showConfirmOrder);
 
 /* ============================================================
-   FIX #14 — Confirm order dialog
+   Confirm order dialog
    ============================================================ */
 function showConfirmOrder() {
   if (!state.cart.length) return;
@@ -2414,7 +2348,6 @@ async function placeOrder() {
     renderCartBar();
     refreshCurrentView();
 
-    /* FIX #2 — open a 2-minute modify window */
     state.orderModifyUntil = Date.now() + 2 * 60 * 1000;
     state.activeOrder = res.order;
 
@@ -2658,7 +2591,6 @@ const GROUP_LABELS = {
   services: 'Other services'
 };
 
-/* FIX #12 — vendor card with hours, gallery, richer info */
 function vendorCard(v) {
   const group = v.group || 'services';
   const hours = v.hours || {};
@@ -2707,14 +2639,14 @@ function vendorCard(v) {
 }
 
 function isVendorOpen(hours) {
-  if (!hours || !hours.open || !hours.close) return true; // default open
+  if (!hours || !hours.open || !hours.close) return true;
   const now = new Date();
   const [oh, om] = hours.open.split(':').map(Number);
   const [ch, cm] = hours.close.split(':').map(Number);
   const cur = now.getHours() * 60 + now.getMinutes();
   const start = oh * 60 + (om || 0);
   const end = ch * 60 + (cm || 0);
-  if (end < start) return cur >= start || cur < end; // overnight
+  if (end < start) return cur >= start || cur < end;
   return cur >= start && cur < end;
 }
 
@@ -2969,7 +2901,6 @@ async function refreshOrders() {
     pickActive();
     renderOrders();
     renderActiveCard();
-    /* FIX #11 — prompt for rating on newly completed orders */
     maybePromptRating();
   } catch {}
 }
@@ -2997,7 +2928,6 @@ function pickActive() {
   }
 }
 
-/* FIX #1 + #2 — Active order with ETA, staff, modify window */
 function renderActiveCard() {
   const card = $('activeCard');
   const o = state.activeOrder;
@@ -3031,7 +2961,6 @@ function renderActiveCard() {
       </div>
     ` : '';
 
-    // FIX #2 — modify window countdown
     let modifyLine = '';
     if (state.orderModifyUntil > Date.now() && String(o.status).toLowerCase() === 'pending') {
       const remaining = Math.floor((state.orderModifyUntil - Date.now()) / 1000);
@@ -3066,7 +2995,6 @@ function renderActiveCard() {
       ${modifyLine}
     `;
 
-    /* FIX #2 — wire modify actions */
     const addBtn = card.querySelector('[data-modify-add]');
     if (addBtn) addBtn.addEventListener('click', () => { switchTab('menu'); toast('Add more items, then place a new order'); });
     const cancelBtn = card.querySelector('[data-modify-cancel]');
@@ -3091,7 +3019,6 @@ function renderActiveCard() {
   }
 }
 
-/* FIX #2 — cancel order */
 async function cancelOrder(order) {
   if (!confirm('Cancel this order? This cannot be undone.')) return;
   try {
@@ -3104,7 +3031,6 @@ async function cancelOrder(order) {
   }
 }
 
-/* FIX #2 — live countdown timer */
 setInterval(() => {
   const timer = document.getElementById('modifyTimer');
   if (!timer) return;
@@ -3118,16 +3044,17 @@ setInterval(() => {
   timer.textContent = `${mm}:${ss}`;
 }, 1000);
 
-/* FIX #11 — Rating & tip prompt */
+/* ============================================================
+   RATING & TIP
+   ============================================================ */
 function maybePromptRating() {
   const completed = state.orders.filter(o =>
     String(o.status || '').toLowerCase() === 'completed' &&
     !state.ratings[o.id]
   );
   if (!completed.length) return;
-  // Prompt for the most recent one
   const order = completed[0];
-  if (document.querySelector('.sheet.show')) return; // don't interrupt
+  if (document.querySelector('.sheet.show')) return;
   showRatingPrompt(order);
 }
 
@@ -3180,7 +3107,6 @@ function showRatingPrompt(order) {
     </div>
   `;
 
-  // Star selection
   const stars = $('ratingSheetBody').querySelectorAll('[data-star]');
   stars.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -3193,7 +3119,6 @@ function showRatingPrompt(order) {
     });
   });
 
-  // Tip selection
   $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(btn => {
     btn.addEventListener('click', () => {
       selectedTip = Number(btn.dataset.tip);
@@ -3221,7 +3146,6 @@ function showRatingPrompt(order) {
       });
       toast('Thank you!');
     } catch {
-      // Store locally even if the API fails
       toast('Rating saved');
     }
   });
@@ -3256,7 +3180,6 @@ function renderOrders() {
     return;
   }
 
-  /* FIX #8 — "Order again" button on completed orders */
   box.innerHTML = list.map(x => orderRow(x)).join('');
 
   box.querySelectorAll('[data-order-again]').forEach(btn => {
@@ -3292,12 +3215,10 @@ function orderRow(x) {
     </div>`;
 }
 
-/* FIX #8 — one-tap reorder */
 function reorder(orderId) {
   const order = state.orders.find(o => String(o.id) === String(orderId));
   if (!order || !order.items?.length) return;
 
-  // Replace current cart with items from that order (that still exist on menu)
   const stillAvailable = order.items.filter(i => {
     const menuItem = state.menu.find(m => String(m.id) === String(i.id));
     return menuItem && menuItem.available !== false;
@@ -3373,7 +3294,6 @@ function startSSE() {
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
-      /* FIX #11 — check for newly-completed orders via SSE */
       maybePromptRating();
     } catch {}
   });
@@ -3387,7 +3307,6 @@ function startSSE() {
     } catch {}
   });
 
-  /* FIX #13 — listen for kitchen busy changes */
   es.addEventListener('kitchen', e => {
     try {
       const data = JSON.parse(e.data) || {};
@@ -3406,18 +3325,59 @@ function startSSE() {
   });
 }
 
-/* FIX #1 — register Web Push (notification permission + subscribe) */
+/* ============================================================
+   WEB PUSH — real implementation
+   ============================================================ */
 async function registerPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  if (!state.token) return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    return toast('Notifications not supported on this browser', 'error');
+  }
+  if (!state.token) return toast('Set your room first', 'error');
+
   try {
-    const reg = await navigator.serviceWorker.register('/sw.js').catch(() => null);
-    if (!reg) return;
+    // 1. Register the service worker (served from root by server.js)
+    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    await navigator.serviceWorker.ready;
+
+    // 2. Ask for permission
     const perm = await Notification.requestPermission();
-    if (perm !== 'granted') return;
-    // Server-side subscription persistence would go here
-    // (a real deployment would POST the subscription to /api/guest/push-subscribe)
-  } catch {}
+    if (perm !== 'granted') return toast('Notifications blocked in browser settings', 'error');
+
+    // 3. Get VAPID public key from the server
+    let vk;
+    try {
+      vk = await api('/api/guest/vapid-public');
+    } catch (e) {
+      return toast('Push not configured by hotel', 'error');
+    }
+    if (!vk.key) return toast('Push not configured', 'error');
+
+    // 4. Subscribe with the browser push service
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vk.key)
+    });
+
+    // 5. Persist subscription on our server
+    await api('/api/guest/push-subscribe', {
+      method: 'POST',
+      body: JSON.stringify(sub.toJSON())
+    });
+
+    toast('Notifications enabled ✓');
+  } catch (e) {
+    console.error('Push registration failed:', e);
+    toast('Could not enable: ' + e.message, 'error');
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
 }
 
 /* ============================================================
@@ -3425,7 +3385,6 @@ async function registerPush() {
    ============================================================ */
 $('langBtn').addEventListener('click', () => openSheet('langSheet'));
 
-/* FIX #10 — real language switching */
 document.querySelectorAll('[data-lang]').forEach(b => {
   b.addEventListener('click', () => {
     const lang = b.dataset.lang;
@@ -3477,13 +3436,12 @@ $('profileBtn').addEventListener('click', () => {
   });
   $('profileSheetBody').querySelector('#pushBtn').addEventListener('click', async () => {
     await registerPush();
-    toast('Notifications enabled');
   });
   openSheet('profileSheet');
 });
 
 /* ============================================================
-   FIX #14 — Pull to refresh
+   PULL TO REFRESH
    ============================================================ */
 (function initPTR() {
   let startY = 0, pulling = false;
@@ -3545,3 +3503,6 @@ init();
 </script>
 </body>
 </html>
+   
+
+   
