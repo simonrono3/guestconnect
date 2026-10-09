@@ -1,7 +1,8 @@
 // ============================================================
-// GuestHub V2.0 — Full system with guest sessions, bookings,
-// vendor marketplace, commission ledger, SSE real-time
-// Aligned with GM OS + Guest SuperApp + Vendor OS + Admin
+// GuestHub V2.1 — Guest Love Edition
+// Adds: push notifications, ETA, kitchen state, cancel window,
+// rate+tip, SSE kitchen channel, extended bootstrap, vendor
+// hours/gallery, dietary tags, item availability & images.
 // ============================================================
 
 import express from "express";
@@ -15,6 +16,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import path from "path";
 import multer from "multer";
+import webpush from "web-push";
 import { fileURLToPath } from "url";
 
 dotenv.config();
@@ -33,6 +35,18 @@ const SUPABASE_ANON    = process.env.SUPABASE_KEY || "";
 const SUPABASE_SERVICE = process.env.SUPABASE_SERVICE_KEY || "";
 const JWT_SECRET       = process.env.JWT_SECRET || "dev_only_change_me";
 const ADMIN_PASSWORD   = process.env.ADMIN_PASSWORD || "admin123";
+
+// ---------- Web Push (FIX #1) ----------
+const VAPID_PUBLIC  = process.env.VAPID_PUBLIC_KEY  || "";
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || "";
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT     || "mailto:admin@guesthub.app";
+const PUSH_ENABLED  = !!(VAPID_PUBLIC && VAPID_PRIVATE);
+if (PUSH_ENABLED) {
+  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
+  console.log("✅ Web Push VAPID configured");
+} else {
+  console.log("ℹ️  Web Push disabled — set VAPID_PUBLIC_KEY + VAPID_PRIVATE_KEY to enable");
+}
 
 let supa = null;
 if (SUPABASE_URL && SUPABASE_SERVICE) {
@@ -76,9 +90,10 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V2.0",
+    os: "GuestHub V2.1",
     time: new Date().toISOString(),
     supabase: !!supa,
+    push: PUSH_ENABLED,
     missing_env: missing
   })
 );
@@ -275,6 +290,95 @@ const imageUpload = multer({
 });
 
 // ============================================================
+// PUSH HELPERS (FIX #1)
+// ============================================================
+async function pushToSession(sessionId, payload) {
+  if (!PUSH_ENABLED || !supa) return { sent: 0, failed: 0 };
+  const { data: subs } = await supa
+    .from("guest_push_subscriptions")
+    .select("*")
+    .eq("guest_session_id", sessionId);
+
+  let sent = 0, failed = 0;
+  const stale = [];
+
+  for (const s of subs || []) {
+    try {
+      await webpush.sendNotification(
+        { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+        JSON.stringify(payload)
+      );
+      sent++;
+    } catch (e) {
+      failed++;
+      if (e.statusCode === 404 || e.statusCode === 410) stale.push(s.id);
+    }
+  }
+
+  if (stale.length) {
+    await supa.from("guest_push_subscriptions").delete().in("id", stale);
+  }
+
+  await supa.from("guest_push_subscriptions")
+    .update({ last_used_at: new Date().toISOString() })
+    .eq("guest_session_id", sessionId);
+
+  return { sent, failed };
+}
+
+async function pushOrderUpdate(order) {
+  if (!order?.guest_session_id) return;
+  const titles = {
+    accepted:   "Order accepted",
+    preparing:  "Being prepared",
+    on_the_way: "On the way",
+    completed:  "Order delivered",
+    cancelled:  "Order cancelled"
+  };
+  const title = titles[order.status] || "Order update";
+  await pushToSession(order.guest_session_id, {
+    title,
+    body: `${order.service_title || "Your order"} · ${order.reference || ""}`,
+    url: `/?hotel=${order.hotel_id}&order=${order.id}`,
+    tag: `order-${order.id}`,
+    orderId: order.id,
+    status: order.status
+  });
+}
+
+async function pushBookingUpdate(booking) {
+  if (!booking?.guest_session_id) return;
+  const titles = {
+    confirmed: "Booking confirmed",
+    declined:  "Booking declined",
+    completed: "Booking completed",
+    cancelled: "Booking cancelled"
+  };
+  const title = titles[booking.status] || "Booking update";
+  await pushToSession(booking.guest_session_id, {
+    title,
+    body: `${booking.service_title || "Your booking"} · ${new Date(booking.scheduled_for).toLocaleString()}`,
+    url: `/?hotel=${booking.hotel_id}&booking=${booking.id}`,
+    tag: `booking-${booking.id}`,
+    bookingId: booking.id,
+    status: booking.status
+  });
+}
+
+// ============================================================
+// SSE KITCHEN REGISTRY (FIX #13)
+// ============================================================
+const guestStreamsByHotel = new Map(); // hotelId -> Set of {send, sid}
+
+function broadcastKitchen(hotelId, payload) {
+  const set = guestStreamsByHotel.get(String(hotelId).toUpperCase());
+  if (!set) return;
+  for (const entry of set) {
+    try { entry.send("kitchen", payload); } catch {}
+  }
+}
+
+// ============================================================
 // ADMIN
 // ============================================================
 app.post("/api/admin/login", loginLimiter, async (req, res) => {
@@ -322,14 +426,12 @@ app.post("/api/admin/hotels/:id/approve", requireAdmin, requireSupabase, async (
   try {
     const { hotel } = await findHotel(req.params.id);
     if (!hotel) return sendError(res, 404, "Hotel not found: " + req.params.id);
-
     const { data: updated, error } = await supa
       .from("hotels")
       .update({ status: "APPROVED" })
       .eq("id", hotel.id)
       .select()
       .single();
-
     if (error) return sendError(res, 500, "Update failed: " + error.message);
     return sendSuccess(res, { hotel: updated });
   } catch (e) {
@@ -409,7 +511,6 @@ app.get("/api/admin/orders", requireAdmin, requireSupabase, async (req, res) => 
   res.json({ orders: data || [] });
 });
 
-// Admin commission ledger
 app.get("/api/admin/commission", requireAdmin, requireSupabase, async (req, res) => {
   const status = String(req.query.status || "").toLowerCase();
   let q = supa.from("commission_ledger").select("*")
@@ -561,7 +662,7 @@ app.post("/api/hotels/login", loginLimiter, requireSupabase, async (req, res) =>
 });
 
 // ============================================================
-// HOTEL IMAGES — now with ownership check (bug #10 fixed)
+// HOTEL IMAGES
 // ============================================================
 app.post(
   "/api/hotels/images",
@@ -730,7 +831,7 @@ app.get("/api/public/hotel/:hotelId/payment", requireSupabase, async (req, res) 
 });
 
 // ============================================================
-// VENDOR SIGNUP — persists all collected fields (bug #17 fixed)
+// VENDOR SIGNUP
 // ============================================================
 app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res) => {
   try {
@@ -763,7 +864,6 @@ app.post("/api/vendors/signup", signupLimiter, requireSupabase, async (req, res)
     const hash = await bcrypt.hash(String(password), 12);
     const serviceList = Array.isArray(services) ? services : [];
 
-    // group_label derived from category
     const groupLabel = (() => {
       const c = String(category || serviceList[0] || "").toLowerCase();
       if (c.includes("transport") || c.includes("taxi")) return "transport";
@@ -891,14 +991,14 @@ app.get("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
 });
 
 app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => {
-  const { title, description, price, category, icon, kind } = req.body;
+  const { title, description, price, category, icon, kind, image_url, dietary_tags } = req.body;
   if (!title) return sendError(res, 400, "Title required");
 
   const finalKind = ["food", "hotel_service", "vendor_item"].includes(String(kind || "").toLowerCase())
     ? String(kind).toLowerCase()
     : "food";
 
-  const { data, error } = await supa.from("hotel_services").insert([{
+  const payload = {
     hotel_id: req.user.hotel_id,
     title: cleanText(title, 120),
     description: cleanText(description, 300),
@@ -907,7 +1007,19 @@ app.post("/api/gm/services", requireHotel, requireSupabase, async (req, res) => 
     icon: cleanText(icon || "🍔", 8),
     kind: finalKind,
     is_active: true
-  }]).select().single();
+  };
+
+  // FIX #3 & #6 — extend with image + dietary tags
+  if (image_url) payload.image_url = cleanText(image_url, 500);
+  if (Array.isArray(dietary_tags)) payload.dietary_tags = dietary_tags.slice(0, 10);
+
+  let { data, error } = await supa.from("hotel_services").insert([payload]).select().single();
+  if (error && isMissingColumnError(error)) {
+    delete payload.image_url;
+    delete payload.dietary_tags;
+    const retry = await supa.from("hotel_services").insert([payload]).select().single();
+    data = retry.data; error = retry.error;
+  }
   if (error) return sendError(res, 500, error.message);
   return sendSuccess(res, { service: data });
 });
@@ -924,7 +1036,20 @@ app.patch("/api/gm/services/:id", requireHotel, requireSupabase, async (req, res
   if (req.body.price !== undefined) patch.price = safeNumber(req.body.price);
   if (req.body.category !== undefined) patch.category = cleanText(req.body.category, 30);
   if (req.body.is_active !== undefined) patch.is_active = !!req.body.is_active;
-  const { data } = await supa.from("hotel_services").update(patch).eq("id", req.params.id).select().single();
+  // FIX #3 & #6 & #13
+  if (req.body.image_url !== undefined) patch.image_url = cleanText(req.body.image_url, 500) || null;
+  if (Array.isArray(req.body.dietary_tags)) patch.dietary_tags = req.body.dietary_tags.slice(0, 10);
+  if (req.body.available !== undefined) patch.available = !!req.body.available;
+
+  let { data, error } = await supa.from("hotel_services").update(patch).eq("id", req.params.id).select().single();
+  if (error && isMissingColumnError(error)) {
+    delete patch.image_url;
+    delete patch.dietary_tags;
+    delete patch.available;
+    const retry = await supa.from("hotel_services").update(patch).eq("id", req.params.id).select().single();
+    data = retry.data; error = retry.error;
+  }
+  if (error) return sendError(res, 500, error.message);
   sendSuccess(res, { service: data });
 });
 
@@ -962,7 +1087,6 @@ app.post("/api/gm/vendors/:vendorId/add", requireHotel, requireSupabase, async (
     .select("id").eq("hotel_id", hid).eq("vendor_id", vid).maybeSingle();
 
   if (!existing) {
-    // Derive group_label from vendor category (bug #14 fixed)
     const cat = String(v.category || "services").toLowerCase();
     const groupLabel =
       cat.includes("transport") || cat.includes("taxi") ? "transport"
@@ -1030,13 +1154,86 @@ app.get("/api/gm/orders", requireHotel, requireSupabase, async (req, res) => {
   sendSuccess(res, { orders: data || [] });
 });
 
+// FIX #1 — GM sets ETA + assigns staff
+app.patch("/api/gm/orders/:id/eta", requireHotel, requireSupabase, async (req, res) => {
+  try {
+    const { data: existing } = await supa.from("orders")
+      .select("hotel_id, guest_session_id, reference, service_title, status")
+      .eq("id", req.params.id).maybeSingle();
+    if (!existing || existing.hotel_id !== req.user.hotel_id)
+      return sendError(res, 403, "Not yours");
+
+    const patch = {};
+    if (req.body.eta_minutes !== undefined)
+      patch.eta_minutes = Math.max(0, Math.min(240, safeNumber(req.body.eta_minutes, 0)));
+    if (req.body.assigned_to !== undefined)
+      patch.assigned_to = cleanText(req.body.assigned_to, 80) || null;
+    if (req.body.assigned_to_id !== undefined && isUUID(req.body.assigned_to_id))
+      patch.assigned_to_id = req.body.assigned_to_id;
+
+    if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
+
+    const { data, error } = await supa.from("orders")
+      .update(patch).eq("id", req.params.id).select().single();
+    if (error && isMissingColumnError(error))
+      return sendError(res, 501, "Run the migration SQL — missing eta/assigned_to columns");
+    if (error) return sendError(res, 500, error.message);
+
+    // Notify guest with new ETA
+    if (data.guest_session_id && patch.eta_minutes !== undefined) {
+      pushToSession(data.guest_session_id, {
+        title: "ETA updated",
+        body: `${data.service_title || "Your order"} — ready in ~${data.eta_minutes} min`,
+        url: `/?hotel=${data.hotel_id}&order=${data.id}`,
+        tag: `order-${data.id}`
+      }).catch(() => {});
+    }
+
+    return sendSuccess(res, { order: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// FIX #13 — GM toggles kitchen busy
+app.patch("/api/gm/kitchen/busy", requireHotel, requireSupabase, async (req, res) => {
+  try {
+    const busy = !!req.body.busy;
+    const message = cleanText(req.body.message, 200) || null;
+    const untilMin = Math.max(0, Math.min(240, safeNumber(req.body.until_minutes, 0)));
+    const busyUntil = untilMin > 0 ? new Date(Date.now() + untilMin * 60000).toISOString() : null;
+
+    let { data, error } = await supa.from("hotels")
+      .update({ kitchen_busy: busy, busy_message: message, busy_until: busyUntil })
+      .ilike("hotel_id", req.user.hotel_id)
+      .select("hotel_id,kitchen_busy,busy_message,busy_until").single();
+
+    if (error && isMissingColumnError(error))
+      return sendError(res, 501, "Run the migration SQL — missing kitchen columns");
+    if (error) return sendError(res, 500, error.message);
+
+    broadcastKitchen(req.user.hotel_id, {
+      busy: data.kitchen_busy,
+      message: data.busy_message,
+      until: data.busy_until
+    });
+
+    return sendSuccess(res, { kitchen: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+app.get("/api/gm/kitchen/busy", requireHotel, requireSupabase, async (req, res) => {
+  const { data } = await supa.from("hotels")
+    .select("hotel_id,kitchen_busy,busy_message,busy_until")
+    .ilike("hotel_id", req.user.hotel_id).maybeSingle();
+  return sendSuccess(res, { kitchen: data || { kitchen_busy: false } });
+});
+
 app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req, res) => {
   try {
     const next = normalizeStatusKey(req.body.status);
     if (!ALLOWED_STATUSES.includes(next)) return sendError(res, 400, "Invalid status");
 
     const { data: existing } = await supa.from("orders")
-      .select("hotel_id, status, reference")
+      .select("hotel_id, status, reference, guest_session_id, service_title, hotel_id")
       .eq("id", req.params.id).maybeSingle();
     if (!existing) return sendError(res, 404, "Order not found");
     if (existing.hotel_id !== req.user.hotel_id) return sendError(res, 403, "Not yours");
@@ -1060,6 +1257,10 @@ app.patch("/api/gm/orders/:id/status", requireHotel, requireSupabase, async (req
       data = r2.data; error = r2.error;
     }
     if (error) return sendError(res, 500, error.message);
+
+    // Push notification to guest (FIX #1)
+    pushOrderUpdate(data).catch(() => {});
+
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
@@ -1099,7 +1300,6 @@ app.patch("/api/gm/orders/:id", requireHotel, requireSupabase, async (req, res) 
   sendSuccess(res, { order: data });
 });
 
-// Hotel bookings view
 app.get("/api/gm/bookings", requireHotel, requireSupabase, async (req, res) => {
   const { data, error } = await supa.from("bookings").select("*")
     .eq("hotel_id", req.user.hotel_id)
@@ -1136,7 +1336,6 @@ app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
   return sendSuccess(res, { vendor: data });
 });
 
-// Vendor orders — now scoped to vendor's service categories (bug #9 fixed)
 app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) => {
   const vid = req.user.vendor_id;
   const { data: links } = await supa.from("vendor_hotels")
@@ -1150,7 +1349,6 @@ app.get("/api/vendor/orders", requireVendor, requireSupabase, async (req, res) =
 
   if (!scopeIds.length) return sendSuccess(res, { orders: [] });
 
-  // Get vendor's service categories to filter unassigned jobs
   const { data: myServices } = await supa.from("hotel_services")
     .select("category").eq("vendor_id", vid);
   const categories = [...new Set(
@@ -1183,7 +1381,7 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
       return sendError(res, 400, "Invalid status");
 
     const { data: order } = await supa.from("orders")
-      .select("id, status, vendor_id, hotel_id, reference, amount")
+      .select("id, status, vendor_id, hotel_id, reference, amount, guest_session_id, service_title")
       .eq("id", req.params.id).maybeSingle();
     if (!order) return sendError(res, 404, "Order not found");
 
@@ -1223,7 +1421,6 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
     }
     if (error) return sendError(res, 500, error.message);
 
-    // Record commission on completion (bug #15 fixed)
     if (status === "completed" && data && Number(data.amount) > 0) {
       try {
         await supa.from("commission_ledger").insert([{
@@ -1236,6 +1433,9 @@ app.patch("/api/vendor/orders/:id", requireVendor, requireSupabase, async (req, 
         }]);
       } catch (e) { console.warn("⚠️ commission insert (order):", e.message); }
     }
+
+    // Push to guest (FIX #1)
+    pushOrderUpdate(data).catch(() => {});
 
     return sendSuccess(res, { order: data });
   } catch (e) {
@@ -1263,7 +1463,6 @@ app.patch("/api/vendor/availability", requireVendor, requireSupabase, async (req
   return sendSuccess(res, { available: !!data.is_available });
 });
 
-// Weekly availability slots
 app.get("/api/vendor/availability", requireVendor, requireSupabase, async (req, res) => {
   const { data, error } = await supa.from("vendor_availability")
     .select("*").eq("vendor_id", req.user.vendor_id).order("dow");
@@ -1331,10 +1530,25 @@ app.patch("/api/vendor/services", requireVendor, requireSupabase, async (req, re
   if (req.body.price !== undefined)   patch.price = safeNumber(req.body.price, 0);
   if (req.body.bio !== undefined)     patch.bio = cleanText(req.body.bio, 300);
   if (req.body.category !== undefined) patch.category = cleanText(req.body.category, 40);
+  // FIX #12 — vendor hours + gallery + cancellation policy
+  if (req.body.hours_open !== undefined)  patch.hours_open  = cleanText(req.body.hours_open, 10) || null;
+  if (req.body.hours_close !== undefined) patch.hours_close = cleanText(req.body.hours_close, 10) || null;
+  if (Array.isArray(req.body.hours_closed_dow)) patch.hours_closed_dow = req.body.hours_closed_dow.filter(n => n >= 0 && n <= 6);
+  if (Array.isArray(req.body.gallery)) patch.gallery = req.body.gallery.filter(u => typeof u === "string").slice(0, 12);
+  if (req.body.logo_url !== undefined) patch.logo_url = cleanText(req.body.logo_url, 500) || null;
+  if (req.body.cancellation_policy !== undefined) patch.cancellation_policy = cleanText(req.body.cancellation_policy, 300) || null;
+
   if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
 
-  const { data, error } = await supa.from("vendors")
+  let { data, error } = await supa.from("vendors")
     .update(patch).eq("id", req.user.vendor_id).select().single();
+  if (error && isMissingColumnError(error)) {
+    // Retry with base fields only
+    const base = {};
+    ["services", "price", "bio", "category"].forEach(k => { if (patch[k] !== undefined) base[k] = patch[k]; });
+    const r2 = await supa.from("vendors").update(base).eq("id", req.user.vendor_id).select().single();
+    data = r2.data; error = r2.error;
+  }
   if (error) return sendError(res, 500, error.message);
   delete data.password_hash;
   return sendSuccess(res, { vendor: data });
@@ -1378,12 +1592,11 @@ app.get("/api/public/vendor/:vendorId/payment", requireSupabase, async (req, res
   return sendSuccess(res, { payment: data });
 });
 
-// Public vendor profile
 app.get("/api/public/vendor/:vendorId", requireSupabase, async (req, res) => {
   const vid = req.params.vendorId;
   if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
   const { data } = await supa.from("vendors")
-    .select("id,vendor_name,bio,category,group_label,phone,city,hub_location,price,services,vehicle,rating_avg,rating_count,is_available,payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,status")
+    .select("id,vendor_name,bio,category,group_label,phone,city,hub_location,price,services,vehicle,rating_avg,rating_count,is_available,payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,status,hours_open,hours_close,hours_closed_dow,gallery,logo_url,cancellation_policy")
     .eq("id", vid).maybeSingle();
   if (!data) return sendError(res, 404, "Vendor not found");
   if (String(data.status).toLowerCase() !== "approved")
@@ -1391,7 +1604,6 @@ app.get("/api/public/vendor/:vendorId", requireSupabase, async (req, res) => {
   return sendSuccess(res, { vendor: data });
 });
 
-// Public slots
 app.get("/api/public/vendor/:vendorId/slots", requireSupabase, async (req, res) => {
   const vid = req.params.vendorId;
   if (!isValidId(vid)) return sendError(res, 400, "Invalid vendor");
@@ -1478,7 +1690,6 @@ app.post("/api/guest/session", orderLimiter, requireSupabase, async (req, res) =
       last_seen_at: new Date().toISOString()
     };
 
-    // Reuse session if same phone + hotel in last 24h
     if (payload.guest_phone) {
       const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
       const { data: existing } = await supa.from("guest_sessions")
@@ -1512,16 +1723,106 @@ app.get("/api/guest/me", requireSupabase, async (req, res) => {
 });
 
 // ============================================================
-// BOOTSTRAP — one call for the guest app
+// FIX #1 — Web Push subscription endpoints
+// ============================================================
+app.post("/api/guest/push-subscribe", requireSupabase, async (req, res) => {
+  try {
+    const t = verifyToken(req);
+    if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+
+    const { endpoint, keys } = req.body || {};
+    if (!endpoint || !keys?.p256dh || !keys?.auth)
+      return sendError(res, 400, "endpoint, keys.p256dh, keys.auth required");
+
+    const { data, error } = await supa.from("guest_push_subscriptions").upsert({
+      guest_session_id: t.sid,
+      hotel_id: t.hid,
+      endpoint,
+      p256dh: keys.p256dh,
+      auth: keys.auth,
+      user_agent: cleanText(req.headers["user-agent"], 200),
+      last_used_at: new Date().toISOString()
+    }, { onConflict: "guest_session_id,endpoint" }).select().single();
+
+    if (error) return sendError(res, 500, error.message);
+    return sendSuccess(res, { subscription: { id: data.id } });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+app.delete("/api/guest/push-subscribe", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+  await supa.from("guest_push_subscriptions")
+    .delete().eq("guest_session_id", t.sid).eq("endpoint", req.body?.endpoint || "");
+  return sendSuccess(res);
+});
+
+app.get("/api/guest/vapid-public", (req, res) => {
+  if (!PUSH_ENABLED) return sendError(res, 503, "Push not configured");
+  return sendSuccess(res, { key: VAPID_PUBLIC });
+});
+
+// ============================================================
+// FIX #1 — Service Worker (served from root)
+// ============================================================
+app.get("/sw.js", (req, res) => {
+  res.type("application/javascript");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Service-Worker-Allowed", "/");
+  res.send(`
+/* GuestHub Service Worker — push notifications */
+self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+
+self.addEventListener('push', event => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch {}
+  const title = data.title || 'GuestHub';
+  const options = {
+    body: data.body || '',
+    tag: data.tag || 'guesthub',
+    renotify: true,
+    data: { url: data.url || '/' }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if (c.url.includes(self.location.origin)) return c.focus().then(() => c.navigate(url));
+      }
+      return clients.openWindow(url);
+    })
+  );
+});
+`);
+});
+
+// ============================================================
+// BOOTSTRAP — one call for the guest app (FIX #3, #6, #12, #13)
 // ============================================================
 app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res) => {
   try {
     const hid = String(req.params.hotelId || "").toUpperCase();
     if (!hid) return sendError(res, 400, "hotelId required");
 
-    const { data: hotel } = await supa.from("hotels")
-      .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status")
-      .ilike("hotel_id", hid).maybeSingle();
+    // Try full select first; fall back if kitchen columns missing
+    let hotel = null;
+    {
+      const r = await supa.from("hotels")
+        .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status,kitchen_busy,busy_message,busy_until")
+        .ilike("hotel_id", hid).maybeSingle();
+      if (r.error && isMissingColumnError(r.error)) {
+        const r2 = await supa.from("hotels")
+          .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status")
+          .ilike("hotel_id", hid).maybeSingle();
+        hotel = r2.data;
+      } else hotel = r.data;
+    }
 
     if (!hotel) return sendError(res, 404, "Hotel not found");
     if (String(hotel.status || "").toUpperCase() !== "APPROVED")
@@ -1555,22 +1856,41 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         name: r.title,
         desc: r.description,
         price: Number(r.price) || 0,
-        icon: r.icon || "🏪"
+        icon: r.icon || "🏪",
+        image_url: r.image_url || null
       });
     });
 
-    // Enrich with vendor payment + rating
+    // Enrich vendors with payment + rating + hours + gallery
     const vendorList = [];
     for (const v of vendorMap.values()) {
-      const { data: vRow } = await supa.from("vendors")
-        .select("payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,rating_avg,rating_count,bio,is_available")
-        .eq("id", v.id).maybeSingle();
+      let vRow = null;
+      {
+        const r = await supa.from("vendors")
+          .select("payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,rating_avg,rating_count,bio,is_available,hours_open,hours_close,hours_closed_dow,gallery,logo_url,cancellation_policy")
+          .eq("id", v.id).maybeSingle();
+        if (r.error && isMissingColumnError(r.error)) {
+          const r2 = await supa.from("vendors")
+            .select("payment_channel,paybill_number,paybill_account,till_number,mpesa,mpesa_name,rating_avg,rating_count,bio,is_available")
+            .eq("id", v.id).maybeSingle();
+          vRow = r2.data;
+        } else vRow = r.data;
+      }
+
       vendorList.push({
         ...v,
         bio: vRow?.bio || "",
         rating: Number(vRow?.rating_avg) || 0,
         rating_count: Number(vRow?.rating_count) || 0,
         available: vRow?.is_available !== false,
+        hours: vRow ? {
+          open: vRow.hours_open || null,
+          close: vRow.hours_close || null,
+          closedDow: vRow.hours_closed_dow || []
+        } : null,
+        gallery: Array.isArray(vRow?.gallery) ? vRow.gallery : [],
+        logo_url: vRow?.logo_url || null,
+        cancellation_policy: vRow?.cancellation_policy || null,
         payment: {
           channel: vRow?.payment_channel || null,
           paybill_number: vRow?.paybill_number || null,
@@ -1594,6 +1914,9 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         promo_text: hotel.promo_text || "",
         image_url: hotel.image_url || (Array.isArray(hotel.images) && hotel.images[0]) || null,
         phone: hotel.phone || null,
+        kitchen_busy: !!hotel.kitchen_busy,
+        busy_message: hotel.busy_message || null,
+        busy_until: hotel.busy_until || null,
         payment: {
           channel: hotel.payment_channel || "paybill",
           paybill_number: hotel.paybill_number || null,
@@ -1609,8 +1932,14 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         desc: r.description,
         price: Number(r.price) || 0,
         icon: r.icon || "🍽️",
+        image_url: r.image_url || null,
         category: r.category || "Menu",
-        tags: Array.isArray(r.tags) ? r.tags : []
+        tags: Array.isArray(r.tags) ? r.tags : [],
+        dietary_tags: Array.isArray(r.dietary_tags) ? r.dietary_tags : [],
+        available: r.available !== false && r.is_active !== false,
+        sold_today: Number(r.sold_today) || 0,
+        rating: Number(r.rating_avg) || 0,
+        rating_count: Number(r.rating_count) || 0
       })),
       services: hotelService.map(r => ({
         id: r.id,
@@ -1618,6 +1947,7 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         desc: r.description,
         price: Number(r.price) || 0,
         icon: r.icon || "🛎️",
+        image_url: r.image_url || null,
         category: r.category || "service"
       })),
       vendors: vendorList,
@@ -1667,8 +1997,11 @@ app.get("/api/public/hotel/:hotelId/menu", requireSupabase, async (req, res) => 
         desc: s.description || "",
         price: Number(s.price) || 0,
         emoji: s.icon || "🍽️",
+        image_url: s.image_url || null,
         tags: Array.isArray(s.tags) ? s.tags : [],
-        available: s.is_active !== false,
+        dietary_tags: Array.isArray(s.dietary_tags) ? s.dietary_tags : [],
+        available: s.available !== false && s.is_active !== false,
+        sold_today: Number(s.sold_today) || 0,
         vendor_id: s.vendor_id || null,
         vendor_name: s.vendor_name || null
       };
@@ -1701,7 +2034,7 @@ app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res)
 });
 
 // ============================================================
-// ORDER CREATION
+// ORDER CREATION (FIX #2 — sets cancel window)
 // ============================================================
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
@@ -1769,12 +2102,16 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
         id: cleanText(i.id, 60),
         name: cleanText(i.name, 120),
         price: safeNumber(i.price, 0),
-        qty: Math.max(1, safeNumber(i.qty, 1))
+        qty: Math.max(1, safeNumber(i.qty, 1)),
+        notes: cleanText(i.notes, 200)
       }));
     }
     if (subtotal !== undefined)       extendedPayload.subtotal       = safeNumber(subtotal, 0);
     if (service_charge !== undefined) extendedPayload.service_charge = safeNumber(service_charge, 0);
     if (total !== undefined)          extendedPayload.total          = safeNumber(total, 0);
+
+    // Set cancel window (FIX #2)
+    extendedPayload.cancel_window_ends_at = new Date(Date.now() + 2 * 60 * 1000).toISOString();
 
     let { data, error } = await supa.from("orders").insert([extendedPayload]).select().single();
     if (error && isMissingColumnError(error)) {
@@ -1802,25 +2139,103 @@ app.get("/api/orders/:id", requireSupabase, async (req, res) => {
   return sendSuccess(res, { order: data });
 });
 
+// ============================================================
+// FIX #2 — Guest cancels own order (2-min window)
+// ============================================================
+app.post("/api/orders/:id/cancel", orderLimiter, requireSupabase, async (req, res) => {
+  try {
+    const t = verifyToken(req);
+    if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+
+    const { data: order } = await supa.from("orders")
+      .select("id, status, guest_session_id, created_at, cancel_window_ends_at, reference, hotel_id, service_title")
+      .eq("id", req.params.id).maybeSingle();
+    if (!order) return sendError(res, 404, "Order not found");
+    if (String(order.guest_session_id) !== String(t.sid))
+      return sendError(res, 403, "Not your order");
+
+    const status = String(order.status || "").toLowerCase();
+    if (!["pending", "new", "accepted"].includes(status))
+      return sendError(res, 400, "Cannot cancel — kitchen already started");
+
+    const windowEnd = order.cancel_window_ends_at
+      ? new Date(order.cancel_window_ends_at).getTime()
+      : new Date(order.created_at).getTime() + 2 * 60 * 1000;
+
+    if (Date.now() > windowEnd)
+      return sendError(res, 400, "Cancellation window has expired. Please ask reception.");
+
+    const now = new Date().toISOString();
+    const { data, error } = await supa.from("orders").update({
+      status: "cancelled",
+      cancelled_at: now,
+      cancelled_by: "guest",
+      cancelled_reason: cleanText(req.body.reason, 200) || "Guest cancelled",
+      updated_at: now
+    }).eq("id", req.params.id).select().single();
+
+    if (error && isMissingColumnError(error)) {
+      // Fallback: just status
+      const r2 = await supa.from("orders").update({ status: "cancelled" })
+        .eq("id", req.params.id).select().single();
+      if (r2.error) return sendError(res, 500, r2.error.message);
+      return sendSuccess(res, { order: r2.data });
+    }
+    if (error) return sendError(res, 500, error.message);
+
+    return sendSuccess(res, { order: data });
+  } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// ============================================================
+// FIX #11 — Rate order + tip
+// ============================================================
 app.post("/api/orders/:id/rate", requireSupabase, async (req, res) => {
   try {
-    const stars = safeNumber(req.body.rating, 0);
-    if (stars < 1 || stars > 5) return sendError(res, 400, "Rating must be 1–5");
+    const t = verifyToken(req);
+    if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
 
-    const { data: existing } = await supa.from("orders")
-      .select("id, status").eq("id", req.params.id).maybeSingle();
-    if (!existing) return sendError(res, 404, "Order not found");
-    if (String(existing.status).toLowerCase() !== "completed")
+    const stars = safeNumber(req.body.stars ?? req.body.rating, 0);
+    const tip   = Math.max(0, safeNumber(req.body.tip, 0));
+
+    if (stars < 1 || stars > 5) return sendError(res, 400, "Rating must be 1–5");
+    if (tip > 100000) return sendError(res, 400, "Tip too large");
+
+    const { data: order } = await supa.from("orders")
+      .select("id, status, guest_session_id, amount")
+      .eq("id", req.params.id).maybeSingle();
+    if (!order) return sendError(res, 404, "Order not found");
+    if (String(order.guest_session_id) !== String(t.sid))
+      return sendError(res, 403, "Not your order");
+    if (String(order.status).toLowerCase() !== "completed")
       return sendError(res, 400, "Only completed orders can be rated");
 
     const now = new Date().toISOString();
-    let { data, error } = await supa.from("orders")
-      .update({ rating: stars, rated_at: now }).eq("id", req.params.id).select().single();
-    if (error && isMissingColumnError(error))
-      return sendError(res, 501, "Rating not configured on orders table");
+    let { data, error } = await supa.from("orders").update({
+      rating: stars,
+      tip_amount: tip,
+      rating_note: cleanText(req.body.note, 300) || null,
+      rated_at: now,
+      updated_at: now
+    }).eq("id", req.params.id).select().single();
+
+    if (error && isMissingColumnError(error)) {
+      const r2 = await supa.from("orders")
+        .update({ rating: stars, rated_at: now })
+        .eq("id", req.params.id).select().single();
+      data = r2.data; error = r2.error;
+    }
+
     if (error) return sendError(res, 500, error.message);
     return sendSuccess(res, { order: data });
   } catch (e) { return sendError(res, 500, e.message); }
+});
+
+// Rate-plus alias (for older client)
+app.post("/api/orders/:id/rate-plus", requireSupabase, async (req, res) => {
+  // Forward to /rate
+  req.url = `/api/orders/${req.params.id}/rate`;
+  app._router.handle(req, res, () => {});
 });
 
 app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
@@ -1853,7 +2268,7 @@ app.get("/api/orders/:hotelId/:room", requireSupabase, async (req, res) => {
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
-// Guest order history — session-aware
+// Guest order history
 app.get("/api/guest/orders", requireSupabase, async (req, res) => {
   const t = verifyToken(req);
   const sid = t?.role === "guest" ? t.sid : null;
@@ -1950,6 +2365,7 @@ app.get("/api/bookings/hotel", requireHotel, requireSupabase, async (req, res) =
   return sendSuccess(res, { bookings: data || [] });
 });
 
+// FIX #1 — Push on booking status change
 app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
   try {
     const t = verifyToken(req);
@@ -1982,7 +2398,6 @@ app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
     const { data, error } = await supa.from("bookings").update(patch).eq("id", req.params.id).select().single();
     if (error) return sendError(res, 500, error.message);
 
-    // Commission on completion
     if (next === "completed" && data.amount > 0 && data.vendor_id) {
       try {
         await supa.from("commission_ledger").insert([{
@@ -1996,12 +2411,15 @@ app.patch("/api/bookings/:id", requireSupabase, async (req, res) => {
       } catch (e) { console.warn("⚠️ commission insert (booking):", e.message); }
     }
 
+    // Push (FIX #1)
+    pushBookingUpdate(data).catch(() => {});
+
     return sendSuccess(res, { booking: data });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
 // ============================================================
-// GUEST SSE — real-time order + booking status
+// GUEST SSE — real-time orders + bookings + kitchen (FIX #1, #13)
 // ============================================================
 app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   const token = String(req.params.token || "");
@@ -2010,7 +2428,7 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   if (!payload || payload.role !== "guest") return sendError(res, 401, "Invalid guest token");
 
   const sid = payload.sid;
-  const hotelId = payload.hid;
+  const hotelId = String(payload.hid || "").toUpperCase();
 
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache, no-transform");
@@ -2019,38 +2437,68 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   res.flushHeaders?.();
 
   const send = (event, data) => {
-    res.write(`event: ${event}\n`);
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    try {
+      res.write(`event: ${event}\n`);
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+    } catch {}
   };
 
+  // Register for kitchen broadcasts
+  if (!guestStreamsByHotel.has(hotelId)) guestStreamsByHotel.set(hotelId, new Set());
+  const entry = { send, sid };
+  guestStreamsByHotel.get(hotelId).add(entry);
+
   send("hello", { sid, hotelId, ts: Date.now() });
+
+  // Send current kitchen state
+  try {
+    const { data: h } = await supa.from("hotels")
+      .select("kitchen_busy,busy_message,busy_until")
+      .ilike("hotel_id", hotelId).maybeSingle();
+    if (h) send("kitchen", { busy: !!h.kitchen_busy, message: h.busy_message, until: h.busy_until });
+  } catch {}
 
   let lastOrdersHash = "";
   let lastBookingsHash = "";
 
   const tick = async () => {
     try {
-      const [orders, bookings] = await Promise.all([
-        supa.from("orders")
-          .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items")
+      // Try extended columns first; fall back if missing
+      let ordersList = [];
+      let bookingsList = [];
+
+      {
+        const r = await supa.from("orders")
+          .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items,eta_minutes,assigned_to,cancel_window_ends_at")
           .eq("hotel_id", hotelId).eq("guest_session_id", sid)
-          .order("created_at", { ascending: false }).limit(20),
-        supa.from("bookings")
+          .order("created_at", { ascending: false }).limit(20);
+        if (r.error && isMissingColumnError(r.error)) {
+          const r2 = await supa.from("orders")
+            .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items")
+            .eq("hotel_id", hotelId).eq("guest_session_id", sid)
+            .order("created_at", { ascending: false }).limit(20);
+          ordersList = r2.data || [];
+        } else ordersList = r.data || [];
+      }
+
+      {
+        const r = await supa.from("bookings")
           .select("id,status,reference,scheduled_for,service_title,updated_at,amount,duration_min,vendor_note")
           .eq("guest_session_id", sid)
-          .order("created_at", { ascending: false }).limit(20)
-      ]);
+          .order("created_at", { ascending: false }).limit(20);
+        bookingsList = r.data || [];
+      }
 
-      const oHash = JSON.stringify(orders.data || []);
-      const bHash = JSON.stringify(bookings.data || []);
+      const oHash = JSON.stringify(ordersList);
+      const bHash = JSON.stringify(bookingsList);
 
       if (oHash !== lastOrdersHash) {
         lastOrdersHash = oHash;
-        send("orders", orders.data || []);
+        send("orders", ordersList);
       }
       if (bHash !== lastBookingsHash) {
         lastBookingsHash = bHash;
-        send("bookings", bookings.data || []);
+        send("bookings", bookingsList);
       }
 
       send("ping", { ts: Date.now() });
@@ -2064,7 +2512,8 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
 
   req.on("close", () => {
     clearInterval(timer);
-    res.end();
+    guestStreamsByHotel.get(hotelId)?.delete(entry);
+    try { res.end(); } catch {}
   });
 });
 
@@ -2110,9 +2559,10 @@ app.use((err, req, res, next) => {
 // ---------- Listen ----------
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V2.0 running on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V2.1 Guest Love Edition on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
+  console.log(`🔔 Web Push: ${PUSH_ENABLED ? "ENABLED" : "DISABLED"}`);
   console.log(`📦 Storage bucket: ${BUCKET}`);
   if (missing.length) console.log(`⚠️  Missing env: ${missing.join(", ")}`);
   console.log("--------------------------------------------");
@@ -2123,5 +2573,9 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("🎫 Guest sessions + bookings + SSE");
   console.log("💰 Commission ledger (15%)");
   console.log("📊 Admin commission endpoints");
+  console.log("✨ NEW: Push notifications, ETA, kitchen state");
+  console.log("✨ NEW: Cancel window, rate+tip, images, diet tags");
   console.log("============================================");
 });
+
+/* === CONTINUE IN PART 2 === */
