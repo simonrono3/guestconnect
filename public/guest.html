@@ -11,9 +11,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 
 <style>
-/* =====================================================================
-   Tokens
-   ===================================================================== */
 :root{
   --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
   --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
@@ -73,9 +70,6 @@ ul{ list-style:none; }
 }
 .skip-link:focus{ top:8px; }
 
-/* =====================================================================
-   Header
-   ===================================================================== */
 .app-header{
   position:sticky; top:0; z-index:100;
   background:var(--brand); color:#fff;
@@ -113,17 +107,7 @@ ul{ list-style:none; }
   position:relative;
 }
 .icon-btn:hover{ background:rgba(255,255,255,.18); }
-.icon-btn .dot{
-  position:absolute; top:6px; right:6px;
-  width:7px; height:7px; border-radius:50%;
-  background:var(--yellow); border:1.5px solid var(--brand);
-  display:none;
-}
-.icon-btn.has-dot .dot{ display:block; }
 
-/* =====================================================================
-   Buttons
-   ===================================================================== */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap:6px; height:40px; padding:0 14px;
@@ -147,14 +131,8 @@ ul{ list-style:none; }
 .btn-sm{ height:32px; padding:0 10px; font-size:12px; }
 .btn .icon{ width:14px; height:14px; }
 
-/* =====================================================================
-   Container & layout
-   ===================================================================== */
 .container{ max-width:720px; margin:0 auto; padding:14px 14px 40px; }
 
-/* =====================================================================
-   Context banner
-   ===================================================================== */
 .context{
   display:flex; align-items:center; gap:12px;
   background:linear-gradient(135deg,var(--brand),var(--brand-3));
@@ -198,9 +176,6 @@ ul{ list-style:none; }
 }
 .context-change:hover{ background:rgba(255,255,255,.22); }
 
-/* =====================================================================
-   Promo banner
-   ===================================================================== */
 .promo{
   display:none;
   background:var(--yellow-soft);
@@ -228,9 +203,6 @@ ul{ list-style:none; }
 .busy-banner.show{ display:flex; }
 .busy-banner .icon{ width:18px; height:18px; flex-shrink:0; }
 
-/* =====================================================================
-   Section headers
-   ===================================================================== */
 .section-head{
   display:flex; align-items:baseline; justify-content:space-between;
   gap:12px; margin:20px 0 10px;
@@ -247,9 +219,6 @@ ul{ list-style:none; }
   background:transparent; border:0; padding:4px;
 }
 
-/* =====================================================================
-   Active order card
-   ===================================================================== */
 .active-card{
   display:none;
   background:#fff;
@@ -323,9 +292,7 @@ ul{ list-style:none; }
 }
 .active-meta strong{ color:var(--text); font-weight:700; }
 
-.progress{
-  display:flex; gap:4px; margin-top:8px;
-}
+.progress{ display:flex; gap:4px; margin-top:8px; }
 .progress .seg{
   flex:1; height:5px; border-radius:999px;
   background:var(--border);
@@ -355,9 +322,6 @@ ul{ list-style:none; }
 }
 .modify-bar .actions button:hover{ background:var(--yellow-soft); }
 
-/* =====================================================================
-   Quick actions grid
-   ===================================================================== */
 .quick{
   display:grid; grid-template-columns:repeat(4,1fr);
   gap:8px; margin-bottom:8px;
@@ -376,21 +340,10 @@ ul{ list-style:none; }
 .quick-btn:active{ transform:scale(.97); }
 .quick-btn .icon{ width:20px; height:20px; color:var(--brand-2); }
 
-/* =====================================================================
-   Menu grid
-   ===================================================================== */
-.grid{
-  display:grid; grid-template-columns:1fr;
-  gap:10px;
-}
+.grid{ display:grid; grid-template-columns:1fr; gap:10px; }
 @media(min-width:520px){ .grid{ grid-template-columns:1fr 1fr; } }
 
-/* =====================================================================
-   Category pills + search
-   ===================================================================== */
-.search-bar{
-  position:relative; margin-bottom:10px;
-}
+.search-bar{ position:relative; margin-bottom:10px; }
 .search-bar input{
   width:100%; height:42px;
   padding:0 40px 0 38px;
@@ -452,9 +405,6 @@ ul{ list-style:none; }
 .pill:hover:not(.on){ border-color:var(--border-3); color:var(--text); }
 .pill.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
 
-/* =====================================================================
-   Menu / service / vendor cards
-   ===================================================================== */
 .card{
   background:#fff;
   border:1px solid var(--border);
@@ -637,9 +587,6 @@ ul{ list-style:none; }
 .vendor-actions{ display:flex; gap:6px; margin-top:12px; }
 .vendor-actions .btn{ flex:1; }
 
-/* =====================================================================
-   Cart bar
-   ===================================================================== */
 .cart-bar{
   position:fixed; left:12px; right:12px;
   bottom:calc(74px + var(--safe-b));
@@ -668,9 +615,6 @@ ul{ list-style:none; }
 }
 .cart-bar button:hover{ filter:brightness(.96); }
 
-/* =====================================================================
-   Bottom nav
-   ===================================================================== */
 .bottom-nav{
   position:fixed; bottom:0; left:0; right:0;
   background:#fff;
@@ -702,9 +646,6 @@ ul{ list-style:none; }
   border:1.5px solid #fff;
 }
 
-/* =====================================================================
-   Modals / sheets
-   ===================================================================== */
 .sheet{
   position:fixed; inset:0; z-index:200;
   background:rgba(0,0,0,.5);
@@ -754,9 +695,6 @@ ul{ list-style:none; }
 .sheet-close:hover{ background:var(--bg-muted); }
 .sheet-close .icon{ width:16px; height:16px; }
 
-/* =====================================================================
-   Cart items
-   ===================================================================== */
 .cart-line{
   display:flex; gap:12px; padding:12px 0;
   border-bottom:1px solid var(--border);
@@ -807,9 +745,6 @@ ul{ list-style:none; }
   border-top:1px solid var(--border);
 }
 
-/* =====================================================================
-   Payment card
-   ===================================================================== */
 .pay{
   background:var(--bg-subtle);
   border:1px solid var(--border);
@@ -874,9 +809,6 @@ ul{ list-style:none; }
   font-size:12.5px; color:var(--yellow-ink); line-height:1.5;
 }
 
-/* =====================================================================
-   Form inputs
-   ===================================================================== */
 .field{ margin-bottom:14px; }
 .field label{
   display:block; font-size:11.5px; font-weight:600;
@@ -900,9 +832,6 @@ ul{ list-style:none; }
 
 .row-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-/* =====================================================================
-   Slot picker
-   ===================================================================== */
 .slots{
   display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
   gap:8px;
@@ -919,9 +848,6 @@ ul{ list-style:none; }
 .slot.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
 .slot:disabled{ opacity:.35; cursor:not-allowed; text-decoration:line-through; }
 
-/* =====================================================================
-   Empty states
-   ===================================================================== */
 .empty{
   text-align:center; padding:48px 20px;
   color:var(--text-3); font-size:13.5px;
@@ -946,9 +872,6 @@ ul{ list-style:none; }
 }
 .empty .retry-btn:hover{ background:var(--brand-3); }
 
-/* =====================================================================
-   Skeleton
-   ===================================================================== */
 .skel{
   height:78px; border-radius:var(--r-lg);
   background:linear-gradient(90deg,#f0f0f0 0%,#e8e8e8 50%,#f0f0f0 100%);
@@ -961,9 +884,6 @@ ul{ list-style:none; }
   100%{ background-position:-200% 0; }
 }
 
-/* =====================================================================
-   Toast
-   ===================================================================== */
 .toast{
   position:fixed; left:50%; bottom:120px;
   transform:translate(-50%,120%);
@@ -981,9 +901,6 @@ ul{ list-style:none; }
 .toast.success{ background:#1a1a1a; }
 .toast .icon{ width:16px; height:16px; flex-shrink:0; }
 
-/* =====================================================================
-   Confirm dialog
-   ===================================================================== */
 .confirm-list{
   background:var(--bg-subtle); border:1px solid var(--border);
   border-radius:var(--r); padding:12px;
@@ -1003,9 +920,6 @@ ul{ list-style:none; }
   font-size:15px; font-weight:700; color:var(--text);
 }
 
-/* =====================================================================
-   Offline bar
-   ===================================================================== */
 .offline{
   position:fixed; top:0; left:0; right:0;
   z-index:400;
@@ -1018,9 +932,6 @@ ul{ list-style:none; }
 }
 .offline.show{ transform:translateY(0); }
 
-/* =====================================================================
-   Pull to refresh
-   ===================================================================== */
 .ptr-indicator{
   position:fixed; top:0; left:50%; transform:translate(-50%,-100%);
   z-index:150;
@@ -1036,9 +947,6 @@ ul{ list-style:none; }
 .ptr-indicator.spinning .icon{ animation:spin 1s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
-/* =====================================================================
-   Tip / rating prompt
-   ===================================================================== */
 .rating-stars{
   display:flex; justify-content:center; gap:8px;
   margin:16px 0;
@@ -1357,6 +1265,8 @@ ul{ list-style:none; }
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- === PART 2 CONTINUES BELOW THIS LINE === -
 
 <script>
 "use strict";
@@ -2146,7 +2056,7 @@ function openItemDetail(id) {
 }
 
 /* ============================================================
-   CART
+   CART — department captured per line
    ============================================================ */
 function addToCart(id) {
   const item = state.menu.find(i => String(i.id) === String(id));
@@ -2158,7 +2068,8 @@ function addToCart(id) {
   else state.cart.push({
     id: item.id, name: item.name, price: Number(item.price) || 0,
     icon: item.icon || '🍽️', image: item.image_url || item.image || null,
-    qty: 1, notes: ''
+    qty: 1, notes: '',
+    department: item.department || 'kitchen'
   });
   trackRecentItem(id);
   saveLocal();
@@ -2175,7 +2086,8 @@ function setCartLine(id, qty, notes) {
     state.cart.push({
       id: item.id, name: item.name, price: Number(item.price) || 0,
       icon: item.icon || '🍽️', image: item.image_url || item.image || null,
-      qty, notes: notes || ''
+      qty, notes: notes || '',
+      department: item.department || 'kitchen'
     });
     trackRecentItem(id);
   }
@@ -2258,8 +2170,10 @@ $('viewCartBtn').addEventListener('click', () => {
   openSheet('cartSheet');
 });
 
-$('placeOrderBtn').addEventListener('click', showConfirmOrder);
+/* === PART 3 CONTINUES BELOW THIS LINE === */
 
+
+   
 /* ============================================================
    Confirm order dialog
    ============================================================ */
@@ -2307,7 +2221,7 @@ function showConfirmOrder() {
 }
 
 /* ============================================================
-   PLACE ORDER
+   PLACE ORDER — computes primary department + sends it
    ============================================================ */
 async function placeOrder() {
   if (!state.cart.length) return;
@@ -2315,8 +2229,19 @@ async function placeOrder() {
 
   const subtotal = cartSubtotal();
   const items = state.cart.map(l => ({
-    id: l.id, name: l.name, price: l.price, qty: l.qty, notes: l.notes || ''
+    id: l.id, name: l.name, price: l.price, qty: l.qty,
+    notes: l.notes || '',
+    department: l.department || 'kitchen'
   }));
+
+  // Determine primary department (most items win; ties go to first)
+  const deptCounts = {};
+  state.cart.forEach(l => {
+    const d = l.department || 'kitchen';
+    deptCounts[d] = (deptCounts[d] || 0) + l.qty;
+  });
+  const primaryDept = Object.entries(deptCounts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'kitchen';
 
   const btn = $('placeOrderBtn');
   btn.disabled = true; btn.textContent = 'Placing…';
@@ -2335,6 +2260,7 @@ async function placeOrder() {
         service_title: items.map(i => i.qty + '× ' + i.name).join(', '),
         category: 'food',
         kind: 'food',
+        department: primaryDept,
         amount: subtotal,
         total: subtotal,
         subtotal,
@@ -2479,7 +2405,7 @@ function attachCopyHandlers(root) {
 }
 
 /* ============================================================
-   SERVICES
+   SERVICES — department sent with request
    ============================================================ */
 function renderServices() {
   const list = state.services;
@@ -2536,6 +2462,7 @@ async function requestService(id) {
         service_title: svc.name,
         category: svc.category || 'service',
         kind: 'hotel_service',
+        department: svc.department || 'front_desk',
         amount: svc.price || 0,
         total: svc.price || 0
       })
@@ -2556,7 +2483,14 @@ document.querySelectorAll('[data-quick]').forEach(b => {
       waiter: t('callWaiter'), water: t('water'),
       bill: t('requestBill'), housekeeping: t('housekeeping')
     };
+    const deptMap = {
+      waiter: 'front_desk',
+      water: 'front_desk',
+      bill: 'front_desk',
+      housekeeping: 'housekeeping'
+    };
     const title = titles[type] || 'Request';
+    const department = deptMap[type] || 'front_desk';
     try {
       await api('/api/orders', {
         method: 'POST',
@@ -2571,6 +2505,7 @@ document.querySelectorAll('[data-quick]').forEach(b => {
           service_title: title,
           category: 'services',
           kind: 'hotel_service',
+          department,
           amount: 0, total: 0
         })
       });
@@ -3234,7 +3169,8 @@ function reorder(orderId) {
       id: i.id, name: i.name, price: Number(menuItem?.price ?? i.price) || 0,
       icon: menuItem?.icon || '🍽️',
       image: menuItem?.image_url || menuItem?.image || null,
-      qty: i.qty, notes: i.notes || ''
+      qty: i.qty, notes: i.notes || '',
+      department: menuItem?.department || i.department || 'kitchen'
     };
   });
   saveLocal();
@@ -3326,7 +3262,7 @@ function startSSE() {
 }
 
 /* ============================================================
-   WEB PUSH — real implementation
+   WEB PUSH
    ============================================================ */
 async function registerPush() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
@@ -3335,15 +3271,12 @@ async function registerPush() {
   if (!state.token) return toast('Set your room first', 'error');
 
   try {
-    // 1. Register the service worker (served from root by server.js)
     const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
     await navigator.serviceWorker.ready;
 
-    // 2. Ask for permission
     const perm = await Notification.requestPermission();
     if (perm !== 'granted') return toast('Notifications blocked in browser settings', 'error');
 
-    // 3. Get VAPID public key from the server
     let vk;
     try {
       vk = await api('/api/guest/vapid-public');
@@ -3352,13 +3285,11 @@ async function registerPush() {
     }
     if (!vk.key) return toast('Push not configured', 'error');
 
-    // 4. Subscribe with the browser push service
     const sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vk.key)
     });
 
-    // 5. Persist subscription on our server
     await api('/api/guest/push-subscribe', {
       method: 'POST',
       body: JSON.stringify(sub.toJSON())
@@ -3503,6 +3434,6 @@ init();
 </script>
 </body>
 </html>
-   
+
 
    
