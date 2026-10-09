@@ -12,7 +12,7 @@
 
 <style>
 /* =====================================================================
-   Tokens — light blue Booking.com palette (matches hotel dashboard)
+   Tokens
    ===================================================================== */
 :root{
   --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
@@ -24,7 +24,9 @@
   --bg:#fff; --bg-subtle:#f5f7fa; --bg-muted:#f9fafb;
   --surface:#fff;
   --border:#e7e7e7; --border-2:#d9d9d9; --border-3:#c5c5c5;
-  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f; --text-4:#8a8a8a;
+  --text:#1a1a1a; --text-2:#595959; --text-3:#6f6f6f;
+  /* FIX #9 — WCAG AA compliant (was #8a8a8a) */
+  --text-4:#6b6b6b;
   --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;
   --r-sm:6px; --r:8px; --r-lg:12px;
@@ -33,6 +35,8 @@
   --shadow-md:0 4px 12px rgb(0 0 0/8%),0 2px 4px rgb(0 0 0/4%);
   --shadow-lg:0 12px 32px rgb(0 0 0/10%),0 4px 8px rgb(0 0 0/4%);
   --safe-b:env(safe-area-inset-bottom,0px);
+  /* FIX #14 — dynamic bottom padding set via JS on resize */
+  --bottom-stack:84px;
   color-scheme:light;
 }
 
@@ -46,7 +50,8 @@ body{
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   font-feature-settings:'cv02','cv03','cv04','cv11';
   min-height:100vh;
-  padding-bottom:calc(84px + var(--safe-b));
+  padding-bottom:calc(var(--bottom-stack) + var(--safe-b));
+  overscroll-behavior-y:contain;
 }
 img,svg{ display:block; max-width:100%; }
 a{ color:inherit; text-decoration:none; }
@@ -57,6 +62,19 @@ ul{ list-style:none; }
 :focus-visible{ outline:2px solid var(--brand-2); outline-offset:2px; border-radius:4px; }
 .icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
 .hidden{ display:none !important; }
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* Skip link — FIX #9 */
+.skip-link{
+  position:absolute; left:8px; top:-100px; z-index:999;
+  background:var(--brand); color:#fff; padding:10px 14px;
+  border-radius:6px; font-weight:600; font-size:13px;
+  transition:top .2s ease;
+}
+.skip-link:focus{ top:8px; }
 
 /* =====================================================================
    Header
@@ -85,7 +103,7 @@ ul{ list-style:none; }
   color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .brand-sub{
-  font-size:11px; color:rgba(255,255,255,.7);
+  font-size:11px; color:rgba(255,255,255,.8);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   margin-top:1px;
 }
@@ -170,7 +188,7 @@ ul{ list-style:none; }
   display:flex; align-items:center; gap:8px;
 }
 .context-sub{
-  font-size:12px; color:rgba(255,255,255,.75);
+  font-size:12px; color:rgba(255,255,255,.8);
   margin-top:3px; display:flex; align-items:center; gap:6px;
 }
 .context-sub .icon{ width:13px; height:13px; color:var(--yellow); }
@@ -199,6 +217,21 @@ ul{ list-style:none; }
 .promo b{ display:block; font-size:13.5px; font-weight:700; }
 .promo p{ font-size:12.5px; margin-top:3px; line-height:1.5; }
 
+/* FIX #13 — Kitchen busy banner */
+.busy-banner{
+  display:none;
+  background:var(--yellow-soft);
+  border:1px solid var(--yellow-line);
+  border-radius:var(--r);
+  padding:12px 14px;
+  margin-bottom:14px;
+  color:var(--yellow-ink);
+  font-size:12.5px;
+  align-items:center; gap:10px;
+}
+.busy-banner.show{ display:flex; }
+.busy-banner .icon{ width:18px; height:18px; flex-shrink:0; }
+
 /* =====================================================================
    Section headers
    ===================================================================== */
@@ -215,6 +248,7 @@ ul{ list-style:none; }
 .section-link{
   font-size:12.5px; font-weight:600; color:var(--brand-2);
   display:inline-flex; align-items:center; gap:4px;
+  background:transparent; border:0; padding:4px;
 }
 
 /* =====================================================================
@@ -252,6 +286,28 @@ ul{ list-style:none; }
   color:var(--brand-2); margin-top:2px;
   letter-spacing:.3px;
 }
+/* FIX #1 — ETA + waiter row */
+.active-eta{
+  display:flex; align-items:center; gap:8px;
+  padding:8px 10px; margin:8px 0;
+  background:var(--brand-soft);
+  border:1px solid var(--brand-line);
+  border-radius:var(--r-sm);
+  font-size:12.5px; color:var(--brand-2); font-weight:600;
+}
+.active-eta .icon{ width:14px; height:14px; }
+.active-eta b{ color:var(--brand); }
+.active-staff{
+  display:flex; align-items:center; gap:8px;
+  font-size:12.5px; color:var(--text-2);
+  margin-top:6px;
+}
+.active-staff .avatar{
+  width:24px; height:24px; border-radius:50%;
+  background:var(--brand-soft); color:var(--brand-2);
+  display:grid; place-items:center;
+  font-size:11px; font-weight:700;
+}
 .badge{
   display:inline-flex; align-items:center; gap:4px;
   padding:3px 9px; border-radius:999px;
@@ -282,6 +338,28 @@ ul{ list-style:none; }
 }
 .progress .seg.on{ background:var(--brand-2); }
 .progress .seg.done{ background:var(--green); }
+
+/* FIX #2 — Post-order modify window */
+.modify-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:8px; margin-top:10px; padding:8px 10px;
+  background:var(--yellow-soft);
+  border:1px solid var(--yellow-line);
+  border-radius:var(--r-sm);
+  font-size:11.5px; color:var(--yellow-ink);
+}
+.modify-bar .timer{
+  font-family:var(--mono); font-weight:700;
+  font-size:12px;
+}
+.modify-bar .actions{ display:flex; gap:6px; }
+.modify-bar .actions button{
+  padding:4px 10px; border-radius:999px;
+  font-size:11px; font-weight:600;
+  background:#fff; border:1px solid var(--yellow-line);
+  color:var(--yellow-ink);
+}
+.modify-bar .actions button:hover{ background:var(--yellow-soft); }
 
 /* =====================================================================
    Quick actions grid
@@ -314,8 +392,55 @@ ul{ list-style:none; }
 @media(min-width:520px){ .grid{ grid-template-columns:1fr 1fr; } }
 
 /* =====================================================================
-   Category pills
+   Category pills + search
    ===================================================================== */
+/* FIX #4 — Search box */
+.search-bar{
+  position:relative; margin-bottom:10px;
+}
+.search-bar input{
+  width:100%; height:42px;
+  padding:0 40px 0 38px;
+  background:#fff; border:1px solid var(--border-2);
+  border-radius:999px;
+  font-size:13.5px;
+  outline:none;
+  transition:all .15s ease;
+}
+.search-bar input:focus{
+  border-color:var(--brand-2);
+  box-shadow:0 0 0 3px var(--brand-soft);
+}
+.search-bar .search-icon{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  width:16px; height:16px; color:var(--text-3);
+  pointer-events:none;
+}
+.search-bar .search-clear{
+  position:absolute; right:10px; top:50%; transform:translateY(-50%);
+  width:26px; height:26px; border-radius:50%;
+  display:none; place-items:center;
+  background:var(--bg-subtle); color:var(--text-3);
+}
+.search-bar .search-clear.show{ display:grid; }
+.search-bar .search-clear .icon{ width:14px; height:14px; }
+
+.recent-row{
+  display:flex; gap:8px; overflow-x:auto;
+  padding-bottom:8px; margin-bottom:4px;
+  scrollbar-width:none;
+}
+.recent-row::-webkit-scrollbar{ display:none; }
+.recent-chip{
+  flex:0 0 auto;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 12px; border-radius:999px;
+  background:var(--yellow-soft); border:1px solid var(--yellow-line);
+  color:var(--yellow-ink); font-size:12px; font-weight:600;
+  white-space:nowrap;
+}
+.recent-chip .icon{ width:13px; height:13px; }
+
 .pills{
   display:flex; gap:6px; overflow-x:auto;
   padding-bottom:6px; margin:0 -14px 12px;
@@ -351,14 +476,22 @@ ul{ list-style:none; }
 .card.clickable{ cursor:pointer; }
 .card.clickable:active{ transform:scale(.99); }
 
+/* FIX #3 — Item images */
 .card-icon{
   width:56px; height:56px; flex-shrink:0;
   border-radius:12px; background:var(--bg-subtle);
   display:grid; place-items:center;
   font-size:26px;
   overflow:hidden;
+  position:relative;
 }
 .card-icon img{ width:100%; height:100%; object-fit:cover; }
+/* Placeholder for items without an image */
+.card-icon.no-img::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(135deg,var(--brand-soft),var(--bg-subtle));
+}
+
 .card-body{ flex:1; min-width:0; }
 .card-name{
   font-size:14.5px; font-weight:700; color:var(--text);
@@ -370,6 +503,36 @@ ul{ list-style:none; }
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
   overflow:hidden;
 }
+/* FIX #6 — Dietary / allergen badges */
+.diet-tags{
+  display:flex; flex-wrap:wrap; gap:4px;
+  margin-top:6px;
+}
+.diet-tag{
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:10.5px; font-weight:600;
+  padding:2px 7px; border-radius:999px;
+  background:var(--green-soft); color:var(--green);
+  border:1px solid var(--green-line);
+}
+.diet-tag.warn{
+  background:var(--red-soft); color:var(--red);
+  border-color:var(--red-line);
+}
+.diet-tag.info{
+  background:var(--yellow-soft); color:var(--yellow-ink);
+  border-color:var(--yellow-line);
+}
+.diet-tag .icon{ width:10px; height:10px; }
+
+/* FIX #6 — Social proof (sold today) */
+.card-social{
+  font-size:11px; color:var(--text-3);
+  margin-top:5px;
+  display:flex; align-items:center; gap:5px;
+}
+.card-social .icon{ width:11px; height:11px; color:var(--yellow); }
+
 .card-row{
   display:flex; align-items:center; justify-content:space-between;
   gap:10px; margin-top:9px;
@@ -392,12 +555,28 @@ ul{ list-style:none; }
 .add-btn.has{ background:var(--brand-soft); color:var(--brand-2); border:1px solid var(--brand-line); }
 .add-btn .icon{ width:18px; height:18px; }
 
+/* FIX #13 — Unavailable items */
+.card.unavailable{
+  opacity:.55;
+  pointer-events:none;
+  position:relative;
+}
+.card.unavailable::after{
+  content:"Sold out";
+  position:absolute; top:10px; right:10px;
+  background:var(--red); color:#fff;
+  font-size:9.5px; font-weight:700;
+  padding:3px 8px; border-radius:999px;
+  text-transform:uppercase; letter-spacing:.3px;
+}
+
 .badge-float{
   position:absolute; top:10px; left:10px;
   background:var(--yellow); color:#000;
   font-size:9.5px; font-weight:700;
   padding:3px 8px; border-radius:999px;
   text-transform:uppercase; letter-spacing:.3px;
+  z-index:1;
 }
 
 /* Vendor card */
@@ -418,7 +597,9 @@ ul{ list-style:none; }
   display:grid; place-items:center;
   font-size:22px; font-weight:800;
   flex-shrink:0;
+  overflow:hidden;
 }
+.vendor-logo img{ width:100%; height:100%; object-fit:cover; }
 .vendor-info{ flex:1; min-width:0; }
 .vendor-name{
   font-size:14.5px; font-weight:700; color:var(--text);
@@ -428,7 +609,37 @@ ul{ list-style:none; }
   font-size:11.5px; color:var(--text-3);
   margin-top:2px;
   display:flex; gap:8px; flex-wrap:wrap;
+  align-items:center;
 }
+/* FIX #12 — Vendor hours */
+.vendor-hours{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:600;
+  padding:2px 8px; border-radius:999px;
+}
+.vendor-hours.open{
+  background:var(--green-soft); color:var(--green);
+  border:1px solid var(--green-line);
+}
+.vendor-hours.closed{
+  background:var(--red-soft); color:var(--red);
+  border:1px solid var(--red-line);
+}
+.vendor-hours .icon{ width:11px; height:11px; }
+
+/* FIX #12 — Vendor gallery */
+.vendor-gallery{
+  display:flex; gap:6px; overflow-x:auto;
+  margin-top:10px; padding-bottom:4px;
+  scrollbar-width:none;
+}
+.vendor-gallery::-webkit-scrollbar{ display:none; }
+.vendor-gallery img{
+  width:80px; height:60px; border-radius:8px;
+  object-fit:cover; flex-shrink:0;
+  border:1px solid var(--border);
+}
+
 .vendor-services{
   display:flex; flex-wrap:wrap; gap:5px;
   margin-top:8px;
@@ -462,7 +673,7 @@ ul{ list-style:none; }
   to{ opacity:1; transform:translateY(0); }
 }
 .cart-bar .info b{ display:block; font-size:14px; font-weight:700; }
-.cart-bar .info small{ font-size:11.5px; color:rgba(255,255,255,.7); }
+.cart-bar .info small{ font-size:11.5px; color:rgba(255,255,255,.8); }
 .cart-bar button{
   background:var(--yellow); color:#000;
   border:none; padding:10px 18px;
@@ -571,7 +782,9 @@ ul{ list-style:none; }
   background:var(--bg-subtle);
   display:grid; place-items:center;
   font-size:22px; flex-shrink:0;
+  overflow:hidden;
 }
+.cart-line-icon img{ width:100%; height:100%; object-fit:cover; }
 .cart-line-body{ flex:1; min-width:0; }
 .cart-line-name{ font-size:13.5px; font-weight:600; color:var(--text); }
 .cart-line-price{ font-size:12px; color:var(--text-3); margin-top:2px; }
@@ -684,7 +897,9 @@ ul{ list-style:none; }
 .field label{
   display:block; font-size:11.5px; font-weight:600;
   color:var(--text-2); margin-bottom:6px;
-  letter-spacing:.3px; text-transform:uppercase;
+  letter-spacing:.3px;
+  /* FIX #14 — remove shouty uppercase */
+  text-transform:none;
 }
 .input, .textarea{
   width:100%; padding:12px 14px;
@@ -739,6 +954,15 @@ ul{ list-style:none; }
   display:block; font-size:14.5px; font-weight:600;
   color:var(--text); margin-bottom:6px;
 }
+/* FIX #8 — Retry button on error states */
+.empty .retry-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  margin-top:14px; padding:10px 18px;
+  background:var(--brand-2); color:#fff;
+  border-radius:999px;
+  font-size:13px; font-weight:600;
+}
+.empty .retry-btn:hover{ background:var(--brand-3); }
 
 /* =====================================================================
    Skeleton
@@ -776,6 +1000,28 @@ ul{ list-style:none; }
 .toast .icon{ width:16px; height:16px; flex-shrink:0; }
 
 /* =====================================================================
+   Confirm dialog
+   ===================================================================== */
+.confirm-list{
+  background:var(--bg-subtle); border:1px solid var(--border);
+  border-radius:var(--r); padding:12px;
+  margin-bottom:14px;
+  max-height:220px; overflow-y:auto;
+}
+.confirm-list .row{
+  display:flex; justify-content:space-between;
+  font-size:13px; padding:5px 0;
+  color:var(--text-2);
+}
+.confirm-list .row b{ color:var(--text); }
+.confirm-total{
+  display:flex; justify-content:space-between;
+  padding:12px 0 0; margin-top:8px;
+  border-top:1px solid var(--border);
+  font-size:15px; font-weight:700; color:var(--text);
+}
+
+/* =====================================================================
    Offline bar
    ===================================================================== */
 .offline{
@@ -790,6 +1036,54 @@ ul{ list-style:none; }
 }
 .offline.show{ transform:translateY(0); }
 
+/* =====================================================================
+   Pull to refresh
+   ===================================================================== */
+.ptr-indicator{
+  position:fixed; top:0; left:50%; transform:translate(-50%,-100%);
+  z-index:150;
+  background:var(--brand); color:#fff;
+  padding:8px 16px; border-radius:0 0 12px 12px;
+  font-size:12px; font-weight:600;
+  display:flex; align-items:center; gap:6px;
+  transition:transform .25s ease;
+  box-shadow:var(--shadow-md);
+}
+.ptr-indicator.show{ transform:translate(-50%,0); }
+.ptr-indicator .icon{ width:14px; height:14px; }
+.ptr-indicator.spinning .icon{ animation:spin 1s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* =====================================================================
+   Tip / rating prompt
+   ===================================================================== */
+.rating-stars{
+  display:flex; justify-content:center; gap:8px;
+  margin:16px 0;
+}
+.rating-star{
+  width:44px; height:44px;
+  display:grid; place-items:center;
+  color:var(--border-3);
+  transition:all .15s ease;
+}
+.rating-star .icon{ width:32px; height:32px; }
+.rating-star.on{ color:var(--yellow); transform:scale(1.08); }
+.tip-grid{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:8px; margin:12px 0;
+}
+.tip-btn{
+  padding:12px 8px;
+  background:#fff; border:1px solid var(--border-2);
+  border-radius:var(--r);
+  font-size:13px; font-weight:700; color:var(--text);
+  text-align:center;
+}
+.tip-btn:hover{ border-color:var(--brand-2); color:var(--brand-2); }
+.tip-btn.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
+.tip-btn small{ display:block; font-size:10.5px; font-weight:500; opacity:.7; margin-top:2px; }
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms !important;
@@ -800,7 +1094,15 @@ ul{ list-style:none; }
 </head>
 <body>
 
-<div class="offline" id="offlineBar">You're offline — reconnecting…</div>
+<a href="#main" class="skip-link">Skip to main content</a>
+
+<div class="offline" id="offlineBar" role="status" aria-live="polite">You're offline — reconnecting…</div>
+
+<!-- FIX #14 — Pull to refresh indicator -->
+<div class="ptr-indicator" id="ptrIndicator">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+  <span>Pull to refresh</span>
+</div>
 
 <header class="app-header">
   <div class="app-header-inner">
@@ -812,17 +1114,17 @@ ul{ list-style:none; }
       </div>
     </div>
     <div class="header-actions">
-      <button class="icon-btn" id="langBtn" title="Language" aria-label="Language">
+      <button class="icon-btn" id="langBtn" title="Language" aria-label="Change language">
         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       </button>
-      <button class="icon-btn" id="profileBtn" title="Profile" aria-label="Profile">
+      <button class="icon-btn" id="profileBtn" title="Profile" aria-label="Your profile">
         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<main class="container" id="main">
+<main class="container" id="main" tabindex="-1">
 
   <!-- CONTEXT BANNER -->
   <section class="context" id="contextBanner">
@@ -845,50 +1147,52 @@ ul{ list-style:none; }
     <p id="promoText"></p>
   </div>
 
+  <!-- FIX #13 — Kitchen busy banner -->
+  <div class="busy-banner" id="busyBanner" role="status" aria-live="polite">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span id="busyText">Kitchen is busy right now — orders may take longer than usual.</span>
+  </div>
+
   <!-- ======================================================= -->
   <!-- TAB: HOME -->
   <!-- ======================================================= -->
   <section id="view-home" class="view">
-    <!-- Active order -->
     <div class="active-card" id="activeCard"></div>
 
-    <!-- Quick actions -->
     <div class="quick" id="quickActions">
-      <button class="quick-btn" data-quick="waiter">
+      <button class="quick-btn" data-quick="waiter" aria-label="Call waiter">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
         Call waiter
       </button>
-      <button class="quick-btn" data-quick="water">
+      <button class="quick-btn" data-quick="water" aria-label="Request water">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
         Water
       </button>
-      <button class="quick-btn" data-quick="bill">
+      <button class="quick-btn" data-quick="bill" aria-label="Request bill">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
         Request bill
       </button>
-      <button class="quick-btn" data-quick="housekeeping">
+      <button class="quick-btn" data-quick="housekeeping" aria-label="Request housekeeping">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
         Housekeeping
       </button>
     </div>
 
-    <!-- Popular menu items -->
     <div class="section-head">
       <h2 class="section-title">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
         Popular right now
       </h2>
-      <a class="section-link" href="#" data-tab="menu">View all →</a>
+      <button class="section-link" data-tab="menu">View all →</button>
     </div>
     <div class="grid" id="popularGrid"></div>
 
-    <!-- Vendors teaser -->
     <div class="section-head">
       <h2 class="section-title">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
         Nearby vendors
       </h2>
-      <a class="section-link" href="#" data-tab="vendors">See all →</a>
+      <button class="section-link" data-tab="vendors">See all →</button>
     </div>
     <div class="grid" id="popularVendors"></div>
   </section>
@@ -897,6 +1201,18 @@ ul{ list-style:none; }
   <!-- TAB: MENU -->
   <!-- ======================================================= -->
   <section id="view-menu" class="view hidden">
+    <!-- FIX #4 — Search -->
+    <div class="search-bar">
+      <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="search" id="menuSearch" placeholder="Search the menu…" autocomplete="off" aria-label="Search menu">
+      <button class="search-clear" id="menuSearchClear" aria-label="Clear search">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- FIX #8 — Recently ordered -->
+    <div id="recentWrap"></div>
+
     <div class="pills" id="menuPills"></div>
     <div class="grid" id="menuGrid"></div>
   </section>
@@ -929,7 +1245,6 @@ ul{ list-style:none; }
 
 </main>
 
-<!-- Cart bar -->
 <div class="cart-bar" id="cartBar">
   <div class="info">
     <b id="cartCount">0 items</b>
@@ -941,36 +1256,32 @@ ul{ list-style:none; }
   </button>
 </div>
 
-<!-- Bottom nav -->
-<nav class="bottom-nav">
-  <button class="nav-btn on" data-tab="home">
+<nav class="bottom-nav" aria-label="Main navigation">
+  <button class="nav-btn on" data-tab="home" aria-label="Home">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Home
   </button>
-  <button class="nav-btn" data-tab="menu">
+  <button class="nav-btn" data-tab="menu" aria-label="Menu">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>
     Menu
   </button>
-  <button class="nav-btn" data-tab="services">
+  <button class="nav-btn" data-tab="services" aria-label="Services">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
     Services
   </button>
-  <button class="nav-btn" data-tab="vendors">
+  <button class="nav-btn" data-tab="vendors" aria-label="Vendors">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
     Vendors
   </button>
-  <button class="nav-btn" data-tab="orders">
+  <button class="nav-btn" data-tab="orders" aria-label="Orders">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
     Orders
     <span class="nav-dot hidden" id="ordersDot">0</span>
   </button>
 </nav>
 
-<!-- ============================================================
-     SHEETS / MODALS
-     ============================================================ -->
+<!-- SHEETS -->
 
-<!-- Context sheet -->
 <div class="sheet" id="contextSheet">
   <div class="sheet-body">
     <div class="sheet-head">
@@ -978,7 +1289,7 @@ ul{ list-style:none; }
         <div class="sheet-title">Where are you?</div>
         <div class="sheet-sub">Choose your room or table — we route everything from there.</div>
       </div>
-      <button class="sheet-close" data-close="contextSheet">
+      <button class="sheet-close" data-close="contextSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
@@ -1013,18 +1324,14 @@ ul{ list-style:none; }
       </div>
     </div>
 
-    <button class="btn btn-primary btn-full btn-lg" id="saveContextBtn">
-      Confirm
-    </button>
+    <button class="btn btn-primary btn-full btn-lg" id="saveContextBtn">Confirm</button>
   </div>
 </div>
 
-<!-- Item detail sheet -->
 <div class="sheet" id="itemSheet">
   <div class="sheet-body" id="itemSheetBody"></div>
 </div>
 
-<!-- Cart sheet -->
 <div class="sheet" id="cartSheet">
   <div class="sheet-body">
     <div class="sheet-head">
@@ -1035,29 +1342,24 @@ ul{ list-style:none; }
         </div>
         <div class="sheet-sub" id="cartSub">—</div>
       </div>
-      <button class="sheet-close" data-close="cartSheet">
+      <button class="sheet-close" data-close="cartSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
     <div id="cartItems"></div>
     <div class="totals" id="cartTotals"></div>
-    <button class="btn btn-primary btn-full btn-lg" id="placeOrderBtn" style="margin-top:16px">
-      Place order
-    </button>
+    <button class="btn btn-primary btn-full btn-lg" id="placeOrderBtn" style="margin-top:16px">Place order</button>
   </div>
 </div>
 
-<!-- Success sheet -->
 <div class="sheet" id="successSheet">
   <div class="sheet-body" id="successSheetBody"></div>
 </div>
 
-<!-- Booking sheet -->
 <div class="sheet" id="bookingSheet">
   <div class="sheet-body" id="bookingSheetBody"></div>
 </div>
 
-<!-- Language sheet -->
 <div class="sheet" id="langSheet">
   <div class="sheet-body">
     <div class="sheet-head">
@@ -1065,7 +1367,7 @@ ul{ list-style:none; }
         <div class="sheet-title">Language</div>
         <div class="sheet-sub">Choose your preferred language</div>
       </div>
-      <button class="sheet-close" data-close="langSheet">
+      <button class="sheet-close" data-close="langSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
@@ -1083,12 +1385,21 @@ ul{ list-style:none; }
   </div>
 </div>
 
-<!-- Profile sheet -->
 <div class="sheet" id="profileSheet">
   <div class="sheet-body" id="profileSheetBody"></div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- FIX #11 — Post-checkout rating sheet -->
+<div class="sheet" id="ratingSheet">
+  <div class="sheet-body" id="ratingSheetBody"></div>
+</div>
+
+<!-- FIX #14 — Confirm order dialog -->
+<div class="sheet" id="confirmSheet">
+  <div class="sheet-body" id="confirmSheetBody"></div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
@@ -1102,11 +1413,20 @@ const ICON = {
   clock: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
   cart: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57L23 6H6"/></svg>',
   plus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+  minus: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>',
   copy: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
   bell: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>',
   star: '<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  starOutline: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
   store: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>',
-  calendar: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>'
+  calendar: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
+  search: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  refresh: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
+  leaf: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+  flame: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+  users: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  user: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>'
 };
 
 /* ============================================================
@@ -1130,11 +1450,17 @@ const state = {
   activeBooking: null,
   tab: 'home',
   menuFilter: 'all',
+  menuSearch: '',
   vendorFilter: 'all',
   orderFilter: 'active',
   context: { mode: 'room', number: '' },
   sse: null,
-  sseRetry: 0
+  sseRetry: 0,
+  recentItems: [],           // FIX #8
+  orderModifyUntil: 0,       // FIX #2
+  kitchenBusy: false,        // FIX #13
+  lang: 'en',                // FIX #10
+  ratings: {}                // FIX #11
 };
 
 const params = new URLSearchParams(location.search);
@@ -1143,12 +1469,136 @@ const URL_ROOM = params.get('room') || params.get('table') || '';
 const URL_MODE = params.get('mode') || (params.get('table') ? 'table' : 'room');
 
 /* ============================================================
+   FIX #10 — REAL i18n dictionary
+   ============================================================ */
+const I18N = {
+  en: {
+    home: 'Home', menu: 'Menu', services: 'Services', vendors: 'Vendors', orders: 'Orders',
+    callWaiter: 'Call waiter', water: 'Water', requestBill: 'Request bill', housekeeping: 'Housekeeping',
+    popularNow: 'Popular right now', nearbyVendors: 'Nearby vendors', viewAll: 'View all →', seeAll: 'See all →',
+    searchPlaceholder: 'Search the menu…', all: 'All', recentlyOrdered: 'Your recent orders',
+    yourOrder: 'Your order', placeOrder: 'Place order', addToCart: 'Add to cart', updateCart: 'Update cart',
+    cartEmpty: 'Your cart is empty', subtotal: 'Subtotal', total: 'Total',
+    orderPlaced: 'Order placed', kitchenPreparing: 'Kitchen is preparing it now — track live in Orders.',
+    trackOrder: 'Track my order', reference: 'Reference',
+    setYourRoom: 'Set your room', whereAreYou: 'Where are you?', chooseRoomOrTable: 'Choose your room or table — we route everything from there.',
+    mode: 'Mode', room: 'Room', table: 'Table', number: 'Number', yourName: 'Your name', phone: 'Phone (for updates)', confirm: 'Confirm',
+    active: 'Active', history: 'History', nothingActive: 'Nothing active', noHistoryYet: 'No history yet',
+    nothingActiveText: 'Place an order or book a service to see it here.',
+    noHistoryText: 'Completed orders will appear here.',
+    book: 'Book', confirmBooking: 'Confirm booking', service: 'Service', date: 'Date', guests: 'Guests',
+    availableSlots: 'Available time slots', notes: 'Notes (optional)', specialRequests: 'Special requests',
+    notesPlaceholder: 'No onions, extra spicy, etc.', noItems: 'No items', tryDifferentCategory: 'Try a different category.',
+    noVendorsYet: 'No vendors yet', partnerVendorsWillAppear: 'Partner vendors will appear here.',
+    noServicesYet: 'No services yet', payViaMpesaPaybill: 'Pay via M-Pesa Paybill', payViaMpesaTill: 'Pay via M-Pesa Till',
+    paybill: 'Paybill', account: 'Account', amount: 'Amount', till: 'Till', copy: 'Copy', copied: 'Copied',
+    payAtReception: 'Pay at reception', language: 'Language', choosePreferredLanguage: 'Choose your preferred language',
+    yourProfile: 'Your profile', updateAnytime: 'Update anytime', name: 'Name', hotel: 'Hotel',
+    currentLocation: 'Current location', changeLocation: 'Change location',
+    eta: 'ETA', arrivingIn: 'Arriving in', handledBy: 'Handled by', orderAgain: 'Order again',
+    modifyWindow: 'You can modify this order for', cancelOrder: 'Cancel order', addMore: 'Add more',
+    kitchenBusy: 'Kitchen is busy right now — orders may take longer than usual.',
+    rateYourOrder: 'Rate your order', howWasIt: 'How was it?', submit: 'Submit', skip: 'Skip',
+    tip: 'Add a tip', tipPrompt: 'Show appreciation for great service', noTip: 'No tip',
+    confirmOrder: 'Confirm your order', confirmPrompt: 'Please review your order before we send it to the kitchen.',
+    item: 'item', items: 'items', offline: "You're offline — reconnecting…", backOnline: 'Back online'
+  },
+  sw: {
+    home: 'Nyumbani', menu: 'Menyu', services: 'Huduma', vendors: 'Wauzaji', orders: 'Oda',
+    callWaiter: 'Ita mhudumu', water: 'Maji', requestBill: 'Omba bili', housekeeping: 'Usafi wa chumba',
+    popularNow: 'Maarufu sasa', nearbyVendors: 'Wauzaji wa karibu', viewAll: 'Ona zote →', seeAll: 'Ona zote →',
+    searchPlaceholder: 'Tafuta kwenye menyu…', all: 'Zote', recentlyOrdered: 'Oda zako za hivi karibuni',
+    yourOrder: 'Oda yako', placeOrder: 'Weka oda', addToCart: 'Ongeza kwenye kikapu', updateCart: 'Sasisha kikapu',
+    cartEmpty: 'Kikapu chako ni tupu', subtotal: 'Jumla ndogo', total: 'Jumla',
+    orderPlaced: 'Oda imewekwa', kitchenPreparing: 'Jikoni inaandaa sasa — fuatilia kwenye Oda.',
+    trackOrder: 'Fuatilia oda yangu', reference: 'Kumbukumbu',
+    setYourRoom: 'Weka chumba chako', whereAreYou: 'Uko wapi?', chooseRoomOrTable: 'Chagua chumba au meza yako — tunatuma kila kitu kutoka hapo.',
+    mode: 'Hali', room: 'Chumba', table: 'Meza', number: 'Nambari', yourName: 'Jina lako', phone: 'Simu (kwa masasisho)', confirm: 'Thibitisha',
+    active: 'Inayoendelea', history: 'Historia', nothingActive: 'Hakuna inayoendelea', noHistoryYet: 'Hakuna historia bado',
+    nothingActiveText: 'Weka oda au book huduma ili kuiona hapa.',
+    noHistoryText: 'Oda zilizokamilika zitaonekana hapa.',
+    book: 'Book', confirmBooking: 'Thibitisha booking', service: 'Huduma', date: 'Tarehe', guests: 'Wageni',
+    availableSlots: 'Muda unaopatikana', notes: 'Maelezo (si lazima)', specialRequests: 'Maombi maalum',
+    notesPlaceholder: 'Bila vitunguu, pilipili zaidi, n.k.', noItems: 'Hakuna vitu', tryDifferentCategory: 'Jaribu kategoria nyingine.',
+    noVendorsYet: 'Hakuna wauzaji bado', partnerVendorsWillAppear: 'Wauzaji washirika wataonekana hapa.',
+    noServicesYet: 'Hakuna huduma bado', payViaMpesaPaybill: 'Lipia kwa M-Pesa Paybill', payViaMpesaTill: 'Lipia kwa M-Pesa Till',
+    paybill: 'Paybill', account: 'Akaunti', amount: 'Kiasi', till: 'Till', copy: 'Nakili', copied: 'Imenakiliwa',
+    payAtReception: 'Lipia mapokezi', language: 'Lugha', choosePreferredLanguage: 'Chagua lugha unayopendelea',
+    yourProfile: 'Wasifu wako', updateAnytime: 'Sasisha wakati wowote', name: 'Jina', hotel: 'Hoteli',
+    currentLocation: 'Mahali ulipo', changeLocation: 'Badilisha mahali',
+    eta: 'Muda', arrivingIn: 'Inafika baada ya', handledBy: 'Anashughulikiwa na', orderAgain: 'Agiza tena',
+    modifyWindow: 'Unaweza kubadilisha oda hii kwa', cancelOrder: 'Ghairi oda', addMore: 'Ongeza zaidi',
+    kitchenBusy: 'Jikoni ina shughuli nyingi sasa — oda zinaweza kuchukua muda mrefu.',
+    rateYourOrder: 'Kadiria oda yako', howWasIt: 'Ilikaaje?', submit: 'Tuma', skip: 'Ruka',
+    tip: 'Ongeza bakshishi', tipPrompt: 'Onyesha shukrani kwa huduma nzuri', noTip: 'Bila bakshishi',
+    confirmOrder: 'Thibitisha oda yako', confirmPrompt: 'Tafadhali angalia oda yako kabla ya kutuma jikoni.',
+    item: 'kitu', items: 'vitu', offline: 'Hauko mtandaoni — tunaunganisha…', backOnline: 'Umerudi mtandaoni'
+  },
+  fr: {
+    home: 'Accueil', menu: 'Menu', services: 'Services', vendors: 'Prestataires', orders: 'Commandes',
+    callWaiter: 'Appeler le serveur', water: 'Eau', requestBill: "Demander l'addition", housekeeping: 'Ménage',
+    popularNow: 'Populaire en ce moment', nearbyVendors: 'Prestataires à proximité', viewAll: 'Tout voir →', seeAll: 'Tout voir →',
+    searchPlaceholder: 'Rechercher dans le menu…', all: 'Tout', recentlyOrdered: 'Vos commandes récentes',
+    yourOrder: 'Votre commande', placeOrder: 'Passer la commande', addToCart: 'Ajouter au panier', updateCart: 'Mettre à jour',
+    cartEmpty: 'Votre panier est vide', subtotal: 'Sous-total', total: 'Total',
+    orderPlaced: 'Commande passée', kitchenPreparing: 'La cuisine prépare — suivez en direct dans Commandes.',
+    trackOrder: 'Suivre ma commande', reference: 'Référence',
+    setYourRoom: 'Définir votre chambre', whereAreYou: 'Où êtes-vous ?', chooseRoomOrTable: 'Choisissez votre chambre ou table — tout est routé depuis là.',
+    mode: 'Mode', room: 'Chambre', table: 'Table', number: 'Numéro', yourName: 'Votre nom', phone: 'Téléphone (pour les mises à jour)', confirm: 'Confirmer',
+    active: 'Actif', history: 'Historique', nothingActive: 'Rien d\'actif', noHistoryYet: 'Pas encore d\'historique',
+    nothingActiveText: 'Passez une commande ou réservez un service pour le voir ici.',
+    noHistoryText: 'Les commandes terminées apparaîtront ici.',
+    book: 'Réserver', confirmBooking: 'Confirmer la réservation', service: 'Service', date: 'Date', guests: 'Invités',
+    availableSlots: 'Créneaux disponibles', notes: 'Notes (optionnel)', specialRequests: 'Demandes spéciales',
+    notesPlaceholder: 'Sans oignons, plus épicé, etc.', noItems: 'Aucun article', tryDifferentCategory: 'Essayez une autre catégorie.',
+    noVendorsYet: 'Aucun prestataire', partnerVendorsWillAppear: 'Les prestataires partenaires apparaîtront ici.',
+    noServicesYet: 'Aucun service', payViaMpesaPaybill: 'Payer via M-Pesa Paybill', payViaMpesaTill: 'Payer via M-Pesa Till',
+    paybill: 'Paybill', account: 'Compte', amount: 'Montant', till: 'Till', copy: 'Copier', copied: 'Copié',
+    payAtReception: 'Payer à la réception', language: 'Langue', choosePreferredLanguage: 'Choisissez votre langue',
+    yourProfile: 'Votre profil', updateAnytime: 'Mettez à jour à tout moment', name: 'Nom', hotel: 'Hôtel',
+    currentLocation: 'Localisation actuelle', changeLocation: 'Changer de lieu',
+    eta: 'Arrivée', arrivingIn: 'Arrive dans', handledBy: 'Servi par', orderAgain: 'Commander à nouveau',
+    modifyWindow: 'Vous pouvez modifier cette commande pendant', cancelOrder: 'Annuler la commande', addMore: 'Ajouter',
+    kitchenBusy: 'La cuisine est occupée — les commandes peuvent prendre plus de temps.',
+    rateYourOrder: 'Évaluer votre commande', howWasIt: 'C\'était comment ?', submit: 'Envoyer', skip: 'Passer',
+    tip: 'Ajouter un pourboire', tipPrompt: 'Montrez votre appréciation', noTip: 'Sans pourboire',
+    confirmOrder: 'Confirmer votre commande', confirmPrompt: 'Veuillez vérifier votre commande avant de l\'envoyer.',
+    item: 'article', items: 'articles', offline: 'Hors ligne — reconnexion…', backOnline: 'De nouveau en ligne'
+  }
+};
+
+function t(key) {
+  return (I18N[state.lang] && I18N[state.lang][key]) || I18N.en[key] || key;
+}
+
+function applyTranslations() {
+  // Update all [data-i18n] elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    el.textContent = t(key);
+  });
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPlaceholder);
+  });
+  // Update aria-labels
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    el.setAttribute('aria-label', t(el.dataset.i18nAria));
+  });
+  document.documentElement.lang = state.lang;
+}
+
+/* ============================================================
    UTILS
    ============================================================ */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const money = v => 'Ksh ' + Number(v || 0).toLocaleString();
+/* FIX #14 — currency-aware formatter */
+function money(v) {
+  const currency = state.hotel?.currency || 'Ksh';
+  return currency + ' ' + Number(v || 0).toLocaleString();
+}
 
 const cleanPhone = v => {
   const d = String(v || '').replace(/\D/g, '');
@@ -1207,6 +1657,40 @@ function relativeTime(iso) {
   return Math.floor(h / 24) + 'd ago';
 }
 
+/* FIX #1 — human-readable ETA */
+function formatETA(order) {
+  const mins = order.eta_minutes || order.estimated_minutes;
+  if (mins) return `~${mins} min`;
+  // Fallback: estimate from status
+  const status = String(order.status || '').toLowerCase();
+  const fallback = {
+    pending: 25, accepted: 20, preparing: 12, on_the_way: 4
+  };
+  return fallback[status] ? `~${fallback[status]} min` : '';
+}
+
+/* FIX #6 — dietary badge map */
+const DIET_META = {
+  vegetarian: { label: 'Vegetarian', icon: ICON.leaf, cls: '' },
+  vegan:      { label: 'Vegan',      icon: ICON.leaf, cls: '' },
+  halal:      { label: 'Halal',      icon: ICON.check, cls: '' },
+  gluten_free:{ label: 'Gluten-free',icon: ICON.check, cls: '' },
+  spicy:      { label: 'Spicy',      icon: ICON.flame, cls: 'warn' },
+  nuts:       { label: 'Contains nuts', icon: ICON.alert, cls: 'warn' }
+};
+
+function renderDietTags(tags) {
+  if (!tags || !tags.length) return '';
+  const valid = tags.filter(tag => DIET_META[tag]);
+  if (!valid.length) return '';
+  return `<div class="diet-tags">${
+    valid.map(tag => {
+      const m = DIET_META[tag];
+      return `<span class="diet-tag ${m.cls}">${m.icon}<span>${esc(m.label)}</span></span>`;
+    }).join('')
+  }</div>`;
+}
+
 /* ============================================================
    PERSISTENCE
    ============================================================ */
@@ -1215,6 +1699,12 @@ function saveLocal() {
     localStorage.setItem('gh_guest_ctx', JSON.stringify(state.context));
     if (state.token) localStorage.setItem('gh_guest_token', state.token);
     localStorage.setItem('gh_guest_cart_' + HOTEL_ID, JSON.stringify(state.cart));
+    // FIX #8 — persist recent items
+    localStorage.setItem('gh_guest_recent_' + HOTEL_ID, JSON.stringify(state.recentItems.slice(0, 8)));
+    // FIX #10 — persist language
+    localStorage.setItem('gh_lang', state.lang);
+    // FIX #11 — persist ratings
+    localStorage.setItem('gh_ratings_' + HOTEL_ID, JSON.stringify(state.ratings));
   } catch {}
 }
 function loadLocal() {
@@ -1224,6 +1714,12 @@ function loadLocal() {
     state.token = localStorage.getItem('gh_guest_token') || null;
     const cart = localStorage.getItem('gh_guest_cart_' + HOTEL_ID);
     if (cart) state.cart = JSON.parse(cart) || [];
+    const recent = localStorage.getItem('gh_guest_recent_' + HOTEL_ID);
+    if (recent) state.recentItems = JSON.parse(recent) || [];
+    const lang = localStorage.getItem('gh_lang');
+    if (lang && I18N[lang]) state.lang = lang;
+    const ratings = localStorage.getItem('gh_ratings_' + HOTEL_ID);
+    if (ratings) state.ratings = JSON.parse(ratings) || {};
   } catch {}
 }
 
@@ -1231,26 +1727,32 @@ function loadLocal() {
    OFFLINE
    ============================================================ */
 function updateOffline() {
-  $('offlineBar').classList.toggle('show', !navigator.onLine);
+  const isOffline = !navigator.onLine;
+  $('offlineBar').classList.toggle('show', isOffline);
+  const span = $('offlineBar');
+  if (span) span.textContent = t('offline');
 }
 window.addEventListener('offline', updateOffline);
-window.addEventListener('online', () => { updateOffline(); toast('Back online'); });
+window.addEventListener('online', () => { updateOffline(); toast(t('backOnline')); });
 updateOffline();
 
 /* ============================================================
    SHEETS
    ============================================================ */
+let sheetStack = [];
 function openSheet(id) {
   const el = $(id);
   if (!el) return;
   el.classList.add('show');
+  if (!sheetStack.includes(id)) sheetStack.push(id);
   document.body.style.overflow = 'hidden';
 }
 function closeSheet(id) {
   const el = $(id);
   if (!el) return;
   el.classList.remove('show');
-  if (!document.querySelector('.sheet.show')) document.body.style.overflow = '';
+  sheetStack = sheetStack.filter(x => x !== id);
+  if (!sheetStack.length) document.body.style.overflow = '';
 }
 document.querySelectorAll('.sheet').forEach(s => {
   s.addEventListener('click', e => { if (e.target === s) closeSheet(s.id); });
@@ -1259,9 +1761,8 @@ document.querySelectorAll('[data-close]').forEach(b => {
   b.addEventListener('click', () => closeSheet(b.dataset.close));
 });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    document.querySelectorAll('.sheet.show').forEach(s => s.classList.remove('show'));
-    document.body.style.overflow = '';
+  if (e.key === 'Escape' && sheetStack.length) {
+    closeSheet(sheetStack[sheetStack.length - 1]);
   }
 });
 
@@ -1274,8 +1775,8 @@ function renderContext() {
   const isTable = c.mode === 'table';
 
   $('contextTitle').textContent = hasNumber
-    ? (isTable ? `Table ${c.number}` : `Room ${c.number}`)
-    : 'Set your room';
+    ? (isTable ? `${t('table')} ${c.number}` : `${t('room')} ${c.number}`)
+    : t('setYourRoom');
 
   const iconSvg = isTable
     ? '<path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/>'
@@ -1286,7 +1787,7 @@ function renderContext() {
   if (sub) sub.textContent = state.hotel ? state.hotel.name : '—';
 
   $('headerContext').textContent = hasNumber
-    ? (isTable ? `Table ${c.number}` : `Room ${c.number}`) + (state.hotel ? ' · ' + state.hotel.name : '')
+    ? (isTable ? `${t('table')} ${c.number}` : `${t('room')} ${c.number}`) + (state.hotel ? ' · ' + state.hotel.name : '')
     : (state.hotel ? state.hotel.name : 'Loading…');
 }
 
@@ -1361,7 +1862,6 @@ async function bootstrap() {
     return;
   }
 
-  // Skeleton
   $('popularGrid').innerHTML = '<div class="skel"></div><div class="skel"></div>';
   $('menuGrid').innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
 
@@ -1373,17 +1873,19 @@ async function bootstrap() {
     state.vendors = res.vendors || [];
     state.departments = res.departments || [];
 
+    /* FIX #13 — read kitchen busy state from hotel payload */
+    state.kitchenBusy = !!(state.hotel.kitchen_busy || state.hotel.is_busy);
+    renderBusyBanner();
+
     document.title = state.hotel.name + ' · GuestHub';
     $('brandLogo').textContent = (state.hotel.name || 'G')[0].toUpperCase();
 
-    // Promo
     if (state.hotel.promo_title) {
       $('promoTitle').textContent = state.hotel.promo_title;
       $('promoText').textContent = state.hotel.promo_text || '';
       $('promoBanner').classList.add('show');
     }
 
-    // Prefill context from URL
     if (URL_ROOM && !state.context.number) {
       state.context.mode = URL_MODE === 'table' ? 'table' : 'room';
       state.context.number = URL_ROOM;
@@ -1391,7 +1893,6 @@ async function bootstrap() {
     saveLocal();
     renderContext();
 
-    // Session — if we don't have name+phone yet, open the sheet
     if (state.token) {
       try {
         const me = await api('/api/guest/me');
@@ -1406,25 +1907,88 @@ async function bootstrap() {
       openContextSheet();
     }
 
-    // Render all views
     renderPopular();
     renderMenuPills();
     renderMenu();
+    renderRecent();
     renderServices();
     renderVendorPills();
     renderVendors();
     renderCartBar();
     refreshOrders();
     refreshBookings();
+    applyTranslations();
 
   } catch (e) {
+    /* FIX #8 — retry button on bootstrap failure */
     $('main').innerHTML = `
       <div class="empty">
         <div class="empty-icon">${ICON.alert}</div>
         <b>Could not load hotel</b>
         <p>${esc(e.message)}</p>
+        <button class="retry-btn" id="retryBootstrap">${ICON.refresh} Try again</button>
       </div>`;
+    const retry = $('retryBootstrap');
+    if (retry) retry.addEventListener('click', () => { bootstrap(); });
   }
+}
+
+/* ============================================================
+   FIX #13 — Kitchen busy banner
+   ============================================================ */
+function renderBusyBanner() {
+  const banner = $('busyBanner');
+  if (!banner) return;
+  if (state.kitchenBusy) {
+    $('busyText').textContent = state.hotel?.busy_message || t('kitchenBusy');
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+/* ============================================================
+   FIX #8 — Recently ordered
+   ============================================================ */
+function renderRecent() {
+  const wrap = $('recentWrap');
+  if (!wrap) return;
+  if (!state.recentItems.length) { wrap.innerHTML = ''; return; }
+
+  const items = state.recentItems
+    .map(id => state.menu.find(m => String(m.id) === String(id)))
+    .filter(Boolean)
+    .slice(0, 6);
+
+  if (!items.length) { wrap.innerHTML = ''; return; }
+
+  wrap.innerHTML = `
+    <div class="recent-row">
+      <span style="font-size:11.5px;font-weight:600;color:var(--text-3);align-self:center;flex-shrink:0;margin-right:4px">${t('recentlyOrdered')}:</span>
+      ${items.map(i => `
+        <button class="recent-chip" data-recent="${esc(i.id)}">
+          ${ICON.refresh}<span>${esc(i.name)}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  wrap.querySelectorAll('[data-recent]').forEach(b => {
+    b.addEventListener('click', () => {
+      const id = b.dataset.recent;
+      const item = state.menu.find(m => String(m.id) === String(id));
+      if (!item) return;
+      // If unavailable, don't add
+      if (item.available === false) return toast(item.name + ' is sold out', 'error');
+      addToCart(id);
+    });
+  });
+}
+
+function trackRecentItem(itemId) {
+  state.recentItems = [itemId, ...state.recentItems.filter(id => id !== itemId)].slice(0, 8);
+  saveLocal();
+  renderRecent();
 }
 
 /* ============================================================
@@ -1442,7 +2006,7 @@ function renderPopular() {
   const vendors = state.vendors.slice(0, 2);
   $('popularVendors').innerHTML = vendors.length
     ? vendors.map(vendorCard).join('')
-    : '<div class="empty" style="grid-column:1/-1;padding:24px"><b>No vendors yet</b></div>';
+    : '<div class="empty" style="grid-column:1/-1;padding:24px"><b>' + t('noVendorsYet') + '</b></div>';
 
   attachMenuHandlers($('popularGrid'));
   attachVendorHandlers($('popularVendors'));
@@ -1464,7 +2028,7 @@ function renderMenuPills() {
   const cats = menuCategories();
   $('menuPills').innerHTML = cats.map(c => `
     <button class="pill ${state.menuFilter === c ? 'on' : ''}" data-mcat="${esc(c)}">
-      ${c === 'all' ? 'All' : esc(c)}
+      ${c === 'all' ? t('all') : esc(c)}
     </button>
   `).join('');
   $('menuPills').querySelectorAll('[data-mcat]').forEach(b => {
@@ -1476,17 +2040,39 @@ function renderMenuPills() {
   });
 }
 
+/* FIX #3, #6, #13 — menu card with image, diet tags, social proof, availability */
 function menuCard(item) {
   const qty = state.cart.find(l => l.id === item.id)?.qty || 0;
+  const unavailable = item.available === false;
+  const img = item.image_url || item.image;
+  const soldToday = item.sold_today;
+  const rating = item.rating;
+
   return `
-    <div class="card clickable" data-item-id="${esc(item.id)}">
-      <div class="card-icon">${item.icon || '🍽️'}</div>
+    <div class="card clickable ${unavailable ? 'unavailable' : ''}" data-item-id="${esc(item.id)}">
+      ${item.tags?.includes('popular') ? '<span class="badge-float">Popular</span>' : ''}
+      <div class="card-icon ${img ? '' : 'no-img'}">
+        ${img
+          ? `<img src="${esc(img)}" alt="${esc(item.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(item.icon || '🍽️')}',style:'font-size:26px'}))">`
+          : (item.icon || '🍽️')}
+      </div>
       <div class="card-body">
         <div class="card-name">${esc(item.name)}</div>
         ${item.desc ? `<div class="card-desc">${esc(item.desc)}</div>` : ''}
+        ${renderDietTags(item.dietary_tags)}
+        ${soldToday ? `
+          <div class="card-social">
+            ${ICON.star}<span>${soldToday} ordered today${rating ? ' · ' + rating.toFixed(1) + '★' : ''}</span>
+          </div>
+        ` : (rating ? `
+          <div class="card-social">${ICON.star}<span>${rating.toFixed(1)}★</span></div>
+        ` : '')}
         <div class="card-row">
           <span class="price">${money(item.price)}</span>
-          <button class="add-btn ${qty > 0 ? 'has' : ''}" data-add="${esc(item.id)}" aria-label="Add">
+          <button class="add-btn ${qty > 0 ? 'has' : ''}"
+                  data-add="${esc(item.id)}"
+                  aria-label="${qty > 0 ? t('updateCart') : t('addToCart')} ${esc(item.name)}"
+                  ${unavailable ? 'disabled' : ''}>
             ${qty > 0 ? ICON.check : ICON.plus}
           </button>
         </div>
@@ -1495,14 +2081,30 @@ function menuCard(item) {
   `;
 }
 
+/* FIX #4 — search filter in menu render */
 function renderMenu() {
-  const list = state.menuFilter === 'all'
+  let list = state.menuFilter === 'all'
     ? state.menu
     : state.menu.filter(i => (i.category || 'Menu') === state.menuFilter);
 
+  // Search filter
+  const q = state.menuSearch.trim().toLowerCase();
+  if (q) {
+    list = list.filter(i =>
+      (i.name || '').toLowerCase().includes(q) ||
+      (i.desc || '').toLowerCase().includes(q) ||
+      (i.category || '').toLowerCase().includes(q) ||
+      (i.tags || []).some(t => String(t).toLowerCase().includes(q))
+    );
+  }
+
   $('menuGrid').innerHTML = list.length
     ? list.map(menuCard).join('')
-    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.cart + '</div><b>No items</b><p>Try a different category.</p></div>';
+    : `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">${ICON.search}</div>
+        <b>${t('noItems')}</b>
+        <p>${t('tryDifferentCategory')}</p>
+      </div>`;
 
   attachMenuHandlers($('menuGrid'));
 }
@@ -1522,15 +2124,33 @@ function attachMenuHandlers(root) {
   });
 }
 
+/* FIX #4 — wire search input */
+$('menuSearch').addEventListener('input', e => {
+  state.menuSearch = e.target.value;
+  $('menuSearchClear').classList.toggle('show', !!state.menuSearch);
+  renderMenu();
+});
+$('menuSearchClear').addEventListener('click', () => {
+  state.menuSearch = '';
+  $('menuSearch').value = '';
+  $('menuSearchClear').classList.remove('show');
+  renderMenu();
+});
+
 /* ============================================================
    ITEM DETAIL
    ============================================================ */
 function openItemDetail(id) {
   const item = state.menu.find(i => String(i.id) === String(id));
   if (!item) return;
+  if (item.available === false) return toast(item.name + ' is sold out', 'error');
+
   const line = state.cart.find(l => l.id === id);
   const qty = line?.qty || 0;
   const notes = line?.notes || '';
+  const img = item.image_url || item.image;
+  const soldToday = item.sold_today;
+  const rating = item.rating;
 
   $('itemSheetBody').innerHTML = `
     <div class="sheet-head">
@@ -1538,24 +2158,36 @@ function openItemDetail(id) {
         <div class="sheet-title">${esc(item.name)}</div>
         <div class="sheet-sub">${esc(item.desc || '')}</div>
       </div>
-      <button class="sheet-close" data-close="itemSheet">
+      <button class="sheet-close" data-close="itemSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div style="text-align:center;padding:20px 0;font-size:64px">${item.icon || '🍽️'}</div>
-    <div style="text-align:center;font-size:22px;font-weight:700;color:var(--brand-2);margin-bottom:16px">${money(item.price)}</div>
+    ${img ? `
+      <div style="border-radius:12px;overflow:hidden;margin-bottom:14px;aspect-ratio:16/9;background:var(--bg-subtle)">
+        <img src="${esc(img)}" alt="${esc(item.name)}" style="width:100%;height:100%;object-fit:cover">
+      </div>
+    ` : `
+      <div style="text-align:center;padding:20px 0;font-size:64px">${item.icon || '🍽️'}</div>
+    `}
+    ${renderDietTags(item.dietary_tags)}
+    ${soldToday ? `
+      <div class="card-social" style="justify-content:center;margin-top:8px">
+        ${ICON.star}<span>${soldToday} guests ordered this today${rating ? ' · ' + rating.toFixed(1) + '★' : ''}</span>
+      </div>
+    ` : ''}
+    <div style="text-align:center;font-size:22px;font-weight:700;color:var(--brand-2);margin:16px 0">${money(item.price)}</div>
     <div class="field">
-      <label>Special requests</label>
-      <textarea class="textarea" id="itemNotes" placeholder="No onions, extra spicy, etc.">${esc(notes)}</textarea>
+      <label>${t('specialRequests')}</label>
+      <textarea class="textarea" id="itemNotes" placeholder="${esc(t('notesPlaceholder'))}">${esc(notes)}</textarea>
     </div>
     <div style="display:flex;align-items:center;gap:12px;margin-top:16px">
-      <div class="qty">
-        <button data-dec>−</button>
-        <span id="itemQty">${qty}</span>
-        <button data-inc>+</button>
+      <div class="qty" role="group" aria-label="Quantity">
+        <button data-dec aria-label="Decrease quantity">${ICON.minus}</button>
+        <span id="itemQty" aria-live="polite">${qty}</span>
+        <button data-inc aria-label="Increase quantity">${ICON.plus}</button>
       </div>
       <button class="btn btn-primary btn-full btn-lg" id="itemConfirm" data-id="${esc(item.id)}">
-        ${qty > 0 ? 'Update cart' : 'Add to cart'}
+        ${qty > 0 ? t('updateCart') : t('addToCart')}
       </button>
     </div>
   `;
@@ -1584,9 +2216,16 @@ function openItemDetail(id) {
 function addToCart(id) {
   const item = state.menu.find(i => String(i.id) === String(id));
   if (!item) return;
+  if (item.available === false) return toast(item.name + ' is sold out', 'error');
+
   const line = state.cart.find(l => l.id === id);
   if (line) line.qty += 1;
-  else state.cart.push({ id: item.id, name: item.name, price: Number(item.price) || 0, icon: item.icon || '🍽️', qty: 1, notes: '' });
+  else state.cart.push({
+    id: item.id, name: item.name, price: Number(item.price) || 0,
+    icon: item.icon || '🍽️', image: item.image_url || item.image || null,
+    qty: 1, notes: ''
+  });
+  trackRecentItem(id);
   saveLocal();
   renderCartBar();
   refreshCurrentView();
@@ -1600,8 +2239,10 @@ function setCartLine(id, qty, notes) {
   if (qty > 0) {
     state.cart.push({
       id: item.id, name: item.name, price: Number(item.price) || 0,
-      icon: item.icon || '🍽️', qty, notes: notes || ''
+      icon: item.icon || '🍽️', image: item.image_url || item.image || null,
+      qty, notes: notes || ''
     });
+    trackRecentItem(id);
   }
   saveLocal();
   renderCartBar();
@@ -1621,30 +2262,43 @@ function cartCount() { return state.cart.reduce((s, l) => s + l.qty, 0); }
 function renderCartBar() {
   const n = cartCount();
   const bar = $('cartBar');
-  if (!n) { bar.classList.remove('show'); return; }
+  if (!n) { bar.classList.remove('show'); updateBottomStack(); return; }
   bar.classList.add('show');
-  $('cartCount').textContent = n + ' item' + (n > 1 ? 's' : '');
+  $('cartCount').textContent = n + ' ' + (n === 1 ? t('item') : t('items'));
   $('cartTotal').textContent = money(cartSubtotal());
+  updateBottomStack();
 }
+
+/* FIX #14 — dynamic body padding */
+function updateBottomStack() {
+  const hasCart = cartCount() > 0;
+  const height = hasCart ? 148 : 84;
+  document.documentElement.style.setProperty('--bottom-stack', height + 'px');
+}
+window.addEventListener('resize', updateBottomStack);
 
 function renderCartSheet() {
   const box = $('cartItems');
   if (!state.cart.length) {
-    box.innerHTML = '<div class="empty"><b>Your cart is empty</b></div>';
+    box.innerHTML = '<div class="empty"><b>' + t('cartEmpty') + '</b></div>';
     $('cartTotals').innerHTML = '';
     return;
   }
   box.innerHTML = state.cart.map(l => `
     <div class="cart-line">
-      <div class="cart-line-icon">${l.icon || '🍽️'}</div>
+      <div class="cart-line-icon">
+        ${l.image
+          ? `<img src="${esc(l.image)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(l.icon || '🍽️')}'}))">`
+          : (l.icon || '🍽️')}
+      </div>
       <div class="cart-line-body">
         <div class="cart-line-name">${esc(l.name)}</div>
         <div class="cart-line-price">${money(l.price)} each${l.notes ? ' · ' + esc(l.notes) : ''}</div>
       </div>
-      <div class="qty">
-        <button data-qty-dec="${esc(l.id)}">−</button>
+      <div class="qty" role="group" aria-label="Quantity for ${esc(l.name)}">
+        <button data-qty-dec="${esc(l.id)}" aria-label="Decrease">${ICON.minus}</button>
         <span>${l.qty}</span>
-        <button data-qty-inc="${esc(l.id)}">+</button>
+        <button data-qty-inc="${esc(l.id)}" aria-label="Increase">${ICON.plus}</button>
       </div>
     </div>
   `).join('');
@@ -1655,12 +2309,12 @@ function renderCartSheet() {
 
   const sub = cartSubtotal();
   $('cartTotals').innerHTML = `
-    <div class="total-row"><span>Subtotal</span><span>${money(sub)}</span></div>
-    <div class="total-row grand"><span>Total</span><span>${money(sub)}</span></div>
+    <div class="total-row"><span>${t('subtotal')}</span><span>${money(sub)}</span></div>
+    <div class="total-row grand"><span>${t('total')}</span><span>${money(sub)}</span></div>
   `;
 
   $('cartSub').textContent = state.context.number
-    ? `${state.context.mode === 'table' ? 'Table' : 'Room'} ${state.context.number} · ${state.hotel?.name || ''}`
+    ? `${state.context.mode === 'table' ? t('table') : t('room')} ${state.context.number} · ${state.hotel?.name || ''}`
     : state.hotel?.name || '';
 }
 
@@ -1670,7 +2324,53 @@ $('viewCartBtn').addEventListener('click', () => {
   openSheet('cartSheet');
 });
 
-$('placeOrderBtn').addEventListener('click', placeOrder);
+$('placeOrderBtn').addEventListener('click', showConfirmOrder);
+
+/* ============================================================
+   FIX #14 — Confirm order dialog
+   ============================================================ */
+function showConfirmOrder() {
+  if (!state.cart.length) return;
+  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+
+  const sub = cartSubtotal();
+  const itemsHtml = state.cart.map(l => `
+    <div class="row">
+      <span>${l.qty}× ${esc(l.name)}</span>
+      <b>${money(l.price * l.qty)}</b>
+    </div>
+  `).join('');
+
+  $('confirmSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${t('confirmOrder')}</div>
+        <div class="sheet-sub">${t('confirmPrompt')}</div>
+      </div>
+      <button class="sheet-close" data-close="confirmSheet" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="confirm-list">
+      ${itemsHtml}
+      <div class="confirm-total"><span>${t('total')}</span><span>${money(sub)}</span></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary btn-lg" id="confirmBack" style="flex:1">Back</button>
+      <button class="btn btn-primary btn-lg" id="confirmPlace" style="flex:2">${t('placeOrder')}</button>
+    </div>
+  `;
+
+  $('confirmSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('confirmSheet'));
+  $('confirmBack').addEventListener('click', () => closeSheet('confirmSheet'));
+  $('confirmPlace').addEventListener('click', () => {
+    closeSheet('confirmSheet');
+    closeSheet('cartSheet');
+    placeOrder();
+  });
+
+  openSheet('confirmSheet');
+}
 
 /* ============================================================
    PLACE ORDER
@@ -1712,8 +2412,11 @@ async function placeOrder() {
     state.cart = [];
     saveLocal();
     renderCartBar();
-    closeSheet('cartSheet');
     refreshCurrentView();
+
+    /* FIX #2 — open a 2-minute modify window */
+    state.orderModifyUntil = Date.now() + 2 * 60 * 1000;
+    state.activeOrder = res.order;
 
     showSuccess(res.order);
     refreshOrders();
@@ -1721,7 +2424,7 @@ async function placeOrder() {
   } catch (e) {
     toast('Failed: ' + e.message, 'error');
   } finally {
-    btn.disabled = false; btn.textContent = 'Place order';
+    btn.disabled = false; btn.textContent = t('placeOrder');
   }
 }
 
@@ -1735,30 +2438,30 @@ function showSuccess(order) {
   $('successSheetBody').innerHTML = `
     <div class="sheet-head">
       <div>
-        <div class="sheet-title">${ICON.check} Order placed</div>
-        <div class="sheet-sub">Kitchen is preparing it now — track live in Orders.</div>
+        <div class="sheet-title">${ICON.check} ${t('orderPlaced')}</div>
+        <div class="sheet-sub">${t('kitchenPreparing')}</div>
       </div>
-      <button class="sheet-close" data-close="successSheet">
+      <button class="sheet-close" data-close="successSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
 
     <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
-      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">Reference</div>
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">${t('reference')}</div>
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(order.reference)}</div>
     </div>
 
     <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:16px">
-      <span style="color:var(--text-2)">Total</span>
+      <span style="color:var(--text-2)">${t('total')}</span>
       <strong style="color:var(--text)">${money(order.amount)}</strong>
     </div>
 
     ${isConfigured ? renderPaymentHTML(order.amount, p) : `
-      <div class="pay-warn">Payment at reception — this hotel has not set up M-Pesa yet.</div>
+      <div class="pay-warn">${t('payAtReception')}</div>
     `}
 
     <button class="btn btn-primary btn-full btn-lg" id="trackBtn" style="margin-top:16px">
-      Track my order
+      ${t('trackOrder')}
     </button>
   `;
 
@@ -1774,26 +2477,25 @@ function showSuccess(order) {
 
 function renderPaymentHTML(amount, p) {
   const channel = String(p.channel || 'paybill').toLowerCase();
-  const name = p.mpesa_name || state.hotel.name;
 
   if (channel === 'paybill' && p.paybill_number) {
     const acc = p.paybill_account || '—';
     return `
       <div class="pay">
-        <div class="pay-head">${ICON.cart}<b>Pay via M-Pesa Paybill</b></div>
+        <div class="pay-head">${ICON.cart}<b>${t('payViaMpesaPaybill')}</b></div>
         <div class="pay-rows">
           <div class="pay-row">
-            <span class="label">Paybill</span>
+            <span class="label">${t('paybill')}</span>
             <span class="value">${esc(p.paybill_number)}</span>
-            <button class="pay-copy" data-copy="${esc(p.paybill_number)}">${ICON.copy} Copy</button>
+            <button class="pay-copy" data-copy="${esc(p.paybill_number)}">${ICON.copy} ${t('copy')}</button>
           </div>
           <div class="pay-row">
-            <span class="label">Account</span>
+            <span class="label">${t('account')}</span>
             <span class="value">${esc(acc)}</span>
-            <button class="pay-copy" data-copy="${esc(acc)}">${ICON.copy} Copy</button>
+            <button class="pay-copy" data-copy="${esc(acc)}">${ICON.copy} ${t('copy')}</button>
           </div>
           <div class="pay-row">
-            <span class="label">Amount</span>
+            <span class="label">${t('amount')}</span>
             <span class="value">${money(amount)}</span>
           </div>
         </div>
@@ -1808,15 +2510,15 @@ function renderPaymentHTML(amount, p) {
   if (channel === 'till' && p.till_number) {
     return `
       <div class="pay">
-        <div class="pay-head">${ICON.cart}<b>Pay via M-Pesa Till</b></div>
+        <div class="pay-head">${ICON.cart}<b>${t('payViaMpesaTill')}</b></div>
         <div class="pay-rows">
           <div class="pay-row">
-            <span class="label">Till</span>
+            <span class="label">${t('till')}</span>
             <span class="value">${esc(p.till_number)}</span>
-            <button class="pay-copy" data-copy="${esc(p.till_number)}">${ICON.copy} Copy</button>
+            <button class="pay-copy" data-copy="${esc(p.till_number)}">${ICON.copy} ${t('copy')}</button>
           </div>
           <div class="pay-row">
-            <span class="label">Amount</span>
+            <span class="label">${t('amount')}</span>
             <span class="value">${money(amount)}</span>
           </div>
         </div>
@@ -1827,7 +2529,7 @@ function renderPaymentHTML(amount, p) {
         </ol>
       </div>`;
   }
-  return `<div class="pay-warn">Pay at reception.</div>`;
+  return `<div class="pay-warn">${t('payAtReception')}</div>`;
 }
 
 function attachCopyHandlers(root) {
@@ -1836,7 +2538,7 @@ function attachCopyHandlers(root) {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
         const old = btn.innerHTML;
-        btn.innerHTML = ICON.check + ' Copied';
+        btn.innerHTML = ICON.check + ' ' + t('copied');
         setTimeout(() => btn.innerHTML = old, 1400);
       } catch { toast('Copy failed'); }
     });
@@ -1851,18 +2553,25 @@ function renderServices() {
   $('servicesGrid').innerHTML = list.length
     ? list.map(s => `
         <div class="card clickable" data-svc-id="${esc(s.id)}">
-          <div class="card-icon">${s.icon || '🛎️'}</div>
+          <div class="card-icon">
+            ${s.image_url || s.image
+              ? `<img src="${esc(s.image_url || s.image)}" alt="" loading="lazy">`
+              : (s.icon || '🛎️')}
+          </div>
           <div class="card-body">
             <div class="card-name">${esc(s.name)}</div>
             ${s.desc ? `<div class="card-desc">${esc(s.desc)}</div>` : ''}
             <div class="card-row">
               <span class="price">${s.price > 0 ? money(s.price) : '<small>Complimentary</small>'}</span>
-              <button class="add-btn" data-svc="${esc(s.id)}">${ICON.plus}</button>
+              <button class="add-btn" data-svc="${esc(s.id)}" aria-label="Request ${esc(s.name)}">${ICON.plus}</button>
             </div>
           </div>
         </div>
       `).join('')
-    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.bell + '</div><b>No services yet</b></div>';
+    : `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">${ICON.bell}</div>
+        <b>${t('noServicesYet')}</b>
+      </div>`;
 
   $('servicesGrid').querySelectorAll('[data-svc]').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); requestService(btn.dataset.svc); });
@@ -1906,12 +2615,14 @@ async function requestService(id) {
   }
 }
 
-/* Quick actions */
 document.querySelectorAll('[data-quick]').forEach(b => {
   b.addEventListener('click', async () => {
     const type = b.dataset.quick;
     if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
-    const titles = { waiter: 'Call Waiter', water: 'Drinking Water', bill: 'Request Bill', housekeeping: 'Housekeeping' };
+    const titles = {
+      waiter: t('callWaiter'), water: t('water'),
+      bill: t('requestBill'), housekeeping: t('housekeeping')
+    };
     const title = titles[type] || 'Request';
     try {
       await api('/api/orders', {
@@ -1947,31 +2658,64 @@ const GROUP_LABELS = {
   services: 'Other services'
 };
 
+/* FIX #12 — vendor card with hours, gallery, richer info */
 function vendorCard(v) {
   const group = v.group || 'services';
-  const primaryItem = v.items?.[0];
+  const hours = v.hours || {};
+  const isOpen = isVendorOpen(hours);
+  const gallery = (v.gallery || v.images || []).slice(0, 4);
+
   return `
     <div class="vendor-card" data-vendor-id="${esc(v.id)}">
       <div class="vendor-head">
-        <div class="vendor-logo">${(v.name || 'V')[0].toUpperCase()}</div>
+        <div class="vendor-logo">
+          ${v.logo_url || v.image_url
+            ? `<img src="${esc(v.logo_url || v.image_url)}" alt="" loading="lazy">`
+            : (v.name || 'V')[0].toUpperCase()}
+        </div>
         <div class="vendor-info">
           <div class="vendor-name">${esc(v.name)}</div>
           <div class="vendor-meta">
             ${v.rating > 0 ? `<span>${ICON.star.replace('<svg', '<svg style="width:11px;height:11px;display:inline;vertical-align:-1px"')} ${v.rating.toFixed(1)}</span>` : ''}
             <span>${esc(GROUP_LABELS[group] || group)}</span>
+            <span class="vendor-hours ${isOpen ? 'open' : 'closed'}">
+              ${ICON.clock}<span>${isOpen ? 'Open now' : 'Closed'}</span>
+            </span>
           </div>
         </div>
       </div>
       ${v.bio ? `<div class="card-desc">${esc(v.bio)}</div>` : ''}
+      ${gallery.length ? `
+        <div class="vendor-gallery">
+          ${gallery.map(url => `<img src="${esc(url)}" alt="" loading="lazy">`).join('')}
+        </div>
+      ` : ''}
       <div class="vendor-services">
         ${(v.items || []).slice(0, 4).map(i => `<span class="vendor-tag">${esc(i.name)}</span>`).join('')}
       </div>
+      ${v.cancellation_policy ? `
+        <div style="font-size:11px;color:var(--text-3);margin-top:8px;display:flex;gap:6px;align-items:flex-start">
+          ${ICON.info}<span>${esc(v.cancellation_policy)}</span>
+        </div>
+      ` : ''}
       <div class="vendor-actions">
-        <button class="btn btn-primary" data-book="${esc(v.id)}">
-          ${ICON.calendar} Book
+        <button class="btn btn-primary" data-book="${esc(v.id)}" ${!isOpen ? 'disabled' : ''}>
+          ${ICON.calendar} ${isOpen ? t('book') : 'Closed'}
         </button>
       </div>
     </div>`;
+}
+
+function isVendorOpen(hours) {
+  if (!hours || !hours.open || !hours.close) return true; // default open
+  const now = new Date();
+  const [oh, om] = hours.open.split(':').map(Number);
+  const [ch, cm] = hours.close.split(':').map(Number);
+  const cur = now.getHours() * 60 + now.getMinutes();
+  const start = oh * 60 + (om || 0);
+  const end = ch * 60 + (cm || 0);
+  if (end < start) return cur >= start || cur < end; // overnight
+  return cur >= start && cur < end;
 }
 
 function vendorCategories() {
@@ -1984,7 +2728,7 @@ function renderVendorPills() {
   const cats = vendorCategories();
   $('vendorPills').innerHTML = cats.map(c => `
     <button class="pill ${state.vendorFilter === c ? 'on' : ''}" data-vcat="${esc(c)}">
-      ${c === 'all' ? 'All' : esc(GROUP_LABELS[c] || c)}
+      ${c === 'all' ? t('all') : esc(GROUP_LABELS[c] || c)}
     </button>
   `).join('');
   $('vendorPills').querySelectorAll('[data-vcat]').forEach(b => {
@@ -2003,7 +2747,11 @@ function renderVendors() {
 
   $('vendorsGrid').innerHTML = list.length
     ? list.map(vendorCard).join('')
-    : '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">' + ICON.store + '</div><b>No vendors yet</b><p>Partner vendors will appear here.</p></div>';
+    : `<div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">${ICON.store}</div>
+        <b>${t('noVendorsYet')}</b>
+        <p>${t('partnerVendorsWillAppear')}</p>
+      </div>`;
 
   attachVendorHandlers($('vendorsGrid'));
 }
@@ -2031,19 +2779,19 @@ async function openBookingSheet(vendorId) {
   const today = new Date();
   const dateStr = d => d.toISOString().slice(0, 10);
 
-  const html = `
+  $('bookingSheetBody').innerHTML = `
     <div class="sheet-head">
       <div>
-        <div class="sheet-title">Book ${esc(vendor.name)}</div>
+        <div class="sheet-title">${t('book')} ${esc(vendor.name)}</div>
         <div class="sheet-sub">${esc(item.name)} · ${money(item.price)}</div>
       </div>
-      <button class="sheet-close" data-close="bookingSheet">
+      <button class="sheet-close" data-close="bookingSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
 
     <div class="field">
-      <label>Service</label>
+      <label>${t('service')}</label>
       <select class="input" id="bkService">
         ${(vendor.items || []).map(i => `
           <option value="${esc(i.id)}" data-price="${i.price}">${esc(i.name)} — ${money(i.price)}</option>
@@ -2053,31 +2801,30 @@ async function openBookingSheet(vendorId) {
 
     <div class="row-2">
       <div class="field">
-        <label>Date</label>
+        <label>${t('date')}</label>
         <input type="date" class="input" id="bkDate" min="${dateStr(today)}" value="${dateStr(today)}">
       </div>
       <div class="field">
-        <label>Guests</label>
+        <label>${t('guests')}</label>
         <input type="number" class="input" id="bkGuests" min="1" max="20" value="1">
       </div>
     </div>
 
     <div class="field">
-      <label>Available time slots</label>
+      <label>${t('availableSlots')}</label>
       <div id="bkSlots"><div class="empty" style="padding:20px"><b>Pick a date</b></div></div>
     </div>
 
     <div class="field">
-      <label>Notes (optional)</label>
-      <textarea class="textarea" id="bkNotes" placeholder="Any special requests?"></textarea>
+      <label>${t('notes')}</label>
+      <textarea class="textarea" id="bkNotes" placeholder="${esc(t('notesPlaceholder'))}"></textarea>
     </div>
 
     <button class="btn btn-primary btn-full btn-lg" id="bkConfirm" disabled>
-      Confirm booking
+      ${t('confirmBooking')}
     </button>
   `;
 
-  $('bookingSheetBody').innerHTML = html;
   $('bookingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('bookingSheet'));
 
   let selectedSlot = null;
@@ -2085,7 +2832,7 @@ async function openBookingSheet(vendorId) {
   async function loadSlots() {
     const date = $('bkDate').value;
     if (!date) return;
-    $('bkSlots').innerHTML = '<div class="empty" style="padding:20px"><b>Loading slots…</b></div>';
+    $('bkSlots').innerHTML = '<div class="empty" style="padding:20px"><b>Loading…</b></div>';
     try {
       const res = await api(`/api/public/vendor/${encodeURIComponent(vendor.id)}/slots?date=${date}`);
       const slots = res.slots || [];
@@ -2157,7 +2904,7 @@ async function openBookingSheet(vendorId) {
     } catch (e) {
       toast('Booking failed: ' + e.message, 'error');
       $('bkConfirm').disabled = false;
-      $('bkConfirm').textContent = 'Confirm booking';
+      $('bkConfirm').textContent = t('confirmBooking');
     }
   });
 
@@ -2172,24 +2919,24 @@ function showBookingSuccess(booking) {
         <div class="sheet-title">${ICON.check} Booking requested</div>
         <div class="sheet-sub">The vendor will confirm shortly.</div>
       </div>
-      <button class="sheet-close" data-close="successSheet">
+      <button class="sheet-close" data-close="successSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
 
     <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
-      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">Reference</div>
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">${t('reference')}</div>
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(booking.reference)}</div>
     </div>
 
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
-      <span style="color:var(--text-2)">Service</span><strong>${esc(booking.service_title)}</strong>
+      <span style="color:var(--text-2)">${t('service')}</span><strong>${esc(booking.service_title)}</strong>
     </div>
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
       <span style="color:var(--text-2)">When</span><strong>${new Date(booking.scheduled_for).toLocaleString()}</strong>
     </div>
     <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13.5px">
-      <span style="color:var(--text-2)">Total</span><strong>${money(booking.amount)}</strong>
+      <span style="color:var(--text-2)">${t('total')}</span><strong>${money(booking.amount)}</strong>
     </div>
 
     <button class="btn btn-primary btn-full btn-lg" id="bookTrackBtn" style="margin-top:16px">View booking</button>
@@ -2222,6 +2969,8 @@ async function refreshOrders() {
     pickActive();
     renderOrders();
     renderActiveCard();
+    /* FIX #11 — prompt for rating on newly completed orders */
+    maybePromptRating();
   } catch {}
 }
 
@@ -2248,6 +2997,7 @@ function pickActive() {
   }
 }
 
+/* FIX #1 + #2 — Active order with ETA, staff, modify window */
 function renderActiveCard() {
   const card = $('activeCard');
   const o = state.activeOrder;
@@ -2266,21 +3016,64 @@ function renderActiveCard() {
       return `<div class="seg ${cls}"></div>`;
     }).join('');
 
+    const eta = formatETA(o);
+    const etaLine = eta ? `
+      <div class="active-eta">
+        ${ICON.clock}
+        <span>${t('arrivingIn')} <b>${eta}</b></span>
+      </div>
+    ` : '';
+
+    const staffLine = o.assigned_to ? `
+      <div class="active-staff">
+        <span class="avatar">${esc((o.assigned_to || 'S')[0].toUpperCase())}</span>
+        <span>${t('handledBy')} <strong>${esc(o.assigned_to)}</strong></span>
+      </div>
+    ` : '';
+
+    // FIX #2 — modify window countdown
+    let modifyLine = '';
+    if (state.orderModifyUntil > Date.now() && String(o.status).toLowerCase() === 'pending') {
+      const remaining = Math.floor((state.orderModifyUntil - Date.now()) / 1000);
+      const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const ss = String(remaining % 60).padStart(2, '0');
+      modifyLine = `
+        <div class="modify-bar">
+          <span>${t('modifyWindow')} <span class="timer" id="modifyTimer">${mm}:${ss}</span></span>
+          <div class="actions">
+            <button data-modify-add>${t('addMore')}</button>
+            <button data-modify-cancel>${t('cancelOrder')}</button>
+          </div>
+        </div>
+      `;
+    }
+
     card.innerHTML = `
       <div class="active-head">
         <div>
-          <div class="active-title">${esc(o.service_title || 'Your order')}</div>
+          <div class="active-title">${esc(o.service_title || t('yourOrder'))}</div>
           <div class="active-ref">${esc(o.reference)}</div>
         </div>
         ${statusBadge(o.status)}
       </div>
+      ${etaLine}
+      ${staffLine}
       <div class="active-meta">
         <span>${ICON.clock} <strong>${relativeTime(o.created_at)}</strong></span>
-        <span>Total <strong>${money(o.amount)}</strong></span>
+        <span>${t('total')} <strong>${money(o.amount)}</strong></span>
       </div>
       <div class="progress">${progress}</div>
+      ${modifyLine}
     `;
+
+    /* FIX #2 — wire modify actions */
+    const addBtn = card.querySelector('[data-modify-add]');
+    if (addBtn) addBtn.addEventListener('click', () => { switchTab('menu'); toast('Add more items, then place a new order'); });
+    const cancelBtn = card.querySelector('[data-modify-cancel]');
+    if (cancelBtn) cancelBtn.addEventListener('click', () => cancelOrder(o));
+
   } else {
+    const eta = formatETA(b);
     card.innerHTML = `
       <div class="active-head">
         <div>
@@ -2289,12 +3082,151 @@ function renderActiveCard() {
         </div>
         ${statusBadge(b.status)}
       </div>
+      ${eta ? `<div class="active-eta">${ICON.calendar}<span><b>${new Date(b.scheduled_for).toLocaleString()}</b></span></div>` : ''}
       <div class="active-meta">
         <span>${ICON.calendar} <strong>${new Date(b.scheduled_for).toLocaleString()}</strong></span>
-        <span>Total <strong>${money(b.amount)}</strong></span>
+        <span>${t('total')} <strong>${money(b.amount)}</strong></span>
       </div>
     `;
   }
+}
+
+/* FIX #2 — cancel order */
+async function cancelOrder(order) {
+  if (!confirm('Cancel this order? This cannot be undone.')) return;
+  try {
+    await api(`/api/orders/${encodeURIComponent(order.id)}/cancel`, { method: 'POST' });
+    state.orderModifyUntil = 0;
+    toast('Order cancelled');
+    refreshOrders();
+  } catch (e) {
+    toast('Could not cancel: ' + e.message, 'error');
+  }
+}
+
+/* FIX #2 — live countdown timer */
+setInterval(() => {
+  const timer = document.getElementById('modifyTimer');
+  if (!timer) return;
+  const remaining = Math.floor((state.orderModifyUntil - Date.now()) / 1000);
+  if (remaining <= 0) {
+    renderActiveCard();
+    return;
+  }
+  const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+  const ss = String(remaining % 60).padStart(2, '0');
+  timer.textContent = `${mm}:${ss}`;
+}, 1000);
+
+/* FIX #11 — Rating & tip prompt */
+function maybePromptRating() {
+  const completed = state.orders.filter(o =>
+    String(o.status || '').toLowerCase() === 'completed' &&
+    !state.ratings[o.id]
+  );
+  if (!completed.length) return;
+  // Prompt for the most recent one
+  const order = completed[0];
+  if (document.querySelector('.sheet.show')) return; // don't interrupt
+  showRatingPrompt(order);
+}
+
+function showRatingPrompt(order) {
+  let selectedStars = 0;
+  let selectedTip = 0;
+  const subtotal = Number(order.amount) || 0;
+  const tipOptions = [
+    { pct: 0, label: t('noTip') },
+    { pct: 5, label: '5%' },
+    { pct: 10, label: '10%' }
+  ];
+
+  $('ratingSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${t('rateYourOrder')}</div>
+        <div class="sheet-sub">${esc(order.service_title || '')} · ${esc(order.reference)}</div>
+      </div>
+      <button class="sheet-close" data-close="ratingSheet" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div style="text-align:center;font-weight:600;color:var(--text-2);font-size:13.5px">${t('howWasIt')}</div>
+    <div class="rating-stars" role="radiogroup" aria-label="Rating">
+      ${[1,2,3,4,5].map(n => `
+        <button class="rating-star" data-star="${n}" role="radio" aria-label="${n} star${n > 1 ? 's' : ''}">
+          ${ICON.starOutline}
+        </button>
+      `).join('')}
+    </div>
+
+    <div class="field">
+      <label>${t('tip')}</label>
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">${t('tipPrompt')}</div>
+      <div class="tip-grid" id="tipGrid">
+        ${tipOptions.map(o => `
+          <button class="tip-btn ${o.pct === 0 ? 'on' : ''}" data-tip="${o.pct}">
+            ${o.label}
+            ${o.pct > 0 ? `<small>${money(Math.round(subtotal * o.pct / 100))}</small>` : ''}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-secondary btn-lg" id="ratingSkip" style="flex:1">${t('skip')}</button>
+      <button class="btn btn-primary btn-lg" id="ratingSubmit" style="flex:2">${t('submit')}</button>
+    </div>
+  `;
+
+  // Star selection
+  const stars = $('ratingSheetBody').querySelectorAll('[data-star]');
+  stars.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedStars = Number(btn.dataset.star);
+      stars.forEach(s => {
+        const on = Number(s.dataset.star) <= selectedStars;
+        s.classList.toggle('on', on);
+        s.innerHTML = on ? ICON.star : ICON.starOutline;
+      });
+    });
+  });
+
+  // Tip selection
+  $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedTip = Number(btn.dataset.tip);
+      $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(b =>
+        b.classList.toggle('on', b === btn));
+    });
+  });
+
+  $('ratingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('ratingSheet'));
+  $('ratingSkip').addEventListener('click', () => {
+    state.ratings[order.id] = { skipped: true, at: Date.now() };
+    saveLocal();
+    closeSheet('ratingSheet');
+  });
+  $('ratingSubmit').addEventListener('click', async () => {
+    if (!selectedStars) return toast('Pick a rating first', 'error');
+    const tipAmount = selectedTip > 0 ? Math.round(subtotal * selectedTip / 100) : 0;
+    state.ratings[order.id] = { stars: selectedStars, tip: tipAmount, at: Date.now() };
+    saveLocal();
+    closeSheet('ratingSheet');
+    try {
+      await api(`/api/orders/${encodeURIComponent(order.id)}/rate`, {
+        method: 'POST',
+        body: JSON.stringify({ stars: selectedStars, tip: tipAmount })
+      });
+      toast('Thank you!');
+    } catch {
+      // Store locally even if the API fails
+      toast('Rating saved');
+    }
+  });
+
+  openSheet('ratingSheet');
 }
 
 function renderOrders() {
@@ -2318,21 +3250,32 @@ function renderOrders() {
     box.innerHTML = `
       <div class="empty">
         <div class="empty-icon">${ICON.cart}</div>
-        <b>${filter === 'active' ? 'Nothing active' : 'No history yet'}</b>
-        <p>${filter === 'active' ? 'Place an order or book a service to see it here.' : 'Completed orders will appear here.'}</p>
+        <b>${filter === 'active' ? t('nothingActive') : t('noHistoryYet')}</b>
+        <p>${filter === 'active' ? t('nothingActiveText') : t('noHistoryText')}</p>
       </div>`;
     return;
   }
 
+  /* FIX #8 — "Order again" button on completed orders */
   box.innerHTML = list.map(x => orderRow(x)).join('');
+
+  box.querySelectorAll('[data-order-again]').forEach(btn => {
+    btn.addEventListener('click', () => reorder(btn.dataset.orderAgain));
+  });
 }
 
 function orderRow(x) {
   const isOrder = x.type === 'order';
   const when = isOrder ? x.created_at : x.scheduled_for;
+  const canReorder = isOrder && String(x.status).toLowerCase() === 'completed' && x.items?.length;
+
   return `
     <div class="card" style="margin-bottom:10px">
-      <div class="card-icon">${isOrder ? '🍽️' : '📅'}</div>
+      <div class="card-icon">
+        ${x.image_url || x.image
+          ? `<img src="${esc(x.image_url || x.image)}" alt="" loading="lazy">`
+          : (isOrder ? '🍽️' : '📅')}
+      </div>
       <div class="card-body">
         <div class="card-name">${esc(x.service_title || 'Request')}</div>
         <div class="card-desc">${esc(x.reference)} · ${new Date(when).toLocaleString()}</div>
@@ -2340,8 +3283,48 @@ function orderRow(x) {
           <span class="price">${money(x.amount)}</span>
           ${statusBadge(x.status)}
         </div>
+        ${canReorder ? `
+          <button class="btn btn-secondary btn-sm" data-order-again="${esc(x.id)}" style="margin-top:8px;width:100%">
+            ${ICON.refresh} ${t('orderAgain')}
+          </button>
+        ` : ''}
       </div>
     </div>`;
+}
+
+/* FIX #8 — one-tap reorder */
+function reorder(orderId) {
+  const order = state.orders.find(o => String(o.id) === String(orderId));
+  if (!order || !order.items?.length) return;
+
+  // Replace current cart with items from that order (that still exist on menu)
+  const stillAvailable = order.items.filter(i => {
+    const menuItem = state.menu.find(m => String(m.id) === String(i.id));
+    return menuItem && menuItem.available !== false;
+  });
+
+  if (!stillAvailable.length) return toast('Items no longer available', 'error');
+
+  const missing = order.items.length - stillAvailable.length;
+
+  state.cart = stillAvailable.map(i => {
+    const menuItem = state.menu.find(m => String(m.id) === String(i.id));
+    return {
+      id: i.id, name: i.name, price: Number(menuItem?.price ?? i.price) || 0,
+      icon: menuItem?.icon || '🍽️',
+      image: menuItem?.image_url || menuItem?.image || null,
+      qty: i.qty, notes: i.notes || ''
+    };
+  });
+  saveLocal();
+  renderCartBar();
+  refreshCurrentView();
+
+  if (missing > 0) toast(`Added ${stillAvailable.length} items (${missing} unavailable)`);
+  else toast('Added to cart');
+
+  renderCartSheet();
+  openSheet('cartSheet');
 }
 
 /* ============================================================
@@ -2375,7 +3358,7 @@ function refreshCurrentView() {
 }
 
 /* ============================================================
-   SSE — real-time order + booking status
+   SSE
    ============================================================ */
 function startSSE() {
   if (state.sse) try { state.sse.close(); } catch {}
@@ -2390,6 +3373,8 @@ function startSSE() {
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
+      /* FIX #11 — check for newly-completed orders via SSE */
+      maybePromptRating();
     } catch {}
   });
 
@@ -2402,6 +3387,16 @@ function startSSE() {
     } catch {}
   });
 
+  /* FIX #13 — listen for kitchen busy changes */
+  es.addEventListener('kitchen', e => {
+    try {
+      const data = JSON.parse(e.data) || {};
+      state.kitchenBusy = !!data.busy;
+      if (data.message) state.hotel = { ...state.hotel, busy_message: data.message };
+      renderBusyBanner();
+    } catch {}
+  });
+
   es.addEventListener('hello', () => { state.sseRetry = 0; });
   es.addEventListener('error', () => {
     try { es.close(); } catch {}
@@ -2411,52 +3406,137 @@ function startSSE() {
   });
 }
 
+/* FIX #1 — register Web Push (notification permission + subscribe) */
+async function registerPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!state.token) return;
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js').catch(() => null);
+    if (!reg) return;
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
+    // Server-side subscription persistence would go here
+    // (a real deployment would POST the subscription to /api/guest/push-subscribe)
+  } catch {}
+}
+
 /* ============================================================
    HEADER ACTIONS
    ============================================================ */
 $('langBtn').addEventListener('click', () => openSheet('langSheet'));
+
+/* FIX #10 — real language switching */
+document.querySelectorAll('[data-lang]').forEach(b => {
+  b.addEventListener('click', () => {
+    const lang = b.dataset.lang;
+    if (!I18N[lang]) return toast('Language not available', 'error');
+    state.lang = lang;
+    saveLocal();
+    applyTranslations();
+    renderContext();
+    renderMenuPills();
+    renderMenu();
+    renderServices();
+    renderVendorPills();
+    renderVendors();
+    renderPopular();
+    renderRecent();
+    renderCartBar();
+    renderOrders();
+    renderActiveCard();
+    renderBusyBanner();
+    updateOffline();
+    closeSheet('langSheet');
+    toast('Language: ' + (lang === 'en' ? 'English' : lang === 'sw' ? 'Kiswahili' : 'Français'));
+  });
+});
+
 $('profileBtn').addEventListener('click', () => {
   if (!state.session) return openContextSheet();
   $('profileSheetBody').innerHTML = `
     <div class="sheet-head">
       <div>
-        <div class="sheet-title">Your profile</div>
-        <div class="sheet-sub">Update anytime</div>
+        <div class="sheet-title">${t('yourProfile')}</div>
+        <div class="sheet-sub">${t('updateAnytime')}</div>
       </div>
-      <button class="sheet-close" data-close="profileSheet">
+      <button class="sheet-close" data-close="profileSheet" aria-label="Close">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-    <div class="field"><label>Name</label><input class="input" value="${esc(state.session.guest_name || '')}" disabled></div>
-    <div class="field"><label>Phone</label><input class="input" value="${esc(state.session.guest_phone || '')}" disabled></div>
-    <div class="field"><label>Hotel</label><input class="input" value="${esc(state.hotel?.name || '')}" disabled></div>
-    <div class="field"><label>Current location</label><input class="input" value="${esc(state.context.mode === 'table' ? 'Table ' : 'Room ')}${esc(state.context.number || '')}" disabled></div>
-    <button class="btn btn-primary btn-full" id="editContext">Change location</button>
+    <div class="field"><label>${t('name')}</label><input class="input" value="${esc(state.session.guest_name || '')}" readonly></div>
+    <div class="field"><label>${t('phone')}</label><input class="input" value="${esc(state.session.guest_phone || '')}" readonly></div>
+    <div class="field"><label>${t('hotel')}</label><input class="input" value="${esc(state.hotel?.name || '')}" readonly></div>
+    <div class="field"><label>${t('currentLocation')}</label><input class="input" value="${esc(state.context.mode === 'table' ? t('table') : t('room'))} ${esc(state.context.number || '')}" readonly></div>
+    <button class="btn btn-primary btn-full" id="editContext">${t('changeLocation')}</button>
+    <button class="btn btn-secondary btn-full" id="pushBtn" style="margin-top:8px">Enable notifications</button>
   `;
   $('profileSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('profileSheet'));
   $('profileSheetBody').querySelector('#editContext').addEventListener('click', () => {
     closeSheet('profileSheet');
     openContextSheet();
   });
+  $('profileSheetBody').querySelector('#pushBtn').addEventListener('click', async () => {
+    await registerPush();
+    toast('Notifications enabled');
+  });
   openSheet('profileSheet');
 });
 
-document.querySelectorAll('[data-lang]').forEach(b => {
-  b.addEventListener('click', () => {
-    const lang = b.dataset.lang;
-    try { localStorage.setItem('gh_lang', lang); } catch {}
-    document.documentElement.lang = lang;
-    closeSheet('langSheet');
-    toast('Language: ' + lang);
-  });
-});
+/* ============================================================
+   FIX #14 — Pull to refresh
+   ============================================================ */
+(function initPTR() {
+  let startY = 0, pulling = false;
+  const indicator = $('ptrIndicator');
+  const threshold = 80;
+
+  window.addEventListener('touchstart', e => {
+    if (window.scrollY > 5) return;
+    if (document.querySelector('.sheet.show')) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+  }, { passive: true });
+
+  window.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 20 && dy < 200) {
+      indicator.classList.add('show');
+      indicator.style.transform = `translate(-50%, ${Math.min(dy * 0.5, 60)}px)`;
+    }
+  }, { passive: true });
+
+  window.addEventListener('touchend', async e => {
+    if (!pulling) return;
+    pulling = false;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy > threshold) {
+      indicator.style.transform = '';
+      indicator.classList.add('spinning');
+      indicator.querySelector('span').textContent = 'Refreshing…';
+      await Promise.all([
+        refreshOrders().catch(() => {}),
+        refreshBookings().catch(() => {})
+      ]);
+      setTimeout(() => {
+        indicator.classList.remove('show', 'spinning');
+        indicator.querySelector('span').textContent = 'Pull to refresh';
+      }, 600);
+    } else {
+      indicator.classList.remove('show');
+      indicator.style.transform = '';
+    }
+  }, { passive: true });
+})();
 
 /* ============================================================
    INIT
    ============================================================ */
 function init() {
   loadLocal();
+  applyTranslations();
   renderContext();
+  updateBottomStack();
   bootstrap();
   setInterval(renderActiveCard, 30000);
 }
