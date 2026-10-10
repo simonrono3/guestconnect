@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,68 +12,43 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 
 <style>
-/* =====================================================================
-   Tokens — Booking.com light palette
-   ===================================================================== */
 :root{
-  /* Brand */
   --brand:        #003580;
   --brand-2:      #0071c2;
   --brand-3:      #005999;
   --brand-soft:   #ebf3ff;
-
-  /* Signal */
   --yellow:       #febb02;
   --yellow-soft:  #fff6e0;
   --green:        #008009;
   --green-soft:   #e8f5e9;
-
-  /* Surfaces */
   --bg:           #ffffff;
   --bg-subtle:    #f5f5f5;
   --bg-muted:     #f7f7f7;
   --surface:      #ffffff;
   --surface-2:    #f7f7f7;
   --surface-3:    #efefef;
-
-  /* Lines */
   --border:       #e7e7e7;
   --border-2:     #d9d9d9;
   --border-3:     #c5c5c5;
-
-  /* Text */
   --text:         #1a1a1a;
   --text-2:       #595959;
   --text-3:       #8a8a8a;
   --text-4:       #a9a9a9;
-
-  /* Type */
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-
-  /* Shape */
   --r-sm: 6px;
   --r:    8px;
   --r-lg: 12px;
-
-  /* Depth */
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 4%);
   --shadow-sm: 0 1px 3px rgb(0 0 0 / 6%), 0 1px 2px rgb(0 0 0 / 4%);
   --shadow-md: 0 4px 12px rgb(0 0 0 / 8%), 0 2px 4px rgb(0 0 0 / 4%);
-
   color-scheme: light;
 }
 
-/* =====================================================================
-   Reset
-   ===================================================================== */
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body{
   font-family: var(--font);
@@ -97,20 +71,9 @@ ul { list-style: none; }
 ::selection { background: var(--yellow); color: var(--text); }
 :focus-visible { outline: 2px solid var(--brand-2); outline-offset: 2px; border-radius: 4px; }
 
-/* =====================================================================
-   Layout
-   ===================================================================== */
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin-inline: auto;
-  padding-inline: 24px;
-}
+.container { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 24px; }
 @media (max-width: 640px) { .container { padding-inline: 20px; } }
 
-/* =====================================================================
-   Buttons
-   ===================================================================== */
 .btn{
   display: inline-flex;
   align-items: center;
@@ -127,36 +90,17 @@ ul { list-style: none; }
   transition: background-color .15s ease, border-color .15s ease,
               color .15s ease, box-shadow .15s ease;
 }
-.btn-primary {
-  background: var(--brand-2);
-  color: #fff;
-  box-shadow: var(--shadow-xs);
-}
+.btn-primary { background: var(--brand-2); color: #fff; box-shadow: var(--shadow-xs); }
 .btn-primary:hover { background: var(--brand-3); }
-
-.btn-secondary {
-  background: var(--bg);
-  color: var(--text);
-  border-color: var(--border-2);
-  box-shadow: var(--shadow-xs);
-}
+.btn-secondary { background: var(--bg); color: var(--text); border-color: var(--border-2); box-shadow: var(--shadow-xs); }
 .btn-secondary:hover { background: var(--bg-subtle); border-color: var(--border-3); }
-
-.btn-ghost {
-  color: var(--text-2);
-  padding-inline: 12px;
-}
+.btn-ghost { color: var(--text-2); padding-inline: 12px; }
 .btn-ghost:hover { color: var(--text); background: var(--bg-muted); }
-
 .btn-sm { height: 34px; padding: 0 12px; font-size: 13px; }
 .btn-lg { height: 46px; padding: 0 20px; font-size: 15px; border-radius: var(--r); }
-
 .btn .arrow { transition: transform .15s ease; }
 .btn:hover .arrow { transform: translateX(2px); }
 
-/* =====================================================================
-   Header — blue bar like Booking.com
-   ===================================================================== */
 .header{
   position: sticky;
   top: 0;
@@ -165,7 +109,6 @@ ul { list-style: none; }
   color: #fff;
   border-bottom: 1px solid rgb(255 255 255 / 10%);
 }
-
 .header-inner{
   display: flex;
   align-items: center;
@@ -173,9 +116,7 @@ ul { list-style: none; }
   gap: 24px;
   height: 60px;
 }
-
 .brand { display: flex; align-items: center; gap: 10px; }
-
 .brand-mark {
   display: grid;
   place-items: center;
@@ -188,13 +129,7 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.brand-name {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #fff;
-}
-
+.brand-name { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; color: #fff; }
 .nav { display: flex; align-items: center; gap: 2px; }
 .nav a{
   padding: 8px 12px;
@@ -205,32 +140,15 @@ ul { list-style: none; }
   transition: color .15s ease, background-color .15s ease;
 }
 .nav a:hover { color: #fff; background: rgb(255 255 255 / 10%); }
-
 .header-actions { display: flex; align-items: center; gap: 8px; }
-
-/* Header buttons on blue background */
-.header .btn-primary {
-  background: #fff;
-  color: var(--brand);
-}
+.header .btn-primary { background: #fff; color: var(--brand); }
 .header .btn-primary:hover { background: rgb(255 255 255 / 92%); }
-
-.header .btn-secondary {
-  background: transparent;
-  color: #fff;
-  border-color: rgb(255 255 255 / 35%);
-}
-.header .btn-secondary:hover {
-  background: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 50%);
-}
-
+.header .btn-secondary { background: transparent; color: #fff; border-color: rgb(255 255 255 / 35%); }
+.header .btn-secondary:hover { background: rgb(255 255 255 / 10%); border-color: rgb(255 255 255 / 50%); }
 @media (max-width: 860px) { .nav { display: none; } }
+@media (max-width: 640px) { .header-actions #guestLoginBtn { display: none; } }
 @media (max-width: 520px) { .header-actions .btn-secondary { display: none; } }
 
-/* =====================================================================
-   Hero
-   ===================================================================== */
 .hero{
   position: relative;
   padding: 88px 0 0;
@@ -238,8 +156,6 @@ ul { list-style: none; }
   background: var(--bg);
   overflow: hidden;
 }
-
-/* Subtle grid pattern — very light, fades to nothing */
 .hero::before{
   content: "";
   position: absolute;
@@ -254,7 +170,6 @@ ul { list-style: none; }
   z-index: 0;
 }
 .hero > .container { position: relative; z-index: 1; }
-
 @media (max-width: 640px) { .hero { padding-top: 56px; } }
 
 .eyebrow{
@@ -270,12 +185,7 @@ ul { list-style: none; }
   border: 1px solid #d4e4f5;
   border-radius: 999px;
 }
-.eyebrow .dot{
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-}
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 
 .hero-title{
   margin-top: 24px;
@@ -287,7 +197,6 @@ ul { list-style: none; }
   margin-inline: auto;
   color: var(--text);
 }
-
 .hero-lead{
   margin-top: 20px;
   max-width: 620px;
@@ -296,29 +205,13 @@ ul { list-style: none; }
   line-height: 1.55;
   color: var(--text-2);
 }
-
-.hero-cta{
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 32px;
-  flex-wrap: wrap;
-}
-
-.hero-meta{
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--text-3);
-}
-
+.hero-cta { display: flex; justify-content: center; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+.hero-meta { margin-top: 20px; font-size: 13px; color: var(--text-3); }
 @media (max-width: 640px){
   .hero-title { font-size: 34px; }
   .hero-lead { font-size: 15.5px; }
 }
 
-/* =====================================================================
-   Audience path cards
-   ===================================================================== */
 .paths{
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -330,7 +223,6 @@ ul { list-style: none; }
 @media (max-width: 720px){
   .paths { grid-template-columns: 1fr; margin-top: 48px; }
 }
-
 .path{
   display: flex;
   flex-direction: column;
@@ -340,11 +232,7 @@ ul { list-style: none; }
   border-radius: var(--r-lg);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
-.path:hover {
-  border-color: var(--border-2);
-  box-shadow: var(--shadow-md);
-}
-
+.path:hover { border-color: var(--border-2); box-shadow: var(--shadow-md); }
 .path-icon{
   display: grid;
   place-items: center;
@@ -355,7 +243,6 @@ ul { list-style: none; }
   color: var(--brand-2);
   margin-bottom: 20px;
 }
-
 .path-audience{
   font-size: 12px;
   font-weight: 500;
@@ -363,7 +250,6 @@ ul { list-style: none; }
   letter-spacing: 0.02em;
   margin-bottom: 6px;
 }
-
 .path h3{
   font-size: 20px;
   font-weight: 700;
@@ -371,30 +257,15 @@ ul { list-style: none; }
   line-height: 1.3;
   color: var(--text);
 }
-
 .path p{
   margin-top: 10px;
   font-size: 14.5px;
   line-height: 1.6;
   color: var(--text-2);
 }
+.path-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.path-foot { margin-top: 16px; font-size: 13px; color: var(--text-3); }
 
-.path-actions{
-  display: flex;
-  gap: 10px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-.path-foot{
-  margin-top: 16px;
-  font-size: 13px;
-  color: var(--text-3);
-}
-
-/* =====================================================================
-   Flow
-   ===================================================================== */
 .flow{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -406,21 +277,18 @@ ul { list-style: none; }
 @media (max-width: 900px){
   .flow { grid-template-columns: 1fr; margin-top: 64px; }
 }
-
 .flow-card{
   padding: 24px;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
 }
-
 .flow-top{
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 18px;
 }
-
 .flow-icon{
   display: grid;
   place-items: center;
@@ -431,7 +299,6 @@ ul { list-style: none; }
   border: 1px solid var(--border-2);
   color: var(--brand-2);
 }
-
 .flow-num{
   font-family: var(--mono);
   font-size: 12px;
@@ -439,21 +306,18 @@ ul { list-style: none; }
   color: var(--text-4);
   letter-spacing: 0.04em;
 }
-
 .flow-card h3{
   font-size: 15.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--text);
 }
-
 .flow-card p{
   margin-top: 6px;
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-2);
 }
-
 .flow-chip{
   display: block;
   margin-top: 16px;
@@ -470,9 +334,6 @@ ul { list-style: none; }
   text-overflow: ellipsis;
 }
 
-/* =====================================================================
-   Stats strip
-   ===================================================================== */
 .stats{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -487,13 +348,7 @@ ul { list-style: none; }
 @media (max-width: 640px){
   .stats { grid-template-columns: 1fr; margin-top: 48px; }
 }
-
-.stat{
-  padding: 28px 24px;
-  background: var(--bg);
-  text-align: center;
-}
-
+.stat{ padding: 28px 24px; background: var(--bg); text-align: center; }
 .stat-value{
   font-size: 28px;
   font-weight: 700;
@@ -502,35 +357,14 @@ ul { list-style: none; }
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
 }
+.stat-label { margin-top: 6px; font-size: 13px; color: var(--text-3); }
 
-.stat-label{
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--text-3);
-}
-
-/* =====================================================================
-   Section chrome
-   ===================================================================== */
 .section { padding: 96px 0; }
 .section--tinted { background: var(--bg-subtle); border-block: 1px solid var(--border); }
 @media (max-width: 640px) { .section { padding: 64px 0; } }
-
-.section-head{
-  max-width: 640px;
-  margin-bottom: 48px;
-}
-.section-head--center{
-  text-align: center;
-  margin-inline: auto;
-}
-
-.section-label{
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--brand-2);
-}
-
+.section-head { max-width: 640px; margin-bottom: 48px; }
+.section-head--center { text-align: center; margin-inline: auto; }
+.section-label { font-size: 13px; font-weight: 500; color: var(--brand-2); }
 .section-title{
   margin-top: 8px;
   font-size: clamp(28px, 3.5vw, 38px);
@@ -539,7 +373,6 @@ ul { list-style: none; }
   letter-spacing: -0.025em;
   color: var(--text);
 }
-
 .section-desc{
   margin-top: 14px;
   font-size: 16px;
@@ -547,9 +380,6 @@ ul { list-style: none; }
   color: var(--text-2);
 }
 
-/* =====================================================================
-   Pricing
-   ===================================================================== */
 .pricing{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -557,7 +387,6 @@ ul { list-style: none; }
   align-items: start;
 }
 @media (max-width: 900px){ .pricing { grid-template-columns: 1fr; } }
-
 .plan{
   display: flex;
   flex-direction: column;
@@ -568,7 +397,6 @@ ul { list-style: none; }
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 .plan:hover { border-color: var(--border-2); }
-
 .plan--featured{
   border-color: var(--brand-2);
   border-width: 2px;
@@ -576,7 +404,6 @@ ul { list-style: none; }
   box-shadow: var(--shadow-md);
   position: relative;
 }
-
 .plan-badge{
   position: absolute;
   top: -11px;
@@ -588,20 +415,8 @@ ul { list-style: none; }
   color: #fff;
   border-radius: 999px;
 }
-
-.plan-name{
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.01em;
-}
-
-.plan-price{
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-top: 16px;
-}
+.plan-name{ font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; }
+.plan-price{ display: flex; align-items: baseline; gap: 6px; margin-top: 16px; }
 .plan-price .amount{
   font-size: 30px;
   font-weight: 700;
@@ -609,11 +424,7 @@ ul { list-style: none; }
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
-.plan-price .period{
-  font-size: 14px;
-  color: var(--text-3);
-}
-
+.plan-price .period { font-size: 14px; color: var(--text-3); }
 .plan-desc{
   margin-top: 8px;
   font-size: 14px;
@@ -621,7 +432,6 @@ ul { list-style: none; }
   color: var(--text-2);
   min-height: 44px;
 }
-
 .plan-list{
   flex: 1;
   display: flex;
@@ -637,15 +447,8 @@ ul { list-style: none; }
   line-height: 1.5;
   color: var(--text-2);
 }
-.plan-list svg{
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--brand-2);
-}
+.plan-list svg{ flex-shrink: 0; margin-top: 2px; color: var(--brand-2); }
 
-/* =====================================================================
-   Directory
-   ===================================================================== */
 .directory-head{
   display: flex;
   align-items: flex-end;
@@ -655,12 +458,7 @@ ul { list-style: none; }
   margin-bottom: 24px;
 }
 .directory-head .section-head { margin-bottom: 0; }
-
-.search{
-  position: relative;
-  width: 100%;
-  max-width: 340px;
-}
+.search { position: relative; width: 100%; max-width: 340px; }
 .search svg{
   position: absolute;
   left: 12px;
@@ -682,17 +480,9 @@ ul { list-style: none; }
   transition: border-color .15s ease, box-shadow .15s ease;
 }
 .search input::placeholder { color: var(--text-4); }
-.search input:focus {
-  border-color: var(--brand-2);
-  box-shadow: 0 0 0 3px var(--brand-soft);
-}
+.search input:focus { border-color: var(--brand-2); box-shadow: 0 0 0 3px var(--brand-soft); }
 
-.filter{
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
+.filter { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
 .filter-btn{
   height: 32px;
   padding: 0 14px;
@@ -704,10 +494,7 @@ ul { list-style: none; }
   border-radius: 999px;
   transition: all .15s ease;
 }
-.filter-btn:hover {
-  border-color: var(--text-3);
-  color: var(--text);
-}
+.filter-btn:hover { border-color: var(--text-3); color: var(--text); }
 .filter-btn[aria-pressed="true"]{
   background: var(--brand-2);
   border-color: var(--brand-2);
@@ -719,7 +506,6 @@ ul { list-style: none; }
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
-
 .card{
   display: flex;
   flex-direction: column;
@@ -734,19 +520,13 @@ ul { list-style: none; }
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
-
 .card-media{
   position: relative;
   aspect-ratio: 16 / 10;
   background: var(--bg-muted);
   overflow: hidden;
 }
-.card-media img{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+.card-media img { width: 100%; height: 100%; object-fit: cover; }
 .card-tag{
   position: absolute;
   top: 12px;
@@ -762,21 +542,18 @@ ul { list-style: none; }
   border-radius: 3px;
   box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
 }
-
 .card-body{
   padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
-
 .card-title{
   font-size: 15.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--brand);
 }
-
 .card-loc{
   display: flex;
   align-items: center;
@@ -786,7 +563,6 @@ ul { list-style: none; }
   color: var(--text-2);
 }
 .card-loc svg { color: var(--text-3); }
-
 .card-cta{
   display: flex;
   align-items: center;
@@ -809,7 +585,6 @@ ul { list-style: none; }
   background: var(--bg-subtle);
 }
 .empty[data-visible="true"] { display: block; }
-
 .empty-icon{
   display: grid;
   place-items: center;
@@ -821,7 +596,6 @@ ul { list-style: none; }
   border: 1px solid var(--border);
   color: var(--text-3);
 }
-
 .empty strong{
   display: block;
   font-size: 15px;
@@ -834,14 +608,7 @@ ul { list-style: none; }
   color: var(--text-2);
 }
 
-/* =====================================================================
-   Bottom CTA band
-   ===================================================================== */
-.cta{
-  padding: 72px 0;
-  background: var(--brand);
-  color: #fff;
-}
+.cta{ padding: 72px 0; background: var(--brand); color: #fff; }
 .cta-inner{
   display: flex;
   align-items: center;
@@ -862,21 +629,14 @@ ul { list-style: none; }
   color: rgb(255 255 255 / 75%);
   max-width: 520px;
 }
-.cta .btn-primary {
-  background: #fff;
-  color: var(--brand);
-}
+.cta .btn-primary { background: #fff; color: var(--brand); }
 .cta .btn-primary:hover { background: rgb(255 255 255 / 92%); }
 
-/* =====================================================================
-   Footer
-   ===================================================================== */
 .footer{
   padding: 64px 0 32px;
   background: var(--bg-subtle);
   border-top: 1px solid var(--border);
 }
-
 .footer-grid{
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -885,44 +645,33 @@ ul { list-style: none; }
 @media (max-width: 720px){
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
 }
-
 .footer-brand{
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
 }
-.footer-brand .brand-mark {
-  background: var(--brand);
-  color: #fff;
-}
+.footer-brand .brand-mark { background: var(--brand); color: #fff; }
 .footer-brand .brand-name { color: var(--text); }
-
 .footer-tagline{
   font-size: 14px;
   color: var(--text-2);
   max-width: 280px;
   line-height: 1.55;
 }
-
 .footer-col h4{
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 14px;
 }
-.footer-col ul{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.footer-col ul{ display: flex; flex-direction: column; gap: 10px; }
 .footer-col a{
   font-size: 14px;
   color: var(--text-2);
   transition: color .15s ease;
 }
 .footer-col a:hover { color: var(--brand-2); }
-
 .footer-bottom{
   display: flex;
   align-items: center;
@@ -936,9 +685,156 @@ ul { list-style: none; }
   color: var(--text-3);
 }
 
-/* =====================================================================
-   Motion
-   ===================================================================== */
+/* ============================================================
+   Guest login modal
+   ============================================================ */
+#guestModal{
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+#guestModal.show{ display: grid; }
+#guestModal .gm-card{
+  width: 100%;
+  max-width: 420px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.25);
+  animation: guestModalUp .22s ease;
+}
+@keyframes guestModalUp{
+  from{ opacity:0; transform:translateY(20px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+#guestModal .gm-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+#guestModal .gm-title{
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  color: var(--text);
+  margin: 0;
+}
+#guestModal .gm-sub{
+  color: var(--text-3);
+  font-size: 13px;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+#guestModal .gm-close{
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border-2);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background .15s ease;
+}
+#guestModal .gm-close:hover{ background: var(--bg-subtle); }
+#guestModal .gm-form{ margin-top: 20px; }
+#guestModal .gm-label{
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-bottom: 6px;
+  margin-top: 14px;
+  letter-spacing: .3px;
+}
+#guestModal .gm-label:first-child{ margin-top: 0; }
+#guestModal .gm-input{
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #fff;
+  border: 1px solid var(--border-2);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+#guestModal .gm-input:focus{
+  border-color: var(--brand-2);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+#guestModal .gm-mode-row{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+#guestModal .gm-mode-btn{
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s ease;
+  border: 1px solid var(--border-2);
+  background: #fff;
+  color: var(--text-2);
+}
+#guestModal .gm-mode-btn.on{
+  border-color: var(--brand-2);
+  background: var(--brand-soft);
+  color: var(--brand-2);
+}
+#guestModal .gm-error{
+  display: none;
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: #fdeaea;
+  color: #d32f2f;
+  border: 1px solid #f4c5c5;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+#guestModal .gm-error.show{ display: block; }
+#guestModal .gm-submit{
+  width: 100%;
+  margin-top: 20px;
+  height: 46px;
+  background: var(--brand-2);
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+#guestModal .gm-submit:hover:not(:disabled){ background: var(--brand-3); }
+#guestModal .gm-submit:disabled{ opacity: .6; cursor: wait; }
+#guestModal .gm-foot{
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--text-3);
+  text-align: center;
+  line-height: 1.5;
+}
+#guestModal .gm-foot a{
+  color: var(--brand-2);
+  font-weight: 600;
+}
+
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{
     animation-duration: 0s !important;
@@ -966,7 +862,8 @@ ul { list-style: none; }
     </nav>
 
     <div class="header-actions">
-      <a href="/hotel-login.html" class="btn btn-secondary btn-sm">Sign in</a>
+      <button type="button" id="guestLoginBtn" class="btn btn-secondary btn-sm">Guest sign in</button>
+      <a href="/hotel-login.html" class="btn btn-secondary btn-sm">Hotel sign in</a>
       <a href="/hotel-signup.html" class="btn btn-primary btn-sm">
         Get started
         <svg class="arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -1004,12 +901,11 @@ ul { list-style: none; }
             <path d="M5 12h14M13 5l7 7-7 7"/>
           </svg>
         </a>
-        <a href="#how" class="btn btn-secondary btn-lg">See how it works</a>
+        <button type="button" id="guestLoginHeroBtn" class="btn btn-secondary btn-lg">I'm a guest</button>
       </div>
 
       <p class="hero-meta">14-day free trial · No card required</p>
 
-      <!-- Audience paths -->
       <div class="paths">
 
         <article class="path">
@@ -1054,7 +950,6 @@ ul { list-style: none; }
           </div>
           <p class="path-foot">No listing fee. Commission on completed orders only.</p>
         </article>
-
       </div>
 
       <!-- How it works -->
@@ -1109,7 +1004,6 @@ ul { list-style: none; }
           <p>Hotels keep 100% of food revenue. 15% commission on vendor bookings.</p>
           <code class="flow-chip">Settlement · Sent to M-Pesa</code>
         </article>
-
       </div>
 
       <!-- Stats -->
@@ -1133,7 +1027,6 @@ ul { list-style: none; }
   <!-- ============================= Pricing ============================= -->
   <section class="section section--tinted" id="pricing">
     <div class="container">
-
       <div class="section-head section-head--center">
         <div class="section-label">Pricing</div>
         <h2 class="section-title">Simple plans, no revenue share on food.</h2>
@@ -1143,7 +1036,6 @@ ul { list-style: none; }
       </div>
 
       <div class="pricing">
-
         <article class="plan">
           <div class="plan-name">Starter</div>
           <div class="plan-price">
@@ -1152,30 +1044,10 @@ ul { list-style: none; }
           </div>
           <p class="plan-desc">For boutique hotels moving off paper menus.</p>
           <ul class="plan-list">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Unlimited QR codes
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Unlimited menu items
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Live order dashboard
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              WhatsApp notifications
-            </li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Unlimited QR codes</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Unlimited menu items</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Live order dashboard</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>WhatsApp notifications</li>
           </ul>
           <a href="/hotel-signup.html" class="btn btn-secondary">Get started</a>
         </article>
@@ -1189,30 +1061,10 @@ ul { list-style: none; }
           </div>
           <p class="plan-desc">For hotels adding taxis, safaris and spa to the guest menu.</p>
           <ul class="plan-list">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Everything in Starter
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Vendor marketplace access
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Automatic WhatsApp routing
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Finance and analytics reports
-            </li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Everything in Starter</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Vendor marketplace access</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Automatic WhatsApp routing</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Finance and analytics reports</li>
           </ul>
           <a href="/hotel-signup.html" class="btn btn-primary">
             Start free trial
@@ -1231,34 +1083,13 @@ ul { list-style: none; }
           </div>
           <p class="plan-desc">For resort groups and chains running multiple properties.</p>
           <ul class="plan-list">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Everything in Growth
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              White-label guest app
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              PMS integration
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/>
-              </svg>
-              Multi-property management
-            </li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Everything in Growth</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>White-label guest app</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>PMS integration</li>
+            <li><svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L4.3 10.7a1 1 0 1 1 1.4-1.4L8.5 12l6.8-6.7a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>Multi-property management</li>
           </ul>
           <a href="/hotel-signup.html" class="btn btn-secondary">Contact sales</a>
         </article>
-
       </div>
     </div>
   </section>
@@ -1356,6 +1187,7 @@ ul { list-style: none; }
       <div class="footer-col">
         <h4>Account</h4>
         <ul>
+          <li><a href="#" id="guestLoginFooter">Guest sign in</a></li>
           <li><a href="/hotel-login.html">Hotel sign in</a></li>
           <li><a href="/vendor-login.html">Vendor sign in</a></li>
           <li><a href="/hotel-signup.html">Create account</a></li>
@@ -1383,10 +1215,58 @@ ul { list-style: none; }
   </div>
 </footer>
 
+<!-- ============================= Guest login modal ============================= -->
+<div id="guestModal" role="dialog" aria-modal="true" aria-labelledby="gmTitle">
+  <div class="gm-card">
+    <div class="gm-head">
+      <div>
+        <h3 class="gm-title" id="gmTitle">Sign in as a guest</h3>
+        <p class="gm-sub">Enter your hotel, room and phone number — no password needed.</p>
+      </div>
+      <button type="button" id="guestModalClose" class="gm-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <form id="guestLoginForm" class="gm-form" novalidate>
+      <label class="gm-label" for="gHotel">Hotel ID</label>
+      <input id="gHotel" name="hotel" type="text" required class="gm-input" placeholder="e.g. BAOBAB" autocomplete="off">
+
+      <label class="gm-label">Mode</label>
+      <div class="gm-mode-row">
+        <button type="button" data-mode="room" class="gm-mode-btn on">Room</button>
+        <button type="button" data-mode="table" class="gm-mode-btn">Table</button>
+      </div>
+
+      <label class="gm-label" for="gRoom"><span id="gLocLabel">Room</span> number</label>
+      <input id="gRoom" name="room" type="text" required class="gm-input" placeholder="101" autocomplete="off">
+
+      <label class="gm-label" for="gPhone">Phone number</label>
+      <input id="gPhone" name="phone" type="tel" required class="gm-input" placeholder="0712 345 678" autocomplete="tel">
+
+      <label class="gm-label" for="gName">Your name</label>
+      <input id="gName" name="name" type="text" required class="gm-input" placeholder="Full name" autocomplete="name">
+
+      <div id="guestLoginError" class="gm-error" role="alert"></div>
+
+      <button type="submit" id="guestLoginSubmit" class="gm-submit">Sign in</button>
+
+      <p class="gm-foot">
+        Or just scan the QR code in your room — <a href="#hotels">no sign-in needed</a>.
+      </p>
+    </form>
+  </div>
+</div>
+
+
+
 <script>
 (() => {
   'use strict';
 
+  /* ============================================================
+     HOTELS DIRECTORY
+     ============================================================ */
   const CONFIG = {
     hotelsEndpoint: '/api/data',
     defaultImage: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop',
@@ -1411,7 +1291,6 @@ ul { list-style: none; }
     year:       document.querySelector('[data-year]'),
   };
 
-  /* -------------------------------------------------------------- */
   const escapeHtml = (v) =>
     String(v ?? '').replace(/[&<>"']/g, (c) =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -1424,7 +1303,6 @@ ul { list-style: none; }
     };
   };
 
-  /* Normalise API variants into one shape. */
   const normaliseHotel = (raw) => ({
     id:       raw.hotel_id ?? raw.id ?? '',
     name:     raw.hotel_name ?? raw.name ?? 'Hotel',
@@ -1433,7 +1311,6 @@ ul { list-style: none; }
     image:    raw.image_url ?? CONFIG.defaultImage,
   });
 
-  /* -------------------------------------------------------------- */
   async function fetchHotels() {
     const res = await fetch(CONFIG.hotelsEndpoint, { headers: { Accept: 'application/json' } });
     if (!res.ok) throw new Error(`Hotels request failed: ${res.status}`);
@@ -1441,7 +1318,6 @@ ul { list-style: none; }
     return Array.isArray(data?.hotels) ? data.hotels.map(normaliseHotel) : [];
   }
 
-  /* -------------------------------------------------------------- */
   function getVisibleHotels() {
     const q = state.query.trim().toLowerCase();
     const cat = state.category.toLowerCase();
@@ -1456,7 +1332,6 @@ ul { list-style: none; }
     });
   }
 
-  /* -------------------------------------------------------------- */
   function hotelCard(hotel) {
     const url = CONFIG.guestUrl(hotel.id, CONFIG.defaultRoom);
     return `
@@ -1493,16 +1368,15 @@ ul { list-style: none; }
     if (els.hotelCount) els.hotelCount.textContent = state.hotels.length;
 
     if (!visible.length) {
-      els.grid.innerHTML = '';
-      els.empty.dataset.visible = 'true';
+      if (els.grid) els.grid.innerHTML = '';
+      if (els.empty) els.empty.dataset.visible = 'true';
       return;
     }
 
-    els.empty.dataset.visible = 'false';
-    els.grid.innerHTML = visible.map(hotelCard).join('');
+    if (els.empty) els.empty.dataset.visible = 'false';
+    if (els.grid) els.grid.innerHTML = visible.map(hotelCard).join('');
   }
 
-  /* -------------------------------------------------------------- */
   function bindEvents() {
     els.search?.addEventListener('input', debounce((e) => {
       state.query = e.target.value;
@@ -1519,8 +1393,7 @@ ul { list-style: none; }
     });
   }
 
-  /* -------------------------------------------------------------- */
-  async function init() {
+  async function initHotels() {
     if (els.year) els.year.textContent = new Date().getFullYear();
     bindEvents();
 
@@ -1534,10 +1407,170 @@ ul { list-style: none; }
     render();
   }
 
+  /* ============================================================
+     GUEST LOGIN MODAL
+     ============================================================ */
+  function initGuestLogin() {
+    const modal       = document.getElementById('guestModal');
+    const openBtns    = [
+      document.getElementById('guestLoginBtn'),
+      document.getElementById('guestLoginHeroBtn'),
+      document.getElementById('guestLoginFooter'),
+    ].filter(Boolean);
+    const closeBtn    = document.getElementById('guestModalClose');
+    const form        = document.getElementById('guestLoginForm');
+    const errBox      = document.getElementById('guestLoginError');
+    const submitBtn   = document.getElementById('guestLoginSubmit');
+    const locLabel    = document.getElementById('gLocLabel');
+    const hotelInput  = document.getElementById('gHotel');
+    const roomInput   = document.getElementById('gRoom');
+    const phoneInput  = document.getElementById('gPhone');
+    const nameInput   = document.getElementById('gName');
+    const modeButtons = document.querySelectorAll('#guestModal .gm-mode-btn');
+
+    if (!modal || !form) return;
+
+    let mode = 'room';
+
+    function setMode(newMode) {
+      mode = newMode;
+      if (locLabel) locLabel.textContent = newMode === 'table' ? 'Table' : 'Room';
+      if (roomInput) roomInput.placeholder = newMode === 'table' ? '5' : '101';
+      modeButtons.forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
+    }
+
+    function showError(msg) {
+      if (!errBox) return;
+      errBox.textContent = msg;
+      errBox.classList.add('show');
+    }
+    function clearError() {
+      if (!errBox) return;
+      errBox.textContent = '';
+      errBox.classList.remove('show');
+    }
+
+    function openModal() {
+      clearError();
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+
+      // Prefill from URL (?hotel=X&room=Y&mode=table)
+      try {
+        const p = new URLSearchParams(location.search);
+        const urlHotel = (p.get('hotel') || '').toUpperCase();
+        const urlRoom  = p.get('room') || p.get('table') || '';
+        const urlMode  = p.get('mode') || (p.get('table') ? 'table' : '');
+        if (urlHotel && hotelInput) hotelInput.value = urlHotel;
+        if (urlRoom && roomInput) roomInput.value = urlRoom;
+        if (urlMode === 'table' || urlMode === 'room') setMode(urlMode);
+      } catch {}
+
+      // Prefill from localStorage — last hotel, last context
+      try {
+        const lastHotel = localStorage.getItem('gh_last_hotel');
+        if (lastHotel && hotelInput && !hotelInput.value) hotelInput.value = lastHotel;
+
+        const ctx = JSON.parse(localStorage.getItem('gh_guest_ctx') || '{}');
+        if (ctx.number && roomInput && !roomInput.value) roomInput.value = ctx.number;
+        if (ctx.mode) setMode(ctx.mode);
+
+        // Note: we deliberately do NOT prefill name/phone for privacy
+      } catch {}
+
+      setTimeout(() => hotelInput?.focus(), 80);
+    }
+
+    function closeModal() {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      clearError();
+    }
+
+    openBtns.forEach(btn => btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    }));
+    closeBtn?.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    modeButtons.forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const hotel = (hotelInput?.value || '').trim().toUpperCase();
+      const room  = (roomInput?.value || '').trim();
+      const phone = (phoneInput?.value || '').trim();
+      const name  = (nameInput?.value || '').trim();
+
+      if (!hotel) return showError('Please enter the hotel ID.');
+      if (!room)  return showError('Please enter the ' + (mode === 'table' ? 'table' : 'room') + ' number.');
+      if (!phone) return showError('Please enter your phone number.');
+      if (!name)  return showError('Please enter your name.');
+
+      const originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      try {
+        const res = await fetch('/api/guest/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            hotel_id: hotel,
+            guest_name: name,
+            guest_phone: phone,
+            mode: mode,
+            number: room
+          })
+        });
+
+        let json = {};
+        try { json = await res.json(); } catch {}
+
+        if (!res.ok || json.ok === false) {
+          throw new Error(json.error || `Sign in failed (HTTP ${res.status})`);
+        }
+
+        // Persist session + context so guest.html picks it up
+        try {
+          if (json.token) localStorage.setItem('gh_guest_token', json.token);
+          localStorage.setItem('gh_guest_ctx', JSON.stringify({ mode, number: room }));
+          localStorage.setItem('gh_last_hotel', hotel);
+        } catch {}
+
+        // Redirect straight into the guest app
+        const qs = new URLSearchParams({ hotel, room, mode });
+        window.location.href = '/guest.html?' + qs.toString();
+      } catch (err) {
+        console.error('[Guest login]', err);
+        const msg = /hotel/i.test(err.message) ? 'Could not find that hotel. Check the hotel ID.'
+                  : /not available/i.test(err.message) ? 'This hotel is not accepting orders yet.'
+                  : (err.message || 'Could not sign in.');
+        showError(msg);
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel || 'Sign in';
+      }
+    });
+  }
+
+  /* ============================================================
+     BOOT
+     ============================================================ */
+  function boot() {
+    initHotels();
+    initGuestLogin();
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
   } else {
-    init();
+    boot();
   }
 })();
 </script>
@@ -1545,3 +1578,15 @@ ul { list-style: none; }
 </body>
 </html>
 
+
+   
+
+   
+
+
+
+
+   
+
+   
+<!-- === PART 2 CONTINUES BELOW THIS LINE === -->
