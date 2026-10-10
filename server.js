@@ -64,12 +64,22 @@ if (SUPABASE_URL && SUPABASE_SERVICE) {
   console.error("❌ Supabase client NOT created — missing SUPABASE_URL or SUPABASE_SERVICE_KEY");
 }
 
-const app = express();
+/*const app = express();
 app.disable("x-powered-by");
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 app.use(compression());
 app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));*/
+
+const app = express();
+app.disable("x-powered-by");
+app.set("trust proxy", 1);
+app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(compression());
+app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
+
+
 
 const ALLOWED_ORIGINS = [
   "https://guestconnect-ap2q.onrender.com",
