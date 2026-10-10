@@ -2823,27 +2823,43 @@ $('orderPills').querySelectorAll('[data-ofilter]').forEach(b => {
   });
 });
 
+/* ============================================================
+   FIX 1: refreshOrders() — Filter by current guest session
+   ============================================================ */
 async function refreshOrders() {
-  if (!state.token) return;
+  // Guard: Do not proceed if there is no token or active session
+  if (!state.token || !state.session) {
+    return;
+  }
+
   try {
     const [orders, bookings] = await Promise.all([
       api('/api/guest/orders').then(r => r.orders || []).catch(() => []),
       api('/api/bookings/guest').then(r => r.bookings || []).catch(() => [])
     ]);
-    state.orders = orders;
-    state.bookings = bookings;
+
+    // **FIX: Filter orders by the current session ID to prevent cross-guest data leakage**
+    state.orders = orders.filter(o => String(o.guest_session_id) === String(state.session.id));
+    
+    // **FIX: Filter bookings similarly**
+    state.bookings = bookings.filter(b => String(b.guest_session_id) === String(state.session.id));
+
     pickActive();
     renderOrders();
     renderActiveCard();
     maybePromptRating();
-  } catch {}
+  } catch (e) {
+    console.error("Failed to refresh orders:", e);
+  }
 }
 
 async function refreshBookings() {
-  if (!state.token) return;
+  if (!state.token || !state.session) return;
   try {
     const r = await api('/api/bookings/guest');
-    state.bookings = r.bookings || [];
+    const bookings = r.bookings || [];
+    // **FIX: Filter bookings by current session ID**
+    state.bookings = bookings.filter(b => String(b.guest_session_id) === String(state.session.id));
     pickActive();
     renderOrders();
     renderActiveCard();
@@ -2851,6 +2867,7 @@ async function refreshBookings() {
 }
 
 function pickActive() {
+  // state.orders and state.bookings are already filtered by session in refreshOrders/refreshBookings
   state.activeOrder = state.orders.find(o => !['completed', 'cancelled'].includes(String(o.status || '').toLowerCase())) || null;
   state.activeBooking = state.bookings.find(b => !['completed', 'cancelled', 'declined'].includes(String(b.status || '').toLowerCase())) || null;
 
@@ -2982,6 +2999,7 @@ setInterval(() => {
    RATING & TIP
    ============================================================ */
 function maybePromptRating() {
+  // Only prompt for orders that belong to the current session
   const completed = state.orders.filter(o =>
     String(o.status || '').toLowerCase() === 'completed' &&
     !state.ratings[o.id]
@@ -3218,28 +3236,41 @@ function refreshCurrentView() {
    ============================================================ */
 function startSSE() {
   if (state.sse) try { state.sse.close(); } catch {}
-  if (!state.token) return;
+  if (!state.token || !state.session) return; // Do not start SSE without a session
 
   const es = new EventSource(`/api/stream/guest/${encodeURIComponent(state.token)}`);
   state.sse = es;
 
+  /* ============================================================
+     FIX 2: SSE orders listener — Filter incoming data by session
+     ============================================================ */
   es.addEventListener('orders', e => {
     try {
-      state.orders = JSON.parse(e.data) || [];
+      const incomingOrders = JSON.parse(e.data) || [];
+      // **FIX: Only update state with orders for the current guest**
+      state.orders = incomingOrders.filter(o => String(o.guest_session_id) === String(state.session.id));
+      
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
       maybePromptRating();
-    } catch {}
+    } catch (err) {
+      console.error("Failed to process SSE orders:", err);
+    }
   });
 
   es.addEventListener('bookings', e => {
     try {
-      state.bookings = JSON.parse(e.data) || [];
+      const incomingBookings = JSON.parse(e.data) || [];
+      // **FIX: Only update state with bookings for the current guest**
+      state.bookings = incomingBookings.filter(b => String(b.guest_session_id) === String(state.session.id));
+      
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
-    } catch {}
+    } catch (err) {
+      console.error("Failed to process SSE bookings:", err);
+    }
   });
 
   es.addEventListener('kitchen', e => {
@@ -3433,6 +3464,3 @@ init();
 </script>
 </body>
 </html>
-
-
-   
