@@ -863,6 +863,7 @@ ul{ list-style:none; }
   display:block; font-size:14.5px; font-weight:600;
   color:var(--text); margin-bottom:6px;
 }
+.empty p{ line-height:1.55; max-width:340px; margin:0 auto; }
 .empty .retry-btn{
   display:inline-flex; align-items:center; gap:6px;
   margin-top:14px; padding:10px 18px;
@@ -932,21 +933,6 @@ ul{ list-style:none; }
 }
 .offline.show{ transform:translateY(0); }
 
-.ptr-indicator{
-  position:fixed; top:0; left:50%; transform:translate(-50%,-100%);
-  z-index:150;
-  background:var(--brand); color:#fff;
-  padding:8px 16px; border-radius:0 0 12px 12px;
-  font-size:12px; font-weight:600;
-  display:flex; align-items:center; gap:6px;
-  transition:transform .25s ease;
-  box-shadow:var(--shadow-md);
-}
-.ptr-indicator.show{ transform:translate(-50%,0); }
-.ptr-indicator .icon{ width:14px; height:14px; }
-.ptr-indicator.spinning .icon{ animation:spin 1s linear infinite; }
-@keyframes spin{ to{ transform:rotate(360deg); } }
-
 .rating-stars{
   display:flex; justify-content:center; gap:8px;
   margin:16px 0;
@@ -974,6 +960,48 @@ ul{ list-style:none; }
 .tip-btn.on{ background:var(--brand-2); border-color:var(--brand-2); color:#fff; }
 .tip-btn small{ display:block; font-size:10.5px; font-weight:500; opacity:.7; margin-top:2px; }
 
+/* Welcome / check-in state */
+.welcome-hero{
+  text-align:center;
+  padding:32px 20px 24px;
+}
+.welcome-hero .badge-icon{
+  width:64px; height:64px; margin:0 auto 14px;
+  border-radius:18px;
+  background:linear-gradient(135deg, var(--brand-2), var(--brand));
+  color:#fff;
+  display:grid; place-items:center;
+  box-shadow:0 12px 24px rgba(0,53,128,.2);
+}
+.welcome-hero .badge-icon .icon{ width:32px; height:32px; }
+.welcome-hero h1{
+  font-size:22px; font-weight:800; letter-spacing:-.02em;
+  color:var(--text); margin-bottom:6px;
+}
+.welcome-hero p{
+  font-size:14px; color:var(--text-2); line-height:1.55;
+  max-width:340px; margin:0 auto;
+}
+.welcome-hero .loc-chip{
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:14px; padding:8px 14px;
+  background:var(--brand-soft);
+  border:1px solid var(--brand-line);
+  color:var(--brand-2);
+  font-weight:700; font-size:13px;
+  border-radius:999px;
+}
+.welcome-hero .loc-chip .icon{ width:14px; height:14px; }
+
+.spinner{
+  width:18px; height:18px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms !important;
@@ -988,11 +1016,6 @@ ul{ list-style:none; }
 
 <div class="offline" id="offlineBar" role="status" aria-live="polite">You're offline — reconnecting…</div>
 
-<div class="ptr-indicator" id="ptrIndicator">
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
-  <span>Pull to refresh</span>
-</div>
-
 <header class="app-header">
   <div class="app-header-inner">
     <div class="brand">
@@ -1006,7 +1029,7 @@ ul{ list-style:none; }
       <button class="icon-btn" id="langBtn" title="Language" aria-label="Change language">
         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
       </button>
-      <button class="icon-btn" id="profileBtn" title="Profile" aria-label="Your profile">
+      <button class="icon-btn hidden" id="profileBtn" title="Profile" aria-label="Your profile">
         <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </button>
     </div>
@@ -1014,118 +1037,11 @@ ul{ list-style:none; }
 </header>
 
 <main class="container" id="main" tabindex="-1">
-
-  <section class="context" id="contextBanner">
-    <div class="context-icon" id="contextIcon">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>
-    </div>
-    <div class="context-body">
-      <div class="context-title" id="contextTitle">Set your room</div>
-      <div class="context-sub" id="contextSub">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>—</span>
-      </div>
-    </div>
-    <button class="context-change" id="changeContextBtn">Change</button>
-  </section>
-
-  <div class="promo" id="promoBanner">
-    <b id="promoTitle"></b>
-    <p id="promoText"></p>
-  </div>
-
-  <div class="busy-banner" id="busyBanner" role="status" aria-live="polite">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span id="busyText">Kitchen is busy right now — orders may take longer than usual.</span>
-  </div>
-
-  <section id="view-home" class="view">
-    <div class="active-card" id="activeCard"></div>
-
-    <div class="quick" id="quickActions">
-      <button class="quick-btn" data-quick="waiter" aria-label="Call waiter">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        Call waiter
-      </button>
-      <button class="quick-btn" data-quick="water" aria-label="Request water">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
-        Water
-      </button>
-      <button class="quick-btn" data-quick="bill" aria-label="Request bill">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
-        Request bill
-      </button>
-      <button class="quick-btn" data-quick="housekeeping" aria-label="Request housekeeping">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
-        Housekeeping
-      </button>
-    </div>
-
-    <div class="section-head">
-      <h2 class="section-title">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-        Popular right now
-      </h2>
-      <button class="section-link" data-tab="menu">View all →</button>
-    </div>
-    <div class="grid" id="popularGrid"></div>
-
-    <div class="section-head">
-      <h2 class="section-title">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
-        Nearby vendors
-      </h2>
-      <button class="section-link" data-tab="vendors">See all →</button>
-    </div>
-    <div class="grid" id="popularVendors"></div>
-  </section>
-
-  <section id="view-menu" class="view hidden">
-    <div class="search-bar">
-      <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="search" id="menuSearch" placeholder="Search the menu…" autocomplete="off" aria-label="Search menu">
-      <button class="search-clear" id="menuSearchClear" aria-label="Clear search">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-    </div>
-
-    <div id="recentWrap"></div>
-
-    <div class="pills" id="menuPills"></div>
-    <div class="grid" id="menuGrid"></div>
-  </section>
-
-  <section id="view-services" class="view hidden">
-    <div class="grid" id="servicesGrid"></div>
-  </section>
-
-  <section id="view-vendors" class="view hidden">
-    <div class="pills" id="vendorPills"></div>
-    <div class="grid" id="vendorsGrid"></div>
-  </section>
-
-  <section id="view-orders" class="view hidden">
-    <div class="pills" id="orderPills">
-      <button class="pill on" data-ofilter="active">Active</button>
-      <button class="pill" data-ofilter="history">History</button>
-    </div>
-    <div id="ordersList"></div>
-  </section>
-
+  <!-- Everything below is rendered dynamically by bootstrap() -->
 </main>
 
-<div class="cart-bar" id="cartBar">
-  <div class="info">
-    <b id="cartCount">0 items</b>
-    <small id="cartTotal">Ksh 0</small>
-  </div>
-  <button id="viewCartBtn">
-    View cart
-    <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-  </button>
-</div>
-
-<nav class="bottom-nav" aria-label="Main navigation">
+<!-- Fixed bottom nav (only shown once checked in) -->
+<nav class="bottom-nav hidden" id="bottomNav" aria-label="Main navigation">
   <button class="nav-btn on" data-tab="home" aria-label="Home">
     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Home
@@ -1149,56 +1065,31 @@ ul{ list-style:none; }
   </button>
 </nav>
 
-<div class="sheet" id="contextSheet">
-  <div class="sheet-body">
-    <div class="sheet-head">
-      <div>
-        <div class="sheet-title">Where are you?</div>
-        <div class="sheet-sub">Choose your room or table — we route everything from there.</div>
-      </div>
-      <button class="sheet-close" data-close="contextSheet" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-    </div>
-
-    <div class="field">
-      <label>Mode</label>
-      <div class="row-2">
-        <button class="btn btn-secondary" id="pickRoomBtn" style="justify-content:center">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>
-          Room
-        </button>
-        <button class="btn btn-secondary" id="pickTableBtn" style="justify-content:center">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/></svg>
-          Table
-        </button>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Number</label>
-      <input type="text" id="contextInput" class="input" placeholder="e.g. 101" autocomplete="off">
-    </div>
-
-    <div class="row-2">
-      <div class="field">
-        <label>Your name</label>
-        <input type="text" id="guestNameInput" class="input" placeholder="Full name" autocomplete="name">
-      </div>
-      <div class="field">
-        <label>Phone (for updates)</label>
-        <input type="tel" id="guestPhoneInput" class="input" placeholder="0712 345 678" autocomplete="tel">
-      </div>
-    </div>
-
-    <button class="btn btn-primary btn-full btn-lg" id="saveContextBtn">Confirm</button>
+<!-- Dynamic cart bar -->
+<div class="cart-bar" id="cartBar">
+  <div class="info">
+    <b id="cartCount">0 items</b>
+    <small id="cartTotal">Ksh 0</small>
   </div>
+  <button id="viewCartBtn">
+    View cart
+    <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+  </button>
 </div>
 
+<!-- ============ SHEETS ============ -->
+
+<!-- Welcome / auto check-in prompt -->
+<div class="sheet" id="welcomeSheet">
+  <div class="sheet-body" id="welcomeSheetBody"></div>
+</div>
+
+<!-- Item detail -->
 <div class="sheet" id="itemSheet">
   <div class="sheet-body" id="itemSheetBody"></div>
 </div>
 
+<!-- Cart -->
 <div class="sheet" id="cartSheet">
   <div class="sheet-body">
     <div class="sheet-head">
@@ -1219,14 +1110,17 @@ ul{ list-style:none; }
   </div>
 </div>
 
+<!-- Success -->
 <div class="sheet" id="successSheet">
   <div class="sheet-body" id="successSheetBody"></div>
 </div>
 
+<!-- Booking -->
 <div class="sheet" id="bookingSheet">
   <div class="sheet-body" id="bookingSheetBody"></div>
 </div>
 
+<!-- Language -->
 <div class="sheet" id="langSheet">
   <div class="sheet-body">
     <div class="sheet-head">
@@ -1252,20 +1146,22 @@ ul{ list-style:none; }
   </div>
 </div>
 
+<!-- Profile -->
 <div class="sheet" id="profileSheet">
   <div class="sheet-body" id="profileSheetBody"></div>
 </div>
 
+<!-- Rating + tip -->
 <div class="sheet" id="ratingSheet">
   <div class="sheet-body" id="ratingSheetBody"></div>
 </div>
 
+<!-- Confirm order -->
 <div class="sheet" id="confirmSheet">
   <div class="sheet-body" id="confirmSheetBody"></div>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  
 
 <script>
 "use strict";
@@ -1290,9 +1186,11 @@ const ICON = {
   refresh: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>',
   leaf: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
   flame: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-  users: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
   user: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
-  info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>'
+  info: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>',
+  qr: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>',
+  door: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.562Z"/></svg>',
+  logout: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>'
 };
 
 /* ============================================================
@@ -1335,7 +1233,20 @@ const URL_ROOM = params.get('room') || params.get('table') || '';
 const URL_MODE = params.get('mode') || (params.get('table') ? 'table' : 'room');
 
 /* ============================================================
-   i18n dictionary
+   DEVICE ID — stable, per-browser identifier
+   ============================================================ */
+function getDeviceId() {
+  let id = localStorage.getItem("gh_device_id");
+  if (!id) {
+    id = "dev_" + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "") : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    localStorage.setItem("gh_device_id", id);
+  }
+  return id;
+}
+const DEVICE_ID = getDeviceId();
+
+/* ============================================================
+   i18n dictionary (unchanged)
    ============================================================ */
 const I18N = {
   en: {
@@ -1347,8 +1258,7 @@ const I18N = {
     cartEmpty: 'Your cart is empty', subtotal: 'Subtotal', total: 'Total',
     orderPlaced: 'Order placed', kitchenPreparing: 'Kitchen is preparing it now — track live in Orders.',
     trackOrder: 'Track my order', reference: 'Reference',
-    setYourRoom: 'Set your room', whereAreYou: 'Where are you?', chooseRoomOrTable: 'Choose your room or table — we route everything from there.',
-    mode: 'Mode', room: 'Room', table: 'Table', number: 'Number', yourName: 'Your name', phone: 'Phone (for updates)', confirm: 'Confirm',
+    room: 'Room', table: 'Table', number: 'Number', yourName: 'Your name', phone: 'Phone (for updates)',
     active: 'Active', history: 'History', nothingActive: 'Nothing active', noHistoryYet: 'No history yet',
     nothingActiveText: 'Place an order or book a service to see it here.',
     noHistoryText: 'Completed orders will appear here.',
@@ -1360,14 +1270,36 @@ const I18N = {
     paybill: 'Paybill', account: 'Account', amount: 'Amount', till: 'Till', copy: 'Copy', copied: 'Copied',
     payAtReception: 'Pay at reception', language: 'Language', choosePreferredLanguage: 'Choose your preferred language',
     yourProfile: 'Your profile', updateAnytime: 'Update anytime', name: 'Name', hotel: 'Hotel',
-    currentLocation: 'Current location', changeLocation: 'Change location',
+    currentLocation: 'Current location',
     eta: 'ETA', arrivingIn: 'Arriving in', handledBy: 'Handled by', orderAgain: 'Order again',
     modifyWindow: 'You can modify this order for', cancelOrder: 'Cancel order', addMore: 'Add more',
     kitchenBusy: 'Kitchen is busy right now — orders may take longer than usual.',
     rateYourOrder: 'Rate your order', howWasIt: 'How was it?', submit: 'Submit', skip: 'Skip',
     tip: 'Add a tip', tipPrompt: 'Show appreciation for great service', noTip: 'No tip',
     confirmOrder: 'Confirm your order', confirmPrompt: 'Please review your order before we send it to the kitchen.',
-    item: 'item', items: 'items', offline: "You're offline — reconnecting…", backOnline: 'Back online'
+    item: 'item', items: 'items', offline: "You're offline — reconnecting…", backOnline: 'Back online',
+    welcomeTitle: 'Welcome!', welcomeSubtitle: "We're glad you're here.",
+    welcomeNamePlaceholder: 'e.g., Jane',
+    welcomeContinue: 'Continue',
+    checkingIn: 'Checking you in…',
+    checkedIn: "You're checked in!",
+    noRoomTitle: 'Scan the QR in your room',
+    noRoomText: "Ask reception for the QR code if you don't have one, or type your room number below.",
+    enterRoom: 'Enter room number',
+    roomPlaceholder: 'e.g., 101',
+    checkInBtn: 'Check in',
+    notCheckedIn: 'Not checked in yet',
+    notCheckedInText: 'Please check in at reception to start ordering.',
+    retry: 'Retry',
+    endStay: 'End my stay',
+    endStayConfirm: "End your stay? You'll need to check in again to order.",
+    checkedOut: 'Checked out. Thank you!',
+    hotelLocked: "This room is already checked in on another device.",
+    updateProfile: 'Update profile',
+    saveChanges: 'Save changes',
+    saved: 'Saved',
+    roomLabel: 'Room',
+    tableLabel: 'Table'
   },
   sw: {
     home: 'Nyumbani', menu: 'Menyu', services: 'Huduma', vendors: 'Wauzaji', orders: 'Oda',
@@ -1378,8 +1310,7 @@ const I18N = {
     cartEmpty: 'Kikapu chako ni tupu', subtotal: 'Jumla ndogo', total: 'Jumla',
     orderPlaced: 'Oda imewekwa', kitchenPreparing: 'Jikoni inaandaa sasa — fuatilia kwenye Oda.',
     trackOrder: 'Fuatilia oda yangu', reference: 'Kumbukumbu',
-    setYourRoom: 'Weka chumba chako', whereAreYou: 'Uko wapi?', chooseRoomOrTable: 'Chagua chumba au meza yako — tunatuma kila kitu kutoka hapo.',
-    mode: 'Hali', room: 'Chumba', table: 'Meza', number: 'Nambari', yourName: 'Jina lako', phone: 'Simu (kwa masasisho)', confirm: 'Thibitisha',
+    room: 'Chumba', table: 'Meza', number: 'Nambari', yourName: 'Jina lako', phone: 'Simu (kwa masasisho)',
     active: 'Inayoendelea', history: 'Historia', nothingActive: 'Hakuna inayoendelea', noHistoryYet: 'Hakuna historia bado',
     nothingActiveText: 'Weka oda au book huduma ili kuiona hapa.',
     noHistoryText: 'Oda zilizokamilika zitaonekana hapa.',
@@ -1391,14 +1322,36 @@ const I18N = {
     paybill: 'Paybill', account: 'Akaunti', amount: 'Kiasi', till: 'Till', copy: 'Nakili', copied: 'Imenakiliwa',
     payAtReception: 'Lipia mapokezi', language: 'Lugha', choosePreferredLanguage: 'Chagua lugha unayopendelea',
     yourProfile: 'Wasifu wako', updateAnytime: 'Sasisha wakati wowote', name: 'Jina', hotel: 'Hoteli',
-    currentLocation: 'Mahali ulipo', changeLocation: 'Badilisha mahali',
+    currentLocation: 'Mahali ulipo',
     eta: 'Muda', arrivingIn: 'Inafika baada ya', handledBy: 'Anashughulikiwa na', orderAgain: 'Agiza tena',
     modifyWindow: 'Unaweza kubadilisha oda hii kwa', cancelOrder: 'Ghairi oda', addMore: 'Ongeza zaidi',
     kitchenBusy: 'Jikoni ina shughuli nyingi sasa — oda zinaweza kuchukua muda mrefu.',
     rateYourOrder: 'Kadiria oda yako', howWasIt: 'Ilikaaje?', submit: 'Tuma', skip: 'Ruka',
     tip: 'Ongeza bakshishi', tipPrompt: 'Onyesha shukrani kwa huduma nzuri', noTip: 'Bila bakshishi',
     confirmOrder: 'Thibitisha oda yako', confirmPrompt: 'Tafadhali angalia oda yako kabla ya kutuma jikoni.',
-    item: 'kitu', items: 'vitu', offline: 'Hauko mtandaoni — tunaunganisha…', backOnline: 'Umerudi mtandaoni'
+    item: 'kitu', items: 'vitu', offline: 'Hauko mtandaoni — tunaunganisha…', backOnline: 'Umerudi mtandaoni',
+    welcomeTitle: 'Karibu!', welcomeSubtitle: 'Tunafurahi uko hapa.',
+    welcomeNamePlaceholder: 'k.m., Jane',
+    welcomeContinue: 'Endelea',
+    checkingIn: 'Tunakuandikisha…',
+    checkedIn: 'Umeandikishwa!',
+    noRoomTitle: 'Scan QR kwenye chumba chako',
+    noRoomText: 'Omba QR kwa mapokezi kama hauna, au andika nambari ya chumba chako hapa chini.',
+    enterRoom: 'Andika nambari ya chumba',
+    roomPlaceholder: 'k.m., 101',
+    checkInBtn: 'Ingia',
+    notCheckedIn: 'Bado hujaandikishwa',
+    notCheckedInText: 'Tafadhali nenda mapokezi ili kuanza kuagiza.',
+    retry: 'Jaribu tena',
+    endStay: 'Maliza safari yangu',
+    endStayConfirm: 'Maliza safari? Utahitaji kuingia tena ili kuagiza.',
+    checkedOut: 'Umetoka. Asante!',
+    hotelLocked: 'Chumba hiki tayari kimeandikishwa kwenye kifaa kingine.',
+    updateProfile: 'Sasisha wasifu',
+    saveChanges: 'Hifadhi mabadiliko',
+    saved: 'Imehifadhiwa',
+    roomLabel: 'Chumba',
+    tableLabel: 'Meza'
   },
   fr: {
     home: 'Accueil', menu: 'Menu', services: 'Services', vendors: 'Prestataires', orders: 'Commandes',
@@ -1409,9 +1362,8 @@ const I18N = {
     cartEmpty: 'Votre panier est vide', subtotal: 'Sous-total', total: 'Total',
     orderPlaced: 'Commande passée', kitchenPreparing: 'La cuisine prépare — suivez en direct dans Commandes.',
     trackOrder: 'Suivre ma commande', reference: 'Référence',
-    setYourRoom: 'Définir votre chambre', whereAreYou: 'Où êtes-vous ?', chooseRoomOrTable: 'Choisissez votre chambre ou table — tout est routé depuis là.',
-    mode: 'Mode', room: 'Chambre', table: 'Table', number: 'Numéro', yourName: 'Votre nom', phone: 'Téléphone (pour les mises à jour)', confirm: 'Confirmer',
-    active: 'Actif', history: 'Historique', nothingActive: 'Rien d\'actif', noHistoryYet: 'Pas encore d\'historique',
+    room: 'Chambre', table: 'Table', number: 'Numéro', yourName: 'Votre nom', phone: 'Téléphone (pour les mises à jour)',
+    active: 'Actif', history: 'Historique', nothingActive: "Rien d'actif", noHistoryYet: "Pas encore d'historique",
     nothingActiveText: 'Passez une commande ou réservez un service pour le voir ici.',
     noHistoryText: 'Les commandes terminées apparaîtront ici.',
     book: 'Réserver', confirmBooking: 'Confirmer la réservation', service: 'Service', date: 'Date', guests: 'Invités',
@@ -1422,33 +1374,41 @@ const I18N = {
     paybill: 'Paybill', account: 'Compte', amount: 'Montant', till: 'Till', copy: 'Copier', copied: 'Copié',
     payAtReception: 'Payer à la réception', language: 'Langue', choosePreferredLanguage: 'Choisissez votre langue',
     yourProfile: 'Votre profil', updateAnytime: 'Mettez à jour à tout moment', name: 'Nom', hotel: 'Hôtel',
-    currentLocation: 'Localisation actuelle', changeLocation: 'Changer de lieu',
+    currentLocation: 'Localisation actuelle',
     eta: 'Arrivée', arrivingIn: 'Arrive dans', handledBy: 'Servi par', orderAgain: 'Commander à nouveau',
     modifyWindow: 'Vous pouvez modifier cette commande pendant', cancelOrder: 'Annuler la commande', addMore: 'Ajouter',
     kitchenBusy: 'La cuisine est occupée — les commandes peuvent prendre plus de temps.',
-    rateYourOrder: 'Évaluer votre commande', howWasIt: 'C\'était comment ?', submit: 'Envoyer', skip: 'Passer',
+    rateYourOrder: 'Évaluer votre commande', howWasIt: "C'était comment ?", submit: 'Envoyer', skip: 'Passer',
     tip: 'Ajouter un pourboire', tipPrompt: 'Montrez votre appréciation', noTip: 'Sans pourboire',
-    confirmOrder: 'Confirmer votre commande', confirmPrompt: 'Veuillez vérifier votre commande avant de l\'envoyer.',
-    item: 'article', items: 'articles', offline: 'Hors ligne — reconnexion…', backOnline: 'De nouveau en ligne'
+    confirmOrder: 'Confirmer votre commande', confirmPrompt: "Veuillez vérifier votre commande avant de l'envoyer.",
+    item: 'article', items: 'articles', offline: 'Hors ligne — reconnexion…', backOnline: 'De nouveau en ligne',
+    welcomeTitle: 'Bienvenue !', welcomeSubtitle: 'Nous sommes ravis de vous accueillir.',
+    welcomeNamePlaceholder: 'ex. : Marie',
+    welcomeContinue: 'Continuer',
+    checkingIn: 'Nous vous enregistrons…',
+    checkedIn: 'Vous êtes enregistré !',
+    noRoomTitle: 'Scannez le QR dans votre chambre',
+    noRoomText: "Demandez le code QR à la réception si vous n'en avez pas, ou saisissez votre numéro de chambre.",
+    enterRoom: 'Numéro de chambre',
+    roomPlaceholder: 'ex. : 101',
+    checkInBtn: "S'enregistrer",
+    notCheckedIn: 'Pas encore enregistré',
+    notCheckedInText: "Veuillez vous enregistrer à la réception pour commander.",
+    retry: 'Réessayer',
+    endStay: 'Terminer mon séjour',
+    endStayConfirm: 'Terminer le séjour ? Vous devrez vous enregistrer à nouveau.',
+    checkedOut: 'Séjour terminé. Merci !',
+    hotelLocked: 'Cette chambre est déjà enregistrée sur un autre appareil.',
+    updateProfile: 'Mettre à jour le profil',
+    saveChanges: 'Enregistrer',
+    saved: 'Enregistré',
+    roomLabel: 'Chambre',
+    tableLabel: 'Table'
   }
 };
 
 function t(key) {
   return (I18N[state.lang] && I18N[state.lang][key]) || I18N.en[key] || key;
-}
-
-function applyTranslations() {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    el.textContent = t(key);
-  });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-    el.placeholder = t(el.dataset.i18nPlaceholder);
-  });
-  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
-    el.setAttribute('aria-label', t(el.dataset.i18nAria));
-  });
-  document.documentElement.lang = state.lang;
 }
 
 /* ============================================================
@@ -1462,20 +1422,17 @@ function money(v) {
   return currency + ' ' + Number(v || 0).toLocaleString();
 }
 
-const cleanPhone = v => {
-  const d = String(v || '').replace(/\D/g, '');
-  if (d.startsWith('254')) return d;
-  if (d.startsWith('0')) return '254' + d.slice(1);
-  return d;
-};
-
 async function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
   if (state.token) headers['Authorization'] = 'Bearer ' + state.token;
   const res = await fetch(API + path, { ...opts, headers });
   let json = {};
   try { json = await res.json(); } catch {}
-  if (!res.ok || json.ok === false) throw new Error(json.error || ('HTTP ' + res.status));
+  if (!res.ok || json.ok === false) {
+    const err = new Error(json.error || ('HTTP ' + res.status));
+    err.status = res.status;
+    throw err;
+  }
   return json;
 }
 
@@ -1486,7 +1443,7 @@ function toast(msg, kind = 'success') {
   el.innerHTML = (kind === 'error' ? ICON.alert : ICON.check) + '<span>' + esc(msg) + '</span>';
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 function statusBadge(status) {
@@ -1548,24 +1505,56 @@ function renderDietTags(tags) {
   }</div>`;
 }
 
+function locLabel(mode, number) {
+  const m = mode === 'table' ? t('tableLabel') : t('roomLabel');
+  return `${m} ${number}`;
+}
+
 /* ============================================================
    PERSISTENCE
    ============================================================ */
 function saveLocal() {
   try {
-    localStorage.setItem('gh_guest_ctx', JSON.stringify(state.context));
-    if (state.token) localStorage.setItem('gh_guest_token', state.token);
+    if (state.token) {
+      localStorage.setItem('gh_guest_token', state.token);
+      localStorage.setItem('gh_guest_loc', JSON.stringify({
+        hotel: HOTEL_ID,
+        mode: state.context.mode,
+        number: state.context.number
+      }));
+    }
     localStorage.setItem('gh_guest_cart_' + HOTEL_ID, JSON.stringify(state.cart));
     localStorage.setItem('gh_guest_recent_' + HOTEL_ID, JSON.stringify(state.recentItems.slice(0, 8)));
     localStorage.setItem('gh_lang', state.lang);
     localStorage.setItem('gh_ratings_' + HOTEL_ID, JSON.stringify(state.ratings));
   } catch {}
 }
+
 function loadLocal() {
   try {
-    const ctx = localStorage.getItem('gh_guest_ctx');
-    if (ctx) state.context = { ...state.context, ...JSON.parse(ctx) };
     state.token = localStorage.getItem('gh_guest_token') || null;
+
+    // Verify the stored token was for the same location as the current URL
+    const locStr = localStorage.getItem('gh_guest_loc');
+    if (locStr && state.token) {
+      try {
+        const loc = JSON.parse(locStr);
+        const sameHotel = loc.hotel === HOTEL_ID;
+        const sameMode  = loc.mode === (URL_MODE === 'table' ? 'table' : 'room');
+        const sameLoc   = !URL_ROOM || String(loc.number) === String(URL_ROOM);
+        if (!(sameHotel && sameMode && sameLoc)) {
+          // Mismatch → discard
+          localStorage.removeItem('gh_guest_token');
+          localStorage.removeItem('gh_guest_loc');
+          state.token = null;
+        }
+      } catch {
+        localStorage.removeItem('gh_guest_token');
+        localStorage.removeItem('gh_guest_loc');
+        state.token = null;
+      }
+    }
+
     const cart = localStorage.getItem('gh_guest_cart_' + HOTEL_ID);
     if (cart) state.cart = JSON.parse(cart) || [];
     const recent = localStorage.getItem('gh_guest_recent_' + HOTEL_ID);
@@ -1577,14 +1566,31 @@ function loadLocal() {
   } catch {}
 }
 
+function clearLocalSession() {
+  try {
+    localStorage.removeItem('gh_guest_token');
+    localStorage.removeItem('gh_guest_loc');
+    localStorage.removeItem('gh_guest_cart_' + HOTEL_ID);
+  } catch {}
+  state.token = null;
+  state.session = null;
+  state.orders = [];
+  state.bookings = [];
+  state.activeOrder = null;
+  state.activeBooking = null;
+  state.cart = [];
+  state.orderModifyUntil = 0;
+  if (state.sse) { try { state.sse.close(); } catch {} state.sse = null; }
+}
+
 /* ============================================================
    OFFLINE
    ============================================================ */
 function updateOffline() {
-  const isOffline = !navigator.onLine;
-  $('offlineBar').classList.toggle('show', isOffline);
-  const span = $('offlineBar');
-  if (span) span.textContent = t('offline');
+  const bar = $('offlineBar');
+  if (!bar) return;
+  bar.classList.toggle('show', !navigator.onLine);
+  bar.textContent = t('offline');
 }
 window.addEventListener('offline', updateOffline);
 window.addEventListener('online', () => { updateOffline(); toast(t('backOnline')); });
@@ -1611,8 +1617,9 @@ function closeSheet(id) {
 document.querySelectorAll('.sheet').forEach(s => {
   s.addEventListener('click', e => { if (e.target === s) closeSheet(s.id); });
 });
-document.querySelectorAll('[data-close]').forEach(b => {
-  b.addEventListener('click', () => closeSheet(b.dataset.close));
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-close]');
+  if (b) closeSheet(b.dataset.close);
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && sheetStack.length) {
@@ -1621,103 +1628,312 @@ document.addEventListener('keydown', e => {
 });
 
 /* ============================================================
-   CONTEXT (room / table)
+   HEADER CONTEXT
    ============================================================ */
 function renderContext() {
   const c = state.context;
   const hasNumber = !!c.number;
   const isTable = c.mode === 'table';
 
-  $('contextTitle').textContent = hasNumber
-    ? (isTable ? `${t('table')} ${c.number}` : `${t('room')} ${c.number}`)
-    : t('setYourRoom');
-
-  const iconSvg = isTable
-    ? '<path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/>'
-    : '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>';
-  $('contextIcon').innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>`;
-
-  const sub = $('contextSub').querySelector('span');
-  if (sub) sub.textContent = state.hotel ? state.hotel.name : '—';
-
   $('headerContext').textContent = hasNumber
-    ? (isTable ? `${t('table')} ${c.number}` : `${t('room')} ${c.number}`) + (state.hotel ? ' · ' + state.hotel.name : '')
+    ? `${locLabel(c.mode, c.number)}${state.hotel ? ' · ' + state.hotel.name : ''}`
     : (state.hotel ? state.hotel.name : 'Loading…');
+
+  if (state.hotel) {
+    $('headerHotelName').textContent = state.hotel.name;
+    $('brandLogo').textContent = (state.hotel.name || 'G')[0].toUpperCase();
+  }
 }
 
-function openContextSheet() {
-  $('contextInput').value = state.context.number || '';
-  $('guestNameInput').value = state.session?.guest_name || '';
-  $('guestPhoneInput').value = state.session?.guest_phone || '';
-  updatePickMode();
-  openSheet('contextSheet');
+/* ============================================================
+   FATAL / CHECK-IN REQUIRED SCREENS
+   ============================================================ */
+function showFatal(message) {
+  $('bottomNav').classList.add('hidden');
+  $('main').innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">${ICON.alert}</div>
+      <b>Something went wrong</b>
+      <p>${esc(message)}</p>
+      <button class="retry-btn" onclick="location.reload()">${ICON.refresh} Try again</button>
+    </div>`;
 }
 
-function updatePickMode() {
-  const isTable = state.context.mode === 'table';
-  $('pickRoomBtn').classList.toggle('btn-primary', !isTable);
-  $('pickRoomBtn').classList.toggle('btn-secondary', isTable);
-  $('pickTableBtn').classList.toggle('btn-primary', isTable);
-  $('pickTableBtn').classList.toggle('btn-secondary', !isTable);
+function showNoRoom() {
+  $('bottomNav').classList.add('hidden');
+  $('main').innerHTML = `
+    <div class="welcome-hero">
+      <div class="badge-icon">${ICON.qr}</div>
+      <h1>${t('noRoomTitle')}</h1>
+      <p>${t('noRoomText')}</p>
+    </div>
+    <div class="field" style="max-width:340px;margin:24px auto 0">
+      <label>${t('enterRoom')}</label>
+      <input class="input" id="manualRoomInput" placeholder="${t('roomPlaceholder')}" inputmode="numeric" autocomplete="off">
+    </div>
+    <div style="max-width:340px;margin:14px auto 0">
+      <button class="btn btn-primary btn-full btn-lg" id="manualRoomBtn">${t('checkInBtn')}</button>
+    </div>
+  `;
+  const go = () => {
+    const num = ($('manualRoomInput').value || '').trim();
+    if (!num) return toast('Enter a room number', 'error');
+    const url = new URL(location.href);
+    url.searchParams.set('room', num);
+    url.searchParams.set('mode', 'room');
+    location.href = url.toString();
+  };
+  $('manualRoomBtn').addEventListener('click', go);
+  $('manualRoomInput').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 }
 
-$('changeContextBtn').addEventListener('click', openContextSheet);
-$('pickRoomBtn').addEventListener('click', () => { state.context.mode = 'room'; updatePickMode(); });
-$('pickTableBtn').addEventListener('click', () => { state.context.mode = 'table'; updatePickMode(); });
+function showCheckInRequired(message) {
+  $('bottomNav').classList.add('hidden');
+  $('main').innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">${ICON.bell}</div>
+      <b>${t('notCheckedIn')}</b>
+      <p>${esc(message || t('notCheckedInText'))}</p>
+      <button class="retry-btn" onclick="location.reload()">${ICON.refresh} ${t('retry')}</button>
+    </div>`;
+}
 
-$('saveContextBtn').addEventListener('click', async () => {
-  const num = $('contextInput').value.trim();
-  const name = $('guestNameInput').value.trim();
-  const phone = $('guestPhoneInput').value.trim();
-
-  if (!num) return toast('Enter a room or table number', 'error');
-  if (!state.session || !state.session.guest_name) {
-    if (!name) return toast('Please add your name', 'error');
-    if (!phone) return toast('Please add your phone', 'error');
+/* ============================================================
+   AUTO CHECK-IN
+   ============================================================ */
+async function tryAutoCheckIn() {
+  // First, try with the existing token
+  if (state.token) {
+    try {
+      const me = await api('/api/guest/me');
+      const s = me.session;
+      const active = (s.status || 'active') === 'active';
+      if (active) {
+        state.session = s;
+        return { mode: 'existing' };
+      }
+      // Session was checked out → clear and re-attach
+      clearLocalSession();
+    } catch (e) {
+      // Token expired or invalid
+      clearLocalSession();
+    }
   }
 
-  state.context.number = num;
-
+  // Auto check-in / attach
   try {
-    const res = await api('/api/guest/session', {
+    const res = await api('/api/guest/checkin', {
       method: 'POST',
       body: JSON.stringify({
         hotel_id: HOTEL_ID,
-        guest_name: name || state.session?.guest_name,
-        guest_phone: phone || state.session?.guest_phone,
         mode: state.context.mode,
-        number: num
+        number: state.context.number,
+        device_id: DEVICE_ID
       })
     });
     state.session = res.session;
     state.token = res.token;
     saveLocal();
-    closeSheet('contextSheet');
-    renderContext();
-    startSSE();
-    refreshOrders();
-    toast('Welcome, ' + (state.session.guest_name || 'guest'));
+    return {
+      mode: res.created_new ? 'new' : 'joined',
+      session: res.session
+    };
   } catch (e) {
-    toast('Could not save: ' + e.message, 'error');
+    if (e.status === 403 || e.status === 409) {
+      return { mode: 'blocked', error: e.message };
+    }
+    throw e;
   }
-});
+}
+
+/* ============================================================
+   WELCOME SHEET (first-time onboarding)
+   ============================================================ */
+function showWelcomeSheet(session) {
+  const loc = locLabel(session.mode, session.room_number || session.table_number);
+  $('welcomeSheetBody').innerHTML = `
+    <div class="welcome-hero" style="padding-top:6px">
+      <div class="badge-icon">${ICON.check}</div>
+      <h1>${t('welcomeTitle')}</h1>
+      <p>${t('welcomeSubtitle')}</p>
+      <div class="loc-chip">${ICON.door}<span>${esc(loc)}</span></div>
+    </div>
+    <div class="field">
+      <label>${t('yourName')}</label>
+      <input class="input" id="wName" placeholder="${t('welcomeNamePlaceholder')}" autocomplete="name">
+    </div>
+    <div class="field">
+      <label>${t('phone')}</label>
+      <input class="input" id="wPhone" placeholder="0712 345 678" inputmode="tel" autocomplete="tel">
+    </div>
+    <button class="btn btn-primary btn-full btn-lg" id="wSave">${t('welcomeContinue')}</button>
+  `;
+  $('welcomeSheetBody').querySelector('#wSave').addEventListener('click', async () => {
+    const name  = $('wName').value.trim();
+    const phone = $('wPhone').value.trim();
+    if (!name)  return toast('Please enter your name', 'error');
+    if (!phone) return toast('Please enter your phone', 'error');
+
+    const btn = $('wSave');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> ' + t('checkingIn');
+
+    try {
+      const r = await api('/api/guest/update-session', {
+        method: 'POST',
+        body: JSON.stringify({ guest_name: name, guest_phone: phone })
+      });
+      state.session = r.session;
+      saveLocal();
+      closeSheet('welcomeSheet');
+      toast(t('checkedIn'));
+    } catch (e) {
+      btn.disabled = false; btn.textContent = t('welcomeContinue');
+      toast('Could not save: ' + e.message, 'error');
+    }
+  });
+  openSheet('welcomeSheet');
+}
+
+/* ============================================================
+   MAIN APP RENDER (only after successful check-in)
+   ============================================================ */
+function renderApp() {
+  $('bottomNav').classList.remove('hidden');
+  $('profileBtn').classList.remove('hidden');
+
+  $('main').innerHTML = `
+    <section class="context" id="contextBanner">
+      <div class="context-icon" id="contextIcon"></div>
+      <div class="context-body">
+        <div class="context-title" id="contextTitle"></div>
+        <div class="context-sub" id="contextSub">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="promo" id="promoBanner">
+      <b id="promoTitle"></b>
+      <p id="promoText"></p>
+    </div>
+
+    <div class="busy-banner" id="busyBanner" role="status" aria-live="polite">
+      ${ICON.clock}
+      <span id="busyText">${esc(t('kitchenBusy'))}</span>
+    </div>
+
+    <section id="view-home" class="view">
+      <div class="active-card" id="activeCard"></div>
+      <div class="quick" id="quickActions">
+        <button class="quick-btn" data-quick="waiter" aria-label="${t('callWaiter')}">
+          ${ICON.bell}
+          ${t('callWaiter')}
+        </button>
+        <button class="quick-btn" data-quick="water" aria-label="${t('water')}">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          ${t('water')}
+        </button>
+        <button class="quick-btn" data-quick="bill" aria-label="${t('requestBill')}">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg>
+          ${t('requestBill')}
+        </button>
+        <button class="quick-btn" data-quick="housekeeping" aria-label="${t('housekeeping')}">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M3 9v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9"/><path d="M3 9h18"/><path d="M9 14h6"/></svg>
+          ${t('housekeeping')}
+        </button>
+      </div>
+
+      <div class="section-head">
+        <h2 class="section-title">${ICON.flame} ${t('popularNow')}</h2>
+        <button class="section-link" data-tab="menu">${t('viewAll')}</button>
+      </div>
+      <div class="grid" id="popularGrid"></div>
+
+      <div class="section-head">
+        <h2 class="section-title">${ICON.store} ${t('nearbyVendors')}</h2>
+        <button class="section-link" data-tab="vendors">${t('seeAll')}</button>
+      </div>
+      <div class="grid" id="popularVendors"></div>
+    </section>
+
+    <section id="view-menu" class="view hidden">
+      <div class="search-bar">
+        ${ICON.search.replace('<svg','<svg class="search-icon"')}
+        <input type="search" id="menuSearch" placeholder="${t('searchPlaceholder')}" autocomplete="off">
+        <button class="search-clear" id="menuSearchClear" aria-label="Clear search">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div id="recentWrap"></div>
+      <div class="pills" id="menuPills"></div>
+      <div class="grid" id="menuGrid"></div>
+    </section>
+
+    <section id="view-services" class="view hidden">
+      <div class="grid" id="servicesGrid"></div>
+    </section>
+
+    <section id="view-vendors" class="view hidden">
+      <div class="pills" id="vendorPills"></div>
+      <div class="grid" id="vendorsGrid"></div>
+    </section>
+
+    <section id="view-orders" class="view hidden">
+      <div class="pills" id="orderPills">
+        <button class="pill on" data-ofilter="active">${t('active')}</button>
+        <button class="pill" data-ofilter="history">${t('history')}</button>
+      </div>
+      <div id="ordersList"></div>
+    </section>
+  `;
+
+  // Populate context banner
+  const isTable = state.context.mode === 'table';
+  const iconSvg = isTable
+    ? '<path d="M3 7h18"/><path d="M6 7v13"/><path d="M18 7v13"/><path d="M6 12h12"/>'
+    : '<path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/>';
+  $('contextIcon').innerHTML = `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${iconSvg}</svg>`;
+  $('contextTitle').textContent = locLabel(state.context.mode, state.context.number);
+  $('contextSub').querySelector('span').textContent = state.hotel?.name || '—';
+
+  // Wire everything up
+  wireMainUI();
+  renderPopular();
+  renderMenuPills();
+  renderMenu();
+  renderRecent();
+  renderServices();
+  renderVendorPills();
+  renderVendors();
+  renderCartBar();
+  renderActiveCard();
+  renderOrders();
+  renderBusyBanner();
+}
 
 /* ============================================================
    BOOTSTRAP
    ============================================================ */
 async function bootstrap() {
+  loadLocal();
+  updateOffline();
+
   if (!HOTEL_ID) {
-    document.getElementById('main').innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">${ICON.alert}</div>
-        <b>No hotel specified</b>
-        <p>Please scan the QR code from your room.</p>
-      </div>`;
-    return;
+    return showFatal("No hotel specified. Please scan the QR code from your room.");
   }
 
-  $('popularGrid').innerHTML = '<div class="skel"></div><div class="skel"></div>';
-  $('menuGrid').innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+  // Set context from URL
+  state.context.mode   = URL_MODE === 'table' ? 'table' : 'room';
+  state.context.number = URL_ROOM;
+
+  // Load hotel info first
+  $('main').innerHTML = `
+    <div class="welcome-hero">
+      <div class="badge-icon"><div class="spinner" style="width:24px;height:24px;border-width:3px"></div></div>
+      <h1>Loading…</h1>
+      <p>Just a moment.</p>
+    </div>`;
 
   try {
     const res = await api(`/api/public/hotel/${encodeURIComponent(HOTEL_ID)}/bootstrap`);
@@ -1726,65 +1942,50 @@ async function bootstrap() {
     state.services = res.services || [];
     state.vendors = res.vendors || [];
     state.departments = res.departments || [];
-
     state.kitchenBusy = !!(state.hotel.kitchen_busy || state.hotel.is_busy);
-    renderBusyBanner();
-
     document.title = state.hotel.name + ' · GuestHub';
-    $('brandLogo').textContent = (state.hotel.name || 'G')[0].toUpperCase();
-
-    if (state.hotel.promo_title) {
-      $('promoTitle').textContent = state.hotel.promo_title;
-      $('promoText').textContent = state.hotel.promo_text || '';
-      $('promoBanner').classList.add('show');
-    }
-
-    if (URL_ROOM && !state.context.number) {
-      state.context.mode = URL_MODE === 'table' ? 'table' : 'room';
-      state.context.number = URL_ROOM;
-    }
-    saveLocal();
-    renderContext();
-
-    if (state.token) {
-      try {
-        const me = await api('/api/guest/me');
-        state.session = me.session;
-        if (!state.session.guest_name || !state.session.guest_phone) openContextSheet();
-        else startSSE();
-      } catch {
-        state.token = null;
-        openContextSheet();
-      }
-    } else {
-      openContextSheet();
-    }
-
-    renderPopular();
-    renderMenuPills();
-    renderMenu();
-    renderRecent();
-    renderServices();
-    renderVendorPills();
-    renderVendors();
-    renderCartBar();
-    refreshOrders();
-    refreshBookings();
-    applyTranslations();
-
   } catch (e) {
-    $('main').innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">${ICON.alert}</div>
-        <b>Could not load hotel</b>
-        <p>${esc(e.message)}</p>
-        <button class="retry-btn" id="retryBootstrap">${ICON.refresh} Try again</button>
-      </div>`;
-    const retry = $('retryBootstrap');
-    if (retry) retry.addEventListener('click', () => { bootstrap(); });
+    return showFatal("Could not load hotel: " + e.message);
+  }
+
+  renderContext();
+
+  // If no room in URL, ask for it
+  if (!state.context.number) {
+    return showNoRoom();
+  }
+
+  // Attempt auto check-in
+  let result;
+  try {
+    result = await tryAutoCheckIn();
+  } catch (e) {
+    return showFatal("Check-in failed: " + e.message);
+  }
+
+  if (result.mode === 'blocked') {
+    return showCheckInRequired(result.error || t('hotelLocked'));
+  }
+
+  // Success — render the app
+  renderApp();
+  startSSE();
+  refreshOrders();
+  refreshBookings();
+
+  if (result.mode === 'new') {
+    // First time in this room — collect name/phone
+    showWelcomeSheet(state.session);
+  } else if (result.mode === 'joined') {
+    toast(`Welcome, ${state.session.guest_name || 'guest'}!`);
+  } else if (result.mode === 'existing') {
+    // Silent — already known
   }
 }
 
+/* ============================================================
+   BUSY BANNER
+   ============================================================ */
 function renderBusyBanner() {
   const banner = $('busyBanner');
   if (!banner) return;
@@ -1797,7 +1998,7 @@ function renderBusyBanner() {
 }
 
 /* ============================================================
-   RECENTLY ORDERED
+   RECENT ITEMS
    ============================================================ */
 function renderRecent() {
   const wrap = $('recentWrap');
@@ -1892,28 +2093,19 @@ function menuCard(item) {
   const qty = state.cart.find(l => l.id === item.id)?.qty || 0;
   const unavailable = item.available === false;
   const img = item.image_url || item.image;
-  const soldToday = item.sold_today;
-  const rating = item.rating;
 
   return `
     <div class="card clickable ${unavailable ? 'unavailable' : ''}" data-item-id="${esc(item.id)}">
       ${item.tags?.includes('popular') ? '<span class="badge-float">Popular</span>' : ''}
       <div class="card-icon ${img ? '' : 'no-img'}">
         ${img
-          ? `<img src="${esc(img)}" alt="${esc(item.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(item.icon || '🍽️')}',style:'font-size:26px'}))">`
+          ? `<img src="${esc(img)}" alt="${esc(item.name)}" loading="lazy">`
           : (item.icon || '🍽️')}
       </div>
       <div class="card-body">
         <div class="card-name">${esc(item.name)}</div>
         ${item.desc ? `<div class="card-desc">${esc(item.desc)}</div>` : ''}
         ${renderDietTags(item.dietary_tags)}
-        ${soldToday ? `
-          <div class="card-social">
-            ${ICON.star}<span>${soldToday} ordered today${rating ? ' · ' + rating.toFixed(1) + '★' : ''}</span>
-          </div>
-        ` : (rating ? `
-          <div class="card-social">${ICON.star}<span>${rating.toFixed(1)}★</span></div>
-        ` : '')}
         <div class="card-row">
           <span class="price">${money(item.price)}</span>
           <button class="add-btn ${qty > 0 ? 'has' : ''}"
@@ -1938,8 +2130,7 @@ function renderMenu() {
     list = list.filter(i =>
       (i.name || '').toLowerCase().includes(q) ||
       (i.desc || '').toLowerCase().includes(q) ||
-      (i.category || '').toLowerCase().includes(q) ||
-      (i.tags || []).some(t => String(t).toLowerCase().includes(q))
+      (i.category || '').toLowerCase().includes(q)
     );
   }
 
@@ -1969,18 +2160,6 @@ function attachMenuHandlers(root) {
   });
 }
 
-$('menuSearch').addEventListener('input', e => {
-  state.menuSearch = e.target.value;
-  $('menuSearchClear').classList.toggle('show', !!state.menuSearch);
-  renderMenu();
-});
-$('menuSearchClear').addEventListener('click', () => {
-  state.menuSearch = '';
-  $('menuSearch').value = '';
-  $('menuSearchClear').classList.remove('show');
-  renderMenu();
-});
-
 /* ============================================================
    ITEM DETAIL
    ============================================================ */
@@ -1993,8 +2172,6 @@ function openItemDetail(id) {
   const qty = line?.qty || 0;
   const notes = line?.notes || '';
   const img = item.image_url || item.image;
-  const soldToday = item.sold_today;
-  const rating = item.rating;
 
   $('itemSheetBody').innerHTML = `
     <div class="sheet-head">
@@ -2014,11 +2191,6 @@ function openItemDetail(id) {
       <div style="text-align:center;padding:20px 0;font-size:64px">${item.icon || '🍽️'}</div>
     `}
     ${renderDietTags(item.dietary_tags)}
-    ${soldToday ? `
-      <div class="card-social" style="justify-content:center;margin-top:8px">
-        ${ICON.star}<span>${soldToday} guests ordered this today${rating ? ' · ' + rating.toFixed(1) + '★' : ''}</span>
-      </div>
-    ` : ''}
     <div style="text-align:center;font-size:22px;font-weight:700;color:var(--brand-2);margin:16px 0">${money(item.price)}</div>
     <div class="field">
       <label>${t('specialRequests')}</label>
@@ -2055,7 +2227,7 @@ function openItemDetail(id) {
 }
 
 /* ============================================================
-   CART — department captured per line
+   CART
    ============================================================ */
 function addToCart(id) {
   const item = state.menu.find(i => String(i.id) === String(id));
@@ -2073,7 +2245,6 @@ function addToCart(id) {
   trackRecentItem(id);
   saveLocal();
   renderCartBar();
-  refreshCurrentView();
   toast(item.name + ' added');
 }
 
@@ -2092,10 +2263,8 @@ function setCartLine(id, qty, notes) {
   }
   saveLocal();
   renderCartBar();
-  refreshCurrentView();
 }
 
-function removeFromCart(id) { setCartLine(id, 0, ''); }
 function updateQty(id, delta) {
   const line = state.cart.find(l => l.id === id);
   if (!line) return;
@@ -2108,19 +2277,12 @@ function cartCount() { return state.cart.reduce((s, l) => s + l.qty, 0); }
 function renderCartBar() {
   const n = cartCount();
   const bar = $('cartBar');
-  if (!n) { bar.classList.remove('show'); updateBottomStack(); return; }
+  if (!bar) return;
+  if (!n) { bar.classList.remove('show'); return; }
   bar.classList.add('show');
   $('cartCount').textContent = n + ' ' + (n === 1 ? t('item') : t('items'));
   $('cartTotal').textContent = money(cartSubtotal());
-  updateBottomStack();
 }
-
-function updateBottomStack() {
-  const hasCart = cartCount() > 0;
-  const height = hasCart ? 148 : 84;
-  document.documentElement.style.setProperty('--bottom-stack', height + 'px');
-}
-window.addEventListener('resize', updateBottomStack);
 
 function renderCartSheet() {
   const box = $('cartItems');
@@ -2133,17 +2295,17 @@ function renderCartSheet() {
     <div class="cart-line">
       <div class="cart-line-icon">
         ${l.image
-          ? `<img src="${esc(l.image)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc(l.icon || '🍽️')}'}))">`
+          ? `<img src="${esc(l.image)}" alt="" loading="lazy">`
           : (l.icon || '🍽️')}
       </div>
       <div class="cart-line-body">
         <div class="cart-line-name">${esc(l.name)}</div>
         <div class="cart-line-price">${money(l.price)} each${l.notes ? ' · ' + esc(l.notes) : ''}</div>
       </div>
-      <div class="qty" role="group" aria-label="Quantity for ${esc(l.name)}">
-        <button data-qty-dec="${esc(l.id)}" aria-label="Decrease">${ICON.minus}</button>
+      <div class="qty" role="group">
+        <button data-qty-dec="${esc(l.id)}">${ICON.minus}</button>
         <span>${l.qty}</span>
-        <button data-qty-inc="${esc(l.id)}" aria-label="Increase">${ICON.plus}</button>
+        <button data-qty-inc="${esc(l.id)}">${ICON.plus}</button>
       </div>
     </div>
   `).join('');
@@ -2159,72 +2321,16 @@ function renderCartSheet() {
   `;
 
   $('cartSub').textContent = state.context.number
-    ? `${state.context.mode === 'table' ? t('table') : t('room')} ${state.context.number} · ${state.hotel?.name || ''}`
+    ? `${locLabel(state.context.mode, state.context.number)} · ${state.hotel?.name || ''}`
     : state.hotel?.name || '';
 }
 
-$('viewCartBtn').addEventListener('click', () => {
-  if (!state.cart.length) return;
-  renderCartSheet();
-  openSheet('cartSheet');
-});
-
-/* === PART 3 CONTINUES BELOW THIS LINE === */
-
-
-   
 /* ============================================================
-   Confirm order dialog
-   ============================================================ */
-function showConfirmOrder() {
-  if (!state.cart.length) return;
-  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
-
-  const sub = cartSubtotal();
-  const itemsHtml = state.cart.map(l => `
-    <div class="row">
-      <span>${l.qty}× ${esc(l.name)}</span>
-      <b>${money(l.price * l.qty)}</b>
-    </div>
-  `).join('');
-
-  $('confirmSheetBody').innerHTML = `
-    <div class="sheet-head">
-      <div>
-        <div class="sheet-title">${t('confirmOrder')}</div>
-        <div class="sheet-sub">${t('confirmPrompt')}</div>
-      </div>
-      <button class="sheet-close" data-close="confirmSheet" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-    </div>
-    <div class="confirm-list">
-      ${itemsHtml}
-      <div class="confirm-total"><span>${t('total')}</span><span>${money(sub)}</span></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-secondary btn-lg" id="confirmBack" style="flex:1">Back</button>
-      <button class="btn btn-primary btn-lg" id="confirmPlace" style="flex:2">${t('placeOrder')}</button>
-    </div>
-  `;
-
-  $('confirmSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('confirmSheet'));
-  $('confirmBack').addEventListener('click', () => closeSheet('confirmSheet'));
-  $('confirmPlace').addEventListener('click', () => {
-    closeSheet('confirmSheet');
-    closeSheet('cartSheet');
-    placeOrder();
-  });
-
-  openSheet('confirmSheet');
-}
-
-/* ============================================================
-   PLACE ORDER — computes primary department + sends it
+   PLACE ORDER
    ============================================================ */
 async function placeOrder() {
   if (!state.cart.length) return;
-  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+  if (!state.session) return toast('Not signed in', 'error');
 
   const subtotal = cartSubtotal();
   const items = state.cart.map(l => ({
@@ -2233,14 +2339,12 @@ async function placeOrder() {
     department: l.department || 'kitchen'
   }));
 
-  // Determine primary department (most items win; ties go to first)
   const deptCounts = {};
   state.cart.forEach(l => {
     const d = l.department || 'kitchen';
     deptCounts[d] = (deptCounts[d] || 0) + l.qty;
   });
-  const primaryDept = Object.entries(deptCounts)
-    .sort((a, b) => b[1] - a[1])[0]?.[0] || 'kitchen';
+  const primaryDept = Object.entries(deptCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'kitchen';
 
   const btn = $('placeOrderBtn');
   btn.disabled = true; btn.textContent = 'Placing…';
@@ -2271,14 +2375,10 @@ async function placeOrder() {
     state.cart = [];
     saveLocal();
     renderCartBar();
-    refreshCurrentView();
-
     state.orderModifyUntil = Date.now() + 2 * 60 * 1000;
     state.activeOrder = res.order;
-
     showSuccess(res.order);
     refreshOrders();
-
   } catch (e) {
     toast('Failed: ' + e.message, 'error');
   } finally {
@@ -2287,7 +2387,7 @@ async function placeOrder() {
 }
 
 /* ============================================================
-   SUCCESS + PAYMENT
+   SUCCESS
    ============================================================ */
 function showSuccess(order) {
   const p = state.hotel.payment || {};
@@ -2303,39 +2403,28 @@ function showSuccess(order) {
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-
     <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
       <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">${t('reference')}</div>
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(order.reference)}</div>
     </div>
-
     <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:16px">
       <span style="color:var(--text-2)">${t('total')}</span>
-      <strong style="color:var(--text)">${money(order.amount)}</strong>
+      <strong>${money(order.amount)}</strong>
     </div>
-
-    ${isConfigured ? renderPaymentHTML(order.amount, p) : `
-      <div class="pay-warn">${t('payAtReception')}</div>
-    `}
-
-    <button class="btn btn-primary btn-full btn-lg" id="trackBtn" style="margin-top:16px">
-      ${t('trackOrder')}
-    </button>
+    ${isConfigured ? renderPaymentHTML(order.amount, p) : `<div class="pay-warn">${t('payAtReception')}</div>`}
+    <button class="btn btn-primary btn-full btn-lg" id="trackBtn" style="margin-top:16px">${t('trackOrder')}</button>
   `;
-
   $('successSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('successSheet'));
-  $('trackBtn').addEventListener('click', () => {
+  $('successSheetBody').querySelector('#trackBtn').addEventListener('click', () => {
     closeSheet('successSheet');
     switchTab('orders');
   });
   attachCopyHandlers($('successSheetBody'));
-
   openSheet('successSheet');
 }
 
 function renderPaymentHTML(amount, p) {
   const channel = String(p.channel || 'paybill').toLowerCase();
-
   if (channel === 'paybill' && p.paybill_number) {
     const acc = p.paybill_account || '—';
     return `
@@ -2357,12 +2446,6 @@ function renderPaymentHTML(amount, p) {
             <span class="value">${money(amount)}</span>
           </div>
         </div>
-        <ol class="pay-steps">
-          <li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Pay Bill</b></li>
-          <li>Business no: <b>${esc(p.paybill_number)}</b></li>
-          <li>Account: <b>${esc(acc)}</b></li>
-          <li>Amount: <b>${amount}</b> · Enter PIN</li>
-        </ol>
       </div>`;
   }
   if (channel === 'till' && p.till_number) {
@@ -2380,11 +2463,6 @@ function renderPaymentHTML(amount, p) {
             <span class="value">${money(amount)}</span>
           </div>
         </div>
-        <ol class="pay-steps">
-          <li>Open M-Pesa → <b>Lipa na M-Pesa</b> → <b>Buy Goods</b></li>
-          <li>Till no: <b>${esc(p.till_number)}</b></li>
-          <li>Amount: <b>${amount}</b> · Enter PIN</li>
-        </ol>
       </div>`;
   }
   return `<div class="pay-warn">${t('payAtReception')}</div>`;
@@ -2404,7 +2482,7 @@ function attachCopyHandlers(root) {
 }
 
 /* ============================================================
-   SERVICES — department sent with request
+   SERVICES
    ============================================================ */
 function renderServices() {
   const list = state.services;
@@ -2444,8 +2522,7 @@ function renderServices() {
 
 async function requestService(id) {
   const svc = state.services.find(s => String(s.id) === String(id));
-  if (!svc) return;
-  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
+  if (!svc || !state.session) return;
 
   try {
     await api('/api/orders', {
@@ -2469,68 +2546,57 @@ async function requestService(id) {
     toast(svc.name + ' requested');
     refreshOrders();
     switchTab('orders');
-  } catch (e) {
-    toast(e.message, 'error');
-  }
+  } catch (e) { toast(e.message, 'error'); }
 }
 
-document.querySelectorAll('[data-quick]').forEach(b => {
-  b.addEventListener('click', async () => {
-    const type = b.dataset.quick;
-    if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
-    const titles = {
-      waiter: t('callWaiter'), water: t('water'),
-      bill: t('requestBill'), housekeeping: t('housekeeping')
-    };
-    const deptMap = {
-      waiter: 'front_desk',
-      water: 'front_desk',
-      bill: 'front_desk',
-      housekeeping: 'housekeeping'
-    };
-    const title = titles[type] || 'Request';
-    const department = deptMap[type] || 'front_desk';
-    try {
-      await api('/api/orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          hotel_id: HOTEL_ID,
-          mode: state.context.mode,
-          room_number: state.context.mode === 'room' ? state.context.number : null,
-          table_number: state.context.mode === 'table' ? state.context.number : null,
-          guest_name: state.session.guest_name,
-          guest_phone: state.session.guest_phone,
-          guest_session_id: state.session.id,
-          service_title: title,
-          category: 'services',
-          kind: 'hotel_service',
-          department,
-          amount: 0, total: 0
-        })
-      });
-      toast(title + ' requested');
-      refreshOrders();
-    } catch (e) { toast(e.message, 'error'); }
+function wireQuickActions() {
+  document.querySelectorAll('[data-quick]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const type = b.dataset.quick;
+      if (!state.session) return;
+      const titles = {
+        waiter: t('callWaiter'), water: t('water'),
+        bill: t('requestBill'), housekeeping: t('housekeeping')
+      };
+      const deptMap = { waiter: 'front_desk', water: 'front_desk', bill: 'front_desk', housekeeping: 'housekeeping' };
+      const title = titles[type] || 'Request';
+      const department = deptMap[type] || 'front_desk';
+      try {
+        await api('/api/orders', {
+          method: 'POST',
+          body: JSON.stringify({
+            hotel_id: HOTEL_ID,
+            mode: state.context.mode,
+            room_number: state.context.mode === 'room' ? state.context.number : null,
+            table_number: state.context.mode === 'table' ? state.context.number : null,
+            guest_name: state.session.guest_name,
+            guest_phone: state.session.guest_phone,
+            guest_session_id: state.session.id,
+            service_title: title,
+            category: 'services',
+            kind: 'hotel_service',
+            department,
+            amount: 0, total: 0
+          })
+        });
+        toast(title + ' requested');
+        refreshOrders();
+      } catch (e) { toast(e.message, 'error'); }
+    });
   });
-});
+}
 
 /* ============================================================
    VENDORS
    ============================================================ */
 const GROUP_LABELS = {
-  transport: 'Transport & Taxi',
-  tours: 'Tours & Safari',
-  wellness: 'Wellness & Spa',
-  media: 'Media & Concierge',
-  services: 'Other services'
+  transport: 'Transport & Taxi', tours: 'Tours & Safari',
+  wellness: 'Wellness & Spa', media: 'Media & Concierge', services: 'Other services'
 };
 
 function vendorCard(v) {
   const group = v.group || 'services';
-  const hours = v.hours || {};
-  const isOpen = isVendorOpen(hours);
   const gallery = (v.gallery || v.images || []).slice(0, 4);
-
   return `
     <div class="vendor-card" data-vendor-id="${esc(v.id)}">
       <div class="vendor-head">
@@ -2542,11 +2608,7 @@ function vendorCard(v) {
         <div class="vendor-info">
           <div class="vendor-name">${esc(v.name)}</div>
           <div class="vendor-meta">
-            ${v.rating > 0 ? `<span>${ICON.star.replace('<svg', '<svg style="width:11px;height:11px;display:inline;vertical-align:-1px"')} ${v.rating.toFixed(1)}</span>` : ''}
             <span>${esc(GROUP_LABELS[group] || group)}</span>
-            <span class="vendor-hours ${isOpen ? 'open' : 'closed'}">
-              ${ICON.clock}<span>${isOpen ? 'Open now' : 'Closed'}</span>
-            </span>
           </div>
         </div>
       </div>
@@ -2559,29 +2621,10 @@ function vendorCard(v) {
       <div class="vendor-services">
         ${(v.items || []).slice(0, 4).map(i => `<span class="vendor-tag">${esc(i.name)}</span>`).join('')}
       </div>
-      ${v.cancellation_policy ? `
-        <div style="font-size:11px;color:var(--text-3);margin-top:8px;display:flex;gap:6px;align-items:flex-start">
-          ${ICON.info}<span>${esc(v.cancellation_policy)}</span>
-        </div>
-      ` : ''}
       <div class="vendor-actions">
-        <button class="btn btn-primary" data-book="${esc(v.id)}" ${!isOpen ? 'disabled' : ''}>
-          ${ICON.calendar} ${isOpen ? t('book') : 'Closed'}
-        </button>
+        <button class="btn btn-primary" data-book="${esc(v.id)}">${ICON.calendar} ${t('book')}</button>
       </div>
     </div>`;
-}
-
-function isVendorOpen(hours) {
-  if (!hours || !hours.open || !hours.close) return true;
-  const now = new Date();
-  const [oh, om] = hours.open.split(':').map(Number);
-  const [ch, cm] = hours.close.split(':').map(Number);
-  const cur = now.getHours() * 60 + now.getMinutes();
-  const start = oh * 60 + (om || 0);
-  const end = ch * 60 + (cm || 0);
-  if (end < start) return cur >= start || cur < end;
-  return cur >= start && cur < end;
 }
 
 function vendorCategories() {
@@ -2616,7 +2659,6 @@ function renderVendors() {
     : `<div class="empty" style="grid-column:1/-1">
         <div class="empty-icon">${ICON.store}</div>
         <b>${t('noVendorsYet')}</b>
-        <p>${t('partnerVendorsWillAppear')}</p>
       </div>`;
 
   attachVendorHandlers($('vendorsGrid'));
@@ -2636,9 +2678,7 @@ function attachVendorHandlers(root) {
    ============================================================ */
 async function openBookingSheet(vendorId) {
   const vendor = state.vendors.find(v => String(v.id) === String(vendorId));
-  if (!vendor) return;
-  if (!state.session) { openContextSheet(); return toast('Set your room first', 'error'); }
-
+  if (!vendor || !state.session) return;
   const item = vendor.items?.[0];
   if (!item) return toast('Vendor has no services', 'error');
 
@@ -2655,7 +2695,6 @@ async function openBookingSheet(vendorId) {
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-
     <div class="field">
       <label>${t('service')}</label>
       <select class="input" id="bkService">
@@ -2664,7 +2703,6 @@ async function openBookingSheet(vendorId) {
         `).join('')}
       </select>
     </div>
-
     <div class="row-2">
       <div class="field">
         <label>${t('date')}</label>
@@ -2675,20 +2713,15 @@ async function openBookingSheet(vendorId) {
         <input type="number" class="input" id="bkGuests" min="1" max="20" value="1">
       </div>
     </div>
-
     <div class="field">
       <label>${t('availableSlots')}</label>
       <div id="bkSlots"><div class="empty" style="padding:20px"><b>Pick a date</b></div></div>
     </div>
-
     <div class="field">
       <label>${t('notes')}</label>
       <textarea class="textarea" id="bkNotes" placeholder="${esc(t('notesPlaceholder'))}"></textarea>
     </div>
-
-    <button class="btn btn-primary btn-full btn-lg" id="bkConfirm" disabled>
-      ${t('confirmBooking')}
-    </button>
+    <button class="btn btn-primary btn-full btn-lg" id="bkConfirm" disabled>${t('confirmBooking')}</button>
   `;
 
   $('bookingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('bookingSheet'));
@@ -2704,8 +2737,6 @@ async function openBookingSheet(vendorId) {
       const slots = res.slots || [];
       if (!slots.length) {
         $('bkSlots').innerHTML = '<div class="empty" style="padding:20px"><b>No slots this day</b><p>Try another date.</p></div>';
-        selectedSlot = null;
-        updateConfirm();
         return;
       }
       $('bkSlots').innerHTML = `
@@ -2718,16 +2749,12 @@ async function openBookingSheet(vendorId) {
           $('bkSlots').querySelectorAll('.slot').forEach(x => x.classList.remove('on'));
           b.classList.add('on');
           selectedSlot = b.dataset.slot;
-          updateConfirm();
+          $('bkConfirm').disabled = false;
         });
       });
     } catch (e) {
-      $('bkSlots').innerHTML = `<div class="empty" style="padding:20px"><b>Could not load</b><p>${esc(e.message)}</p></div>`;
+      $('bkSlots').innerHTML = `<div class="empty" style="padding:20px"><b>Could not load</b></div>`;
     }
-  }
-
-  function updateConfirm() {
-    $('bkConfirm').disabled = !selectedSlot;
   }
 
   $('bkDate').addEventListener('change', loadSlots);
@@ -2789,67 +2816,39 @@ function showBookingSuccess(booking) {
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
       </button>
     </div>
-
     <div style="background:var(--bg-subtle);border:1px dashed var(--border-2);border-radius:var(--r);padding:14px;text-align:center;margin-bottom:16px">
       <div style="font-size:10.5px;font-weight:600;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase">${t('reference')}</div>
       <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--brand);margin-top:4px">${esc(booking.reference)}</div>
     </div>
-
     <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
       <span style="color:var(--text-2)">${t('service')}</span><strong>${esc(booking.service_title)}</strong>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px">
+    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13.5px">
       <span style="color:var(--text-2)">When</span><strong>${new Date(booking.scheduled_for).toLocaleString()}</strong>
     </div>
-    <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13.5px">
-      <span style="color:var(--text-2)">${t('total')}</span><strong>${money(booking.amount)}</strong>
-    </div>
-
     <button class="btn btn-primary btn-full btn-lg" id="bookTrackBtn" style="margin-top:16px">View booking</button>
   `;
   $('successSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('successSheet'));
-  $('bookTrackBtn').addEventListener('click', () => { closeSheet('successSheet'); switchTab('orders'); });
+  $('successSheetBody').querySelector('#bookTrackBtn').addEventListener('click', () => {
+    closeSheet('successSheet'); switchTab('orders');
+  });
   openSheet('successSheet');
 }
 
 /* ============================================================
    ORDERS
    ============================================================ */
-$('orderPills').querySelectorAll('[data-ofilter]').forEach(b => {
-  b.addEventListener('click', () => {
-    state.orderFilter = b.dataset.ofilter;
-    $('orderPills').querySelectorAll('[data-ofilter]').forEach(x => x.classList.toggle('on', x === b));
-    renderOrders();
-  });
-});
-
-/* ============================================================
-   FIX 1: refreshOrders() — Filter by current guest session
-   ============================================================ */
 async function refreshOrders() {
-  // Guard: Do not proceed if there is no token or active session
-  if (!state.token || !state.session) {
-    return;
-  }
-
+  if (!state.token || !state.session) return;
   try {
-    const [orders, bookings] = await Promise.all([
-      api('/api/guest/orders').then(r => r.orders || []).catch(() => []),
-      api('/api/bookings/guest').then(r => r.bookings || []).catch(() => [])
-    ]);
-
-    // **FIX: Filter orders by the current session ID to prevent cross-guest data leakage**
-    state.orders = orders.filter(o => String(o.guest_session_id) === String(state.session.id));
-    
-    // **FIX: Filter bookings similarly**
-    state.bookings = bookings.filter(b => String(b.guest_session_id) === String(state.session.id));
-
+    const r = await api('/api/guest/orders');
+    state.orders = (r.orders || []).filter(o => String(o.guest_session_id) === String(state.session.id));
     pickActive();
     renderOrders();
     renderActiveCard();
     maybePromptRating();
   } catch (e) {
-    console.error("Failed to refresh orders:", e);
+    console.warn('refreshOrders:', e.message);
   }
 }
 
@@ -2857,9 +2856,7 @@ async function refreshBookings() {
   if (!state.token || !state.session) return;
   try {
     const r = await api('/api/bookings/guest');
-    const bookings = r.bookings || [];
-    // **FIX: Filter bookings by current session ID**
-    state.bookings = bookings.filter(b => String(b.guest_session_id) === String(state.session.id));
+    state.bookings = (r.bookings || []).filter(b => String(b.guest_session_id) === String(state.session.id));
     pickActive();
     renderOrders();
     renderActiveCard();
@@ -2867,7 +2864,6 @@ async function refreshBookings() {
 }
 
 function pickActive() {
-  // state.orders and state.bookings are already filtered by session in refreshOrders/refreshBookings
   state.activeOrder = state.orders.find(o => !['completed', 'cancelled'].includes(String(o.status || '').toLowerCase())) || null;
   state.activeBooking = state.bookings.find(b => !['completed', 'cancelled', 'declined'].includes(String(b.status || '').toLowerCase())) || null;
 
@@ -2881,6 +2877,7 @@ function pickActive() {
 
 function renderActiveCard() {
   const card = $('activeCard');
+  if (!card) return;
   const o = state.activeOrder;
   const b = state.activeBooking;
   const active = o || b;
@@ -2896,37 +2893,8 @@ function renderActiveCard() {
       const cls = i < idx ? 'done' : i === idx ? 'on' : '';
       return `<div class="seg ${cls}"></div>`;
     }).join('');
-
     const eta = formatETA(o);
-    const etaLine = eta ? `
-      <div class="active-eta">
-        ${ICON.clock}
-        <span>${t('arrivingIn')} <b>${eta}</b></span>
-      </div>
-    ` : '';
-
-    const staffLine = o.assigned_to ? `
-      <div class="active-staff">
-        <span class="avatar">${esc((o.assigned_to || 'S')[0].toUpperCase())}</span>
-        <span>${t('handledBy')} <strong>${esc(o.assigned_to)}</strong></span>
-      </div>
-    ` : '';
-
-    let modifyLine = '';
-    if (state.orderModifyUntil > Date.now() && String(o.status).toLowerCase() === 'pending') {
-      const remaining = Math.floor((state.orderModifyUntil - Date.now()) / 1000);
-      const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const ss = String(remaining % 60).padStart(2, '0');
-      modifyLine = `
-        <div class="modify-bar">
-          <span>${t('modifyWindow')} <span class="timer" id="modifyTimer">${mm}:${ss}</span></span>
-          <div class="actions">
-            <button data-modify-add>${t('addMore')}</button>
-            <button data-modify-cancel>${t('cancelOrder')}</button>
-          </div>
-        </div>
-      `;
-    }
+    const etaLine = eta ? `<div class="active-eta">${ICON.clock}<span>${t('arrivingIn')} <b>${eta}</b></span></div>` : '';
 
     card.innerHTML = `
       <div class="active-head">
@@ -2937,22 +2905,13 @@ function renderActiveCard() {
         ${statusBadge(o.status)}
       </div>
       ${etaLine}
-      ${staffLine}
       <div class="active-meta">
         <span>${ICON.clock} <strong>${relativeTime(o.created_at)}</strong></span>
         <span>${t('total')} <strong>${money(o.amount)}</strong></span>
       </div>
       <div class="progress">${progress}</div>
-      ${modifyLine}
     `;
-
-    const addBtn = card.querySelector('[data-modify-add]');
-    if (addBtn) addBtn.addEventListener('click', () => { switchTab('menu'); toast('Add more items, then place a new order'); });
-    const cancelBtn = card.querySelector('[data-modify-cancel]');
-    if (cancelBtn) cancelBtn.addEventListener('click', () => cancelOrder(o));
-
   } else {
-    const eta = formatETA(b);
     card.innerHTML = `
       <div class="active-head">
         <div>
@@ -2961,7 +2920,6 @@ function renderActiveCard() {
         </div>
         ${statusBadge(b.status)}
       </div>
-      ${eta ? `<div class="active-eta">${ICON.calendar}<span><b>${new Date(b.scheduled_for).toLocaleString()}</b></span></div>` : ''}
       <div class="active-meta">
         <span>${ICON.calendar} <strong>${new Date(b.scheduled_for).toLocaleString()}</strong></span>
         <span>${t('total')} <strong>${money(b.amount)}</strong></span>
@@ -2970,143 +2928,9 @@ function renderActiveCard() {
   }
 }
 
-async function cancelOrder(order) {
-  if (!confirm('Cancel this order? This cannot be undone.')) return;
-  try {
-    await api(`/api/orders/${encodeURIComponent(order.id)}/cancel`, { method: 'POST' });
-    state.orderModifyUntil = 0;
-    toast('Order cancelled');
-    refreshOrders();
-  } catch (e) {
-    toast('Could not cancel: ' + e.message, 'error');
-  }
-}
-
-setInterval(() => {
-  const timer = document.getElementById('modifyTimer');
-  if (!timer) return;
-  const remaining = Math.floor((state.orderModifyUntil - Date.now()) / 1000);
-  if (remaining <= 0) {
-    renderActiveCard();
-    return;
-  }
-  const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
-  const ss = String(remaining % 60).padStart(2, '0');
-  timer.textContent = `${mm}:${ss}`;
-}, 1000);
-
-/* ============================================================
-   RATING & TIP
-   ============================================================ */
-function maybePromptRating() {
-  // Only prompt for orders that belong to the current session
-  const completed = state.orders.filter(o =>
-    String(o.status || '').toLowerCase() === 'completed' &&
-    !state.ratings[o.id]
-  );
-  if (!completed.length) return;
-  const order = completed[0];
-  if (document.querySelector('.sheet.show')) return;
-  showRatingPrompt(order);
-}
-
-function showRatingPrompt(order) {
-  let selectedStars = 0;
-  let selectedTip = 0;
-  const subtotal = Number(order.amount) || 0;
-  const tipOptions = [
-    { pct: 0, label: t('noTip') },
-    { pct: 5, label: '5%' },
-    { pct: 10, label: '10%' }
-  ];
-
-  $('ratingSheetBody').innerHTML = `
-    <div class="sheet-head">
-      <div>
-        <div class="sheet-title">${t('rateYourOrder')}</div>
-        <div class="sheet-sub">${esc(order.service_title || '')} · ${esc(order.reference)}</div>
-      </div>
-      <button class="sheet-close" data-close="ratingSheet" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-    </div>
-
-    <div style="text-align:center;font-weight:600;color:var(--text-2);font-size:13.5px">${t('howWasIt')}</div>
-    <div class="rating-stars" role="radiogroup" aria-label="Rating">
-      ${[1,2,3,4,5].map(n => `
-        <button class="rating-star" data-star="${n}" role="radio" aria-label="${n} star${n > 1 ? 's' : ''}">
-          ${ICON.starOutline}
-        </button>
-      `).join('')}
-    </div>
-
-    <div class="field">
-      <label>${t('tip')}</label>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">${t('tipPrompt')}</div>
-      <div class="tip-grid" id="tipGrid">
-        ${tipOptions.map(o => `
-          <button class="tip-btn ${o.pct === 0 ? 'on' : ''}" data-tip="${o.pct}">
-            ${o.label}
-            ${o.pct > 0 ? `<small>${money(Math.round(subtotal * o.pct / 100))}</small>` : ''}
-          </button>
-        `).join('')}
-      </div>
-    </div>
-
-    <div style="display:flex;gap:8px;margin-top:16px">
-      <button class="btn btn-secondary btn-lg" id="ratingSkip" style="flex:1">${t('skip')}</button>
-      <button class="btn btn-primary btn-lg" id="ratingSubmit" style="flex:2">${t('submit')}</button>
-    </div>
-  `;
-
-  const stars = $('ratingSheetBody').querySelectorAll('[data-star]');
-  stars.forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedStars = Number(btn.dataset.star);
-      stars.forEach(s => {
-        const on = Number(s.dataset.star) <= selectedStars;
-        s.classList.toggle('on', on);
-        s.innerHTML = on ? ICON.star : ICON.starOutline;
-      });
-    });
-  });
-
-  $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedTip = Number(btn.dataset.tip);
-      $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(b =>
-        b.classList.toggle('on', b === btn));
-    });
-  });
-
-  $('ratingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('ratingSheet'));
-  $('ratingSkip').addEventListener('click', () => {
-    state.ratings[order.id] = { skipped: true, at: Date.now() };
-    saveLocal();
-    closeSheet('ratingSheet');
-  });
-  $('ratingSubmit').addEventListener('click', async () => {
-    if (!selectedStars) return toast('Pick a rating first', 'error');
-    const tipAmount = selectedTip > 0 ? Math.round(subtotal * selectedTip / 100) : 0;
-    state.ratings[order.id] = { stars: selectedStars, tip: tipAmount, at: Date.now() };
-    saveLocal();
-    closeSheet('ratingSheet');
-    try {
-      await api(`/api/orders/${encodeURIComponent(order.id)}/rate`, {
-        method: 'POST',
-        body: JSON.stringify({ stars: selectedStars, tip: tipAmount })
-      });
-      toast('Thank you!');
-    } catch {
-      toast('Rating saved');
-    }
-  });
-
-  openSheet('ratingSheet');
-}
-
 function renderOrders() {
   const box = $('ordersList');
+  if (!box) return;
   const filter = state.orderFilter;
 
   let list = [];
@@ -3132,25 +2956,15 @@ function renderOrders() {
     return;
   }
 
-  box.innerHTML = list.map(x => orderRow(x)).join('');
-
-  box.querySelectorAll('[data-order-again]').forEach(btn => {
-    btn.addEventListener('click', () => reorder(btn.dataset.orderAgain));
-  });
+  box.innerHTML = list.map(orderRow).join('');
 }
 
 function orderRow(x) {
   const isOrder = x.type === 'order';
   const when = isOrder ? x.created_at : x.scheduled_for;
-  const canReorder = isOrder && String(x.status).toLowerCase() === 'completed' && x.items?.length;
-
   return `
     <div class="card" style="margin-bottom:10px">
-      <div class="card-icon">
-        ${x.image_url || x.image
-          ? `<img src="${esc(x.image_url || x.image)}" alt="" loading="lazy">`
-          : (isOrder ? '🍽️' : '📅')}
-      </div>
+      <div class="card-icon">${isOrder ? '🍽️' : '📅'}</div>
       <div class="card-body">
         <div class="card-name">${esc(x.service_title || 'Request')}</div>
         <div class="card-desc">${esc(x.reference)} · ${new Date(when).toLocaleString()}</div>
@@ -3158,51 +2972,105 @@ function orderRow(x) {
           <span class="price">${money(x.amount)}</span>
           ${statusBadge(x.status)}
         </div>
-        ${canReorder ? `
-          <button class="btn btn-secondary btn-sm" data-order-again="${esc(x.id)}" style="margin-top:8px;width:100%">
-            ${ICON.refresh} ${t('orderAgain')}
-          </button>
-        ` : ''}
       </div>
     </div>`;
 }
 
-function reorder(orderId) {
-  const order = state.orders.find(o => String(o.id) === String(orderId));
-  if (!order || !order.items?.length) return;
+/* ============================================================
+   RATING
+   ============================================================ */
+function maybePromptRating() {
+  const completed = state.orders.filter(o =>
+    String(o.status || '').toLowerCase() === 'completed' && !state.ratings[o.id]
+  );
+  if (!completed.length) return;
+  if (document.querySelector('.sheet.show')) return;
+  showRatingPrompt(completed[0]);
+}
 
-  const stillAvailable = order.items.filter(i => {
-    const menuItem = state.menu.find(m => String(m.id) === String(i.id));
-    return menuItem && menuItem.available !== false;
+function showRatingPrompt(order) {
+  let selectedStars = 0, selectedTip = 0;
+  const subtotal = Number(order.amount) || 0;
+  const tips = [{ pct: 0, label: t('noTip') }, { pct: 5, label: '5%' }, { pct: 10, label: '10%' }];
+
+  $('ratingSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${t('rateYourOrder')}</div>
+        <div class="sheet-sub">${esc(order.service_title || '')} · ${esc(order.reference)}</div>
+      </div>
+      <button class="sheet-close" data-close="ratingSheet" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div style="text-align:center;font-weight:600;color:var(--text-2);font-size:13.5px">${t('howWasIt')}</div>
+    <div class="rating-stars" role="radiogroup">
+      ${[1,2,3,4,5].map(n => `<button class="rating-star" data-star="${n}">${ICON.starOutline}</button>`).join('')}
+    </div>
+    <div class="field">
+      <label>${t('tip')}</label>
+      <div class="tip-grid">
+        ${tips.map(o => `
+          <button class="tip-btn ${o.pct === 0 ? 'on' : ''}" data-tip="${o.pct}">
+            ${o.label}
+            ${o.pct > 0 ? `<small>${money(Math.round(subtotal * o.pct / 100))}</small>` : ''}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-secondary btn-lg" id="ratingSkip" style="flex:1">${t('skip')}</button>
+      <button class="btn btn-primary btn-lg" id="ratingSubmit" style="flex:2">${t('submit')}</button>
+    </div>
+  `;
+
+  const stars = $('ratingSheetBody').querySelectorAll('[data-star]');
+  stars.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedStars = Number(btn.dataset.star);
+      stars.forEach(s => {
+        const on = Number(s.dataset.star) <= selectedStars;
+        s.classList.toggle('on', on);
+        s.innerHTML = on ? ICON.star : ICON.starOutline;
+      });
+    });
   });
 
-  if (!stillAvailable.length) return toast('Items no longer available', 'error');
-
-  const missing = order.items.length - stillAvailable.length;
-
-  state.cart = stillAvailable.map(i => {
-    const menuItem = state.menu.find(m => String(m.id) === String(i.id));
-    return {
-      id: i.id, name: i.name, price: Number(menuItem?.price ?? i.price) || 0,
-      icon: menuItem?.icon || '🍽️',
-      image: menuItem?.image_url || menuItem?.image || null,
-      qty: i.qty, notes: i.notes || '',
-      department: menuItem?.department || i.department || 'kitchen'
-    };
+  $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedTip = Number(btn.dataset.tip);
+      $('ratingSheetBody').querySelectorAll('[data-tip]').forEach(b => b.classList.toggle('on', b === btn));
+    });
   });
-  saveLocal();
-  renderCartBar();
-  refreshCurrentView();
 
-  if (missing > 0) toast(`Added ${stillAvailable.length} items (${missing} unavailable)`);
-  else toast('Added to cart');
+  $('ratingSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('ratingSheet'));
+  $('ratingSheetBody').querySelector('#ratingSkip').addEventListener('click', () => {
+    state.ratings[order.id] = { skipped: true, at: Date.now() };
+    saveLocal();
+    closeSheet('ratingSheet');
+  });
+  $('ratingSheetBody').querySelector('#ratingSubmit').addEventListener('click', async () => {
+    if (!selectedStars) return toast('Pick a rating first', 'error');
+    const tipAmount = selectedTip > 0 ? Math.round(subtotal * selectedTip / 100) : 0;
+    state.ratings[order.id] = { stars: selectedStars, tip: tipAmount, at: Date.now() };
+    saveLocal();
+    closeSheet('ratingSheet');
+    try {
+      await api(`/api/orders/${encodeURIComponent(order.id)}/rate`, {
+        method: 'POST',
+        body: JSON.stringify({ stars: selectedStars, tip: tipAmount })
+      });
+      toast('Thank you!');
+    } catch {
+      toast('Rating saved');
+    }
+  });
 
-  renderCartSheet();
-  openSheet('cartSheet');
+  openSheet('ratingSheet');
 }
 
 /* ============================================================
-   TABS
+   TABS + UI WIRING
    ============================================================ */
 function switchTab(name) {
   state.tab = name;
@@ -3214,21 +3082,138 @@ function switchTab(name) {
   if (name === 'orders') { refreshOrders(); refreshBookings(); }
 }
 
-document.querySelectorAll('.nav-btn').forEach(b => {
-  b.addEventListener('click', () => switchTab(b.dataset.tab));
-});
-document.querySelectorAll('[data-tab]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    switchTab(a.dataset.tab);
+function wireMainUI() {
+  // Bottom nav
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.addEventListener('click', () => switchTab(b.dataset.tab));
   });
-});
+  document.querySelectorAll('[data-tab]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); switchTab(a.dataset.tab); });
+  });
 
-function refreshCurrentView() {
-  if (state.tab === 'home') renderPopular();
-  else if (state.tab === 'menu') renderMenu();
-  else if (state.tab === 'services') renderServices();
-  else if (state.tab === 'vendors') renderVendors();
+  // Search
+  $('menuSearch').addEventListener('input', e => {
+    state.menuSearch = e.target.value;
+    $('menuSearchClear').classList.toggle('show', !!state.menuSearch);
+    renderMenu();
+  });
+  $('menuSearchClear').addEventListener('click', () => {
+    state.menuSearch = '';
+    $('menuSearch').value = '';
+    $('menuSearchClear').classList.remove('show');
+    renderMenu();
+  });
+
+  // Order filter pills
+  $('orderPills').querySelectorAll('[data-ofilter]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.orderFilter = b.dataset.ofilter;
+      $('orderPills').querySelectorAll('[data-ofilter]').forEach(x => x.classList.toggle('on', x === b));
+      renderOrders();
+    });
+  });
+
+  // Cart view
+  $('viewCartBtn').addEventListener('click', () => {
+    if (!state.cart.length) return;
+    renderCartSheet();
+    openSheet('cartSheet');
+  });
+
+  // Place order
+  $('placeOrderBtn').addEventListener('click', () => {
+    if (!state.cart.length) return;
+    closeSheet('cartSheet');
+    placeOrder();
+  });
+
+  // Quick actions
+  wireQuickActions();
+
+  // Header buttons
+  $('langBtn').addEventListener('click', () => openSheet('langSheet'));
+  $('profileBtn').addEventListener('click', openProfileSheet);
+
+  // Language picker
+  document.querySelectorAll('[data-lang]').forEach(b => {
+    b.addEventListener('click', () => {
+      const lang = b.dataset.lang;
+      if (!I18N[lang]) return toast('Language not available', 'error');
+      state.lang = lang;
+      saveLocal();
+      closeSheet('langSheet');
+      // Re-render everything
+      renderApp();
+      toast('Language updated');
+    });
+  });
+}
+
+/* ============================================================
+   PROFILE SHEET
+   ============================================================ */
+function openProfileSheet() {
+  if (!state.session) return;
+  const s = state.session;
+  const loc = locLabel(s.mode, s.room_number || s.table_number);
+
+  $('profileSheetBody').innerHTML = `
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title">${t('yourProfile')}</div>
+        <div class="sheet-sub">${t('updateAnytime')}</div>
+      </div>
+      <button class="sheet-close" data-close="profileSheet" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+    <div class="field">
+      <label>${t('name')}</label>
+      <input class="input" id="pName" value="${esc(s.guest_name || '')}" placeholder="${t('welcomeNamePlaceholder')}">
+    </div>
+    <div class="field">
+      <label>${t('phone')}</label>
+      <input class="input" id="pPhone" value="${esc(s.guest_phone || '')}" inputmode="tel" placeholder="0712 345 678">
+    </div>
+    <div class="field">
+      <label>${t('currentLocation')}</label>
+      <input class="input" value="${esc(loc)} · ${esc(state.hotel?.name || '')}" readonly>
+    </div>
+    <button class="btn btn-primary btn-full" id="pSave">${t('saveChanges')}</button>
+    <button class="btn btn-danger btn-full" id="pCheckout" style="margin-top:8px">
+      ${ICON.logout} ${t('endStay')}
+    </button>
+  `;
+
+  $('profileSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('profileSheet'));
+
+  $('profileSheetBody').querySelector('#pSave').addEventListener('click', async () => {
+    const name = $('pName').value.trim();
+    const phone = $('pPhone').value.trim();
+    if (!name) return toast('Name required', 'error');
+    if (!phone) return toast('Phone required', 'error');
+    try {
+      const r = await api('/api/guest/update-session', {
+        method: 'POST',
+        body: JSON.stringify({ guest_name: name, guest_phone: phone })
+      });
+      state.session = r.session;
+      saveLocal();
+      closeSheet('profileSheet');
+      toast(t('saved'));
+    } catch (e) { toast(e.message, 'error'); }
+  });
+
+  $('profileSheetBody').querySelector('#pCheckout').addEventListener('click', async () => {
+    if (!confirm(t('endStayConfirm'))) return;
+    try { await api('/api/guest/checkout', { method: 'POST' }); } catch {}
+    clearLocalSession();
+    closeSheet('profileSheet');
+    toast(t('checkedOut'));
+    setTimeout(() => location.reload(), 800);
+  });
+
+  openSheet('profileSheet');
 }
 
 /* ============================================================
@@ -3236,41 +3221,30 @@ function refreshCurrentView() {
    ============================================================ */
 function startSSE() {
   if (state.sse) try { state.sse.close(); } catch {}
-  if (!state.token || !state.session) return; // Do not start SSE without a session
+  if (!state.token || !state.session) return;
 
   const es = new EventSource(`/api/stream/guest/${encodeURIComponent(state.token)}`);
   state.sse = es;
 
-  /* ============================================================
-     FIX 2: SSE orders listener — Filter incoming data by session
-     ============================================================ */
   es.addEventListener('orders', e => {
     try {
-      const incomingOrders = JSON.parse(e.data) || [];
-      // **FIX: Only update state with orders for the current guest**
-      state.orders = incomingOrders.filter(o => String(o.guest_session_id) === String(state.session.id));
-      
+      const incoming = JSON.parse(e.data) || [];
+      state.orders = incoming.filter(o => String(o.guest_session_id) === String(state.session.id));
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
       maybePromptRating();
-    } catch (err) {
-      console.error("Failed to process SSE orders:", err);
-    }
+    } catch {}
   });
 
   es.addEventListener('bookings', e => {
     try {
-      const incomingBookings = JSON.parse(e.data) || [];
-      // **FIX: Only update state with bookings for the current guest**
-      state.bookings = incomingBookings.filter(b => String(b.guest_session_id) === String(state.session.id));
-      
+      const incoming = JSON.parse(e.data) || [];
+      state.bookings = incoming.filter(b => String(b.guest_session_id) === String(state.session.id));
       pickActive();
       renderActiveCard();
       if (state.tab === 'orders') renderOrders();
-    } catch (err) {
-      console.error("Failed to process SSE bookings:", err);
-    }
+    } catch {}
   });
 
   es.addEventListener('kitchen', e => {
@@ -3292,170 +3266,11 @@ function startSSE() {
 }
 
 /* ============================================================
-   WEB PUSH
-   ============================================================ */
-async function registerPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    return toast('Notifications not supported on this browser', 'error');
-  }
-  if (!state.token) return toast('Set your room first', 'error');
-
-  try {
-    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-    await navigator.serviceWorker.ready;
-
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') return toast('Notifications blocked in browser settings', 'error');
-
-    let vk;
-    try {
-      vk = await api('/api/guest/vapid-public');
-    } catch (e) {
-      return toast('Push not configured by hotel', 'error');
-    }
-    if (!vk.key) return toast('Push not configured', 'error');
-
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(vk.key)
-    });
-
-    await api('/api/guest/push-subscribe', {
-      method: 'POST',
-      body: JSON.stringify(sub.toJSON())
-    });
-
-    toast('Notifications enabled ✓');
-  } catch (e) {
-    console.error('Push registration failed:', e);
-    toast('Could not enable: ' + e.message, 'error');
-  }
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const raw = atob(base64);
-  const arr = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-  return arr;
-}
-
-/* ============================================================
-   HEADER ACTIONS
-   ============================================================ */
-$('langBtn').addEventListener('click', () => openSheet('langSheet'));
-
-document.querySelectorAll('[data-lang]').forEach(b => {
-  b.addEventListener('click', () => {
-    const lang = b.dataset.lang;
-    if (!I18N[lang]) return toast('Language not available', 'error');
-    state.lang = lang;
-    saveLocal();
-    applyTranslations();
-    renderContext();
-    renderMenuPills();
-    renderMenu();
-    renderServices();
-    renderVendorPills();
-    renderVendors();
-    renderPopular();
-    renderRecent();
-    renderCartBar();
-    renderOrders();
-    renderActiveCard();
-    renderBusyBanner();
-    updateOffline();
-    closeSheet('langSheet');
-    toast('Language: ' + (lang === 'en' ? 'English' : lang === 'sw' ? 'Kiswahili' : 'Français'));
-  });
-});
-
-$('profileBtn').addEventListener('click', () => {
-  if (!state.session) return openContextSheet();
-  $('profileSheetBody').innerHTML = `
-    <div class="sheet-head">
-      <div>
-        <div class="sheet-title">${t('yourProfile')}</div>
-        <div class="sheet-sub">${t('updateAnytime')}</div>
-      </div>
-      <button class="sheet-close" data-close="profileSheet" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      </button>
-    </div>
-    <div class="field"><label>${t('name')}</label><input class="input" value="${esc(state.session.guest_name || '')}" readonly></div>
-    <div class="field"><label>${t('phone')}</label><input class="input" value="${esc(state.session.guest_phone || '')}" readonly></div>
-    <div class="field"><label>${t('hotel')}</label><input class="input" value="${esc(state.hotel?.name || '')}" readonly></div>
-    <div class="field"><label>${t('currentLocation')}</label><input class="input" value="${esc(state.context.mode === 'table' ? t('table') : t('room'))} ${esc(state.context.number || '')}" readonly></div>
-    <button class="btn btn-primary btn-full" id="editContext">${t('changeLocation')}</button>
-    <button class="btn btn-secondary btn-full" id="pushBtn" style="margin-top:8px">Enable notifications</button>
-  `;
-  $('profileSheetBody').querySelector('.sheet-close').addEventListener('click', () => closeSheet('profileSheet'));
-  $('profileSheetBody').querySelector('#editContext').addEventListener('click', () => {
-    closeSheet('profileSheet');
-    openContextSheet();
-  });
-  $('profileSheetBody').querySelector('#pushBtn').addEventListener('click', async () => {
-    await registerPush();
-  });
-  openSheet('profileSheet');
-});
-
-/* ============================================================
-   PULL TO REFRESH
-   ============================================================ */
-(function initPTR() {
-  let startY = 0, pulling = false;
-  const indicator = $('ptrIndicator');
-  const threshold = 80;
-
-  window.addEventListener('touchstart', e => {
-    if (window.scrollY > 5) return;
-    if (document.querySelector('.sheet.show')) return;
-    startY = e.touches[0].clientY;
-    pulling = true;
-  }, { passive: true });
-
-  window.addEventListener('touchmove', e => {
-    if (!pulling) return;
-    const dy = e.touches[0].clientY - startY;
-    if (dy > 20 && dy < 200) {
-      indicator.classList.add('show');
-      indicator.style.transform = `translate(-50%, ${Math.min(dy * 0.5, 60)}px)`;
-    }
-  }, { passive: true });
-
-  window.addEventListener('touchend', async e => {
-    if (!pulling) return;
-    pulling = false;
-    const dy = e.changedTouches[0].clientY - startY;
-    if (dy > threshold) {
-      indicator.style.transform = '';
-      indicator.classList.add('spinning');
-      indicator.querySelector('span').textContent = 'Refreshing…';
-      await Promise.all([
-        refreshOrders().catch(() => {}),
-        refreshBookings().catch(() => {})
-      ]);
-      setTimeout(() => {
-        indicator.classList.remove('show', 'spinning');
-        indicator.querySelector('span').textContent = 'Pull to refresh';
-      }, 600);
-    } else {
-      indicator.classList.remove('show');
-      indicator.style.transform = '';
-    }
-  }, { passive: true });
-})();
-
-/* ============================================================
    INIT
    ============================================================ */
 function init() {
   loadLocal();
-  applyTranslations();
-  renderContext();
-  updateBottomStack();
+  updateOffline();
   bootstrap();
   setInterval(renderActiveCard, 30000);
 }
