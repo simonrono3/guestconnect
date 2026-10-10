@@ -1,9 +1,9 @@
 // ============================================================
-// GuestHub V2.2 — Guest Love Edition + Department Routing
-// Adds: web push, ETA, kitchen state, cancel window, rate+tip,
-// SSE kitchen channel, extended bootstrap, vendor hours/gallery,
-// dietary tags, item availability, item images,
-// and department routing with WhatsApp notification.
+// GuestHub V2.3 — Stay-Based Sessions Edition
+// Adds: auto guest check-in via QR, device tracking, staff
+// check-in, stay lifecycle (active → checked_out/expired),
+// self-checkout, hotel auto-checkin config, strict per-room
+// session isolation.
 // ============================================================
 
 import express from "express";
@@ -64,13 +64,6 @@ if (SUPABASE_URL && SUPABASE_SERVICE) {
   console.error("❌ Supabase client NOT created — missing SUPABASE_URL or SUPABASE_SERVICE_KEY");
 }
 
-/*const app = express();
-app.disable("x-powered-by");
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
-app.use(compression());
-app.use(express.json({ limit: "2mb" }));
-app.use(express.urlencoded({ extended: true, limit: "2mb" }));*/
-
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
@@ -78,8 +71,6 @@ app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false 
 app.use(compression());
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true, limit: "2mb" }));
-
-
 
 const ALLOWED_ORIGINS = [
   "https://guestconnect-ap2q.onrender.com",
@@ -106,7 +97,7 @@ app.get("/healthz", (req, res) => res.status(200).send("ok"));
 app.get("/api/health", (req, res) =>
   res.json({
     ok: true,
-    os: "GuestHub V2.2",
+    os: "GuestHub V2.3",
     time: new Date().toISOString(),
     supabase: !!supa,
     push: PUSH_ENABLED,
@@ -236,6 +227,44 @@ function requireGuest(req, res, next) {
   const t = verifyToken(req);
   if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
   req.user = t; next();
+}
+
+/* ============================================================
+   STAY LIFECYCLE HELPERS
+   ============================================================ */
+
+// Verify a guest session id is currently active. Returns the row or null.
+async function getActiveGuestSession(sessionId) {
+  if (!sessionId || !isUUID(sessionId)) return null;
+  const { data } = await supa
+    .from("guest_sessions")
+    .select("id, hotel_id, status, mode, room_number, table_number, guest_name, guest_phone")
+    .eq("id", sessionId)
+    .maybeSingle();
+  if (!data) return null;
+  if ((data.status || "active") !== "active") return null;
+  return data;
+}
+
+// Auto-expire idle sessions for a hotel (safety net).
+async function expireIdleSessions(hotelId) {
+  if (!hotelId || !supa) return;
+  const now = Date.now();
+  const roomCutoff  = new Date(now - 30 * 24 * 3600 * 1000).toISOString();
+  const tableCutoff = new Date(now -  6 * 3600 * 1000).toISOString();
+  try {
+    await supa.from("guest_sessions")
+      .update({ status: "expired", check_out_at: new Date().toISOString(), checked_out_by: "system" })
+      .eq("hotel_id", hotelId).eq("status", "active").eq("mode", "room")
+      .lt("last_activity_at", roomCutoff);
+
+    await supa.from("guest_sessions")
+      .update({ status: "expired", check_out_at: new Date().toISOString(), checked_out_by: "system" })
+      .eq("hotel_id", hotelId).eq("status", "active").eq("mode", "table")
+      .lt("last_activity_at", tableCutoff);
+  } catch (e) {
+    console.warn("⚠️ expireIdleSessions:", e.message);
+  }
 }
 
 /* ============================================================
@@ -1544,6 +1573,101 @@ app.patch("/api/gm/bookings/:id", requireHotel, requireSupabase, async (req, res
 });
 
 /* ============================================================
+   GM — STAYS (staff check-in / check-out / active list)
+   ============================================================ */
+app.post("/api/gm/sessions/checkin", requireHotel, requireSupabase, async (req, res) => {
+  try {
+    const { room_number, table_number, mode, guest_name, guest_phone, notes } = req.body;
+    const isTable = String(mode || "room").toLowerCase() === "table";
+    const loc = cleanText(isTable ? table_number : room_number, 30);
+    if (!loc) return sendError(res, 400, isTable ? "table_number required" : "room_number required");
+
+    const name = cleanText(guest_name, 100);
+    const phone = cleanPhone(guest_phone);
+    if (!name) return sendError(res, 400, "Guest name required");
+    if (!phone) return sendError(res, 400, "Guest phone required");
+
+    const hid = req.user.hotel_id;
+    const now = new Date().toISOString();
+
+    // Close any active session for this exact location (re-check-in)
+    await supa.from("guest_sessions")
+      .update({ status: "checked_out", check_out_at: now, checked_out_by: "hotel" })
+      .eq("hotel_id", hid)
+      .eq(isTable ? "table_number" : "room_number", loc)
+      .eq("status", "active");
+
+    const payload = {
+      hotel_id: hid,
+      mode: isTable ? "table" : "room",
+      room_number: isTable ? null : loc,
+      table_number: isTable ? loc : null,
+      guest_name: name,
+      guest_phone: phone,
+      language: "en",
+      status: "active",
+      check_in_at: now,
+      last_seen_at: now,
+      last_activity_at: now,
+      checked_in_by: req.user.email || req.user.hotel_id,
+      notes: cleanText(notes, 300) || null,
+      device_ids: []
+    };
+
+    const { data, error } = await supa
+      .from("guest_sessions")
+      .insert([payload])
+      .select()
+      .single();
+
+    if (error) {
+      if (error.code === "23505") return sendError(res, 409, "That room already has an active guest");
+      return sendError(res, 500, error.message);
+    }
+
+    const attachUrl =
+      `${req.protocol}://${req.get("host")}/?hotel=${encodeURIComponent(hid)}` +
+      (isTable ? `&table=${encodeURIComponent(loc)}&mode=table`
+               : `&room=${encodeURIComponent(loc)}&mode=room`);
+
+    return sendSuccess(res, { session: data, attach_url: attachUrl });
+  } catch (e) {
+    return sendError(res, 500, e.message);
+  }
+});
+
+app.get("/api/gm/sessions", requireHotel, requireSupabase, async (req, res) => {
+  const { data, error } = await supa
+    .from("guest_sessions")
+    .select("*")
+    .eq("hotel_id", req.user.hotel_id)
+    .eq("status", "active")
+    .order("check_in_at", { ascending: false })
+    .limit(500);
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { sessions: data || [] });
+});
+
+app.post("/api/gm/sessions/:id/checkout", requireHotel, requireSupabase, async (req, res) => {
+  const { data: existing } = await supa
+    .from("guest_sessions").select("hotel_id").eq("id", req.params.id).maybeSingle();
+  if (!existing || existing.hotel_id !== req.user.hotel_id)
+    return sendError(res, 403, "Not yours");
+
+  const { data, error } = await supa
+    .from("guest_sessions")
+    .update({
+      status: "checked_out",
+      check_out_at: new Date().toISOString(),
+      checked_out_by: "hotel"
+    })
+    .eq("id", req.params.id).select().single();
+
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { session: data });
+});
+
+/* ============================================================
    VENDOR endpoints
    ============================================================ */
 app.get("/api/vendor/me", requireVendor, requireSupabase, async (req, res) => {
@@ -1882,49 +2006,299 @@ app.get("/api/public/vendor/:vendorId/slots", requireSupabase, async (req, res) 
 });
 
 /* ============================================================
-   GUEST SESSIONS
+   GUEST AUTO CHECK-IN / ATTACH / CHECKOUT
    ============================================================ */
+
+// Auto check-in / attach — the primary endpoint the guest app calls
+app.post("/api/guest/checkin", orderLimiter, requireSupabase, async (req, res) => {
+  try {
+    const { hotel_id, mode, number, guest_name, guest_phone, device_id } = req.body;
+    if (!hotel_id) return sendError(res, 400, "hotel_id required");
+
+    const isTable = String(mode || "room").toLowerCase() === "table";
+    const loc = cleanText(number, 30);
+    if (!loc) return sendError(res, 400, "room/table number required");
+    if (!device_id || String(device_id).length < 8)
+      return sendError(res, 400, "device_id required");
+
+    const hid = String(hotel_id).toUpperCase();
+
+    // Sweep old idle sessions first
+    await expireIdleSessions(hid);
+
+    // Load hotel config
+    let hotel = null;
+    {
+      const r = await supa
+        .from("hotels")
+        .select("hotel_id, allow_room_sharing, auto_checkin_enabled")
+        .ilike("hotel_id", hid)
+        .maybeSingle();
+      if (r.error && isMissingColumnError(r.error)) {
+        // Columns missing → default behaviour (sharing on, auto on)
+        const r2 = await supa.from("hotels").select("hotel_id").ilike("hotel_id", hid).maybeSingle();
+        hotel = r2.data ? { ...r2.data, allow_room_sharing: true, auto_checkin_enabled: true } : null;
+      } else hotel = r.data;
+    }
+
+    if (!hotel) return sendError(res, 404, "Hotel not found");
+
+    const phone = cleanPhone(guest_phone || "");
+    const name = cleanText(guest_name, 100);
+
+    // Look for an active session for this exact location
+    const { data: existing } = await supa
+      .from("guest_sessions")
+      .select("*")
+      .eq("hotel_id", hid)
+      .eq(isTable ? "table_number" : "room_number", loc)
+      .eq("mode", isTable ? "table" : "room")
+      .eq("status", "active")
+      .order("check_in_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const now = new Date().toISOString();
+
+    // ───────── CASE A: session exists → decide whether to attach ─────────
+    if (existing) {
+      const deviceIds = Array.isArray(existing.device_ids) ? existing.device_ids : [];
+      const knownDevice = deviceIds.includes(device_id);
+      const phoneMatch  = phone && cleanPhone(existing.guest_phone) === phone;
+      const allowShare  = hotel.allow_room_sharing !== false;
+
+      const permitted = isTable || knownDevice || phoneMatch || allowShare;
+
+      if (!permitted) {
+        return sendError(res, 403,
+          "This room is already checked in on another device. Please see reception.");
+      }
+
+      const patch = {
+        last_seen_at: now,
+        last_activity_at: now,
+        device_ids: knownDevice ? deviceIds : [...deviceIds, device_id].slice(0, 10)
+      };
+      if (!existing.guest_name && name) patch.guest_name = name;
+      if (!existing.guest_phone && phone) patch.guest_phone = phone;
+
+      const { data: updated, error } = await supa
+        .from("guest_sessions")
+        .update(patch)
+        .eq("id", existing.id)
+        .select()
+        .single();
+
+      if (error) return sendError(res, 500, error.message);
+
+      const exp = isTable ? "12h" : "30d";
+      const token = createToken({ role: "guest", sid: updated.id, hid }, exp);
+      return sendSuccess(res, {
+        session: updated,
+        token,
+        expires_in: exp,
+        joined_existing: true
+      });
+    }
+
+    // ───────── CASE B: no session → create one (auto check-in) ─────────
+    if (!hotel.auto_checkin_enabled && !isTable) {
+      return sendError(res, 403, "Please check in at reception to start ordering.");
+    }
+
+    const insert = {
+      hotel_id: hid,
+      mode: isTable ? "table" : "room",
+      room_number: isTable ? null : loc,
+      table_number: isTable ? loc : null,
+      guest_name: name || "Guest",
+      guest_phone: phone || null,
+      language: "en",
+      status: "active",
+      check_in_at: now,
+      last_seen_at: now,
+      last_activity_at: now,
+      checked_in_by: "guest_self",
+      device_ids: [device_id]
+    };
+
+    const { data: created, error } = await supa
+      .from("guest_sessions")
+      .insert([insert])
+      .select()
+      .single();
+
+    if (error) {
+      // Race: someone just claimed it
+      if (error.code === "23505") {
+        return sendError(res, 409, "Someone just checked in on this room. Please reload.");
+      }
+      // If optional columns don't exist yet, retry with minimal payload
+      if (isMissingColumnError(error)) {
+        const minimal = {
+          hotel_id: hid,
+          mode: isTable ? "table" : "room",
+          room_number: isTable ? null : loc,
+          table_number: isTable ? loc : null,
+          guest_name: name || "Guest",
+          guest_phone: phone || null,
+          last_seen_at: now
+        };
+        const r2 = await supa.from("guest_sessions").insert([minimal]).select().single();
+        if (r2.error) return sendError(res, 500, r2.error.message);
+        const exp = isTable ? "12h" : "30d";
+        const token = createToken({ role: "guest", sid: r2.data.id, hid }, exp);
+        return sendSuccess(res, { session: r2.data, token, expires_in: exp, created_new: true });
+      }
+      return sendError(res, 500, error.message);
+    }
+
+    const exp = isTable ? "12h" : "30d";
+    const token = createToken({ role: "guest", sid: created.id, hid }, exp);
+    return sendSuccess(res, {
+      session: created,
+      token,
+      expires_in: exp,
+      created_new: true
+    });
+  } catch (e) {
+    return sendError(res, 500, e.message);
+  }
+});
+
+// Guest updates their own session (name / phone / language)
+app.post("/api/guest/update-session", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+
+  const patch = {};
+  if (req.body.guest_name !== undefined)  patch.guest_name  = cleanText(req.body.guest_name, 100);
+  if (req.body.guest_phone !== undefined) patch.guest_phone = cleanPhone(req.body.guest_phone);
+  if (req.body.language !== undefined)    patch.language    = cleanText(req.body.language, 5);
+
+  if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
+
+  // Ensure the session is still active
+  const active = await getActiveGuestSession(t.sid);
+  if (!active) return sendError(res, 403, "Your stay has ended.");
+
+  patch.last_activity_at = new Date().toISOString();
+
+  const { data, error } = await supa
+    .from("guest_sessions")
+    .update(patch)
+    .eq("id", t.sid)
+    .eq("status", "active")
+    .select()
+    .single();
+
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { session: data });
+});
+
+// Guest checks themselves out
+app.post("/api/guest/checkout", requireSupabase, async (req, res) => {
+  const t = verifyToken(req);
+  if (!t || t.role !== "guest") return sendError(res, 401, "Guest session required");
+
+  const now = new Date().toISOString();
+  const { data, error } = await supa
+    .from("guest_sessions")
+    .update({
+      status: "checked_out",
+      check_out_at: now,
+      checked_out_by: "guest",
+      last_activity_at: now,
+      device_ids: []
+    })
+    .eq("id", t.sid)
+    .select()
+    .single();
+
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { session: data });
+});
+
+// Legacy — kept for backwards compatibility but delegates to the same helper
 app.post("/api/guest/session", orderLimiter, requireSupabase, async (req, res) => {
   try {
-    const { hotel_id, guest_name, guest_phone, mode, number, language } = req.body;
+    const { hotel_id, guest_name, guest_phone, mode, number, language, device_id } = req.body;
     if (!hotel_id) return sendError(res, 400, "hotel_id required");
 
     const isTable = String(mode || "room").toLowerCase() === "table";
     const loc = cleanText(number, 30);
     if (!loc) return sendError(res, 400, "room/table number required");
 
-    const payload = {
-      hotel_id: String(hotel_id).toUpperCase(),
-      guest_name: cleanText(guest_name, 100),
-      guest_phone: cleanPhone(guest_phone),
-      room_number: isTable ? null : loc,
-      table_number: isTable ? loc : null,
-      mode: isTable ? "table" : "room",
-      language: cleanText(language || "en", 5),
-      last_seen_at: new Date().toISOString()
-    };
+    const hid = String(hotel_id).toUpperCase();
+    const phone = cleanPhone(guest_phone);
+    const name = cleanText(guest_name, 100);
+    const now = new Date().toISOString();
 
-    if (payload.guest_phone) {
-      const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
-      const { data: existing } = await supa.from("guest_sessions")
-        .select("*").eq("hotel_id", payload.hotel_id)
-        .eq("guest_phone", payload.guest_phone)
-        .gte("last_seen_at", since).order("last_seen_at", { ascending: false })
-        .limit(1).maybeSingle();
+    // Look for active session at this location
+    const { data: existing } = await supa
+      .from("guest_sessions")
+      .select("*")
+      .eq("hotel_id", hid)
+      .eq(isTable ? "table_number" : "room_number", loc)
+      .eq("mode", isTable ? "table" : "room")
+      .eq("status", "active")
+      .order("check_in_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-      if (existing) {
-        const { data: updated } = await supa.from("guest_sessions")
-          .update(payload).eq("id", existing.id).select().single();
-        const token = createToken({ role: "guest", sid: updated.id, hid: payload.hotel_id }, "30d");
-        return sendSuccess(res, { session: updated, token });
-      }
+    if (existing) {
+      const patch = {
+        last_seen_at: now,
+        last_activity_at: now
+      };
+      if (!existing.guest_name && name) patch.guest_name = name;
+      if (!existing.guest_phone && phone) patch.guest_phone = phone;
+      if (language) patch.language = cleanText(language, 5);
+
+      const { data: updated, error } = await supa
+        .from("guest_sessions")
+        .update(patch).eq("id", existing.id).select().single();
+      if (error) return sendError(res, 500, error.message);
+
+      const token = createToken({ role: "guest", sid: updated.id, hid }, isTable ? "12h" : "30d");
+      return sendSuccess(res, { session: updated, token, reused: true });
     }
 
-    const { data, error } = await supa.from("guest_sessions").insert([payload]).select().single();
+    // Create fresh
+    const insert = {
+      hotel_id: hid,
+      mode: isTable ? "table" : "room",
+      room_number: isTable ? null : loc,
+      table_number: isTable ? loc : null,
+      guest_name: name || "Guest",
+      guest_phone: phone || null,
+      language: cleanText(language || "en", 5),
+      status: "active",
+      check_in_at: now,
+      last_seen_at: now,
+      last_activity_at: now,
+      checked_in_by: "guest_self",
+      device_ids: device_id ? [device_id] : []
+    };
+
+    let { data, error } = await supa.from("guest_sessions").insert([insert]).select().single();
+    if (error && isMissingColumnError(error)) {
+      const minimal = {
+        hotel_id: hid,
+        mode: isTable ? "table" : "room",
+        room_number: isTable ? null : loc,
+        table_number: isTable ? loc : null,
+        guest_name: name || "Guest",
+        guest_phone: phone || null,
+        last_seen_at: now
+      };
+      const r2 = await supa.from("guest_sessions").insert([minimal]).select().single();
+      data = r2.data; error = r2.error;
+    }
     if (error) return sendError(res, 500, error.message);
 
-    const token = createToken({ role: "guest", sid: data.id, hid: payload.hotel_id }, "30d");
-    return sendSuccess(res, { session: data, token });
+    const token = createToken({ role: "guest", sid: data.id, hid }, isTable ? "12h" : "30d");
+    return sendSuccess(res, { session: data, token, reused: false });
   } catch (e) { return sendError(res, 500, e.message); }
 });
 
@@ -2015,9 +2389,6 @@ self.addEventListener('notificationclick', event => {
 `);
 });
 
-/* === CONTINUE IN CHUNK 2 === */
-
-
 /* ============================================================
    BOOTSTRAP — one call for the guest app
    ============================================================ */
@@ -2026,11 +2397,11 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
     const hid = String(req.params.hotelId || "").toUpperCase();
     if (!hid) return sendError(res, 400, "hotelId required");
 
-    // Try full select first; fall back if kitchen columns missing
+    // Try full select first; fall back if optional columns missing
     let hotel = null;
     {
       const r = await supa.from("hotels")
-        .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status,kitchen_busy,busy_message,busy_until")
+        .select("hotel_id,name,hotel_name,tagline,currency,service_charge,promo_title,promo_text,image_url,images,payment_channel,paybill_number,paybill_account,till_number,mpesa_name,phone,status,kitchen_busy,busy_message,busy_until,allow_room_sharing,auto_checkin_enabled")
         .ilike("hotel_id", hid).maybeSingle();
       if (r.error && isMissingColumnError(r.error)) {
         const r2 = await supa.from("hotels")
@@ -2134,6 +2505,8 @@ app.get("/api/public/hotel/:hotelId/bootstrap", requireSupabase, async (req, res
         kitchen_busy: !!hotel.kitchen_busy,
         busy_message: hotel.busy_message || null,
         busy_until: hotel.busy_until || null,
+        allow_room_sharing: hotel.allow_room_sharing !== false,
+        auto_checkin_enabled: hotel.auto_checkin_enabled !== false,
         payment: {
           channel: hotel.payment_channel || "paybill",
           paybill_number: hotel.paybill_number || null,
@@ -2253,8 +2626,31 @@ app.get("/api/public/hotel/:hotelId/settings", requireSupabase, async (req, res)
   });
 });
 
+// Hotel settings (allow_room_sharing + auto_checkin_enabled)
+app.patch("/api/gm/settings", requireHotel, requireSupabase, async (req, res) => {
+  const patch = {};
+  if (req.body.allow_room_sharing !== undefined)
+    patch.allow_room_sharing = !!req.body.allow_room_sharing;
+  if (req.body.auto_checkin_enabled !== undefined)
+    patch.auto_checkin_enabled = !!req.body.auto_checkin_enabled;
+
+  if (!Object.keys(patch).length) return sendError(res, 400, "Nothing to update");
+
+  const { data, error } = await supa
+    .from("hotels")
+    .update(patch)
+    .ilike("hotel_id", req.user.hotel_id)
+    .select()
+    .single();
+
+  if (error && isMissingColumnError(error))
+    return sendError(res, 501, "Run the migration SQL — missing settings columns");
+  if (error) return sendError(res, 500, error.message);
+  return sendSuccess(res, { hotel: data });
+});
+
 /* ============================================================
-   ORDER CREATION — with department + WhatsApp notify
+   ORDER CREATION — with department + WhatsApp notify + session guard
    ============================================================ */
 app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
   try {
@@ -2272,6 +2668,14 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     if (!guest_name) return sendError(res, 400, "Guest name required");
     if (!guest_phone) return sendError(res, 400, "Phone required");
     if (!service_title) return sendError(res, 400, "Service required");
+
+    // Guard: if a session id is provided, it must be active
+    if (guest_session_id && isUUID(guest_session_id)) {
+      const active = await getActiveGuestSession(guest_session_id);
+      if (!active) {
+        return sendError(res, 403, "Your stay has ended. Please see reception.");
+      }
+    }
 
     const isTable = String(mode || "").toLowerCase() === "table";
     const locValue = isTable
@@ -2346,6 +2750,14 @@ app.post("/api/orders", orderLimiter, requireSupabase, async (req, res) => {
     }
 
     if (error) return sendError(res, 500, error.message);
+
+    // Bump session activity
+    if (extendedPayload.guest_session_id) {
+      supa.from("guest_sessions")
+        .update({ last_activity_at: new Date().toISOString() })
+        .eq("id", extendedPayload.guest_session_id)
+        .then(() => {}, () => {});
+    }
 
     // Fire department notification (non-blocking)
     notifyDepartment(data).catch(e => console.warn("dept notify failed:", e.message));
@@ -2527,6 +2939,12 @@ app.post("/api/bookings", orderLimiter, requireSupabase, async (req, res) => {
     if (!hotel_id || !vendor_id || !service_title || !scheduled_for)
       return sendError(res, 400, "hotel_id, vendor_id, service_title, scheduled_for are required");
 
+    // Guard: session must be active
+    if (guest_session_id && isUUID(guest_session_id)) {
+      const active = await getActiveGuestSession(guest_session_id);
+      if (!active) return sendError(res, 403, "Your stay has ended. Please see reception.");
+    }
+
     const when = new Date(scheduled_for);
     if (isNaN(when.getTime())) return sendError(res, 400, "Invalid scheduled_for");
     if (when.getTime() < Date.now() - 60_000)
@@ -2557,6 +2975,13 @@ app.post("/api/bookings", orderLimiter, requireSupabase, async (req, res) => {
 
     const { data, error } = await supa.from("bookings").insert([payload]).select().single();
     if (error) return sendError(res, 500, error.message);
+
+    if (payload.guest_session_id) {
+      supa.from("guest_sessions")
+        .update({ last_activity_at: new Date().toISOString() })
+        .eq("id", payload.guest_session_id)
+        .then(() => {}, () => {});
+    }
 
     return sendSuccess(res, { booking: data });
   } catch (e) { return sendError(res, 500, e.message); }
@@ -2654,6 +3079,16 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
   const sid = payload.sid;
   const hotelId = String(payload.hid || "").toUpperCase();
 
+  // Verify session still active on connect
+  const { data: sessRow } = await supa
+    .from("guest_sessions")
+    .select("id, status")
+    .eq("id", sid)
+    .maybeSingle();
+  if (!sessRow || (sessRow.status || "active") !== "active") {
+    return sendError(res, 403, "Your stay has ended.");
+  }
+
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache, no-transform");
   res.setHeader("Connection", "keep-alive");
@@ -2684,20 +3119,34 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
 
   let lastOrdersHash = "";
   let lastBookingsHash = "";
+  let sessionCheckedOut = false;
 
   const tick = async () => {
     try {
+      // Verify session still active every tick
+      if (!sessionCheckedOut) {
+        const { data: s } = await supa
+          .from("guest_sessions")
+          .select("status")
+          .eq("id", sid)
+          .maybeSingle();
+        if (!s || (s.status || "active") !== "active") {
+          sessionCheckedOut = true;
+          send("session_ended", { reason: s?.status || "expired" });
+        }
+      }
+
       let ordersList = [];
       let bookingsList = [];
 
       {
         const r = await supa.from("orders")
-          .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items,eta_minutes,assigned_to,cancel_window_ends_at")
+          .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items,eta_minutes,assigned_to,cancel_window_ends_at,guest_session_id")
           .eq("hotel_id", hotelId).eq("guest_session_id", sid)
           .order("created_at", { ascending: false }).limit(20);
         if (r.error && isMissingColumnError(r.error)) {
           const r2 = await supa.from("orders")
-            .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items")
+            .select("id,status,reference,amount,service_title,updated_at,created_at,mode,room_number,table_number,items,guest_session_id")
             .eq("hotel_id", hotelId).eq("guest_session_id", sid)
             .order("created_at", { ascending: false }).limit(20);
           ordersList = r2.data || [];
@@ -2706,7 +3155,7 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
 
       {
         const r = await supa.from("bookings")
-          .select("id,status,reference,scheduled_for,service_title,updated_at,amount,duration_min,vendor_note")
+          .select("id,status,reference,scheduled_for,service_title,updated_at,amount,duration_min,vendor_note,guest_session_id")
           .eq("guest_session_id", sid)
           .order("created_at", { ascending: false }).limit(20);
         bookingsList = r.data || [];
@@ -2723,6 +3172,12 @@ app.get("/api/stream/guest/:token", requireSupabase, async (req, res) => {
         lastBookingsHash = bHash;
         send("bookings", bookingsList);
       }
+
+      // Bump session activity
+      supa.from("guest_sessions")
+        .update({ last_activity_at: new Date().toISOString(), last_seen_at: new Date().toISOString() })
+        .eq("id", sid)
+        .then(() => {}, () => {});
 
       send("ping", { ts: Date.now() });
     } catch (e) {
@@ -2784,7 +3239,7 @@ app.use((err, req, res, next) => {
    ============================================================ */
 app.listen(PORT, "0.0.0.0", () => {
   console.log("============================================");
-  console.log(`✅ GuestHub V2.2 Department Routing on 0.0.0.0:${PORT}`);
+  console.log(`✅ GuestHub V2.3 Stay-Based Sessions on 0.0.0.0:${PORT}`);
   console.log(`📁 Serving from: ${path.join(__dirname, "public")}`);
   console.log(`🔑 Supabase: ${supa ? "CONNECTED" : "MISSING KEYS"}`);
   console.log(`🔔 Web Push: ${PUSH_ENABLED ? "ENABLED" : "DISABLED"}`);
@@ -2796,7 +3251,9 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("🍽️  Table-mode ordering enabled");
   console.log("📸 Hotel image uploads (ownership-checked)");
   console.log("🏦 Hotel + vendor paybill/till endpoints");
-  console.log("🎫 Guest sessions + bookings + SSE");
+  console.log("🎫 Auto guest check-in via QR + staff check-in");
+  console.log("🚪 Stay lifecycle: active → checked_out / expired");
+  console.log("🔒 Strict per-room session isolation");
   console.log("💰 Commission ledger (15%)");
   console.log("📊 Admin commission endpoints");
   console.log("🔔 Push notifications + ETA + kitchen state");
