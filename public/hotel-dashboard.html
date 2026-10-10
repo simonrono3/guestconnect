@@ -16,9 +16,6 @@
 <script src="/config.js" onerror="console.warn('config.js missing')"></script>
 
 <style>
-/* =====================================================================
-   Tokens
-   ===================================================================== */
 :root{
   --brand:#003580; --brand-2:#0071c2; --brand-3:#005999;
   --brand-soft:#ebf3ff; --brand-line:#d4e4f5;
@@ -65,7 +62,6 @@ ul{ list-style:none; }
 .icon{ display:inline-block; vertical-align:middle; flex-shrink:0; color:currentColor; }
 .hidden{ display:none !important; }
 
-/* Boot error */
 #bootError{
   display:none; position:fixed; top:0; left:0; right:0; z-index:9999;
   background:var(--red); color:#fff; padding:12px 14px;
@@ -79,7 +75,6 @@ ul{ list-style:none; }
   margin-left:auto;
 }
 
-/* Header */
 .header{
   position:sticky; top:0; z-index:100;
   background:var(--brand); color:#fff;
@@ -121,7 +116,6 @@ ul{ list-style:none; }
 }
 .icon-btn.has-notif .notif-dot{ display:block; }
 
-/* Buttons */
 .btn{
   display:inline-flex; align-items:center; justify-content:center;
   gap:6px; height:36px; padding:0 14px;
@@ -155,7 +149,6 @@ ul{ list-style:none; }
 .btn-lg{ height:44px; padding:0 18px; font-size:14px; border-radius:var(--r); }
 .btn .icon{ width:14px; height:14px; }
 
-/* Dashboard */
 .dashboard{ padding:20px 16px; max-width:1500px; margin:auto; }
 .hero{
   border:1px solid var(--border);
@@ -580,7 +573,6 @@ label:first-child{ margin-top:0; }
 .langCard .check{ position:absolute; top:10px; right:12px; color:var(--brand-2); }
 .langCard .check svg{ width:16px; height:16px; }
 
-/* Payment */
 .payTabs{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
 .payTab{
   padding:14px 10px;
@@ -1118,6 +1110,7 @@ function t(key, vars){
 let SERVICES = [], ORDERS = [], DEPTS = [], VENDORS_POOL = [], MY_VENDOR_IDS = [], BOOKINGS = [];
 let currentTab = localStorage.getItem('hotel_last_tab') || 'orders';
 let orderFilter = 'all';
+let orderDept = 'all';
 let orderSearch = '';
 let bookingFilter = 'today';
 let seenOrderIds = new Set();
@@ -1256,6 +1249,8 @@ function normalizeCategory(raw){
   if(c.includes('housekeep')||c.includes('front')||c.includes('service')||c.includes('maintenance')||c.includes('clean')||c.includes('towel')||c.includes('amenity')) return 'services';
   return 'other';
 }
+
+/* === PART 2 CONTINUES BELOW === */
 
 /* Loaders */
 async function loadHotelMeta(){
@@ -1405,6 +1400,9 @@ function updateTabBadges(){
   if(cb){ cb.textContent = todayBookings; cb.classList.toggle('hot', todayBookings > 0); }
 }
 
+/* ============================================================
+   ORDERS — with Department filter tabs
+   ============================================================ */
 function renderOrders(){
   const box = $('view-orders');
   if(!box) return;
@@ -1415,6 +1413,12 @@ function renderOrders(){
   }
   const q = orderSearch.toLowerCase();
   const filtered = ORDERS.filter(o => {
+    // Department filter
+    if (orderDept !== 'all') {
+      const d = String(o.department || 'front_desk').toLowerCase();
+      if (d !== orderDept) return false;
+    }
+    // Search filter
     const blob = `${orderRoom(o)} ${orderGuest(o)} ${orderCat(o)} ${orderItemsText(o)} ${orderRef(o)} ${o.guest_phone||''}`.toLowerCase();
     return !q || blob.includes(q);
   });
@@ -1429,11 +1433,30 @@ function renderOrders(){
   const list = byFilter[orderFilter] || byFilter.all;
   const pendingNew = byFilter.new;
 
+  // Department filter counts (over full filtered list, not status-filtered)
+  const deptCounts = { all: filtered.length, kitchen: 0, bar: 0, front_desk: 0, housekeeping: 0, maintenance: 0 };
+  filtered.forEach(o => {
+    const d = String(o.department || 'front_desk').toLowerCase();
+    if (deptCounts[d] !== undefined) deptCounts[d]++;
+  });
+
   box.innerHTML = `
     <div class="card">
       <div class="card-title">${ICON.bell} ${esc(t('tab_orders'))} — ${esc(HOTEL_ID)}</div>
       <div class="card-sub">Tap a status button — the guest's phone updates in ~0.4s</div>
       <input id="orderSearch" class="input" style="margin-top:12px" placeholder="${esc(t('search_ph'))}" value="${esc(orderSearch)}" autocomplete="off">
+
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-top:14px;margin-bottom:6px">Department</div>
+      <div class="filterRow" id="deptTabs">
+        <button type="button" class="fpill ${orderDept==='all'?'active':''}" data-dept="all">All <span class="n">(${deptCounts.all})</span></button>
+        <button type="button" class="fpill ${orderDept==='kitchen'?'active':''}" data-dept="kitchen">🍳 Kitchen <span class="n">(${deptCounts.kitchen})</span></button>
+        <button type="button" class="fpill ${orderDept==='bar'?'active':''}" data-dept="bar">🍹 Bar <span class="n">(${deptCounts.bar})</span></button>
+        <button type="button" class="fpill ${orderDept==='front_desk'?'active':''}" data-dept="front_desk">🛎️ Front Desk <span class="n">(${deptCounts.front_desk})</span></button>
+        <button type="button" class="fpill ${orderDept==='housekeeping'?'active':''}" data-dept="housekeeping">🧹 Housekeeping <span class="n">(${deptCounts.housekeeping})</span></button>
+        <button type="button" class="fpill ${orderDept==='maintenance'?'active':''}" data-dept="maintenance">🔧 Maintenance <span class="n">(${deptCounts.maintenance})</span></button>
+      </div>
+
+      <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.4px;margin-top:14px;margin-bottom:6px">Status</div>
       <div class="filterRow">
         <button type="button" class="fpill ${orderFilter==='all'?'active':''}" data-f="all">${esc(t('f_all'))} <span class="n">(${counts.all})</span></button>
         <button type="button" class="fpill ${orderFilter==='new'?'active':''}" data-f="new">${ICON.sparkles} ${esc(t('f_new'))} <span class="n">(${counts.new})</span></button>
@@ -1462,6 +1485,13 @@ function renderOrders(){
       }, SEARCH_DEBOUNCE_MS);
     });
   }
+
+  // Department tab click
+  box.querySelectorAll('[data-dept]').forEach(p => p.addEventListener('click', () => {
+    orderDept = p.dataset.dept;
+    renderOrders();
+  }));
+
   box.querySelectorAll('[data-f]').forEach(p => p.addEventListener('click', () => {
     orderFilter = p.dataset.f;
     renderOrders();
@@ -1495,11 +1525,24 @@ function orderCard(o){
   const cancelBtn = nexts.includes('cancelled')
     ? `<button type="button" class="btn btn-danger btn-sm" data-status="cancelled" data-order-id="${esc(o.id)}">${esc(t('cancel'))}</button>`
     : '';
+
+  const deptLabels = {
+    kitchen: '🍳 Kitchen',
+    bar: '🍹 Bar',
+    front_desk: '🛎️ Front Desk',
+    housekeeping: '🧹 Housekeeping',
+    maintenance: '🔧 Maintenance'
+  };
+  const deptBadge = o.department
+    ? `<span class="badge badge-gray">${esc(deptLabels[String(o.department).toLowerCase()] || o.department)}</span>`
+    : '';
+
   return `
     <div class="row ${isFresh ? 'new-order' : ''} ${isUrgent ? 'priority' : ''} clickable" data-order-id="${esc(o.id)}">
       <div class="rowMain">
         <b>${esc(t('room'))} ${esc(orderRoom(o))} — ${esc(orderGuest(o))}</b>
         <span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span>
+        ${deptBadge}
         ${isFresh ? `<span class="badge badge-blue">${ICON.sparkles} ${esc(t('new_order'))}</span>` : ''}
         <small>${esc(orderItemsText(o))} — ${money(orderAmount(o))}</small>
         <div class="orderMeta">
@@ -1620,7 +1663,6 @@ async function updateBookingStatus(id, status){
   }catch(e){ toast('Error: ' + e.message, 'error'); }
 }
 
-/* Placeholder renderers so nothing breaks */
 function renderVendors(){
   const box = $('view-vendors'); if(!box) return;
   box.innerHTML = `
@@ -1667,18 +1709,33 @@ function renderMenu(){
           <option value="breakfast">Breakfast</option>
         </select>
       </div>
+      <div style="margin-top:10px">
+        <label style="margin-top:0">Department (for routing)</label>
+        <select id="mDept" class="select">
+          <option value="kitchen">🍳 Kitchen</option>
+          <option value="bar">🍹 Bar</option>
+          <option value="front_desk">🛎️ Front Desk</option>
+          <option value="housekeeping">🧹 Housekeeping</option>
+          <option value="maintenance">🔧 Maintenance</option>
+        </select>
+      </div>
       <button type="button" class="btn btn-primary" style="width:100%;margin-top:12px" onclick="addMenu()">${ICON.plus} ${esc(t('menu_add'))}</button>
     </div>
-    ${food.length ? food.map(i => `
-      <div class="row">
-        <div class="rowMain">
-          <b>${esc(i.title)}</b> <span class="badge badge-green">${money(i.price)}</span>
-          <small>${esc(i.category || 'food')}</small>
-        </div>
-        <div class="rowActions">
-          <button type="button" class="btn btn-danger btn-sm" onclick="delMenu('${esc(i.id)}')">${ICON.trash}</button>
-        </div>
-      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.utensils}</div><strong>${esc(t('empty_menu'))}</strong></div></div>`}
+    ${food.length ? food.map(i => {
+      const dept = String(i.department || 'kitchen').toLowerCase();
+      const deptLabel = { kitchen:'🍳 Kitchen', bar:'🍹 Bar', front_desk:'🛎️ Front Desk', housekeeping:'🧹 Housekeeping', maintenance:'🔧 Maintenance' }[dept] || dept;
+      return `
+        <div class="row">
+          <div class="rowMain">
+            <b>${esc(i.title)}</b> <span class="badge badge-green">${money(i.price)}</span>
+            <span class="badge badge-gray">${esc(deptLabel)}</span>
+            <small>${esc(i.category || 'food')}</small>
+          </div>
+          <div class="rowActions">
+            <button type="button" class="btn btn-danger btn-sm" onclick="delMenu('${esc(i.id)}')">${ICON.trash}</button>
+          </div>
+        </div>`;
+    }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.utensils}</div><strong>${esc(t('empty_menu'))}</strong></div></div>`}
   `;
 }
 
@@ -1690,37 +1747,72 @@ function renderServices(){
       <div class="card-title">${ICON.bell} ${esc(t('services_title'))}</div>
       <div class="card-sub">${activeCount} ${esc(t('services_sub'))}</div>
     </div>
-    ${SERVICES.length ? SERVICES.map(s => `
-      <div class="row">
-        <div class="rowMain">
-          <b>${esc(s.title)}</b>
-          <span class="badge ${s.is_active ? 'badge-green' : 'badge-gray'}">${money(s.price)}</span>
-          <small>(${esc(s.kind || normalizeCategory(s.category))})</small>
-        </div>
-        <div class="rowActions">
-          <button type="button" class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? ICON.pause : ICON.play}</button>
-          <button type="button" class="btn btn-danger btn-sm" onclick="delService('${esc(s.id)}')">${ICON.trash}</button>
-        </div>
-      </div>`).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.bell}</div><strong>${esc(t('empty_services'))}</strong></div></div>`}
+    ${SERVICES.length ? SERVICES.map(s => {
+      const dept = String(s.department || 'front_desk').toLowerCase();
+      const deptLabel = { kitchen:'🍳 Kitchen', bar:'🍹 Bar', front_desk:'🛎️ Front Desk', housekeeping:'🧹 Housekeeping', maintenance:'🔧 Maintenance' }[dept] || dept;
+      return `
+        <div class="row">
+          <div class="rowMain">
+            <b>${esc(s.title)}</b>
+            <span class="badge ${s.is_active ? 'badge-green' : 'badge-gray'}">${money(s.price)}</span>
+            <span class="badge badge-gray">${esc(deptLabel)}</span>
+            <small>(${esc(s.kind || normalizeCategory(s.category))})</small>
+          </div>
+          <div class="rowActions">
+            <button type="button" class="btn ${s.is_active ? 'btn-dark' : 'btn-primary'} btn-sm" onclick="toggleService('${esc(s.id)}', ${!s.is_active})">${s.is_active ? ICON.pause : ICON.play}</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="delService('${esc(s.id)}')">${ICON.trash}</button>
+          </div>
+        </div>`;
+    }).join('') : `<div class="card"><div class="empty"><div class="emptyIcon">${ICON.bell}</div><strong>${esc(t('empty_services'))}</strong></div></div>`}
   `;
 }
 
 function renderWhatsApp(){
   const box = $('view-whatsapp'); if(!box) return;
-  const getVal = n => { const d = DEPTS.find(x => x.name === n); return d ? (d.whatsapp || '') : ''; };
+  const getVal = n => { const d = DEPTS.find(x => String(x.name||'').toLowerCase() === n); return d ? (d.whatsapp || '') : ''; };
+  const depts = [
+    { key: 'kitchen',      label: '🍳 Kitchen',       hint: 'Food orders' },
+    { key: 'bar',          label: '🍹 Bar',            hint: 'Drinks & beverages' },
+    { key: 'front_desk',   label: '🛎️ Front Desk',    hint: 'Waiter, water, bill' },
+    { key: 'housekeeping', label: '🧹 Housekeeping',  hint: 'Cleaning requests' },
+    { key: 'maintenance',  label: '🔧 Maintenance',    hint: 'Repairs' }
+  ];
   box.innerHTML = `
     <div class="card">
-      <div class="card-title">${ICON.message} ${esc(t('wa_title'))}</div>
-      <div class="card-sub">${esc(t('wa_sub'))}</div>
+      <div class="card-title">${ICON.message} WhatsApp department alerts</div>
+      <div class="card-sub">When a guest orders, we'll send a WhatsApp message to the department number below. Format: international, no + or spaces (e.g. <code>254712345678</code>).</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
-        <div><label>Kitchen</label><input id="wa_kitchen" class="input" value="${esc(getVal('kitchen'))}" placeholder="254712345678"></div>
-        <div><label>Housekeeping</label><input id="wa_housekeeping" class="input" value="${esc(getVal('housekeeping'))}" placeholder="254712345678"></div>
-        <div><label>Laundry</label><input id="wa_laundry" class="input" value="${esc(getVal('laundry'))}" placeholder="254712345678"></div>
-        <div><label>Taxi</label><input id="wa_taxi" class="input" value="${esc(getVal('taxi'))}" placeholder="254712345678"></div>
-        <div><label>Front Desk</label><input id="wa_frontdesk" class="input" value="${esc(getVal('frontdesk'))}" placeholder="254712345678"></div>
+        ${depts.map(d => `
+          <div>
+            <label style="margin-top:0">${esc(d.label)}</label>
+            <input id="wa_${d.key}" class="input" value="${esc(getVal(d.key))}" placeholder="254712345678" inputmode="numeric">
+            <small style="display:block;color:var(--text-3);font-size:11px;margin-top:4px">${esc(d.hint)}</small>
+          </div>
+        `).join('')}
       </div>
+      <div class="payHelp">${ICON.info}<span>Leave a field empty to disable alerts for that department. Guests still see orders in the dashboard.</span></div>
       <button type="button" class="btn btn-primary" style="width:100%;margin-top:16px" onclick="saveWhatsApp()">${ICON.save} ${esc(t('save'))}</button>
     </div>`;
+}
+
+async function saveWhatsApp(){
+  if(!supa) return toast(t('no_supabase'), 'error');
+  const keys = ['kitchen','bar','front_desk','housekeeping','maintenance'];
+  let saved = 0;
+  for(const d of keys){
+    const num = ($('wa_' + d)?.value || '').replace(/\D/g, '');
+    if(num){
+      const { error } = await supa.from('departments').upsert({
+        hotel_id: HOTEL_ID,
+        name: d,
+        whatsapp: num
+      }, { onConflict: 'hotel_id,name' });
+      if(error){ console.warn('saveWhatsApp ' + d + ':', error.message); continue; }
+      saved++;
+    }
+  }
+  toast(`Saved ${saved} department number(s) — guests will get notified on new orders`);
+  loadDepts();
 }
 
 function renderQR(){
@@ -2094,7 +2186,7 @@ async function addVendor(vendorId){
       hotel_id: HOTEL_ID, title: v.vendor_name, description: v.bio || 'Available through GuestHub',
       price: v.price || 0, category: guestCategory, icon: '🏪', vendor_id: vendorId,
       vendor_name: v.vendor_name, vendor_phone: v.phone, is_active: true,
-      kind: 'vendor_item', group_label: groupLabel
+      kind: 'vendor_item', group_label: groupLabel, department: 'front_desk'
     }]);
     if(error) return toast(t('error_prefix') + error.message, 'error');
     toast(t('toast_added'));
@@ -2108,14 +2200,19 @@ async function removeVendor(vendorId){
   toast(t('toast_removed'));
   loadVendorsPool(); loadServices(); renderCurrentTab();
 }
+
 async function addMenu(){
   const name = $('mName').value.trim();
   const price = parseInt($('mPrice').value);
   const cat = $('mCat').value;
+  const dept = ($('mDept')?.value || 'kitchen').toLowerCase();
   if(!name || !price) return toast(t('name_price_req'), 'error');
   if(!supa) return toast(t('no_supabase'), 'error');
   const { error } = await supa.from('hotel_services').insert([{
-    hotel_id: HOTEL_ID, title: name, price, category: normalizeCategory(cat), is_active: true, kind: 'food'
+    hotel_id: HOTEL_ID, title: name, price,
+    category: normalizeCategory(cat),
+    department: dept,
+    is_active: true, kind: 'food'
   }]);
   if(error) return toast(t('error_prefix') + error.message, 'error');
   toast(t('toast_added'));
@@ -2139,19 +2236,7 @@ async function delService(id){
   toast(t('toast_removed'));
   await loadServices(); renderServices();
 }
-async function saveWhatsApp(){
-  if(!supa) return toast(t('no_supabase'), 'error');
-  const keys = ['kitchen','housekeeping','laundry','taxi','frontdesk'];
-  for(const d of keys){
-    const num = $('wa_' + d)?.value.trim();
-    if(num){
-      const { error } = await supa.from('departments').upsert({ hotel_id: HOTEL_ID, name: d, whatsapp: num }, { onConflict: 'hotel_id,name' });
-      if(error) return toast(t('error_prefix') + error.message, 'error');
-    }
-  }
-  toast(t('toast_saved'));
-  loadDepts();
-}
+
 function qrReady(){
   if(typeof QRCode === 'undefined' || window.__qrLibFailed){
     toast(t('qr_lib_missing'), 'error');
@@ -2186,11 +2271,11 @@ function genBatch(){
   toast(`Generated ${raw.length} QR codes`);
 }
 function exportCSV(){
-  const rows = [['Reference','Date','Room','Guest','Phone','Service','Category','Amount','Status']];
+  const rows = [['Reference','Date','Room','Guest','Phone','Service','Category','Department','Amount','Status']];
   ORDERS.forEach(o => rows.push([
     orderRef(o), o.created_at ? new Date(o.created_at).toISOString() : '',
     orderRoom(o), orderGuest(o), o.guest_phone || '',
-    orderItemsText(o), orderCat(o), orderAmount(o), o.status
+    orderItemsText(o), orderCat(o), o.department || '', orderAmount(o), o.status
   ]));
   const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
@@ -2215,6 +2300,7 @@ function openOrderModal(id){
       <div><label style="margin-top:0">${esc(t('service'))}</label><div style="font-weight:600">${esc(orderItemsText(o))}</div></div>
       <div><label style="margin-top:0">${esc(t('amount'))}</label><div style="font-weight:700;color:var(--brand-2)">${money(orderAmount(o))}</div></div>
       <div><label style="margin-top:0">${esc(t('category'))}</label><div style="font-weight:500">${esc(orderCat(o))}</div></div>
+      <div><label style="margin-top:0">Department</label><div style="font-weight:600">${esc(o.department || '—')}</div></div>
       <div><label style="margin-top:0">${esc(t('status'))}</label><div><span class="badge ${st.badge}">${esc((t(o.status) || o.status).toUpperCase())}</span></div></div>
       <div><label style="margin-top:0">${esc(t('phone'))}</label><div style="font-weight:500">${esc(o.guest_phone || '—')}</div></div>
       <div><label style="margin-top:0">${esc(t('created'))}</label><div style="font-weight:500;font-size:12.5px">${o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</div></div>
@@ -2496,3 +2582,4 @@ window.updateBookingStatus = updateBookingStatus;
 </script>
 </body>
 </html>
+   
